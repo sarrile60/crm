@@ -493,11 +493,11 @@ const Home = () => {
       </section>
 
       {/* Success Stories Section */}
-      <section id="success-stories" className="bg-[#121212] py-20 px-[7.6923%]">
+      <section id="success-stories" className="bg-gray-50 py-20 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-white mb-6">Casi di Successo</h2>
-            <p className="text-xl text-white/85 max-w-3xl mx-auto">
+            <h2 className="text-5xl font-bold text-black mb-6">Casi di Successo</h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               Risultati reali per clienti reali - casi anonimizzati per protezione privacy
             </p>
           </div>
@@ -541,44 +541,44 @@ const Home = () => {
                 duration: '14 mesi'
               }
             ].map((story, index) => (
-              <div key={index} className="bg-black border border-white/25 p-6 hover:border-[#00FFD1] transition-all">
+              <div key={index} className="bg-white border-2 border-gray-200 p-6 hover:border-[#D4AF37] transition-all shadow-md">
                 <div className="flex items-center gap-2 mb-4">
-                  <CheckCircle className="w-5 h-5 text-[#00FFD1]" />
-                  <span className="text-[#00FFD1] font-semibold">Caso Risolto</span>
+                  <CheckCircle className="w-5 h-5 text-[#D4AF37]" />
+                  <span className="text-[#D4AF37] font-semibold">Caso Risolto</span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">{story.type}</h3>
+                <h3 className="text-xl font-bold text-black mb-3">{story.type}</h3>
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between">
-                    <span className="text-white/85">Importo:</span>
-                    <span className="text-white font-semibold">{story.amount}</span>
+                    <span className="text-gray-700">Importo:</span>
+                    <span className="text-black font-semibold">{story.amount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/85">Durata:</span>
-                    <span className="text-white font-semibold">{story.duration}</span>
+                    <span className="text-gray-700">Durata:</span>
+                    <span className="text-black font-semibold">{story.duration}</span>
                   </div>
                 </div>
-                <p className="text-white/85 text-sm">{story.outcome}</p>
+                <p className="text-gray-700 text-sm">{story.outcome}</p>
               </div>
             ))}
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mt-16 text-center">
-            <div className="bg-black border border-white/25 p-8">
-              <div className="text-5xl font-bold text-[#00FFD1] mb-3">500+</div>
-              <div className="text-white/85 text-lg">Casi Totali Gestiti</div>
+            <div className="bg-white border-2 border-[#D4AF37] p-8 shadow-md">
+              <div className="text-5xl font-bold text-[#D4AF37] mb-3">500+</div>
+              <div className="text-black text-lg font-semibold">Casi Totali Gestiti</div>
             </div>
-            <div className="bg-black border border-white/25 p-8">
-              <div className="text-5xl font-bold text-[#00FFD1] mb-3">35+</div>
-              <div className="text-white/85 text-lg">Clienti Internazionali</div>
+            <div className="bg-white border-2 border-[#D4AF37] p-8 shadow-md">
+              <div className="text-5xl font-bold text-[#D4AF37] mb-3">35+</div>
+              <div className="text-black text-lg font-semibold">Clienti Internazionali</div>
             </div>
-            <div className="bg-black border border-white/25 p-8">
-              <div className="text-5xl font-bold text-[#00FFD1] mb-3">24h</div>
-              <div className="text-white/85 text-lg">Tempo Medio di Risposta</div>
+            <div className="bg-white border-2 border-[#D4AF37] p-8 shadow-md">
+              <div className="text-5xl font-bold text-[#D4AF37] mb-3">24h</div>
+              <div className="text-black text-lg font-semibold">Tempo Medio di Risposta</div>
             </div>
           </div>
 
           <div className="text-center mt-12">
-            <Button onClick={() => handleCTAClick('success-stories')} className="bg-[#00FFD1] text-black hover:bg-[#00FFD1]/90 rounded-none text-lg px-8 py-7">
+            <Button onClick={() => handleCTAClick('success-stories')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-8 py-7 font-semibold">
               Richiedi la Tua Consulenza <ArrowRight className="ml-2" />
             </Button>
           </div>
