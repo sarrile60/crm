@@ -682,15 +682,15 @@ const Home = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black py-16 px-[7.6923%] border-t border-white/25">
+      <footer className="bg-black py-16 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto">
           <div className="grid md:grid-cols-3 gap-12 mb-12">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <Scale className="w-8 h-8 text-[#00FFD1]" />
+                <Scale className="w-8 h-8 text-[#D4AF37]" />
                 <span className="text-white text-xl font-semibold">1 LAW SOLICITORS</span>
               </div>
-              <p className="text-white/85 mb-4">
+              <p className="text-gray-300 mb-4">
                 Recognised Body Law Practice<br />
                 SRA Regolamentato<br />
                 SRA ID: 8003758
@@ -700,12 +700,12 @@ const Home = () => {
             <div>
               <h4 className="text-white font-semibold mb-4 text-lg">Contatti</h4>
               <div className="space-y-3">
-                <div className="flex items-start gap-2 text-white/85">
-                  <MapPin className="w-5 h-5 text-[#00FFD1] mt-1" />
+                <div className="flex items-start gap-2 text-gray-300">
+                  <MapPin className="w-5 h-5 text-[#D4AF37] mt-1" />
                   <span>12 Caroline Street<br />Birmingham, England<br />B3 1TR</span>
                 </div>
-                <div className="flex items-center gap-2 text-white/85">
-                  <Phone className="w-5 h-5 text-[#00FFD1]" />
+                <div className="flex items-center gap-2 text-gray-300">
+                  <Phone className="w-5 h-5 text-[#D4AF37]" />
                   <span>+44 (disponibile nel form)</span>
                 </div>
               </div>
@@ -713,7 +713,7 @@ const Home = () => {
 
             <div>
               <h4 className="text-white font-semibold mb-4 text-lg">Informazioni Legali</h4>
-              <p className="text-white/85 text-sm mb-2">
+              <p className="text-gray-300 text-sm mb-2">
                 Tipo: Private Limited Company<br />
                 Costituita: 9 Settembre 2021<br />
                 SIC Code: 69102 – Solicitors
@@ -721,8 +721,8 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="border-t border-white/25 pt-8 text-center">
-            <p className="text-white/85">
+          <div className="border-t border-gray-700 pt-8 text-center">
+            <p className="text-gray-300">
               © {new Date().getFullYear()} 1 LAW SOLICITORS LIMITED. Tutti i diritti riservati.
             </p>
           </div>
