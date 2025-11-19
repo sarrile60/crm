@@ -603,63 +603,63 @@ const Home = () => {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-2" className="bg-[#121212] border border-white/25 px-6">
-              <AccordionTrigger className="text-white text-lg font-semibold hover:text-[#00FFD1]">
+            <AccordionItem value="item-2" className="bg-gray-50 border-2 border-gray-200 px-6">
+              <AccordionTrigger className="text-black text-lg font-semibold hover:text-[#D4AF37]">
                 Quali documenti sono necessari?
               </AccordionTrigger>
-              <AccordionContent className="text-white/85 text-base leading-relaxed">
+              <AccordionContent className="text-gray-700 text-base leading-relaxed">
                 Idealmente: screenshot di conversazioni, conferme di transazioni, indirizzi wallet, contratti o accordi, prove di comunicazione con i truffatori, estratti conto bancari. Tuttavia, anche con documentazione limitata possiamo valutare il caso e guidarti nella raccolta delle prove necessarie.
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-3" className="bg-[#121212] border border-white/25 px-6">
-              <AccordionTrigger className="text-white text-lg font-semibold hover:text-[#00FFD1]">
+            <AccordionItem value="item-3" className="bg-gray-50 border-2 border-gray-200 px-6">
+              <AccordionTrigger className="text-black text-lg font-semibold hover:text-[#D4AF37]">
                 Quanto tempo richiede il recupero fondi?
               </AccordionTrigger>
-              <AccordionContent className="text-white/85 text-base leading-relaxed">
+              <AccordionContent className="text-gray-700 text-base leading-relaxed">
                 Dipende dalla complessità del caso. Casi semplici con broker regolamentati possono richiedere 3-6 mesi. Casi internazionali complessi possono richiedere 8-14 mesi. Durante la consulenza iniziale forniremo una stima basata sul tuo caso specifico.
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-4" className="bg-[#121212] border border-white/25 px-6">
-              <AccordionTrigger className="text-white text-lg font-semibold hover:text-[#00FFD1]">
+            <AccordionItem value="item-4" className="bg-gray-50 border-2 border-gray-200 px-6">
+              <AccordionTrigger className="text-black text-lg font-semibold hover:text-[#D4AF37]">
                 Gestite casi internazionali?
               </AccordionTrigger>
-              <AccordionContent className="text-white/85 text-base leading-relaxed">
+              <AccordionContent className="text-gray-700 text-base leading-relaxed">
                 Sì, abbiamo esperienza in dispute cross-border e collaboriamo con INTERPOL e Pharos (Ministero Francese) per casi internazionali. Abbiamo gestito con successo casi in oltre 35 paesi, inclusi situazioni con exchange esteri, broker offshore e piattaforme internazionali.
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-5" className="bg-[#121212] border border-white/25 px-6">
-              <AccordionTrigger className="text-white text-lg font-semibold hover:text-[#00FFD1]">
+            <AccordionItem value="item-5" className="bg-gray-50 border-2 border-gray-200 px-6">
+              <AccordionTrigger className="text-black text-lg font-semibold hover:text-[#D4AF37]">
                 Quando è possibile recuperare i fondi?
               </AccordionTrigger>
-              <AccordionContent className="text-white/85 text-base leading-relaxed">
+              <AccordionContent className="text-gray-700 text-base leading-relaxed">
                 In molti casi, l'azione legale può aiutare i clienti a recuperare i fondi, a seconda delle prove, dei dettagli della transazione e delle circostanze della truffa. I fattori chiave includono: identificabilità dei truffatori, tracciabilità delle transazioni, giurisdizione applicabile, e tempestività dell'azione legale. Garantiamo il recupero attraverso metodi online, in persona e partnership internazionali.
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-6" className="bg-[#121212] border border-white/25 px-6">
-              <AccordionTrigger className="text-white text-lg font-semibold hover:text-[#00FFD1]">
+            <AccordionItem value="item-6" className="bg-gray-50 border-2 border-gray-200 px-6">
+              <AccordionTrigger className="text-black text-lg font-semibold hover:text-[#D4AF37]">
                 Quali sono i costi?
               </AccordionTrigger>
-              <AccordionContent className="text-white/85 text-base leading-relaxed">
+              <AccordionContent className="text-gray-700 text-base leading-relaxed">
                 La consulenza iniziale è gratuita. Per casi che decidiamo di accettare, lavoriamo con diverse strutture di compenso a seconda della complessità: fee fisse, fee orarie, o fee basate su successo. Discuteremo tutte le opzioni durante la consulenza iniziale e non ci saranno costi nascosti.
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-7" className="bg-[#121212] border border-white/25 px-6">
-              <AccordionTrigger className="text-white text-lg font-semibold hover:text-[#00FFD1]">
+            <AccordionItem value="item-7" className="bg-gray-50 border-2 border-gray-200 px-6">
+              <AccordionTrigger className="text-black text-lg font-semibold hover:text-[#D4AF37]">
                 Parlerò direttamente con un avvocato?
               </AccordionTrigger>
-              <AccordionContent className="text-white/85 text-base leading-relaxed">
+              <AccordionContent className="text-gray-700 text-base leading-relaxed">
                 Sì, dopo la valutazione iniziale del caso, sarai assegnato a un avvocato dedicato che gestirà personalmente il tuo caso. Avrai comunicazione diretta con il tuo avvocato durante tutto il processo, con aggiornamenti regolari sullo stato del caso.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
 
           <div className="text-center mt-12">
-            <Button onClick={() => handleCTAClick('faq')} className="bg-[#00FFD1] text-black hover:bg-[#00FFD1]/90 rounded-none text-lg px-8 py-7">
+            <Button onClick={() => handleCTAClick('faq')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-8 py-7 font-semibold">
               Invia il Tuo Caso <ArrowRight className="ml-2" />
             </Button>
           </div>
@@ -667,15 +667,15 @@ const Home = () => {
       </section>
 
       {/* Final CTA Section */}
-      <section className="bg-[#00FFD1] py-20 px-[7.6923%]">
+      <section className="bg-[#D4AF37] py-20 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto text-center">
           <h2 className="text-5xl font-bold text-black mb-6">
             Pronto a Recuperare i Tuoi Fondi?
           </h2>
-          <p className="text-xl text-black/85 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl text-black mb-8 max-w-3xl mx-auto font-medium">
             Non aspettare. Ogni giorno conta. Ottieni una valutazione legale gratuita e scopri come possiamo aiutarti a recuperare i tuoi fondi attraverso azione legale strutturata.
           </p>
-          <Button onClick={() => handleCTAClick('final-cta')} className="bg-black text-white hover:bg-black/90 rounded-none text-lg px-12 py-7">
+          <Button onClick={() => handleCTAClick('final-cta')} className="bg-black text-white hover:bg-gray-800 rounded-none text-lg px-12 py-7 font-semibold shadow-xl">
             Ottieni Consulenza Gratuita Ora <ArrowRight className="ml-2" />
           </Button>
         </div>
