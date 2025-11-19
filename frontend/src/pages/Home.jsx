@@ -181,15 +181,6 @@ const Home = () => {
         )}
       </header>
 
-      {/* Sticky CTA Button */}
-      <button
-        onClick={() => handleCTAClick('sticky')}
-        className="fixed right-8 top-1/2 -translate-y-1/2 z-40 bg-[#00FFD1] text-black px-6 py-4 rounded-none shadow-lg hover:bg-[#00FFD1]/90 transition-all hidden lg:block writing-mode-vertical"
-        style={{ writingMode: 'vertical-rl' }}
-      >
-        <span className="text-lg font-semibold">Consulenza Gratuita</span>
-      </button>
-
       {/* Hero Section */}
       <section id="home" className="min-h-screen bg-black pt-32 pb-20 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
