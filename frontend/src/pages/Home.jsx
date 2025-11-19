@@ -586,19 +586,19 @@ const Home = () => {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="bg-black py-20 px-[7.6923%]">
+      <section id="faq" className="bg-white py-20 px-[7.6923%]">
         <div className="max-w-[900px] mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-white mb-6">Domande Frequenti</h2>
-            <p className="text-xl text-white/85">Risposte alle domande più comuni sul processo di recupero fondi</p>
+            <h2 className="text-5xl font-bold text-black mb-6">Domande Frequenti</h2>
+            <p className="text-xl text-gray-700">Risposte alle domande più comuni sul processo di recupero fondi</p>
           </div>
 
           <Accordion type="single" collapsible className="space-y-4">
-            <AccordionItem value="item-1" className="bg-[#121212] border border-white/25 px-6">
-              <AccordionTrigger className="text-white text-lg font-semibold hover:text-[#00FFD1]">
+            <AccordionItem value="item-1" className="bg-gray-50 border-2 border-gray-200 px-6">
+              <AccordionTrigger className="text-black text-lg font-semibold hover:text-[#D4AF37]">
                 Come funziona la consulenza gratuita?
               </AccordionTrigger>
-              <AccordionContent className="text-white/85 text-base leading-relaxed">
+              <AccordionContent className="text-gray-700 text-base leading-relaxed">
                 Dopo aver inviato il form, un avvocato del nostro team esaminerà il tuo caso entro 24 ore. Valuteremo le prove, le transazioni e le circostanze della truffa per determinare le opzioni legali disponibili. La consulenza iniziale è completamente gratuita e senza impegno.
               </AccordionContent>
             </AccordionItem>
