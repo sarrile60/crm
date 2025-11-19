@@ -1,5 +1,5 @@
-.dark-landing-page {
-  background: #000000;
+.light-landing-page {
+  background: #ffffff;
   min-height: 100vh;
 }
 
@@ -8,22 +8,22 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar for dark theme */
+/* Custom scrollbar for luxury theme */
 ::-webkit-scrollbar {
   width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #000000;
+  background: #f5f5f5;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00FFD1;
+  background: #D4AF37;
   border-radius: 0px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6FD2C0;
+  background: #C5A028;
 }
 
 /* Vertical text for sticky button */
@@ -51,5 +51,49 @@ html {
 
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 32px rgba(0, 255, 209, 0.2);
+  box-shadow: 0 12px 40px rgba(212, 175, 55, 0.3);
+}
+
+/* Luxury gold shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.gold-shimmer {
+  background: linear-gradient(
+    90deg,
+    #D4AF37 0%,
+    #F4E5C3 50%,
+    #D4AF37 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 3s infinite;
+}
+
+/* Luxury shadows */
+.luxury-shadow {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.luxury-shadow-gold {
+  box-shadow: 0 10px 40px rgba(212, 175, 55, 0.2);
+}
+
+/* Button hover effects */
+button:hover {
+  transform: translateY(-2px);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Gold gradient text */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #D4AF37 0%, #F4E5C3 50%, #D4AF37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
