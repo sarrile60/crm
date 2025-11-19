@@ -458,11 +458,11 @@ const Home = () => {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="bg-black py-20 px-[7.6923%]">
+      <section id="how-it-works" className="bg-white py-20 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-white mb-6">Come Funziona il Processo</h2>
-            <p className="text-xl text-white/85 max-w-3xl mx-auto">
+            <h2 className="text-5xl font-bold text-black mb-6">Come Funziona il Processo</h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               Un processo in 6 fasi per recuperare i tuoi fondi attraverso azione legale strutturata
             </p>
           </div>
@@ -476,16 +476,16 @@ const Home = () => {
               { step: '05', title: 'Negoziazione', description: 'Negoziamo con le entità coinvolte utilizzando partnership internazionali quando necessario' },
               { step: '06', title: 'Risultato Finale', description: 'Recupero fondi o risultato legale a seconda del caso e delle prove disponibili' }
             ].map((item, index) => (
-              <div key={index} className="bg-[#121212] border border-white/25 p-6 relative">
-                <div className="text-6xl font-bold text-[#00FFD1]/20 absolute top-4 right-4">{item.step}</div>
-                <h3 className="text-2xl font-bold text-white mb-4 relative z-10">{item.title}</h3>
-                <p className="text-white/85 relative z-10">{item.description}</p>
+              <div key={index} className="bg-white border-2 border-gray-200 p-6 relative hover:border-[#D4AF37] transition-all shadow-md">
+                <div className="text-6xl font-bold text-[#D4AF37]/20 absolute top-4 right-4">{item.step}</div>
+                <h3 className="text-2xl font-bold text-black mb-4 relative z-10">{item.title}</h3>
+                <p className="text-gray-700 relative z-10">{item.description}</p>
               </div>
             ))}
           </div>
 
           <div className="text-center mt-12">
-            <Button onClick={() => handleCTAClick('how-it-works')} className="bg-[#00FFD1] text-black hover:bg-[#00FFD1]/90 rounded-none text-lg px-8 py-7">
+            <Button onClick={() => handleCTAClick('how-it-works')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-8 py-7 font-semibold">
               Inizia la Tua Revisione Gratuita <ArrowRight className="ml-2" />
             </Button>
           </div>
