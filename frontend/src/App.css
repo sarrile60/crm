@@ -97,3 +97,62 @@ button:hover {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Regulatory Slideshow Animation */
+.regulatory-slider {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.regulatory-track {
+  display: flex;
+  gap: 4rem;
+  animation: scroll 40s linear infinite;
+  width: max-content;
+}
+
+.regulatory-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 180px;
+  max-width: 180px;
+  flex-shrink: 0;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Pause animation on hover */
+.regulatory-slider:hover .regulatory-track {
+  animation-play-state: paused;
+}
+
+/* Fade effect on edges */
+.regulatory-slider::before,
+.regulatory-slider::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 150px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.regulatory-slider::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.regulatory-slider::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+}
