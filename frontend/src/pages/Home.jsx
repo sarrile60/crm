@@ -344,23 +344,23 @@ const Home = () => {
       </section>
 
       {/* Trust Bar */}
-      <section className="bg-[#121212] py-12 px-[7.6923%] border-y border-white/25">
+      <section className="bg-black py-12 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div>
-            <div className="text-4xl font-bold text-[#00FFD1] mb-2">500+</div>
-            <div className="text-white/85">Casi Gestiti</div>
+            <div className="text-4xl font-bold text-[#D4AF37] mb-2">500+</div>
+            <div className="text-white">Casi Gestiti</div>
           </div>
           <div>
-            <div className="text-4xl font-bold text-[#00FFD1] mb-2">€50M+</div>
-            <div className="text-white/85">Fondi Recuperati</div>
+            <div className="text-4xl font-bold text-[#D4AF37] mb-2">€50M+</div>
+            <div className="text-white">Fondi Recuperati</div>
           </div>
           <div>
-            <div className="text-4xl font-bold text-[#00FFD1] mb-2">35+</div>
-            <div className="text-white/85">Paesi Serviti</div>
+            <div className="text-4xl font-bold text-[#D4AF37] mb-2">35+</div>
+            <div className="text-white">Paesi Serviti</div>
           </div>
           <div>
-            <div className="text-4xl font-bold text-[#00FFD1] mb-2">24h</div>
-            <div className="text-white/85">Tempo di Risposta</div>
+            <div className="text-4xl font-bold text-[#D4AF37] mb-2">24h</div>
+            <div className="text-white">Tempo di Risposta</div>
           </div>
         </div>
       </section>
