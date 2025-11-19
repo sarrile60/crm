@@ -405,52 +405,52 @@ const Home = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="bg-[#121212] py-20 px-[7.6923%]">
+      <section id="about" className="bg-gray-50 py-20 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <img
               src="https://images.unsplash.com/photo-1758518731462-d091b0b4ed0d"
               alt="Team legale professionale"
-              className="w-full h-[500px] object-cover"
+              className="w-full h-[500px] object-cover shadow-xl"
             />
           </div>
           <div>
-            <h2 className="text-5xl font-bold text-white mb-6">Chi Siamo</h2>
-            <p className="text-xl text-white/85 mb-6 leading-relaxed">
+            <h2 className="text-5xl font-bold text-black mb-6">Chi Siamo</h2>
+            <p className="text-xl text-gray-700 mb-6 leading-relaxed">
               <strong>1 LAW SOLICITORS LIMITED</strong> è uno studio legale riconosciuto e regolamentato dalla Solicitors Regulation Authority (SRA ID: 8003758), specializzato in dispute legali per truffe finanziarie online e casi transfrontalieri.
             </p>
-            <p className="text-xl text-white/85 mb-6 leading-relaxed">
+            <p className="text-xl text-gray-700 mb-6 leading-relaxed">
               Il nostro team di avvocati esperti ha gestito con successo centinaia di casi di frodi crypto, forex, broker illegali e piattaforme di investimento false. Lavoriamo con partnership internazionali tra cui <strong>INTERPOL</strong> e <strong>Pharos (Ministero Francese)</strong> per garantire risultati ottimali.
             </p>
-            <p className="text-xl text-white/85 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-700 mb-8 leading-relaxed">
               Attraverso metodi online e in persona, garantiamo il recupero dei fondi per i nostri clienti utilizzando strategie legali avanzate, analisi delle prove e negoziazioni con le entità coinvolte.
             </p>
             
             <div className="space-y-4 mb-8">
               <div className="flex items-start gap-3">
-                <Shield className="w-6 h-6 text-[#00FFD1] mt-1" />
+                <Shield className="w-6 h-6 text-[#D4AF37] mt-1" />
                 <div>
-                  <h4 className="text-white font-semibold mb-1">Regolamentazione SRA</h4>
-                  <p className="text-white/85">Recognised Body Law Practice - SRA ID: 8003758</p>
+                  <h4 className="text-black font-semibold mb-1">Regolamentazione SRA</h4>
+                  <p className="text-gray-700">Recognised Body Law Practice - SRA ID: 8003758</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="w-6 h-6 text-[#00FFD1] mt-1" />
+                <MapPin className="w-6 h-6 text-[#D4AF37] mt-1" />
                 <div>
-                  <h4 className="text-white font-semibold mb-1">Sede Legale</h4>
-                  <p className="text-white/85">12 Caroline Street, Birmingham, England B3 1TR</p>
+                  <h4 className="text-black font-semibold mb-1">Sede Legale</h4>
+                  <p className="text-gray-700">12 Caroline Street, Birmingham, England B3 1TR</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Globe className="w-6 h-6 text-[#00FFD1] mt-1" />
+                <Globe className="w-6 h-6 text-[#D4AF37] mt-1" />
                 <div>
-                  <h4 className="text-white font-semibold mb-1">Partnership Internazionali</h4>
-                  <p className="text-white/85">Collaborazione con INTERPOL e Pharos per casi transfrontalieri</p>
+                  <h4 className="text-black font-semibold mb-1">Partnership Internazionali</h4>
+                  <p className="text-gray-700">Collaborazione con INTERPOL e Pharos per casi transfrontalieri</p>
                 </div>
               </div>
             </div>
 
-            <Button onClick={() => handleCTAClick('about')} className="bg-[#00FFD1] text-black hover:bg-[#00FFD1]/90 rounded-none text-lg px-8 py-7">
+            <Button onClick={() => handleCTAClick('about')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-8 py-7 font-semibold">
               Parla con il Team Legale
             </Button>
           </div>
