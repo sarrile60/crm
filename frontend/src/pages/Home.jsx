@@ -182,44 +182,44 @@ const Home = () => {
       </header>
 
       {/* Hero Section */}
-      <section id="home" className="min-h-screen bg-black pt-32 pb-20 px-[7.6923%]">
+      <section id="home" className="min-h-screen bg-white pt-32 pb-20 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h1 className="text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-6xl font-bold text-black mb-6 leading-tight">
               Recupera i Tuoi Fondi da Truffe Online e Crypto
             </h1>
-            <p className="text-xl text-white/85 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-700 mb-8 leading-relaxed">
               Studio legale specializzato nel recupero di fondi da truffe crypto, forex, broker fraudolenti e piattaforme di investimento false. In molti casi, l'azione legale può aiutare i clienti a recuperare i fondi, a seconda delle prove, dei dettagli della transazione e delle circostanze della truffa.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Button onClick={() => handleCTAClick('hero')} className="bg-[#00FFD1] text-black hover:bg-[#00FFD1]/90 rounded-none text-lg px-8 py-7">
+              <Button onClick={() => handleCTAClick('hero')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-8 py-7 font-semibold">
                 Ottieni Consulenza Gratuita <ArrowRight className="ml-2" />
               </Button>
-              <Button onClick={() => scrollToSection('how-it-works')} className="bg-white/10 text-white hover:bg-white hover:text-black rounded-none text-lg px-8 py-7 transition-all">
+              <Button onClick={() => scrollToSection('how-it-works')} className="bg-black text-white hover:bg-gray-800 rounded-none text-lg px-8 py-7 transition-all">
                 Come Funziona
               </Button>
             </div>
             <div className="flex flex-wrap gap-6">
-              <div className="flex items-center gap-2 text-white/85">
-                <Shield className="w-5 h-5 text-[#00FFD1]" />
+              <div className="flex items-center gap-2 text-gray-700">
+                <Shield className="w-5 h-5 text-[#D4AF37]" />
                 <span>SRA Regolamentato</span>
               </div>
-              <div className="flex items-center gap-2 text-white/85">
-                <CheckCircle className="w-5 h-5 text-[#00FFD1]" />
+              <div className="flex items-center gap-2 text-gray-700">
+                <CheckCircle className="w-5 h-5 text-[#D4AF37]" />
                 <span>Casi Internazionali</span>
               </div>
-              <div className="flex items-center gap-2 text-white/85">
-                <Users className="w-5 h-5 text-[#00FFD1]" />
+              <div className="flex items-center gap-2 text-gray-700">
+                <Users className="w-5 h-5 text-[#D4AF37]" />
                 <span>Partnership con INTERPOL</span>
               </div>
             </div>
           </div>
 
           {/* Contact Form */}
-          <div id="contact" className="bg-[#121212] border border-white/25 p-8">
+          <div id="contact" className="bg-gray-50 border-2 border-[#D4AF37] p-8 shadow-xl">
             <div className="mb-6">
-              <h3 className="text-2xl font-bold text-white mb-2">Richiedi Consulenza Gratuita</h3>
-              <p className="text-white/85">Valutazione legale confidenziale senza impegno</p>
+              <h3 className="text-2xl font-bold text-black mb-2">Richiedi Consulenza Gratuita</h3>
+              <p className="text-gray-700">Valutazione legale confidenziale senza impegno</p>
             </div>
 
             {formStep === 1 ? (
