@@ -138,42 +138,42 @@ const Home = () => {
   };
 
   return (
-    <div className="dark-landing-page">
+    <div className="light-landing-page">
       {/* Header */}
-      <header className="fixed top-0 w-full z-50 bg-black border-b border-white/25">
+      <header className="fixed top-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-[1400px] mx-auto px-[7.6923%] py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Scale className="w-8 h-8 text-[#00FFD1]" />
-            <span className="text-white text-xl font-semibold">1 LAW SOLICITORS</span>
+            <Scale className="w-8 h-8 text-[#D4AF37]" />
+            <span className="text-black text-xl font-semibold">1 LAW SOLICITORS</span>
           </div>
           
           <nav className="hidden md:flex items-center gap-8">
-            <button onClick={() => scrollToSection('home')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg">Home</button>
-            <button onClick={() => scrollToSection('about')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg">Chi Siamo</button>
-            <button onClick={() => scrollToSection('services')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg">Servizi</button>
-            <button onClick={() => scrollToSection('how-it-works')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg">Come Funziona</button>
-            <button onClick={() => scrollToSection('success-stories')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg">Casi di Successo</button>
-            <button onClick={() => scrollToSection('faq')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg">FAQ</button>
-            <Button onClick={() => handleCTAClick('header')} className="bg-[#00FFD1] text-black hover:bg-[#00FFD1]/90 rounded-none text-lg px-6 py-6">
+            <button onClick={() => scrollToSection('home')} className="text-gray-600 hover:text-black transition-colors text-lg">Home</button>
+            <button onClick={() => scrollToSection('about')} className="text-gray-600 hover:text-black transition-colors text-lg">Chi Siamo</button>
+            <button onClick={() => scrollToSection('services')} className="text-gray-600 hover:text-black transition-colors text-lg">Servizi</button>
+            <button onClick={() => scrollToSection('how-it-works')} className="text-gray-600 hover:text-black transition-colors text-lg">Come Funziona</button>
+            <button onClick={() => scrollToSection('success-stories')} className="text-gray-600 hover:text-black transition-colors text-lg">Casi di Successo</button>
+            <button onClick={() => scrollToSection('faq')} className="text-gray-600 hover:text-black transition-colors text-lg">FAQ</button>
+            <Button onClick={() => handleCTAClick('header')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-6 py-6 font-semibold">
               Consulenza Gratuita
             </Button>
           </nav>
 
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-white">
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-black">
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
         {mobileMenuOpen && (
-          <div className="md:hidden bg-black border-t border-white/25 py-4">
+          <div className="md:hidden bg-white border-t border-gray-200 py-4">
             <nav className="flex flex-col gap-4 px-[7.6923%]">
-              <button onClick={() => scrollToSection('home')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg text-left">Home</button>
-              <button onClick={() => scrollToSection('about')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg text-left">Chi Siamo</button>
-              <button onClick={() => scrollToSection('services')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg text-left">Servizi</button>
-              <button onClick={() => scrollToSection('how-it-works')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg text-left">Come Funziona</button>
-              <button onClick={() => scrollToSection('success-stories')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg text-left">Casi di Successo</button>
-              <button onClick={() => scrollToSection('faq')} className="text-[#4D4D4D] hover:text-white transition-colors text-lg text-left">FAQ</button>
-              <Button onClick={() => handleCTAClick('mobile-menu')} className="bg-[#00FFD1] text-black hover:bg-[#00FFD1]/90 rounded-none text-lg w-full py-6">
+              <button onClick={() => scrollToSection('home')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">Home</button>
+              <button onClick={() => scrollToSection('about')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">Chi Siamo</button>
+              <button onClick={() => scrollToSection('services')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">Servizi</button>
+              <button onClick={() => scrollToSection('how-it-works')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">Come Funziona</button>
+              <button onClick={() => scrollToSection('success-stories')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">Casi di Successo</button>
+              <button onClick={() => scrollToSection('faq')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">FAQ</button>
+              <Button onClick={() => handleCTAClick('mobile-menu')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg w-full py-6 font-semibold">
                 Consulenza Gratuita
               </Button>
             </nav>
