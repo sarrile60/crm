@@ -356,99 +356,108 @@ const Home = () => {
             <div className="regulatory-track">
               {/* First set of logos */}
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <Shield className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-3 shadow-md">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37] mb-1">FCA</div>
+                    <div className="text-[10px] text-gray-600 leading-tight">Financial Conduct Authority</div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-black">FCA</span>
-                <span className="text-xs text-gray-600 text-center">Financial Conduct Authority</span>
               </div>
               
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <Scale className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-3 shadow-md">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37] mb-1">BaFin</div>
+                    <div className="text-[10px] text-gray-600 leading-tight">Bundesanstalt für Finanzdienstleistung</div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-black">BaFin</span>
-                <span className="text-xs text-gray-600 text-center">Bundesanstalt für Finanzdienstleistungsaufsicht</span>
               </div>
               
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <Shield className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-3 shadow-md">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37] mb-1">SRA</div>
+                    <div className="text-[10px] text-gray-600 leading-tight">Solicitors Regulation Authority</div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-black">SRA</span>
-                <span className="text-xs text-gray-600 text-center">Solicitors Regulation Authority</span>
               </div>
               
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <Globe className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-3 shadow-md">
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-[#D4AF37] mb-1">INTERPOL</div>
+                    <div className="text-[10px] text-gray-600 leading-tight">International Police Organization</div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-black">INTERPOL</span>
-                <span className="text-xs text-gray-600 text-center">International Police</span>
               </div>
               
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <FileText className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-3 shadow-md">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37] mb-1">Pharos</div>
+                    <div className="text-[10px] text-gray-600 leading-tight">Ministère de l'Intérieur</div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-black">Pharos</span>
-                <span className="text-xs text-gray-600 text-center">Ministero Francese</span>
               </div>
               
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <Shield className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-3 shadow-md">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37] mb-1">CONSOB</div>
+                    <div className="text-[10px] text-gray-600 leading-tight">Commissione Nazionale</div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-black">CONSOB</span>
-                <span className="text-xs text-gray-600 text-center">Commissione Nazionale</span>
               </div>
               
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <TrendingUp className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-3 shadow-md">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37] mb-1">AMF</div>
+                    <div className="text-[10px] text-gray-600 leading-tight">Autorité des Marchés Financiers</div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-black">AMF</span>
-                <span className="text-xs text-gray-600 text-center">Autorité des Marchés Financiers</span>
               </div>
               
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <Globe className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-2 shadow-md">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/ESMALogo.png" alt="ESMA Logo" className="w-full h-full object-contain" />
                 </div>
-                <span className="text-sm font-semibold text-black">ESMA</span>
-                <span className="text-xs text-gray-600 text-center">European Securities Authority</span>
               </div>
               
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <Shield className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-3 shadow-md">
+                  <div className="text-center">
+                    <div className="text-xl font-bold text-[#D4AF37] mb-1">Banca d'Italia</div>
+                    <div className="text-[10px] text-gray-600 leading-tight">Central Bank of Italy</div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-black">Banca d'Italia</span>
-                <span className="text-xs text-gray-600 text-center">Central Bank of Italy</span>
               </div>
               
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <FileText className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-3 shadow-md">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37] mb-1">CNMV</div>
+                    <div className="text-[10px] text-gray-600 leading-tight">Comisión Nacional del Mercado</div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-black">CNMV</span>
-                <span className="text-xs text-gray-600 text-center">Comisión Nacional del Mercado</span>
               </div>
               
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <Scale className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-3 shadow-md">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37] mb-1">AFM</div>
+                    <div className="text-[10px] text-gray-600 leading-tight">Autoriteit Financiële Markten</div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-black">AFM</span>
-                <span className="text-xs text-gray-600 text-center">Autoriteit Financiële Markten</span>
               </div>
               
               <div className="regulatory-item">
-                <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
-                  <Shield className="w-12 h-12 text-[#D4AF37]" />
+                <div className="w-32 h-32 flex items-center justify-center bg-white rounded-lg border-2 border-[#D4AF37] mb-3 p-3 shadow-md">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37] mb-1">FINMA</div>
+                    <div className="text-[10px] text-gray-600 leading-tight">Swiss Financial Authority</div>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-black">FINMA</span>
-                <span className="text-xs text-gray-600 text-center">Swiss Financial Market Authority</span>
               </div>
               
               {/* Duplicate set for seamless loop */}
