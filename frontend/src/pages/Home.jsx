@@ -183,7 +183,7 @@ const Home = () => {
 
       {/* Hero Section */}
       <section id="home" className="min-h-screen bg-white pt-32 pb-20 px-[7.6923%]">
-        <div className="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-12 items-start">
           <div>
             <h1 className="text-6xl font-bold text-black mb-6 leading-tight">
               Recupera i Tuoi Fondi da Truffe Online e Crypto
@@ -199,7 +199,7 @@ const Home = () => {
                 Come Funziona
               </Button>
             </div>
-            <div className="flex flex-wrap gap-6">
+            <div className="flex flex-wrap gap-6 mb-12">
               <div className="flex items-center gap-2 text-gray-700">
                 <Shield className="w-5 h-5 text-[#D4AF37]" />
                 <span>SRA Regolamentato</span>
@@ -211,6 +211,58 @@ const Home = () => {
               <div className="flex items-center gap-2 text-gray-700">
                 <Users className="w-5 h-5 text-[#D4AF37]" />
                 <span>Partnership con INTERPOL</span>
+              </div>
+            </div>
+
+            {/* Trust Indicators Section */}
+            <div className="bg-gray-50 border-2 border-[#D4AF37] p-6 rounded-lg">
+              <h3 className="text-lg font-bold text-black mb-4">Perché Scegliere 1 LAW SOLICITORS?</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-6 h-6 text-[#D4AF37] mt-1 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-black text-sm">Risposta Rapida</p>
+                    <p className="text-xs text-gray-600">Valutazione entro 24 ore</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Shield className="w-6 h-6 text-[#D4AF37] mt-1 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-black text-sm">100% Confidenziale</p>
+                    <p className="text-xs text-gray-600">Massima riservatezza</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Scale className="w-6 h-6 text-[#D4AF37] mt-1 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-black text-sm">Esperti Legali</p>
+                    <p className="text-xs text-gray-600">Team specializzato</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Globe className="w-6 h-6 text-[#D4AF37] mt-1 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-black text-sm">Network Globale</p>
+                    <p className="text-xs text-gray-600">Collaborazioni internazionali</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-6 pt-6 border-t border-gray-300">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37]">€50M+</div>
+                    <div className="text-xs text-gray-600">Recuperati</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37]">500+</div>
+                    <div className="text-xs text-gray-600">Casi Risolti</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-[#D4AF37]">35+</div>
+                    <div className="text-xs text-gray-600">Paesi</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
