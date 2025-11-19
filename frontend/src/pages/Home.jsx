@@ -225,37 +225,37 @@ const Home = () => {
             {formStep === 1 ? (
               <form onSubmit={handleStep1Submit} className="space-y-4">
                 <div>
-                  <label className="block text-white mb-2 text-sm">Nome Completo *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">Nome Completo *</label>
                   <Input
                     type="text"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
                     placeholder="Mario Rossi"
-                    className="bg-black border-white/25 text-white rounded-none"
+                    className="bg-white border-gray-300 text-black rounded-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-white mb-2 text-sm">Email *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">Email *</label>
                   <Input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="mario@esempio.it"
-                    className="bg-black border-white/25 text-white rounded-none"
+                    className="bg-white border-gray-300 text-black rounded-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-white mb-2 text-sm">Numero di Telefono *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">Numero di Telefono *</label>
                   <div className="flex gap-2">
                     <Input
                       type="text"
                       value="+39"
                       disabled
-                      className="bg-black border-white/25 text-white rounded-none w-20"
+                      className="bg-gray-100 border-gray-300 text-black rounded-none w-20"
                     />
                     <Input
                       type="tel"
@@ -263,36 +263,36 @@ const Home = () => {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="3XX XXX XXXX"
-                      className="bg-black border-white/25 text-white rounded-none flex-1"
+                      className="bg-white border-gray-300 text-black rounded-none flex-1"
                       required
                     />
                   </div>
                 </div>
-                <Button type="submit" className="w-full bg-[#00FFD1] text-black hover:bg-[#00FFD1]/90 rounded-none text-lg py-6">
+                <Button type="submit" className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg py-6 font-semibold">
                   Continua → Dettagli Caso
                 </Button>
               </form>
             ) : (
               <form onSubmit={handleFinalSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-white mb-2 text-sm">Nome Azienda Truffatrice *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">Nome Azienda Truffatrice *</label>
                   <Input
                     type="text"
                     name="scammerCompany"
                     value={formData.scammerCompany}
                     onChange={handleInputChange}
                     placeholder="Es. FakeInvest Ltd"
-                    className="bg-black border-white/25 text-white rounded-none"
+                    className="bg-white border-gray-300 text-black rounded-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-white mb-2 text-sm">Importo Perso *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">Importo Perso *</label>
                   <Select onValueChange={handleSelectChange} value={formData.amountLost}>
-                    <SelectTrigger className="bg-black border-white/25 text-white rounded-none">
+                    <SelectTrigger className="bg-white border-gray-300 text-black rounded-none">
                       <SelectValue placeholder="Seleziona importo" />
                     </SelectTrigger>
-                    <SelectContent className="bg-black border-white/25 text-white">
+                    <SelectContent className="bg-white border-gray-300 text-black">
                       <SelectItem value="500-5000">€500 - €5.000</SelectItem>
                       <SelectItem value="5000-50000">€5.000 - €50.000</SelectItem>
                       <SelectItem value="50000-500000">€50.000 - €500.000</SelectItem>
@@ -301,41 +301,41 @@ const Home = () => {
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-white mb-2 text-sm">Raccontaci cosa è successo *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">Raccontaci cosa è successo *</label>
                   <Textarea
                     name="caseDetails"
                     value={formData.caseDetails}
                     onChange={handleInputChange}
                     placeholder="Descrivi i dettagli della truffa, quando è avvenuta, quali prove hai, ecc."
                     rows={5}
-                    className="bg-black border-white/25 text-white rounded-none"
+                    className="bg-white border-gray-300 text-black rounded-none"
                     required
                   />
                 </div>
-                <Button type="submit" disabled={loading} className="w-full bg-[#00FFD1] text-black hover:bg-[#00FFD1]/90 rounded-none text-lg py-6">
+                <Button type="submit" disabled={loading} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg py-6 font-semibold">
                   {loading ? 'Invio in corso...' : 'Invia Richiesta di Consulenza'}
                 </Button>
                 <button
                   type="button"
                   onClick={() => setFormStep(1)}
-                  className="text-white/85 hover:text-white underline text-sm"
+                  className="text-gray-700 hover:text-black underline text-sm"
                 >
                   ← Torna Indietro
                 </button>
               </form>
             )}
 
-            <div className="mt-6 pt-6 border-t border-white/25 space-y-2">
-              <div className="flex items-center gap-2 text-white/85 text-sm">
-                <Shield className="w-4 h-4 text-[#00FFD1]" />
+            <div className="mt-6 pt-6 border-t border-gray-300 space-y-2">
+              <div className="flex items-center gap-2 text-gray-700 text-sm">
+                <Shield className="w-4 h-4 text-[#D4AF37]" />
                 <span>SRA Regolamentato – ID 8003758</span>
               </div>
-              <div className="flex items-center gap-2 text-white/85 text-sm">
-                <CheckCircle className="w-4 h-4 text-[#00FFD1]" />
+              <div className="flex items-center gap-2 text-gray-700 text-sm">
+                <CheckCircle className="w-4 h-4 text-[#D4AF37]" />
                 <span>Invio Sicuro e Confidenziale</span>
               </div>
-              <div className="flex items-center gap-2 text-white/85 text-sm">
-                <MapPin className="w-4 h-4 text-[#00FFD1]" />
+              <div className="flex items-center gap-2 text-gray-700 text-sm">
+                <MapPin className="w-4 h-4 text-[#D4AF37]" />
                 <span>12 Caroline Street, Birmingham B3 1TR</span>
               </div>
             </div>
