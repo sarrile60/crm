@@ -366,11 +366,11 @@ const Home = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="bg-black py-20 px-[7.6923%]">
+      <section id="services" className="bg-white py-20 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-white mb-6">I Nostri Servizi Legali</h2>
-            <p className="text-xl text-white/85 max-w-3xl mx-auto">
+            <h2 className="text-5xl font-bold text-black mb-6">I Nostri Servizi Legali</h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               Offriamo assistenza legale specializzata per vittime di truffe finanziarie online e transfrontaliere
             </p>
           </div>
@@ -386,18 +386,18 @@ const Home = () => {
               { icon: <Globe />, title: 'Dispute Internazionali', description: 'Gestione di casi legali cross-border con partnership INTERPOL e Pharos' },
               { icon: <Users />, title: 'Analisi Prove', description: 'Valutazione dettagliata di prove, transazioni e costruzione del caso legale' }
             ].map((service, index) => (
-              <div key={index} className="bg-[#121212] border border-white/25 p-6 hover:border-[#00FFD1] transition-all group">
-                <div className="w-12 h-12 bg-[#00FFD1] text-black flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div key={index} className="bg-white border-2 border-gray-200 p-6 hover:border-[#D4AF37] transition-all group shadow-md">
+                <div className="w-12 h-12 bg-[#D4AF37] text-black flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   {service.icon}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">{service.title}</h3>
-                <p className="text-white/85">{service.description}</p>
+                <h3 className="text-xl font-bold text-black mb-3">{service.title}</h3>
+                <p className="text-gray-700">{service.description}</p>
               </div>
             ))}
           </div>
 
           <div className="text-center mt-12">
-            <Button onClick={() => handleCTAClick('services')} className="bg-[#00FFD1] text-black hover:bg-[#00FFD1]/90 rounded-none text-lg px-8 py-7">
+            <Button onClick={() => handleCTAClick('services')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-8 py-7 font-semibold">
               Ottieni Consulenza Gratuita <ArrowRight className="ml-2" />
             </Button>
           </div>
