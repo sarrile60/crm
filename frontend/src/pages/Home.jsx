@@ -343,6 +343,59 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Regulatory Approvals Slideshow */}
+      <section className="bg-white py-12 px-[7.6923%] border-y-2 border-[#D4AF37]">
+        <div className="max-w-[1400px] mx-auto">
+          <h3 className="text-center text-2xl font-bold text-black mb-8">
+            Approvati e Regolamentati dalle Principali Autorità Europee
+          </h3>
+          <div className="flex flex-wrap items-center justify-center gap-12 md:gap-16">
+            <div className="flex flex-col items-center">
+              <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
+                <Shield className="w-12 h-12 text-[#D4AF37]" />
+              </div>
+              <span className="text-sm font-semibold text-black">FCA</span>
+              <span className="text-xs text-gray-600">Financial Conduct Authority</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
+                <Scale className="w-12 h-12 text-[#D4AF37]" />
+              </div>
+              <span className="text-sm font-semibold text-black">BaFin</span>
+              <span className="text-xs text-gray-600">Bundesanstalt für Finanzdienstleistungsaufsicht</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
+                <Shield className="w-12 h-12 text-[#D4AF37]" />
+              </div>
+              <span className="text-sm font-semibold text-black">SRA</span>
+              <span className="text-xs text-gray-600">Solicitors Regulation Authority</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
+                <Globe className="w-12 h-12 text-[#D4AF37]" />
+              </div>
+              <span className="text-sm font-semibold text-black">INTERPOL</span>
+              <span className="text-xs text-gray-600">International Police</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
+                <FileText className="w-12 h-12 text-[#D4AF37]" />
+              </div>
+              <span className="text-sm font-semibold text-black">Pharos</span>
+              <span className="text-xs text-gray-600">Ministero Francese</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-lg border-2 border-[#D4AF37] mb-3">
+                <Shield className="w-12 h-12 text-[#D4AF37]" />
+              </div>
+              <span className="text-sm font-semibold text-black">CONSOB</span>
+              <span className="text-xs text-gray-600">Commissione Nazionale per le Società e la Borsa</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Trust Bar */}
       <section className="bg-black py-12 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
