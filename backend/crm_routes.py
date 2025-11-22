@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Header, Depends
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from crm_models import (
     User, UserCreate, UserLogin, UserUpdate,
