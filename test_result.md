@@ -112,75 +112,93 @@ user_problem_statement: |
 backend:
   - task: "Add created_at field with timezone-aware datetime"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/crm_models.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Updated all models to use datetime.now(timezone.utc) instead of datetime.utcnow(). Added created_at field to leads."
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: All leads now have created_at field with proper ISO datetime format. Fixed data inconsistency and updated lead submission endpoint to ensure new leads get created_at field."
 
   - task: "Phone masking utility function"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/crm_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added mask_phone_number() function that shows full number for admin, masked for other roles (only last 4 digits visible)"
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Phone masking working correctly. Admin sees full phone (+393451234567), all other roles see masked phone (xxxxxxxx4567). Tested on both leads list and lead detail endpoints."
 
   - task: "Update get_crm_leads to mask phones"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/crm_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Modified leads endpoint to mask phone numbers based on user role before returning data"
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: GET /api/crm/leads correctly masks phone numbers based on user role. Admin sees full numbers, Manager/Supervisor/Agent see masked numbers."
 
   - task: "Update get_lead_detail to mask phones"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/crm_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Modified lead detail endpoint to mask phone numbers based on user role"
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: GET /api/crm/leads/{lead_id} correctly masks phone numbers. Fixed MongoDB ObjectId serialization issue by excluding _id field. Phone masking works for all user roles."
 
   - task: "Mass update endpoint with role permissions"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/crm_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Created /api/crm/leads/mass-update endpoint. Only Admin/Manager/Supervisor can use it. Accepts lead_ids array and updates status/team_id/assigned_to fields"
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: POST /api/crm/leads/mass-update working perfectly. Admin/Manager/Supervisor can perform mass updates, Agent gets 403 Forbidden as expected. Successfully tested status and multiple field updates with proper updated_count response."
 
   - task: "MassUpdateData model"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/crm_models.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added MassUpdateData Pydantic model with lead_ids list and optional status/team_id/assigned_to fields"
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: MassUpdateData model working correctly with mass update endpoint. Properly validates lead_ids array and optional update fields."
 
 frontend:
   - task: "Created Date formatting in Italian"
