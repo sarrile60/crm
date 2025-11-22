@@ -8,27 +8,18 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
+const CallbackNotifications = ({ onCallbackAlert }) => {
   const [reminders, setReminders] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [urgentCallback, setUrgentCallback] = useState(null);
   const [showUrgentModal, setShowUrgentModal] = useState(false);
-  const [snoozeData, setSnoozeData] = useState({});
+  const [leads, setLeads] = useState([]);
 
   useEffect(() => {
     fetchReminders();
-    checkUpcomingCallbacks();
-    
     // Check for reminders every 30 seconds
     const interval = setInterval(checkUpcomingCallbacks, 30000);
-    
-    // Check for snoozed callbacks every 10 seconds
-    const snoozeInterval = setInterval(checkSnoozedCallbacks, 10000);
-    
-    return () => {
-      clearInterval(interval);
-      clearInterval(snoozeInterval);
-    };
+    return () => clearInterval(interval);
   }, []);
 
   const fetchReminders = async () => {
@@ -41,32 +32,6 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     } catch (error) {
       console.error('Error fetching reminders:', error);
     }
-  };
-
-  const checkSnoozedCallbacks = () => {
-    const now = Date.now();
-    const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
-    
-    Object.keys(snoozeDataFromStorage).forEach(leadId => {
-      const snooze = snoozeDataFromStorage[leadId];
-      
-      // Check if snooze time has passed
-      if (snooze.snoozeUntil <= now) {
-        // Re-trigger the callback alert
-        if (snooze.lead) {
-          setUrgentCallback(snooze.lead);
-          setShowUrgentModal(true);
-          playAlertSound();
-          
-          // Update snooze data
-          snoozeDataFromStorage[leadId] = {
-            ...snooze,
-            snoozeUntil: null
-          };
-          localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
-        }
-      }
-    });
   };
 
   const checkUpcomingCallbacks = async () => {
@@ -84,20 +49,11 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       const depositStatuses = ['Deposit 1', 'Deposit 2', 'Deposit 3', 'Deposit 4', 'Deposit 5'];
       const allNotifyStatuses = [...callbackStatuses, ...depositStatuses];
       
-      // Get current snooze data
-      const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
-      
       // Check for callbacks within the next 1 minute
       for (const lead of allLeads) {
         if (allNotifyStatuses.includes(lead.status) && lead.callback_date) {
           const callbackTime = new Date(lead.callback_date);
           const timeDiff = callbackTime - now;
-          
-          // Skip if currently snoozed
-          const snooze = snoozeDataFromStorage[lead.id];
-          if (snooze && snooze.snoozeUntil > Date.now()) {
-            continue;
-          }
           
           // Alert if callback is within 30 seconds to 90 seconds from now
           if (timeDiff > 30000 && timeDiff <= 90000) {
@@ -125,84 +81,28 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
 
   const playAlertSound = () => {
     // Create a simple beep sound
-    try {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.frequency.value = 800;
-      oscillator.type = 'sine';
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-      
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.5);
-    } catch (error) {
-      console.error('Error playing sound:', error);
-    }
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
   };
 
-  const handleCallNow = (lead) => {
-    // Clear snooze data for this lead
-    const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
-    delete snoozeDataFromStorage[lead.id];
-    localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
-    
+  const handleCallbackNow = (lead) => {
     // Call the parent callback to switch to leads tab and open the lead
     if (onCallbackAlert) {
       onCallbackAlert(lead);
     }
-    setShowUrgentModal(false);
-  };
-
-  const handleSnooze = async (lead) => {
-    const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
-    const currentSnooze = snoozeDataFromStorage[lead.id] || { count: 0 };
-    
-    const newCount = currentSnooze.count + 1;
-    
-    if (newCount >= 3) {
-      // Notify supervisor on 3rd snooze
-      try {
-        const token = localStorage.getItem('crmToken');
-        const headers = { Authorization: `Bearer ${token}` };
-        
-        const response = await axios.post(
-          `${API}/crm/callback-snooze-alert?lead_id=${lead.id}&agent_id=${currentUser.id}`,
-          {},
-          { headers }
-        );
-        
-        if (response.data.success) {
-          toast.warning(`Supervisor ${response.data.supervisor} è stato notificato`);
-        }
-      } catch (error) {
-        console.error('Error notifying supervisor:', error);
-      }
-      
-      // Reset count and close modal
-      delete snoozeDataFromStorage[lead.id];
-      localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
-      setShowUrgentModal(false);
-      return;
-    }
-    
-    // Schedule snooze for 5 minutes
-    const snoozeUntil = Date.now() + (5 * 60 * 1000); // 5 minutes
-    
-    snoozeDataFromStorage[lead.id] = {
-      count: newCount,
-      snoozeUntil: snoozeUntil,
-      lead: lead
-    };
-    
-    localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
-    
-    toast.info(`Callback posticipato di 5 minuti (${newCount}/2)`);
     setShowUrgentModal(false);
   };
 
@@ -233,13 +133,9 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
         )}
       </button>
 
-      {/* Urgent Callback Alert Modal - NO X BUTTON */}
-      <Dialog open={showUrgentModal} onOpenChange={() => {}}>
-        <DialogContent 
-          className={`max-w-lg border-4 ${urgentCallback?.status?.startsWith('Deposit') ? 'bg-blue-50 border-blue-600' : 'bg-red-50 border-red-600'}`}
-          onPointerDownOutside={(e) => e.preventDefault()}
-          onEscapeKeyDown={(e) => e.preventDefault()}
-        >
+      {/* Urgent Callback Alert Modal */}
+      <Dialog open={showUrgentModal} onOpenChange={setShowUrgentModal}>
+        <DialogContent className={`max-w-lg border-4 ${urgentCallback?.status?.startsWith('Deposit') ? 'bg-blue-50 border-blue-600' : 'bg-red-50 border-red-600'}`}>
           <DialogHeader>
             <DialogTitle className={`text-3xl font-bold flex items-center gap-3 ${urgentCallback?.status?.startsWith('Deposit') ? 'text-blue-600' : 'text-red-600'}`}>
               <Phone className="w-8 h-8 animate-bounce" />
@@ -289,37 +185,19 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                   </div>
                 </div>
               </div>
-              
-              {/* Check snooze count */}
-              {(() => {
-                const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
-                const currentSnooze = snoozeDataFromStorage[urgentCallback.id] || { count: 0 };
-                const snoozeCount = currentSnooze.count;
-                
-                return snoozeCount > 0 && (
-                  <div className="bg-yellow-100 border-2 border-yellow-500 p-3 text-center">
-                    <p className="text-sm font-bold text-yellow-800">
-                      ⚠️ Hai posticipato {snoozeCount} volte. 
-                      {snoozeCount === 2 ? ' Il prossimo posticipo notificherà il supervisore!' : ''}
-                    </p>
-                  </div>
-                );
-              })()}
-              
               <div className="flex gap-3">
                 <Button
-                  onClick={() => handleCallNow(urgentCallback)}
-                  className={`flex-1 text-white rounded-none text-lg py-6 font-bold ${urgentCallback?.status?.startsWith('Deposit') ? 'bg-green-600 hover:bg-green-700' : 'bg-green-600 hover:bg-green-700'}`}
+                  onClick={() => handleCallbackNow(urgentCallback)}
+                  className={`flex-1 text-white rounded-none text-lg py-6 font-bold ${urgentCallback?.status?.startsWith('Deposit') ? 'bg-blue-600 hover:bg-blue-700' : 'bg-red-600 hover:bg-red-700'}`}
                 >
                   <Phone className="w-5 h-5 mr-2" />
-                  CHIAMA ORA
+                  {urgentCallback?.status?.startsWith('Deposit') ? 'GESTISCI ORA' : 'CHIAMA ORA'}
                 </Button>
                 <Button
-                  onClick={() => handleSnooze(urgentCallback)}
-                  className="flex-1 bg-orange-500 text-white hover:bg-orange-600 rounded-none text-lg py-6 font-bold"
+                  onClick={() => setShowUrgentModal(false)}
+                  className="bg-gray-300 text-black hover:bg-gray-400 rounded-none px-6"
                 >
-                  <Clock className="w-5 h-5 mr-2" />
-                  PIÙ TARDI
+                  Più Tardi
                 </Button>
               </div>
             </div>
