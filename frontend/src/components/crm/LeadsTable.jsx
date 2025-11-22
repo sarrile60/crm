@@ -638,6 +638,126 @@ const LeadsTable = ({ currentUser }) => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Create Lead Modal */}
+      {showCreateModal && (
+        <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+          <DialogContent className="max-w-2xl bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-black">Crea Nuovo Lead</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-black mb-2">Nome Completo *</label>
+                  <Input
+                    value={newLead.fullName}
+                    onChange={(e) => setNewLead({ ...newLead, fullName: e.target.value })}
+                    placeholder="Mario Rossi"
+                    className="bg-white border-gray-300 rounded-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-black mb-2">Email *</label>
+                  <Input
+                    type="email"
+                    value={newLead.email}
+                    onChange={(e) => setNewLead({ ...newLead, email: e.target.value })}
+                    placeholder="mario@esempio.it"
+                    className="bg-white border-gray-300 rounded-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-black mb-2">Telefono *</label>
+                  <Input
+                    value={newLead.phone}
+                    onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
+                    placeholder="3XX XXX XXXX"
+                    className="bg-white border-gray-300 rounded-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-black mb-2">Azienda Truffatrice *</label>
+                  <Input
+                    value={newLead.scammerCompany}
+                    onChange={(e) => setNewLead({ ...newLead, scammerCompany: e.target.value })}
+                    placeholder="Es. FakeInvest Ltd"
+                    className="bg-white border-gray-300 rounded-none"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Importo Perso *</label>
+                <Select value={newLead.amountLost} onValueChange={(value) => setNewLead({ ...newLead, amountLost: value })}>
+                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                    <SelectValue placeholder="Seleziona importo" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="500-5000">€500 - €5.000</SelectItem>
+                    <SelectItem value="5000-50000">€5.000 - €50.000</SelectItem>
+                    <SelectItem value="50000-500000">€50.000 - €500.000</SelectItem>
+                    <SelectItem value="500000+">€500.000+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Dettagli Caso *</label>
+                <Textarea
+                  value={newLead.caseDetails}
+                  onChange={(e) => setNewLead({ ...newLead, caseDetails: e.target.value })}
+                  placeholder="Descrivi i dettagli della truffa..."
+                  rows={5}
+                  className="bg-white border-gray-300 rounded-none"
+                />
+              </div>
+              <Button onClick={handleCreateLead} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
+                Crea Lead
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Import CSV Modal */}
+      {showImportModal && (
+        <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
+          <DialogContent className="max-w-3xl bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-black">Importa Lead da CSV</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="bg-yellow-50 border-2 border-yellow-200 p-4">
+                <h4 className="font-bold text-black mb-2">Formato CSV Richiesto:</h4>
+                <p className="text-sm text-gray-700 mb-3">Il file CSV deve avere queste colonne nell'ordine esatto:</p>
+                <div className="bg-white p-3 border border-gray-300 font-mono text-xs overflow-x-auto">
+                  <div className="font-bold mb-1">Nome,Email,Telefono,Azienda Truffatrice,Importo Perso,Dettagli Caso</div>
+                  <div className="text-gray-600">Mario Rossi,mario@email.com,3201234567,FakeInvest Ltd,€5.000 - €50.000,Descrizione della truffa...</div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Seleziona File CSV</label>
+                <Input
+                  type="file"
+                  accept=".csv"
+                  onChange={(e) => setCsvFile(e.target.files[0])}
+                  className="bg-white border-gray-300 rounded-none"
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <Button onClick={handleImportCSV} disabled={!csvFile} className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Importa Lead
+                </Button>
+                <Button onClick={() => setShowImportModal(false)} className="flex-1 bg-gray-300 text-black hover:bg-gray-400 rounded-none">
+                  Annulla
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
