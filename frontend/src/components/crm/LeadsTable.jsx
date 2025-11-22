@@ -246,6 +246,12 @@ const LeadsTable = ({ currentUser }) => {
   };
 
   const handleSaveEdit = async () => {
+    // Validate callback date if status is Callback
+    if (editData.status === 'Callback' && !editData.callback_date) {
+      toast.error('Per lo stato Callback devi impostare data e ora');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
