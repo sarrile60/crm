@@ -85,7 +85,7 @@ const CRMDashboard = () => {
           </div>
           
           <div className="flex items-center gap-4">
-            <CallbackNotifications />
+            <CallbackNotifications onCallbackAlert={handleCallbackAlert} />
             <Button onClick={handleLogout} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
               <LogOut className="w-4 h-4 mr-2" />
               Logout
