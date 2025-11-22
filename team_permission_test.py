@@ -248,6 +248,8 @@ class TeamPermissionTester:
         ]
         
         created_leads = []
+        headers = {"Authorization": f"Bearer {self.tokens['admin']}", "Content-Type": "application/json"}
+        
         for lead_data in test_leads_data:
             try:
                 # Create lead via main endpoint
@@ -259,7 +261,6 @@ class TeamPermissionTester:
                 
                 if response.status_code == 200:
                     # Get the lead ID and update with team assignment
-                    headers = {"Authorization": f"Bearer {self.tokens['admin']}"}
                     leads_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
                     
                     if leads_response.status_code == 200:
@@ -273,26 +274,69 @@ class TeamPermissionTester:
                                     update_response = self.session.put(
                                         f"{CRM_BASE_URL}/leads/{lead_id}",
                                         json={"team_id": lead_data["team_id"]},
-                                        headers={**headers, "Content-Type": "application/json"}
+                                        headers=headers
                                     )
                                     
                                     if update_response.status_code == 200:
-                                        created_leads.append({
-                                            "id": lead_id,
-                                            "team_id": lead_data["team_id"],
-                                            "name": lead_data["fullName"]
-                                        })
-                                        self.log_result(
-                                            f"Create Team Lead", 
-                                            True, 
-                                            f"Created lead {lead_data['fullName']} for team"
-                                        )
+                                        # Verify the update worked
+                                        verify_response = self.session.get(f"{CRM_BASE_URL}/leads/{lead_id}", headers=headers)
+                                        if verify_response.status_code == 200:
+                                            updated_lead = verify_response.json()
+                                            actual_team_id = updated_lead.get("team_id")
+                                            
+                                            created_leads.append({
+                                                "id": lead_id,
+                                                "team_id": actual_team_id,
+                                                "name": lead_data["fullName"]
+                                            })
+                                            
+                                            self.log_result(
+                                                f"Create Team Lead", 
+                                                actual_team_id == lead_data["team_id"], 
+                                                f"Created lead {lead_data['fullName']} - Team ID: {actual_team_id}"
+                                            )
+                                    else:
+                                        self.log_result(f"Update Team Lead", False, f"Failed to update lead team: {update_response.status_code}")
                                 break
                                 
             except Exception as e:
                 self.log_result(f"Create Team Lead", False, f"Error creating lead: {str(e)}")
         
         return created_leads
+    
+    def verify_team_assignments(self):
+        """Verify that team assignments are working correctly"""
+        print("\n🔍 Verifying team assignments...")
+        
+        if "admin" not in self.tokens:
+            return
+            
+        headers = {"Authorization": f"Bearer {self.tokens['admin']}"}
+        
+        try:
+            # Get all leads as admin
+            response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
+            if response.status_code == 200:
+                leads = response.json()
+                
+                # Count leads by team
+                team_counts = {}
+                no_team_count = 0
+                
+                for lead in leads:
+                    team_id = lead.get("team_id")
+                    if team_id:
+                        team_counts[team_id] = team_counts.get(team_id, 0) + 1
+                    else:
+                        no_team_count += 1
+                
+                print(f"   Total leads: {len(leads)}")
+                print(f"   Leads without team: {no_team_count}")
+                for team_id, count in team_counts.items():
+                    print(f"   Leads in team {team_id}: {count}")
+                    
+        except Exception as e:
+            print(f"   Error verifying assignments: {str(e)}")
 
     def setup_test_environment(self):
         """Setup test environment by logging in all users and getting their info"""
