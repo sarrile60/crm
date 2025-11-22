@@ -409,7 +409,7 @@ async def get_lead_notes(lead_id: str, current_user: dict = Depends(get_current_
 @crm_router.get("/leads/{lead_id}/activity")
 async def get_lead_activity(lead_id: str, current_user: dict = Depends(get_current_user)):
     """Get activity log for a lead"""
-    activities = await db.activity_logs.find({"lead_id": lead_id}).sort("timestamp", -1).to_list(1000)
+    activities = await db.activity_logs.find({"lead_id": lead_id}, {"_id": 0}).sort("timestamp", -1).to_list(1000)
     return activities
 
 # ==================== CALLBACK REMINDERS ROUTES ====================
