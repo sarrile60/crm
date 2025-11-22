@@ -47,6 +47,17 @@ def require_role(required_roles: List[str]):
         return current_user
     return role_checker
 
+# Phone masking utility
+def mask_phone_number(phone: str, user_role: str) -> str:
+    """Mask phone number based on user role - only admin sees full number"""
+    if user_role == "admin":
+        return phone
+    
+    # For other roles, show only last 4 digits
+    if len(phone) > 4:
+        return "xxxxxxxx" + phone[-4:]
+    return phone
+
 # ==================== AUTHENTICATION ROUTES ====================
 
 @crm_router.post("/auth/login")
