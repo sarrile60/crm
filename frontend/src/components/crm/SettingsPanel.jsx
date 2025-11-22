@@ -11,12 +11,20 @@ const API = `${BACKEND_URL}/api`;
 
 const SettingsPanel = () => {
   const [statuses, setStatuses] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
   const [newStatus, setNewStatus] = useState({
     name: '',
     color: '#3B82F6',
     order: 0
+  });
+  const [newTeam, setNewTeam] = useState({
+    name: '',
+    description: '',
+    supervisor_id: ''
   });
 
   useEffect(() => {
