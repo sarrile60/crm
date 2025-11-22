@@ -91,7 +91,7 @@ const SettingsPanel = () => {
 
       await axios.delete(`${API}/crm/statuses/${statusId}`, { headers });
       toast.success('Stato eliminato');
-      fetchStatuses();
+      fetchData();
     } catch (error) {
       toast.error('Errore nell\'eliminazione dello stato');
     }
