@@ -727,6 +727,78 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                 </div>
               </div>
 
+              {/* Quick Status Update Section */}
+              <div>
+                <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2">Aggiorna Stato</h3>
+                <div className="bg-gray-50 border-2 border-gray-200 p-4 space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-black mb-2">Stato</label>
+                      <Select value={editData.status || selectedLead.status} onValueChange={(value) => setEditData({ ...editData, status: value })}>
+                        <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          {statuses.map(status => (
+                            <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-black mb-2">Priorità</label>
+                      <Select value={editData.priority || selectedLead.priority} onValueChange={(value) => setEditData({ ...editData, priority: value })}>
+                        <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="low">Bassa</SelectItem>
+                          <SelectItem value="medium">Media</SelectItem>
+                          <SelectItem value="high">Alta</SelectItem>
+                          <SelectItem value="urgent">Urgente</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  {((editData.status || selectedLead.status) === 'Callback' || 
+                    (editData.status || selectedLead.status) === 'Potential Callback' || 
+                    (editData.status || selectedLead.status) === 'Pharos in progress' ||
+                    (editData.status || selectedLead.status)?.startsWith('Deposit')) && (
+                    <>
+                      <div className="bg-yellow-50 border-2 border-yellow-400 p-3">
+                        <p className="text-sm font-semibold text-black mb-1">⚠️ Callback/Deposit richiesto</p>
+                        <p className="text-xs text-gray-700">Imposta data e ora. Riceverai notifica 1 minuto prima.</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-black mb-2">Data e Ora *</label>
+                        <Input
+                          type="datetime-local"
+                          value={editData.callback_date || ''}
+                          onChange={(e) => setEditData({ ...editData, callback_date: e.target.value })}
+                          className="bg-white border-gray-300 rounded-none"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-black mb-2">Note (Opzionale)</label>
+                        <Textarea
+                          value={editData.callback_notes || ''}
+                          onChange={(e) => setEditData({ ...editData, callback_notes: e.target.value })}
+                          placeholder="Aggiungi note..."
+                          className="bg-white border-gray-300 rounded-none"
+                          rows={2}
+                        />
+                      </div>
+                    </>
+                  )}
+                  
+                  <Button onClick={handleSaveEdit} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
+                    Salva Modifiche
+                  </Button>
+                </div>
+              </div>
+
               {/* Comments Section */}
               <div>
                 <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2 flex items-center gap-2">
