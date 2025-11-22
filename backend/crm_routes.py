@@ -278,7 +278,7 @@ async def get_crm_leads(
             {"scammerCompany": {"$regex": search, "$options": "i"}}
         ]
     
-    leads = await db.leads.find(query).sort("created_at", -1).to_list(1000)
+    leads = await db.leads.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return leads
 
 @crm_router.get("/leads/{lead_id}")
