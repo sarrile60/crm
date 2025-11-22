@@ -9,7 +9,8 @@ from crm_models import (
     LeadEnhanced, LeadUpdate, LeadAssignment,
     ActivityLog, ActivityLogCreate,
     LeadNote, LeadNoteCreate,
-    CallbackReminder, CallbackReminderCreate
+    CallbackReminder, CallbackReminderCreate,
+    MassUpdateData
 )
 from auth_utils import hash_password, verify_password, create_access_token, get_user_from_token
 
