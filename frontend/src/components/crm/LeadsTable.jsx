@@ -309,6 +309,50 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
     setShowAssignModal(true);
   };
 
+  const handleInlineStatusChange = async (leadId, newStatus) => {
+    const requiresCallback = newStatus === 'Callback' || 
+                            newStatus === 'Potential Callback' || 
+                            newStatus === 'Pharos in progress' ||
+                            newStatus?.startsWith('Deposit');
+    
+    if (requiresCallback) {
+      // Open a mini modal for callback date/time
+      setInlineEditLeadId(leadId);
+      setInlineStatusData({ status: newStatus, callback_date: '', callback_notes: '' });
+    } else {
+      // Update status directly
+      try {
+        const token = localStorage.getItem('crmToken');
+        const headers = { Authorization: `Bearer ${token}` };
+        await axios.put(`${API}/crm/leads/${leadId}`, { status: newStatus }, { headers });
+        toast.success('Stato aggiornato');
+        fetchData();
+      } catch (error) {
+        toast.error('Errore aggiornamento stato');
+      }
+    }
+  };
+
+  const handleSaveInlineCallback = async () => {
+    if (!inlineStatusData.callback_date) {
+      toast.error('Devi impostare data e ora');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.put(`${API}/crm/leads/${inlineEditLeadId}`, inlineStatusData, { headers });
+      localStorage.removeItem(`callback_alerted_${inlineEditLeadId}`);
+      toast.success('Stato aggiornato con callback');
+      setInlineEditLeadId(null);
+      setInlineStatusData({ status: '', callback_date: '', callback_notes: '' });
+      fetchData();
+    } catch (error) {
+      toast.error('Errore aggiornamento');
+    }
+  };
+
   const handleSaveEdit = async () => {
     // Validate callback date for callback statuses
     const requiresCallback = editData.status === 'Callback' || 
@@ -333,6 +377,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       toast.success('Lead aggiornato con successo');
       setShowEditModal(false);
       fetchData();
+      
+      // If we're in detail modal, update the selected lead
+      if (showDetailModal) {
+        setSelectedLead({...selectedLead, ...editData});
+      }
     } catch (error) {
       toast.error('Errore nell\'aggiornamento del lead');
     }
