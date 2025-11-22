@@ -290,6 +290,79 @@ const UserManagement = ({ currentUser }) => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Edit User Modal */}
+      {showEditModal && selectedUser && (
+        <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+          <DialogContent className="max-w-md bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-black">Modifica Utente</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Nome Completo</label>
+                <Input
+                  value={editUser.full_name}
+                  onChange={(e) => setEditUser({ ...editUser, full_name: e.target.value })}
+                  placeholder="Mario Rossi"
+                  className="bg-white border-gray-300 rounded-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Email</label>
+                <Input
+                  type="email"
+                  value={editUser.email}
+                  onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
+                  placeholder="mario@1lawsolicitors.com"
+                  className="bg-white border-gray-300 rounded-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Nuova Password (opzionale)</label>
+                <Input
+                  type="password"
+                  value={editUser.password}
+                  onChange={(e) => setEditUser({ ...editUser, password: e.target.value })}
+                  placeholder="Lascia vuoto per non modificare"
+                  className="bg-white border-gray-300 rounded-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Ruolo</label>
+                <Select value={editUser.role} onValueChange={(value) => setEditUser({ ...editUser, role: value })}>
+                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="manager">Manager</SelectItem>
+                    <SelectItem value="supervisor">Supervisor</SelectItem>
+                    <SelectItem value="agent">Agent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Team</label>
+                <Select value={editUser.team_id || "none"} onValueChange={(value) => setEditUser({ ...editUser, team_id: value === "none" ? "" : value })}>
+                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                    <SelectValue placeholder="Nessun team" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="none">Nessun team</SelectItem>
+                    {teams.map(team => (
+                      <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={handleSaveEdit} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
+                Salva Modifiche
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
