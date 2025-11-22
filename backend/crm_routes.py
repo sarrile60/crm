@@ -278,9 +278,22 @@ async def get_crm_leads(
     
     # Apply filters based on user role
     if current_user["role"] == "agent":
+        # Agents ONLY see leads assigned to them
         query["assigned_to"] = current_user["id"]
-    elif current_user["role"] in ["supervisor", "manager"] and current_user.get("team_id"):
-        query["team_id"] = current_user.get("team_id")
+    elif current_user["role"] == "supervisor":
+        # Supervisors ONLY see leads from their team (if no team, see nothing)
+        if current_user.get("team_id"):
+            query["team_id"] = current_user.get("team_id")
+        else:
+            # Supervisor without team sees NO leads
+            query["team_id"] = "___NO_TEAM_MATCH___"
+    elif current_user["role"] == "manager":
+        # Managers ONLY see leads from their team (if no team, see nothing)
+        if current_user.get("team_id"):
+            query["team_id"] = current_user.get("team_id")
+        else:
+            # Manager without team sees NO leads
+            query["team_id"] = "___NO_TEAM_MATCH___"
     
     # Apply additional filters
     if status:
