@@ -401,7 +401,7 @@ const LeadsTable = ({ currentUser }) => {
           <tbody>
             {leads.length === 0 ? (
               <tr>
-                <td colSpan="8" className="text-center p-8 text-gray-600">
+                <td colSpan="9" className="text-center p-8 text-gray-600">
                   Nessun lead trovato
                 </td>
               </tr>
@@ -412,6 +412,7 @@ const LeadsTable = ({ currentUser }) => {
                     {new Date(lead.created_at).toLocaleDateString('it-IT')}
                   </td>
                   <td className="p-4 text-black font-semibold">{lead.fullName}</td>
+                  <td className="p-4 text-gray-700 font-mono">+39 {lead.phone}</td>
                   <td className="p-4 text-gray-700">{lead.email}</td>
                   <td className="p-4 text-gray-700">{lead.amountLost}</td>
                   <td className="p-4">
