@@ -77,7 +77,7 @@ async def login(credentials: UserLogin):
     # Update last login
     await db.crm_users.update_one(
         {"id": user["id"]},
-        {"$set": {"last_login": datetime.utcnow()}}
+        {"$set": {"last_login": datetime.now(timezone.utc)}}
     )
     
     # Create token
@@ -330,7 +330,7 @@ async def update_lead(lead_id: str, update_data: LeadUpdate, current_user: dict 
         raise HTTPException(status_code=403, detail="Access denied")
     
     update_dict = {k: v for k, v in update_data.dict().items() if v is not None}
-    update_dict["updated_at"] = datetime.utcnow()
+    update_dict["updated_at"] = datetime.now(timezone.utc)
     
     # Log status change
     if "status" in update_dict and update_dict["status"] != lead.get("status"):
@@ -374,7 +374,7 @@ async def assign_lead(assignment: LeadAssignment, current_user: dict = Depends(r
         {"$set": {
             "assigned_to": assignment.assigned_to,
             "assigned_by": assignment.assigned_by,
-            "updated_at": datetime.utcnow()
+            "updated_at": datetime.now(timezone.utc)
         }}
     )
     
@@ -442,7 +442,7 @@ async def get_reminders(current_user: dict = Depends(get_current_user)):
     query = {
         "assigned_to": current_user["id"],
         "is_completed": False,
-        "callback_date": {"$lte": datetime.utcnow()}
+        "callback_date": {"$lte": datetime.now(timezone.utc)}
     }
     
     reminders = await db.callback_reminders.find(query, {"_id": 0}).sort("callback_date", 1).to_list(1000)
@@ -453,7 +453,7 @@ async def complete_reminder(reminder_id: str, current_user: dict = Depends(get_c
     """Mark reminder as completed"""
     result = await db.callback_reminders.update_one(
         {"id": reminder_id, "assigned_to": current_user["id"]},
-        {"$set": {"is_completed": True, "completed_at": datetime.utcnow()}}
+        {"$set": {"is_completed": True, "completed_at": datetime.now(timezone.utc)}}
     )
     
     if result.matched_count == 0:
@@ -522,7 +522,7 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     pending_callbacks = await db.callback_reminders.count_documents({
         "assigned_to": current_user["id"],
         "is_completed": False,
-        "callback_date": {"$lte": datetime.utcnow()}
+        "callback_date": {"$lte": datetime.now(timezone.utc)}
     })
     
     return {
