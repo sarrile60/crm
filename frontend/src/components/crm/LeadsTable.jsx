@@ -119,10 +119,12 @@ const LeadsTable = ({ currentUser }) => {
   };
 
   const handleCreateLead = async () => {
+    if (!newLead.fullName || !newLead.email || !newLead.phone || !newLead.scammerCompany || !newLead.amountLost || !newLead.caseDetails) {
+      toast.error('Compila tutti i campi obbligatori');
+      return;
+    }
+
     try {
-      const token = localStorage.getItem('crmToken');
-      const headers = { Authorization: `Bearer ${token}` };
-      
       await axios.post(`${API}/leads/submit`, newLead);
       toast.success('Lead creato con successo');
       setShowCreateModal(false);
@@ -134,9 +136,14 @@ const LeadsTable = ({ currentUser }) => {
         amountLost: '',
         caseDetails: ''
       });
-      fetchData();
+      
+      // Wait a bit for database to update, then refresh
+      setTimeout(() => {
+        fetchData();
+      }, 500);
     } catch (error) {
-      toast.error('Errore nella creazione del lead');
+      console.error('Error creating lead:', error);
+      toast.error(error.response?.data?.detail || 'Errore nella creazione del lead');
     }
   };
 
