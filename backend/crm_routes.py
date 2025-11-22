@@ -330,9 +330,17 @@ async def get_lead_detail(lead_id: str, current_user: dict = Depends(get_current
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
-    # Check permissions
-    if current_user["role"] == "agent" and lead.get("assigned_to") != current_user["id"]:
-        raise HTTPException(status_code=403, detail="Access denied")
+    # Check permissions based on role
+    if current_user["role"] == "agent":
+        # Agents can only access their assigned leads
+        if lead.get("assigned_to") != current_user["id"]:
+            raise HTTPException(status_code=403, detail="Access denied")
+    elif current_user["role"] in ["supervisor", "manager"]:
+        # Supervisors/Managers can only access leads from their team
+        user_team_id = current_user.get("team_id")
+        if not user_team_id or lead.get("team_id") != user_team_id:
+            raise HTTPException(status_code=403, detail="Access denied - lead not in your team")
+    # Admin can access all leads (no check needed)
     
     # Mask phone number based on user role
     if "phone" in lead:
