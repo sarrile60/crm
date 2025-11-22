@@ -532,6 +532,89 @@ async def mass_update_leads(update_data: MassUpdateData, current_user: dict = De
     
     return {"success": True, "updated_count": result.modified_count}
 
+# ==================== CALLBACK SNOOZE ALERTS ====================
+
+@crm_router.post("/callback-snooze-alert")
+async def notify_supervisor_callback_ignored(
+    lead_id: str,
+    agent_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Notify supervisor when agent ignores callback 3 times"""
+    try:
+        # Get the lead and agent info
+        lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
+        agent = await db.crm_users.find_one({"id": agent_id}, {"_id": 0})
+        
+        if not lead or not agent:
+            raise HTTPException(status_code=404, detail="Lead or agent not found")
+        
+        # Get agent's team
+        team_id = agent.get("team_id")
+        if not team_id:
+            # No team, no supervisor to notify
+            return {"success": False, "message": "Agent has no team"}
+        
+        # Get team to find supervisor
+        team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+        if not team or not team.get("supervisor_id"):
+            return {"success": False, "message": "Team has no supervisor"}
+        
+        supervisor_id = team["supervisor_id"]
+        supervisor = await db.crm_users.find_one({"id": supervisor_id}, {"_id": 0})
+        
+        if not supervisor:
+            return {"success": False, "message": "Supervisor not found"}
+        
+        # Create notification/alert for supervisor
+        alert = {
+            "id": str(uuid.uuid4()),
+            "type": "callback_ignored",
+            "supervisor_id": supervisor_id,
+            "agent_id": agent_id,
+            "agent_name": agent.get("full_name"),
+            "lead_id": lead_id,
+            "lead_name": lead.get("fullName"),
+            "lead_phone": lead.get("phone"),
+            "callback_date": lead.get("callback_date"),
+            "message": f"Agente {agent.get('full_name')} ha ignorato 3 volte il callback per {lead.get('fullName')}",
+            "created_at": datetime.now(timezone.utc),
+            "read": False
+        }
+        
+        await db.supervisor_alerts.insert_one(alert)
+        
+        return {
+            "success": True, 
+            "message": "Supervisor notified",
+            "supervisor": supervisor.get("full_name")
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@crm_router.get("/supervisor-alerts")
+async def get_supervisor_alerts(current_user: dict = Depends(get_current_user)):
+    """Get alerts for supervisor"""
+    if current_user["role"] not in ["supervisor", "admin"]:
+        return []
+    
+    query = {"supervisor_id": current_user["id"], "read": False}
+    if current_user["role"] == "admin":
+        query = {"read": False}  # Admin sees all
+    
+    alerts = await db.supervisor_alerts.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return alerts
+
+@crm_router.put("/supervisor-alerts/{alert_id}/read")
+async def mark_alert_read(alert_id: str, current_user: dict = Depends(get_current_user)):
+    """Mark alert as read"""
+    await db.supervisor_alerts.update_one(
+        {"id": alert_id},
+        {"$set": {"read": True}}
+    )
+    return {"success": True}
+
 # ==================== DASHBOARD STATS ====================
 
 @crm_router.get("/dashboard/stats")
