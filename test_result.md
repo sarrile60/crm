@@ -101,3 +101,202 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  User requested 4 new CRM features:
+  1. Created Date Column - Rename "Data" to "Created Date" with Italian format (1 nov 13:51)
+  2. Mass Update - Checkboxes for lead selection, mass update button for Admin/Manager/Supervisor to update Team/Status/Assigned User
+  3. Lead Details Navigation - Clickable client name opens detail modal with left/right arrows to navigate through filtered leads
+  4. Phone Privacy & Click-to-Call - Admin sees full number, others see masked (+39 xxxxxxxx7890), all numbers clickable with tel: link
+
+backend:
+  - task: "Add created_at field with timezone-aware datetime"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/crm_models.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated all models to use datetime.now(timezone.utc) instead of datetime.utcnow(). Added created_at field to leads."
+
+  - task: "Phone masking utility function"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/crm_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added mask_phone_number() function that shows full number for admin, masked for other roles (only last 4 digits visible)"
+
+  - task: "Update get_crm_leads to mask phones"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/crm_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Modified leads endpoint to mask phone numbers based on user role before returning data"
+
+  - task: "Update get_lead_detail to mask phones"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/crm_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Modified lead detail endpoint to mask phone numbers based on user role"
+
+  - task: "Mass update endpoint with role permissions"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/crm_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created /api/crm/leads/mass-update endpoint. Only Admin/Manager/Supervisor can use it. Accepts lead_ids array and updates status/team_id/assigned_to fields"
+
+  - task: "MassUpdateData model"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/crm_models.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added MassUpdateData Pydantic model with lead_ids list and optional status/team_id/assigned_to fields"
+
+frontend:
+  - task: "Created Date formatting in Italian"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/crm/LeadsTable.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added formatCreatedDate() function that formats dates as '1 nov 13:51' in Italian. Changed table header from 'Data' to 'Created Date'"
+
+  - task: "Checkboxes for lead selection"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/crm/LeadsTable.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added checkbox column to leads table (only for Admin/Manager/Supervisor). Includes select-all checkbox in header and individual checkboxes per row. State managed via selectedLeadIds array"
+
+  - task: "Mass Update modal and functionality"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/crm/LeadsTable.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added Mass Update button (shows when leads selected), modal with dropdowns for Status/Team/Assigned User. Calls /api/crm/leads/mass-update endpoint. Only available to Admin/Manager/Supervisor"
+
+  - task: "Clickable client name for lead details"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/crm/LeadsTable.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Made client name (fullName) in table clickable with underline styling. Opens detail modal when clicked"
+
+  - task: "Lead navigation arrows in detail modal"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/crm/LeadsTable.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added left/right arrow buttons in detail modal header. Navigates through filteredLeads array. Arrows disabled at boundaries. Updates currentLeadIndex state"
+
+  - task: "Phone number click-to-call functionality"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/crm/LeadsTable.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Made phone numbers clickable with tel: links. Added formatPhoneForCall() function. Works in both table view and detail modal. Phone masking handled by backend"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Backend: Test mass update endpoint with different roles"
+    - "Backend: Test phone masking for different user roles"
+    - "Frontend: Test Created Date formatting"
+    - "Frontend: Test mass update selection and update"
+    - "Frontend: Test lead navigation arrows"
+    - "Frontend: Test click-to-call phone functionality"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      Implemented all 4 requested CRM features:
+      
+      BACKEND:
+      - Updated datetime to use timezone-aware datetime.now(timezone.utc)
+      - Added phone masking utility (admin sees full, others see masked)
+      - Created mass update endpoint (/api/crm/leads/mass-update) with role checks
+      - Applied phone masking to leads list and detail endpoints
+      
+      FRONTEND:
+      - Created Date column with Italian formatting (1 nov 13:51)
+      - Checkboxes for lead selection (Admin/Manager/Supervisor only)
+      - Mass Update button and modal for bulk updates
+      - Clickable client names to open detail modal
+      - Left/Right navigation arrows in detail modal
+      - Click-to-call phone links with tel: protocol
+      
+      All features need backend and frontend testing.
+      Backend server restarted successfully.
+      
+      Test priorities:
+      1. Phone masking for different roles (admin vs non-admin)
+      2. Mass update permissions and functionality
+      3. Lead navigation with filters applied
+      4. Click-to-call phone links
