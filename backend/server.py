@@ -9,7 +9,7 @@ from typing import Optional
 import jwt
 from datetime import datetime, timedelta
 from models import Lead, LeadCreate, Analytics, AdminLogin, AdminToken
-from crm_routes import crm_router
+from crm_routes import crm_router, init_crm_db
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -18,6 +18,9 @@ load_dotenv(ROOT_DIR / '.env')
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
+
+# Initialize CRM database
+init_crm_db(db)
 
 # JWT Secret
 JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-here-change-in-production')
