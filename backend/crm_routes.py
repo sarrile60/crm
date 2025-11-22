@@ -401,7 +401,7 @@ async def add_note(lead_id: str, note_data: LeadNoteCreate, current_user: dict =
 @crm_router.get("/leads/{lead_id}/notes")
 async def get_lead_notes(lead_id: str, current_user: dict = Depends(get_current_user)):
     """Get all notes for a lead"""
-    notes = await db.lead_notes.find({"lead_id": lead_id}).sort("created_at", -1).to_list(1000)
+    notes = await db.lead_notes.find({"lead_id": lead_id}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return notes
 
 # ==================== ACTIVITY LOG ROUTES ====================
