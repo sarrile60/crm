@@ -136,6 +136,164 @@ class TeamPermissionTester:
             self.log_result(f"Lead Detail Access - {role}", False, f"Error testing lead access: {str(e)}")
             return False
     
+    def create_test_teams(self):
+        """Create test teams for comprehensive testing"""
+        if "admin" not in self.tokens:
+            return False
+            
+        headers = {
+            "Authorization": f"Bearer {self.tokens['admin']}",
+            "Content-Type": "application/json"
+        }
+        
+        # Create test teams
+        test_teams = [
+            {"name": "Sales Team A", "description": "Test sales team A"},
+            {"name": "Sales Team B", "description": "Test sales team B"}
+        ]
+        
+        created_teams = []
+        for team_data in test_teams:
+            try:
+                response = self.session.post(
+                    f"{CRM_BASE_URL}/teams",
+                    json=team_data,
+                    headers=headers
+                )
+                
+                if response.status_code == 200:
+                    team_id = response.json().get("team_id")
+                    created_teams.append({"name": team_data["name"], "id": team_id})
+                    self.log_result(f"Create Team", True, f"Created team: {team_data['name']}")
+                else:
+                    self.log_result(f"Create Team", False, f"Failed to create team: {response.status_code}")
+                    
+            except Exception as e:
+                self.log_result(f"Create Team", False, f"Error creating team: {str(e)}")
+        
+        return created_teams
+    
+    def assign_users_to_teams(self, teams):
+        """Assign test users to teams"""
+        if "admin" not in self.tokens or len(teams) < 2:
+            return False
+            
+        headers = {
+            "Authorization": f"Bearer {self.tokens['admin']}",
+            "Content-Type": "application/json"
+        }
+        
+        # Assign supervisor to team A, manager to team B
+        assignments = [
+            {"role": "supervisor", "team_id": teams[0]["id"], "team_name": teams[0]["name"]},
+            {"role": "manager", "team_id": teams[1]["id"], "team_name": teams[1]["name"]}
+        ]
+        
+        for assignment in assignments:
+            try:
+                user_info = self.user_info.get(assignment["role"])
+                if not user_info:
+                    continue
+                    
+                user_id = user_info.get("id")
+                update_data = {"team_id": assignment["team_id"]}
+                
+                response = self.session.put(
+                    f"{CRM_BASE_URL}/users/{user_id}",
+                    json=update_data,
+                    headers=headers
+                )
+                
+                if response.status_code == 200:
+                    self.log_result(
+                        f"Assign Team", 
+                        True, 
+                        f"Assigned {assignment['role']} to {assignment['team_name']}"
+                    )
+                    # Update local user info
+                    self.user_info[assignment["role"]]["team_id"] = assignment["team_id"]
+                else:
+                    self.log_result(f"Assign Team", False, f"Failed to assign team: {response.status_code}")
+                    
+            except Exception as e:
+                self.log_result(f"Assign Team", False, f"Error assigning team: {str(e)}")
+        
+        return True
+    
+    def create_test_leads_with_teams(self, teams):
+        """Create test leads assigned to different teams"""
+        if "admin" not in self.tokens:
+            return False
+            
+        # Create leads for different teams
+        test_leads_data = [
+            {
+                "fullName": "Team A Lead 1",
+                "email": "teama1@example.com",
+                "phone": "+393451111111",
+                "scammerCompany": "Fake Corp A",
+                "amountLost": "€5,000",
+                "caseDetails": "Test case for team A",
+                "team_id": teams[0]["id"] if len(teams) > 0 else None
+            },
+            {
+                "fullName": "Team B Lead 1", 
+                "email": "teamb1@example.com",
+                "phone": "+393452222222",
+                "scammerCompany": "Fake Corp B",
+                "amountLost": "€8,000",
+                "caseDetails": "Test case for team B",
+                "team_id": teams[1]["id"] if len(teams) > 1 else None
+            }
+        ]
+        
+        created_leads = []
+        for lead_data in test_leads_data:
+            try:
+                # Create lead via main endpoint
+                response = self.session.post(
+                    f"{BASE_URL}/leads/submit",
+                    json={k: v for k, v in lead_data.items() if k != "team_id"},
+                    headers={"Content-Type": "application/json"}
+                )
+                
+                if response.status_code == 200:
+                    # Get the lead ID and update with team assignment
+                    headers = {"Authorization": f"Bearer {self.tokens['admin']}"}
+                    leads_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
+                    
+                    if leads_response.status_code == 200:
+                        leads = leads_response.json()
+                        for lead in leads:
+                            if lead.get("email") == lead_data["email"]:
+                                lead_id = lead.get("id")
+                                
+                                # Update lead with team assignment
+                                if lead_data.get("team_id"):
+                                    update_response = self.session.put(
+                                        f"{CRM_BASE_URL}/leads/{lead_id}",
+                                        json={"team_id": lead_data["team_id"]},
+                                        headers={**headers, "Content-Type": "application/json"}
+                                    )
+                                    
+                                    if update_response.status_code == 200:
+                                        created_leads.append({
+                                            "id": lead_id,
+                                            "team_id": lead_data["team_id"],
+                                            "name": lead_data["fullName"]
+                                        })
+                                        self.log_result(
+                                            f"Create Team Lead", 
+                                            True, 
+                                            f"Created lead {lead_data['fullName']} for team"
+                                        )
+                                break
+                                
+            except Exception as e:
+                self.log_result(f"Create Team Lead", False, f"Error creating lead: {str(e)}")
+        
+        return created_leads
+
     def setup_test_environment(self):
         """Setup test environment by logging in all users and getting their info"""
         print("🔧 Setting up test environment...")
@@ -151,6 +309,17 @@ class TeamPermissionTester:
             if user_info:
                 team_id = user_info.get("team_id")
                 print(f"   {role.title()}: ID={user_info.get('id')}, Team={team_id or 'None'}")
+        
+        # Create test teams and assign users
+        print("\n🏢 Creating test teams and assignments...")
+        teams = self.create_test_teams()
+        if teams:
+            self.assign_users_to_teams(teams)
+            self.create_test_leads_with_teams(teams)
+            
+            # Refresh user info after team assignments
+            for role in TEST_CREDENTIALS.keys():
+                self.get_user_info(role)
         
         return True
     
