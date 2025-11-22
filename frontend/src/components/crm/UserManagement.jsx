@@ -191,14 +191,25 @@ const UserManagement = ({ currentUser }) => {
                   {user.last_login ? new Date(user.last_login).toLocaleString('it-IT') : 'Mai'}
                 </td>
                 <td className="p-4">
-                  {currentUser.role === 'admin' && user.id !== currentUser.id && (
-                    <Button
-                      onClick={() => handleToggleActive(user.id, user.is_active)}
-                      size="sm"
-                      className={`${user.is_active ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white rounded-none`}
-                    >
-                      {user.is_active ? 'Disattiva' : 'Attiva'}
-                    </Button>
+                  {currentUser.role === 'admin' && (
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleEditUser(user)}
+                        size="sm"
+                        className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      {user.id !== currentUser.id && (
+                        <Button
+                          onClick={() => handleToggleActive(user.id, user.is_active)}
+                          size="sm"
+                          className={`${user.is_active ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white rounded-none`}
+                        >
+                          {user.is_active ? 'Disattiva' : 'Attiva'}
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </td>
               </tr>
