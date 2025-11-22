@@ -611,6 +611,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               <th className="text-left text-white p-4 font-semibold">Importo</th>
               <th className="text-left text-white p-4 font-semibold">Stato</th>
               <th className="text-left text-white p-4 font-semibold">Priorità</th>
+              <th className="text-left text-white p-4 font-semibold">Team</th>
               <th className="text-left text-white p-4 font-semibold">Assegnato</th>
               <th className="text-left text-white p-4 font-semibold">Azioni</th>
             </tr>
