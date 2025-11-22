@@ -57,6 +57,12 @@ const CRMDashboard = () => {
     navigate('/crm/login');
   };
 
+  const handleCallbackAlert = (lead) => {
+    // Switch to leads tab and pass the lead to open
+    setActiveTab('leads');
+    setCallbackLead(lead);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
