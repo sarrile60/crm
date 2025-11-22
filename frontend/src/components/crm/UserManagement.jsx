@@ -211,12 +211,12 @@ const UserManagement = ({ currentUser }) => {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-black mb-2">Team (Opzionale)</label>
-                <Select value={newUser.team_id} onValueChange={(value) => setNewUser({ ...newUser, team_id: value })}>
+                <Select value={newUser.team_id || "none"} onValueChange={(value) => setNewUser({ ...newUser, team_id: value === "none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
                     <SelectValue placeholder="Nessun team" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="">Nessun team</SelectItem>
+                    <SelectItem value="none">Nessun team</SelectItem>
                     {teams.map(team => (
                       <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
                     ))}
