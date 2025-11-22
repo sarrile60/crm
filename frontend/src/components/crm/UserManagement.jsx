@@ -70,6 +70,46 @@ const UserManagement = ({ currentUser }) => {
     }
   };
 
+  const handleEditUser = (user) => {
+    setSelectedUser(user);
+    setEditUser({
+      email: user.email,
+      full_name: user.full_name,
+      password: '', // Leave blank, only update if filled
+      role: user.role,
+      team_id: user.team_id || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      // Build update payload - only include fields that have values
+      const updateData = {
+        full_name: editUser.full_name,
+        email: editUser.email,
+        role: editUser.role,
+        team_id: editUser.team_id || null
+      };
+
+      // Only include password if it was entered
+      if (editUser.password) {
+        updateData.password = editUser.password;
+      }
+
+      await axios.put(`${API}/crm/users/${selectedUser.id}`, updateData, { headers });
+      toast.success('Utente aggiornato con successo');
+      setShowEditModal(false);
+      setSelectedUser(null);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Errore nell\'aggiornamento dell\'utente');
+    }
+  };
+
   const handleToggleActive = async (userId, isActive) => {
     try {
       const token = localStorage.getItem('crmToken');
