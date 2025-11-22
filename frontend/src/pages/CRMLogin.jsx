@@ -1,0 +1,104 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Scale } from 'lucide-react';
+import { toast } from 'sonner';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+const CRMLogin = () => {
+  const navigate = useNavigate();
+  const [credentials, setCredentials] = useState({
+    email: '',
+    password: ''
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await axios.post(`${API}/crm/auth/login`, credentials);
+      
+      if (response.data.token) {
+        localStorage.setItem('crmToken', response.data.token);
+        localStorage.setItem('crmUser', JSON.stringify(response.data.user));
+        toast.success('Login effettuato con successo!');
+        navigate('/crm/dashboard');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Credenziali non valide');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Scale className="w-10 h-10 text-[#D4AF37]" />
+            <span className="text-black text-2xl font-semibold">1 LAW SOLICITORS</span>
+          </div>
+          <h1 className="text-3xl font-bold text-black mb-2">CRM Portal</h1>
+          <p className="text-gray-700">Accedi al sistema di gestione clienti</p>
+        </div>
+
+        <div className="bg-gray-50 border-2 border-[#D4AF37] p-8 shadow-xl">
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label className="block text-black mb-2 text-sm font-semibold">Email</label>
+              <Input
+                type="email"
+                value={credentials.email}
+                onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+                placeholder="admin@1lawsolicitors.com"
+                className="bg-white border-gray-300 text-black rounded-none"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-black mb-2 text-sm font-semibold">Password</label>
+              <Input
+                type="password"
+                value={credentials.password}
+                onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                placeholder="••••••••"
+                className="bg-white border-gray-300 text-black rounded-none"
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg py-6 font-semibold"
+            >
+              {loading ? 'Accesso in corso...' : 'Accedi al CRM'}
+            </Button>
+          </form>
+          
+          <div className="mt-6 text-center text-sm text-gray-600">
+            <p>Account predefinito:</p>
+            <p className="font-mono">admin@1lawsolicitors.com / Admin@123456</p>
+          </div>
+        </div>
+
+        <div className="text-center mt-6">
+          <button
+            onClick={() => navigate('/')}
+            className="text-gray-700 hover:text-black underline"
+          >
+            Torna al sito
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CRMLogin;
