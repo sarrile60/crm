@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, Phone, Clock } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { toast } from 'sonner';
@@ -8,15 +8,17 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const CallbackNotifications = () => {
+const CallbackNotifications = ({ onCallbackAlert }) => {
   const [reminders, setReminders] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [urgentCallback, setUrgentCallback] = useState(null);
+  const [showUrgentModal, setShowUrgentModal] = useState(false);
+  const [leads, setLeads] = useState([]);
 
   useEffect(() => {
     fetchReminders();
-    // Check for reminders every minute
-    const interval = setInterval(fetchReminders, 60000);
+    // Check for reminders every 30 seconds
+    const interval = setInterval(checkUpcomingCallbacks, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -27,16 +29,74 @@ const CallbackNotifications = () => {
 
       const res = await axios.get(`${API}/crm/reminders`, { headers });
       setReminders(res.data);
-      
-      // Show notification if there are pending reminders
-      if (res.data.length > 0 && !showModal) {
-        toast.info(`Hai ${res.data.length} callback in attesa!`, {
-          duration: 5000
-        });
-      }
     } catch (error) {
       console.error('Error fetching reminders:', error);
     }
+  };
+
+  const checkUpcomingCallbacks = async () => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const leadsRes = await axios.get(`${API}/crm/leads`, { headers });
+      const allLeads = leadsRes.data;
+      
+      const now = new Date();
+      
+      // Check for callbacks within the next 1 minute
+      for (const lead of allLeads) {
+        if (lead.status === 'Callback' && lead.callback_date) {
+          const callbackTime = new Date(lead.callback_date);
+          const timeDiff = callbackTime - now;
+          
+          // Alert if callback is within 30 seconds to 90 seconds from now
+          if (timeDiff > 30000 && timeDiff <= 90000) {
+            // Check if we already alerted for this callback
+            const alerted = localStorage.getItem(`callback_alerted_${lead.id}`);
+            if (!alerted) {
+              setUrgentCallback(lead);
+              setShowUrgentModal(true);
+              localStorage.setItem(`callback_alerted_${lead.id}`, 'true');
+              
+              // Play alert sound (optional)
+              playAlertSound();
+            }
+          }
+        }
+      }
+      
+      fetchReminders();
+    } catch (error) {
+      console.error('Error checking callbacks:', error);
+    }
+  };
+
+  const playAlertSound = () => {
+    // Create a simple beep sound
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
+  };
+
+  const handleCallbackNow = (lead) => {
+    // Call the parent callback to switch to leads tab and open the lead
+    if (onCallbackAlert) {
+      onCallbackAlert(lead);
+    }
+    setShowUrgentModal(false);
   };
 
   const handleCompleteReminder = async (reminderId) => {
