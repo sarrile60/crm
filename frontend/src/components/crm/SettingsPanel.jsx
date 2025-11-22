@@ -28,18 +28,25 @@ const SettingsPanel = () => {
   });
 
   useEffect(() => {
-    fetchStatuses();
+    fetchData();
   }, []);
 
-  const fetchStatuses = async () => {
+  const fetchData = async () => {
     try {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      const res = await axios.get(`${API}/crm/statuses`, { headers });
-      setStatuses(res.data);
+      const [statusesRes, teamsRes, usersRes] = await Promise.all([
+        axios.get(`${API}/crm/statuses`, { headers }),
+        axios.get(`${API}/crm/teams`, { headers }),
+        axios.get(`${API}/crm/users`, { headers })
+      ]);
+
+      setStatuses(statusesRes.data);
+      setTeams(teamsRes.data);
+      setUsers(usersRes.data);
     } catch (error) {
-      toast.error('Errore nel caricamento degli stati');
+      toast.error('Errore nel caricamento dei dati');
     } finally {
       setLoading(false);
     }
