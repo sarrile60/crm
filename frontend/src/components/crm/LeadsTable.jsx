@@ -389,6 +389,7 @@ const LeadsTable = ({ currentUser }) => {
             <tr>
               <th className="text-left text-white p-4 font-semibold">Data</th>
               <th className="text-left text-white p-4 font-semibold">Nome</th>
+              <th className="text-left text-white p-4 font-semibold">Telefono</th>
               <th className="text-left text-white p-4 font-semibold">Email</th>
               <th className="text-left text-white p-4 font-semibold">Importo</th>
               <th className="text-left text-white p-4 font-semibold">Stato</th>
