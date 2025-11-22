@@ -188,7 +188,7 @@ async def create_team(team_data: TeamCreate, current_user: dict = Depends(get_cu
 @crm_router.get("/teams")
 async def get_teams(current_user: dict = Depends(get_current_user)):
     """Get all teams"""
-    teams = await db.teams.find({"is_active": True}).to_list(1000)
+    teams = await db.teams.find({"is_active": True}, {"_id": 0}).to_list(1000)
     return teams
 
 @crm_router.get("/teams/{team_id}")
