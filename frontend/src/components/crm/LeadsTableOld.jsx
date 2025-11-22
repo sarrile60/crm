@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, Edit, UserPlus, Filter, Search, Upload, Download, Plus, MessageSquare, ChevronLeft, ChevronRight, CheckSquare, Square } from 'lucide-react';
+import { Eye, Edit, UserPlus, Filter, Search, Upload, Download, Plus, MessageSquare } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Textarea } from '../ui/textarea';
-import { Checkbox } from '../ui/checkbox';
 import { toast } from 'sonner';
 import axios from 'axios';
 
@@ -14,15 +13,11 @@ const API = `${BACKEND_URL}/api`;
 
 const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
   const [leads, setLeads] = useState([]);
-  const [filteredLeads, setFilteredLeads] = useState([]);
   const [users, setUsers] = useState([]);
-  const [teams, setTeams] = useState([]);
   const [statuses, setStatuses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [selectedLeadIds, setSelectedLeadIds] = useState([]);
-  const [showMassUpdateModal, setShowMassUpdateModal] = useState(false);
 
   // Handle urgent callback lead
   useEffect(() => {
@@ -30,7 +25,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       handleViewDetails(urgentCallbackLead);
     }
   }, [urgentCallbackLead]);
-  
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [filters, setFilters] = useState({
@@ -39,10 +33,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
     search: ''
   });
   const [editData, setEditData] = useState({});
-  const [massUpdateData, setMassUpdateData] = useState({
-    status: '',
-    team_id: '',
-    assigned_to: ''
+  const [callbackData, setCallbackData] = useState({
+    callback_date: '',
+    callback_notes: ''
   });
   const [showImportModal, setShowImportModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -57,15 +50,10 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
   });
   const [leadNotes, setLeadNotes] = useState([]);
   const [newNote, setNewNote] = useState('');
-  const [currentLeadIndex, setCurrentLeadIndex] = useState(0);
 
   useEffect(() => {
     fetchData();
   }, [filters]);
-
-  useEffect(() => {
-    setFilteredLeads(leads);
-  }, [leads]);
 
   const fetchData = async () => {
     try {
@@ -78,17 +66,15 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       if (filters.priority) queryParams.priority = filters.priority;
       if (filters.search) queryParams.search = filters.search;
 
-      const [leadsRes, usersRes, statusesRes, teamsRes] = await Promise.all([
+      const [leadsRes, usersRes, statusesRes] = await Promise.all([
         axios.get(`${API}/crm/leads`, { headers, params: queryParams }),
         axios.get(`${API}/crm/users`, { headers }),
-        axios.get(`${API}/crm/statuses`, { headers }),
-        axios.get(`${API}/crm/teams`, { headers })
+        axios.get(`${API}/crm/statuses`, { headers })
       ]);
 
       setLeads(leadsRes.data);
       setUsers(usersRes.data);
       setStatuses(statusesRes.data);
-      setTeams(teamsRes.data);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Errore nel caricamento dei dati');
@@ -97,21 +83,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
     }
   };
 
-  const formatCreatedDate = (dateString) => {
-    const date = new Date(dateString);
-    const months = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
-    const day = date.getDate();
-    const month = months[date.getMonth()];
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${day} ${month} ${hours}:${minutes}`;
-  };
-
   const handleViewDetails = async (lead) => {
-    // Find index in filteredLeads
-    const index = filteredLeads.findIndex(l => l.id === lead.id);
-    setCurrentLeadIndex(index >= 0 ? index : 0);
-    
     setSelectedLead(lead);
     setShowDetailModal(true);
     
@@ -123,29 +95,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       setLeadNotes(notesRes.data);
     } catch (error) {
       console.error('Error fetching notes:', error);
-    }
-  };
-
-  const navigateLead = async (direction) => {
-    let newIndex = currentLeadIndex + direction;
-    
-    if (newIndex < 0) newIndex = 0;
-    if (newIndex >= filteredLeads.length) newIndex = filteredLeads.length - 1;
-    
-    if (filteredLeads[newIndex]) {
-      setCurrentLeadIndex(newIndex);
-      const nextLead = filteredLeads[newIndex];
-      setSelectedLead(nextLead);
-      
-      // Fetch notes for the new lead
-      try {
-        const token = localStorage.getItem('crmToken');
-        const headers = { Authorization: `Bearer ${token}` };
-        const notesRes = await axios.get(`${API}/crm/leads/${nextLead.id}/notes`, { headers });
-        setLeadNotes(notesRes.data);
-      } catch (error) {
-        console.error('Error fetching notes:', error);
-      }
     }
   };
 
@@ -212,9 +161,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
     }
 
     const csvContent = [
-      ['Data Creazione', 'Nome', 'Email', 'Telefono', 'Azienda Truffatrice', 'Importo Perso', 'Stato', 'Priorità', 'Dettagli Caso'],
+      ['Data', 'Nome', 'Email', 'Telefono', 'Azienda Truffatrice', 'Importo Perso', 'Stato', 'Priorità', 'Dettagli Caso'],
       ...leads.map(lead => [
-        formatCreatedDate(lead.created_at),
+        new Date(lead.created_at).toLocaleDateString('it-IT'),
         lead.fullName,
         lead.email,
         lead.phone,
@@ -355,62 +304,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
     }
   };
 
-  const toggleLeadSelection = (leadId) => {
-    setSelectedLeadIds(prev => 
-      prev.includes(leadId) 
-        ? prev.filter(id => id !== leadId)
-        : [...prev, leadId]
-    );
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedLeadIds.length === filteredLeads.length) {
-      setSelectedLeadIds([]);
-    } else {
-      setSelectedLeadIds(filteredLeads.map(lead => lead.id));
-    }
-  };
-
-  const handleMassUpdate = async () => {
-    if (selectedLeadIds.length === 0) {
-      toast.error('Nessun lead selezionato');
-      return;
-    }
-
-    if (!massUpdateData.status && !massUpdateData.team_id && !massUpdateData.assigned_to) {
-      toast.error('Seleziona almeno un campo da aggiornare');
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('crmToken');
-      const headers = { Authorization: `Bearer ${token}` };
-
-      const updatePayload = {
-        lead_ids: selectedLeadIds,
-        ...(massUpdateData.status && { status: massUpdateData.status }),
-        ...(massUpdateData.team_id && { team_id: massUpdateData.team_id }),
-        ...(massUpdateData.assigned_to && { assigned_to: massUpdateData.assigned_to })
-      };
-
-      const response = await axios.post(`${API}/crm/leads/mass-update`, updatePayload, { headers });
-      
-      toast.success(`${response.data.updated_count} lead aggiornati con successo`);
-      setShowMassUpdateModal(false);
-      setSelectedLeadIds([]);
-      setMassUpdateData({ status: '', team_id: '', assigned_to: '' });
-      fetchData();
-    } catch (error) {
-      toast.error('Errore nell\'aggiornamento massivo');
-    }
-  };
-
-  const formatPhoneForCall = (phone) => {
-    // Remove spaces and special chars, keep only digits
-    const cleanPhone = phone.replace(/[^0-9]/g, '');
-    return `tel:+39${cleanPhone}`;
-  };
-
   const getStatusColor = (status) => {
     const colors = {
       new: 'bg-blue-100 text-blue-800',
@@ -439,19 +332,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
     return <div className="text-center py-12">Caricamento lead...</div>;
   }
 
-  const canMassUpdate = ['admin', 'manager', 'supervisor'].includes(currentUser.role);
-
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold text-black">Gestione Lead</h2>
         <div className="flex gap-3">
-          {canMassUpdate && selectedLeadIds.length > 0 && (
-            <Button onClick={() => setShowMassUpdateModal(true)} className="bg-purple-600 text-white hover:bg-purple-700 rounded-none">
-              <Edit className="w-4 h-4 mr-2" />
-              Mass Update ({selectedLeadIds.length})
-            </Button>
-          )}
           <Button onClick={() => setShowCreateModal(true)} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
             <Plus className="w-4 h-4 mr-2" />
             Crea Lead
@@ -524,18 +409,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         <table className="w-full">
           <thead className="bg-black">
             <tr>
-              {canMassUpdate && (
-                <th className="text-left text-white p-4 font-semibold w-12">
-                  <button onClick={toggleSelectAll} className="text-white hover:text-[#D4AF37]">
-                    {selectedLeadIds.length === filteredLeads.length && filteredLeads.length > 0 ? (
-                      <CheckSquare className="w-5 h-5" />
-                    ) : (
-                      <Square className="w-5 h-5" />
-                    )}
-                  </button>
-                </th>
-              )}
-              <th className="text-left text-white p-4 font-semibold">Created Date</th>
+              <th className="text-left text-white p-4 font-semibold">Data</th>
               <th className="text-left text-white p-4 font-semibold">Nome</th>
               <th className="text-left text-white p-4 font-semibold">Telefono</th>
               <th className="text-left text-white p-4 font-semibold">Email</th>
@@ -547,45 +421,20 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredLeads.length === 0 ? (
+            {leads.length === 0 ? (
               <tr>
-                <td colSpan={canMassUpdate ? "10" : "9"} className="text-center p-8 text-gray-600">
+                <td colSpan="9" className="text-center p-8 text-gray-600">
                   Nessun lead trovato
                 </td>
               </tr>
             ) : (
-              filteredLeads.map((lead) => (
+              leads.map((lead) => (
                 <tr key={lead.id} className="border-t border-gray-200 hover:bg-gray-50">
-                  {canMassUpdate && (
-                    <td className="p-4">
-                      <button onClick={() => toggleLeadSelection(lead.id)} className="text-gray-700 hover:text-[#D4AF37]">
-                        {selectedLeadIds.includes(lead.id) ? (
-                          <CheckSquare className="w-5 h-5" />
-                        ) : (
-                          <Square className="w-5 h-5" />
-                        )}
-                      </button>
-                    </td>
-                  )}
                   <td className="p-4 text-gray-700">
-                    {formatCreatedDate(lead.created_at)}
+                    {new Date(lead.created_at).toLocaleDateString('it-IT')}
                   </td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => handleViewDetails(lead)}
-                      className="text-black font-semibold hover:text-[#D4AF37] underline"
-                    >
-                      {lead.fullName}
-                    </button>
-                  </td>
-                  <td className="p-4">
-                    <a 
-                      href={formatPhoneForCall(lead.phone)} 
-                      className="text-blue-600 hover:text-blue-800 font-mono underline"
-                    >
-                      +39 {lead.phone}
-                    </a>
-                  </td>
+                  <td className="p-4 text-black font-semibold">{lead.fullName}</td>
+                  <td className="p-4 text-gray-700 font-mono">+39 {lead.phone}</td>
                   <td className="p-4 text-gray-700">{lead.email}</td>
                   <td className="p-4 text-gray-700">{lead.amountLost}</td>
                   <td className="p-4">
@@ -635,32 +484,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         </table>
       </div>
 
-      {/* Detail Modal with Navigation */}
+      {/* Detail Modal */}
       {showDetailModal && selectedLead && (
         <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
           <DialogContent className="max-w-4xl bg-white max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <div className="flex items-center justify-between">
-                <DialogTitle className="text-2xl font-bold text-black">Dettagli Lead</DialogTitle>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => navigateLead(-1)}
-                    disabled={currentLeadIndex === 0}
-                    size="sm"
-                    className="bg-gray-200 text-black hover:bg-gray-300 rounded-none disabled:opacity-50"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    onClick={() => navigateLead(1)}
-                    disabled={currentLeadIndex === filteredLeads.length - 1}
-                    size="sm"
-                    className="bg-gray-200 text-black hover:bg-gray-300 rounded-none disabled:opacity-50"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
+              <DialogTitle className="text-2xl font-bold text-black">Dettagli Lead</DialogTitle>
             </DialogHeader>
             <div className="space-y-6">
               {/* Lead Info */}
@@ -677,12 +506,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-gray-600">Telefono</label>
-                    <a 
-                      href={formatPhoneForCall(selectedLead.phone)} 
-                      className="text-blue-600 hover:text-blue-800 underline font-semibold block"
-                    >
-                      +39 {selectedLead.phone}
-                    </a>
+                    <p className="text-black">+39 {selectedLead.phone}</p>
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-gray-600">Importo Perso</label>
@@ -694,7 +518,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-gray-600">Data Creazione</label>
-                    <p className="text-black">{formatCreatedDate(selectedLead.created_at)}</p>
+                    <p className="text-black">{new Date(selectedLead.created_at).toLocaleString('it-IT')}</p>
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-gray-600">Stato</label>
@@ -758,69 +582,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   )}
                 </div>
               </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-
-      {/* Mass Update Modal */}
-      {showMassUpdateModal && (
-        <Dialog open={showMassUpdateModal} onOpenChange={setShowMassUpdateModal}>
-          <DialogContent className="max-w-lg bg-white">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">Mass Update</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <p className="text-gray-700">Aggiorna {selectedLeadIds.length} lead selezionati:</p>
-              
-              <div>
-                <label className="block text-sm font-semibold text-black mb-2">Stato</label>
-                <Select value={massUpdateData.status} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, status: value })}>
-                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Seleziona stato" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="">Nessun cambio</SelectItem>
-                    {statuses.map(status => (
-                      <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-black mb-2">Team</label>
-                <Select value={massUpdateData.team_id} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, team_id: value })}>
-                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Seleziona team" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="">Nessun cambio</SelectItem>
-                    {teams.map(team => (
-                      <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-black mb-2">Assegna a Utente</label>
-                <Select value={massUpdateData.assigned_to} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, assigned_to: value })}>
-                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Seleziona utente" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="">Nessun cambio</SelectItem>
-                    {users.filter(u => u.is_active).map(user => (
-                      <SelectItem key={user.id} value={user.id}>{user.full_name} ({user.role})</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <Button onClick={handleMassUpdate} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
-                Aggiorna Lead
-              </Button>
             </div>
           </DialogContent>
         </Dialog>
