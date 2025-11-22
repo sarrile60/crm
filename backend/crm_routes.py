@@ -211,7 +211,7 @@ async def create_status(status_data: CustomStatusCreate, current_user: dict = De
 @crm_router.get("/statuses")
 async def get_statuses(current_user: dict = Depends(get_current_user)):
     """Get all statuses"""
-    statuses = await db.custom_statuses.find({"is_active": True}).sort("order", 1).to_list(1000)
+    statuses = await db.custom_statuses.find({"is_active": True}, {"_id": 0}).sort("order", 1).to_list(1000)
     return statuses
 
 @crm_router.put("/statuses/{status_id}", dependencies=[Depends(require_role(["admin"]))])
