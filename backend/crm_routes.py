@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Header, Depends
 from typing import Optional, List
 from datetime import datetime
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from crm_models import (
     User, UserCreate, UserLogin, UserUpdate,
@@ -17,10 +16,12 @@ from auth_utils import hash_password, verify_password, create_access_token, get_
 # Create router
 crm_router = APIRouter(prefix="/api/crm")
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# Database will be injected
+db = None
+
+def init_crm_db(database):
+    global db
+    db = database
 
 # Dependency to get current user from token
 async def get_current_user(authorization: Optional[str] = Header(None)):
