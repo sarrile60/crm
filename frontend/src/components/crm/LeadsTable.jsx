@@ -794,6 +794,14 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                     <label className="text-sm font-semibold text-gray-600">Priorità</label>
                     <p className={`font-semibold ${getPriorityColor(selectedLead.priority)}`}>{selectedLead.priority}</p>
                   </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Team</label>
+                    <p className="text-black">{selectedLead.team_id ? teams.find(t => t.id === selectedLead.team_id)?.name || 'N/A' : 'Nessun team'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Assegnato a</label>
+                    <p className="text-black">{selectedLead.assigned_to ? users.find(u => u.id === selectedLead.assigned_to)?.full_name || 'N/A' : 'Non assegnato'}</p>
+                  </div>
                 </div>
                 <div className="mt-4">
                   <label className="text-sm font-semibold text-gray-600">Dettagli Caso</label>
