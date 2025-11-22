@@ -61,9 +61,24 @@ const SettingsPanel = () => {
       toast.success('Stato creato con successo');
       setShowCreateModal(false);
       setNewStatus({ name: '', color: '#3B82F6', order: 0 });
-      fetchStatuses();
+      fetchData();
     } catch (error) {
       toast.error('Errore nella creazione dello stato');
+    }
+  };
+
+  const handleCreateTeam = async () => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.post(`${API}/crm/teams`, newTeam, { headers });
+      toast.success('Team creato con successo');
+      setShowCreateTeamModal(false);
+      setNewTeam({ name: '', description: '', supervisor_id: '' });
+      fetchData();
+    } catch (error) {
+      toast.error('Errore nella creazione del team');
     }
   };
 
