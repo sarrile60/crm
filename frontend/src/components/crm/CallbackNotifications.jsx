@@ -135,17 +135,17 @@ const CallbackNotifications = ({ onCallbackAlert }) => {
 
       {/* Urgent Callback Alert Modal */}
       <Dialog open={showUrgentModal} onOpenChange={setShowUrgentModal}>
-        <DialogContent className="max-w-lg bg-red-50 border-4 border-red-600">
+        <DialogContent className={`max-w-lg border-4 ${urgentCallback?.status?.startsWith('Deposit') ? 'bg-blue-50 border-blue-600' : 'bg-red-50 border-red-600'}`}>
           <DialogHeader>
-            <DialogTitle className="text-3xl font-bold text-red-600 flex items-center gap-3">
+            <DialogTitle className={`text-3xl font-bold flex items-center gap-3 ${urgentCallback?.status?.startsWith('Deposit') ? 'text-blue-600' : 'text-red-600'}`}>
               <Phone className="w-8 h-8 animate-bounce" />
-              CALLBACK URGENTE!
+              {urgentCallback?.status?.startsWith('Deposit') ? 'DEPOSIT URGENTE!' : 'CALLBACK URGENTE!'}
             </DialogTitle>
           </DialogHeader>
           {urgentCallback && (
             <div className="space-y-4">
-              <div className="bg-white border-2 border-red-600 p-6">
-                <div className="flex items-center gap-2 text-red-600 font-bold mb-4">
+              <div className={`bg-white border-2 p-6 ${urgentCallback?.status?.startsWith('Deposit') ? 'border-blue-600' : 'border-red-600'}`}>
+                <div className={`flex items-center gap-2 font-bold mb-4 ${urgentCallback?.status?.startsWith('Deposit') ? 'text-blue-600' : 'text-red-600'}`}>
                   <Clock className="w-6 h-6" />
                   <span className="text-xl">Tra meno di 1 minuto!</span>
                 </div>
