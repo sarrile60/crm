@@ -157,6 +157,8 @@ class CRMTester:
                                 break
                         
                         if self.test_lead_id:
+                            # Assign the lead to the agent for testing
+                            self.assign_lead_to_agent()
                             self.log_result("Create Test Lead", True, f"Created test lead with ID: {self.test_lead_id}")
                             return True
                 
@@ -169,6 +171,45 @@ class CRMTester:
         except Exception as e:
             self.log_result("Create Test Lead", False, f"Error creating lead: {str(e)}")
             return False
+    
+    def assign_lead_to_agent(self):
+        """Assign test lead to agent for permission testing"""
+        if not self.admin_token or not self.test_lead_id:
+            return
+        
+        try:
+            # Get agent user ID
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            users_response = self.session.get(f"{CRM_BASE_URL}/users", headers=headers)
+            
+            if users_response.status_code == 200:
+                users = users_response.json()
+                agent_id = None
+                for user in users:
+                    if user.get("role") == "agent":
+                        agent_id = user.get("id")
+                        break
+                
+                if agent_id:
+                    # Assign lead to agent
+                    assignment_data = {
+                        "lead_id": self.test_lead_id,
+                        "assigned_to": agent_id,
+                        "assigned_by": "admin"
+                    }
+                    
+                    assign_response = self.session.post(
+                        f"{CRM_BASE_URL}/leads/{self.test_lead_id}/assign",
+                        json=assignment_data,
+                        headers=headers
+                    )
+                    
+                    if assign_response.status_code == 200:
+                        self.log_result("Assign Lead to Agent", True, "Successfully assigned lead to agent")
+                    else:
+                        self.log_result("Assign Lead to Agent", False, f"Failed to assign lead: {assign_response.status_code}")
+        except Exception as e:
+            self.log_result("Assign Lead to Agent", False, f"Error assigning lead: {str(e)}")
     
     def login_user(self, email, password):
         """Login as specific user and return token"""
