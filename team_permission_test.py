@@ -220,89 +220,84 @@ class TeamPermissionTester:
         
         return True
     
-    def create_test_leads_with_teams(self, teams):
-        """Create test leads assigned to different teams"""
-        if "admin" not in self.tokens:
-            return False
+    def assign_existing_leads_to_teams(self, teams):
+        """Assign some existing leads to teams using mass update"""
+        if "admin" not in self.tokens or len(teams) < 2:
+            return []
             
-        # Create leads for different teams
-        test_leads_data = [
-            {
-                "fullName": "Team A Lead 1",
-                "email": "teama1@example.com",
-                "phone": "+393451111111",
-                "scammerCompany": "Fake Corp A",
-                "amountLost": "€5,000",
-                "caseDetails": "Test case for team A",
-                "team_id": teams[0]["id"] if len(teams) > 0 else None
-            },
-            {
-                "fullName": "Team B Lead 1", 
-                "email": "teamb1@example.com",
-                "phone": "+393452222222",
-                "scammerCompany": "Fake Corp B",
-                "amountLost": "€8,000",
-                "caseDetails": "Test case for team B",
-                "team_id": teams[1]["id"] if len(teams) > 1 else None
-            }
-        ]
-        
-        created_leads = []
         headers = {"Authorization": f"Bearer {self.tokens['admin']}", "Content-Type": "application/json"}
         
-        for lead_data in test_leads_data:
-            try:
-                # Create lead via main endpoint
-                response = self.session.post(
-                    f"{BASE_URL}/leads/submit",
-                    json={k: v for k, v in lead_data.items() if k != "team_id"},
-                    headers={"Content-Type": "application/json"}
-                )
+        try:
+            # Get existing leads
+            response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
+            if response.status_code != 200:
+                return []
                 
-                if response.status_code == 200:
-                    # Get the lead ID and update with team assignment
-                    leads_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
-                    
-                    if leads_response.status_code == 200:
-                        leads = leads_response.json()
-                        for lead in leads:
-                            if lead.get("email") == lead_data["email"]:
-                                lead_id = lead.get("id")
-                                
-                                # Update lead with team assignment
-                                if lead_data.get("team_id"):
-                                    update_response = self.session.put(
-                                        f"{CRM_BASE_URL}/leads/{lead_id}",
-                                        json={"team_id": lead_data["team_id"]},
-                                        headers=headers
-                                    )
-                                    
-                                    if update_response.status_code == 200:
-                                        # Verify the update worked
-                                        verify_response = self.session.get(f"{CRM_BASE_URL}/leads/{lead_id}", headers=headers)
-                                        if verify_response.status_code == 200:
-                                            updated_lead = verify_response.json()
-                                            actual_team_id = updated_lead.get("team_id")
-                                            
-                                            created_leads.append({
-                                                "id": lead_id,
-                                                "team_id": actual_team_id,
-                                                "name": lead_data["fullName"]
-                                            })
-                                            
-                                            self.log_result(
-                                                f"Create Team Lead", 
-                                                actual_team_id == lead_data["team_id"], 
-                                                f"Created lead {lead_data['fullName']} - Team ID: {actual_team_id}"
-                                            )
-                                    else:
-                                        self.log_result(f"Update Team Lead", False, f"Failed to update lead team: {update_response.status_code}")
-                                break
-                                
-            except Exception as e:
-                self.log_result(f"Create Team Lead", False, f"Error creating lead: {str(e)}")
-        
-        return created_leads
+            leads = response.json()
+            if len(leads) < 4:
+                return []
+            
+            # Assign first 2 leads to team A, next 2 to team B
+            team_a_leads = [leads[0]["id"], leads[1]["id"]]
+            team_b_leads = [leads[2]["id"], leads[3]["id"]]
+            
+            assignments = []
+            
+            # Assign leads to team A
+            mass_update_a = {
+                "lead_ids": team_a_leads,
+                "team_id": teams[0]["id"]
+            }
+            
+            response_a = self.session.post(
+                f"{CRM_BASE_URL}/leads/mass-update",
+                json=mass_update_a,
+                headers=headers
+            )
+            
+            if response_a.status_code == 200:
+                assignments.extend([
+                    {"id": lead_id, "team_id": teams[0]["id"], "team_name": teams[0]["name"]}
+                    for lead_id in team_a_leads
+                ])
+                self.log_result(
+                    "Assign Leads to Team A", 
+                    True, 
+                    f"Assigned 2 leads to {teams[0]['name']}"
+                )
+            else:
+                self.log_result("Assign Leads to Team A", False, f"Failed: {response_a.status_code}")
+            
+            # Assign leads to team B
+            mass_update_b = {
+                "lead_ids": team_b_leads,
+                "team_id": teams[1]["id"]
+            }
+            
+            response_b = self.session.post(
+                f"{CRM_BASE_URL}/leads/mass-update",
+                json=mass_update_b,
+                headers=headers
+            )
+            
+            if response_b.status_code == 200:
+                assignments.extend([
+                    {"id": lead_id, "team_id": teams[1]["id"], "team_name": teams[1]["name"]}
+                    for lead_id in team_b_leads
+                ])
+                self.log_result(
+                    "Assign Leads to Team B", 
+                    True, 
+                    f"Assigned 2 leads to {teams[1]['name']}"
+                )
+            else:
+                self.log_result("Assign Leads to Team B", False, f"Failed: {response_b.status_code}")
+            
+            return assignments
+            
+        except Exception as e:
+            self.log_result("Assign Leads to Teams", False, f"Error: {str(e)}")
+            return []
     
     def verify_team_assignments(self):
         """Verify that team assignments are working correctly"""
