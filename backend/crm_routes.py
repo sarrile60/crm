@@ -248,6 +248,7 @@ async def get_crm_leads(
     assigned_to: Optional[str] = None,
     team_id: Optional[str] = None,
     priority: Optional[str] = None,
+    search: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
     """Get leads with filters"""
@@ -256,7 +257,7 @@ async def get_crm_leads(
     # Apply filters based on user role
     if current_user["role"] == "agent":
         query["assigned_to"] = current_user["id"]
-    elif current_user["role"] == "supervisor":
+    elif current_user["role"] == "supervisor" and current_user.get("team_id"):
         query["team_id"] = current_user.get("team_id")
     
     # Apply additional filters
@@ -268,6 +269,14 @@ async def get_crm_leads(
         query["team_id"] = team_id
     if priority:
         query["priority"] = priority
+    
+    # Search filter
+    if search:
+        query["$or"] = [
+            {"fullName": {"$regex": search, "$options": "i"}},
+            {"email": {"$regex": search, "$options": "i"}},
+            {"scammerCompany": {"$regex": search, "$options": "i"}}
+        ]
     
     leads = await db.leads.find(query).sort("created_at", -1).to_list(1000)
     return leads
