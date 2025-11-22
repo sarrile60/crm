@@ -53,8 +53,14 @@ const LeadsTable = ({ currentUser }) => {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
+      // Build query params only with non-empty values
+      const queryParams = {};
+      if (filters.status) queryParams.status = filters.status;
+      if (filters.priority) queryParams.priority = filters.priority;
+      if (filters.search) queryParams.search = filters.search;
+
       const [leadsRes, usersRes, statusesRes] = await Promise.all([
-        axios.get(`${API}/crm/leads`, { headers, params: filters }),
+        axios.get(`${API}/crm/leads`, { headers, params: queryParams }),
         axios.get(`${API}/crm/users`, { headers }),
         axios.get(`${API}/crm/statuses`, { headers })
       ]);
@@ -63,6 +69,7 @@ const LeadsTable = ({ currentUser }) => {
       setUsers(usersRes.data);
       setStatuses(statusesRes.data);
     } catch (error) {
+      console.error('Error fetching data:', error);
       toast.error('Errore nel caricamento dei dati');
     } finally {
       setLoading(false);
