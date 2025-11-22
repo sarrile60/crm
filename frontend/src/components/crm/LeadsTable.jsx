@@ -658,9 +658,24 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   <td className="p-4 text-gray-700">{lead.email}</td>
                   <td className="p-4 text-gray-700">{lead.amountLost}</td>
                   <td className="p-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(lead.status)}`}>
-                      {lead.status}
-                    </span>
+                    <Select value={lead.status} onValueChange={(value) => handleInlineStatusChange(lead.id, value)}>
+                      <SelectTrigger className="w-[180px] bg-white border-gray-300 rounded-none h-8">
+                        <SelectValue>
+                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(lead.status)}`}>
+                            {lead.status}
+                          </span>
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        {statuses.map(status => (
+                          <SelectItem key={status.id} value={status.name}>
+                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(status.name)}`}>
+                              {status.name}
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </td>
                   <td className="p-4">
                     <span className={`font-semibold ${getPriorityColor(lead.priority)}`}>
