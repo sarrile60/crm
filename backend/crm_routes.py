@@ -311,6 +311,10 @@ async def get_lead_detail(lead_id: str, current_user: dict = Depends(get_current
     if current_user["role"] == "agent" and lead.get("assigned_to") != current_user["id"]:
         raise HTTPException(status_code=403, detail="Access denied")
     
+    # Mask phone number based on user role
+    if "phone" in lead:
+        lead["phone"] = mask_phone_number(lead["phone"], current_user["role"])
+    
     return lead
 
 @crm_router.put("/leads/{lead_id}")
