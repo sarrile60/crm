@@ -684,6 +684,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                     </span>
                   </td>
                   <td className="p-4 text-gray-700">
+                    {lead.team_id ? teams.find(t => t.id === lead.team_id)?.name || 'N/A' : 'Nessun team'}
+                  </td>
+                  <td className="p-4 text-gray-700">
                     {lead.assigned_to ? users.find(u => u.id === lead.assigned_to)?.full_name || 'N/A' : 'Non assegnato'}
                   </td>
                   <td className="p-4">
