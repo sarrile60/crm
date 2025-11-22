@@ -253,9 +253,14 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
   };
 
   const handleSaveEdit = async () => {
-    // Validate callback date if status is Callback
-    if (editData.status === 'Callback' && !editData.callback_date) {
-      toast.error('Per lo stato Callback devi impostare data e ora');
+    // Validate callback date for callback statuses
+    const requiresCallback = editData.status === 'Callback' || 
+                            editData.status === 'Potential Callback' || 
+                            editData.status === 'Pharos in progress' ||
+                            editData.status?.startsWith('Deposit');
+    
+    if (requiresCallback && !editData.callback_date) {
+      toast.error('Devi impostare data e ora per questo stato');
       return;
     }
 
@@ -264,6 +269,10 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.put(`${API}/crm/leads/${selectedLead.id}`, editData, { headers });
+      
+      // Clear the old alert flag so new callbacks can trigger alerts
+      localStorage.removeItem(`callback_alerted_${selectedLead.id}`);
+      
       toast.success('Lead aggiornato con successo');
       setShowEditModal(false);
       fetchData();
