@@ -695,7 +695,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                       href={formatPhoneForCall(selectedLead.phone)} 
                       className="text-blue-600 hover:text-blue-800 underline font-semibold block"
                     >
-                      +39 {selectedLead.phone}
+                      {formatPhoneDisplay(selectedLead.phone)}
                     </a>
                   </div>
                   <div>
