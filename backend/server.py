@@ -81,7 +81,6 @@ async def submit_lead(lead_data: LeadCreate):
         lead_dict = lead.dict()
         
         # Ensure created_at field exists for CRM compatibility
-        from datetime import timezone
         lead_dict["created_at"] = lead_dict.get("createdAt", datetime.now(timezone.utc))
         
         await db.leads.insert_one(lead_dict)
