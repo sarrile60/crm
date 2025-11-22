@@ -1185,6 +1185,50 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         </Dialog>
       )}
 
+      {/* Inline Callback Date Modal */}
+      {inlineEditLeadId && (
+        <Dialog open={!!inlineEditLeadId} onOpenChange={() => setInlineEditLeadId(null)}>
+          <DialogContent className="max-w-md bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-black">Imposta Callback/Deposit</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="bg-yellow-50 border-2 border-yellow-400 p-3">
+                <p className="text-sm font-semibold text-black mb-1">⚠️ Callback richiesto</p>
+                <p className="text-xs text-gray-700">Stato selezionato: <strong>{inlineStatusData.status}</strong></p>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Data e Ora *</label>
+                <Input
+                  type="datetime-local"
+                  value={inlineStatusData.callback_date}
+                  onChange={(e) => setInlineStatusData({ ...inlineStatusData, callback_date: e.target.value })}
+                  className="bg-white border-gray-300 rounded-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Note (Opzionale)</label>
+                <Textarea
+                  value={inlineStatusData.callback_notes}
+                  onChange={(e) => setInlineStatusData({ ...inlineStatusData, callback_notes: e.target.value })}
+                  placeholder="Aggiungi note..."
+                  className="bg-white border-gray-300 rounded-none"
+                  rows={3}
+                />
+              </div>
+              <div className="flex gap-3">
+                <Button onClick={handleSaveInlineCallback} className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
+                  Salva
+                </Button>
+                <Button onClick={() => setInlineEditLeadId(null)} className="flex-1 bg-gray-300 text-black hover:bg-gray-400 rounded-none">
+                  Annulla
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {/* Import CSV Modal */}
       {showImportModal && (
         <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
