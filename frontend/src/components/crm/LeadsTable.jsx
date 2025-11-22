@@ -30,6 +30,19 @@ const LeadsTable = ({ currentUser }) => {
     callback_date: '',
     callback_notes: ''
   });
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [csvFile, setCsvFile] = useState(null);
+  const [newLead, setNewLead] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    scammerCompany: '',
+    amountLost: '',
+    caseDetails: ''
+  });
+  const [leadNotes, setLeadNotes] = useState([]);
+  const [newNote, setNewNote] = useState('');
 
   useEffect(() => {
     fetchData();
