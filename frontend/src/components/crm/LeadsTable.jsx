@@ -179,12 +179,12 @@ const LeadsTable = ({ currentUser }) => {
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-2">Priorità</label>
-            <Select value={filters.priority} onValueChange={(value) => setFilters({ ...filters, priority: value })}>
+            <Select value={filters.priority || "all"} onValueChange={(value) => setFilters({ ...filters, priority: value === "all" ? "" : value })}>
               <SelectTrigger className="bg-white border-gray-300 rounded-none">
                 <SelectValue placeholder="Tutte" />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="">Tutte</SelectItem>
+                <SelectItem value="all">Tutte</SelectItem>
                 <SelectItem value="low">Bassa</SelectItem>
                 <SelectItem value="medium">Media</SelectItem>
                 <SelectItem value="high">Alta</SelectItem>
