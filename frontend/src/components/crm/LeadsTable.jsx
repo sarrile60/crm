@@ -788,13 +788,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               <p className="text-gray-700">Aggiorna {selectedLeadIds.length} lead selezionati:</p>
               
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Stato</label>
-                <Select value={massUpdateData.status} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, status: value })}>
+                <label className="block text-sm font-semibold text-black mb-2">Stato (opzionale)</label>
+                <Select value={massUpdateData.status || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, status: value === "_none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Seleziona stato" />
+                    <SelectValue placeholder="Nessun cambio" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="">Nessun cambio</SelectItem>
+                    <SelectItem value="_none">Nessun cambio</SelectItem>
                     {statuses.map(status => (
                       <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
                     ))}
@@ -803,13 +803,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Team</label>
-                <Select value={massUpdateData.team_id} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, team_id: value })}>
+                <label className="block text-sm font-semibold text-black mb-2">Team (opzionale)</label>
+                <Select value={massUpdateData.team_id || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, team_id: value === "_none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Seleziona team" />
+                    <SelectValue placeholder="Nessun cambio" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="">Nessun cambio</SelectItem>
+                    <SelectItem value="_none">Nessun cambio</SelectItem>
                     {teams.map(team => (
                       <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
                     ))}
@@ -818,13 +818,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Assegna a Utente</label>
-                <Select value={massUpdateData.assigned_to} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, assigned_to: value })}>
+                <label className="block text-sm font-semibold text-black mb-2">Assegna a Utente (opzionale)</label>
+                <Select value={massUpdateData.assigned_to || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, assigned_to: value === "_none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Seleziona utente" />
+                    <SelectValue placeholder="Nessun cambio" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="">Nessun cambio</SelectItem>
+                    <SelectItem value="_none">Nessun cambio</SelectItem>
                     {users.filter(u => u.is_active).map(user => (
                       <SelectItem key={user.id} value={user.id}>{user.full_name} ({user.role})</SelectItem>
                     ))}
