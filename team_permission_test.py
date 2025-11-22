@@ -354,7 +354,7 @@ class TeamPermissionTester:
         teams = self.create_test_teams()
         if teams:
             self.assign_users_to_teams(teams)
-            self.create_test_leads_with_teams(teams)
+            self.assign_existing_leads_to_teams(teams)
             self.verify_team_assignments()
             
             # Refresh user info after team assignments
