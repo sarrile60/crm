@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Header, Depends
 from typing import Optional, List
 from datetime import datetime, timezone
 import os
+import uuid
 from crm_models import (
     User, UserCreate, UserLogin, UserUpdate,
     Team, TeamCreate,
