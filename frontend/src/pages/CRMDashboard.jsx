@@ -210,7 +210,7 @@ const CRMDashboard = () => {
           </div>
         )}
 
-        {activeTab === 'leads' && <LeadsTable currentUser={currentUser} />}
+        {activeTab === 'leads' && <LeadsTable currentUser={currentUser} urgentCallbackLead={callbackLead} />}
         {activeTab === 'users' && <UserManagement currentUser={currentUser} />}
         {activeTab === 'settings' && <SettingsPanel />}
       </main>
