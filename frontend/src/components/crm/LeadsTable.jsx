@@ -69,9 +69,150 @@ const LeadsTable = ({ currentUser }) => {
     }
   };
 
-  const handleViewDetails = (lead) => {
+  const handleViewDetails = async (lead) => {
     setSelectedLead(lead);
     setShowDetailModal(true);
+    
+    // Fetch notes for this lead
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      const notesRes = await axios.get(`${API}/crm/leads/${lead.id}/notes`, { headers });
+      setLeadNotes(notesRes.data);
+    } catch (error) {
+      console.error('Error fetching notes:', error);
+    }
+  };
+
+  const handleAddNote = async () => {
+    if (!newNote.trim()) {
+      toast.error('La nota non può essere vuota');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      await axios.post(`${API}/crm/leads/${selectedLead.id}/notes`, {
+        lead_id: selectedLead.id,
+        note: newNote,
+        is_internal: true
+      }, { headers });
+      
+      toast.success('Nota aggiunta con successo');
+      setNewNote('');
+      
+      // Refresh notes
+      const notesRes = await axios.get(`${API}/crm/leads/${selectedLead.id}/notes`, { headers });
+      setLeadNotes(notesRes.data);
+    } catch (error) {
+      toast.error('Errore nell\'aggiunta della nota');
+    }
+  };
+
+  const handleCreateLead = async () => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      await axios.post(`${API}/leads/submit`, newLead);
+      toast.success('Lead creato con successo');
+      setShowCreateModal(false);
+      setNewLead({
+        fullName: '',
+        email: '',
+        phone: '',
+        scammerCompany: '',
+        amountLost: '',
+        caseDetails: ''
+      });
+      fetchData();
+    } catch (error) {
+      toast.error('Errore nella creazione del lead');
+    }
+  };
+
+  const handleExportCSV = () => {
+    if (leads.length === 0) {
+      toast.error('Nessun lead da esportare');
+      return;
+    }
+
+    const csvContent = [
+      ['Data', 'Nome', 'Email', 'Telefono', 'Azienda Truffatrice', 'Importo Perso', 'Stato', 'Priorità', 'Dettagli Caso'],
+      ...leads.map(lead => [
+        new Date(lead.created_at).toLocaleDateString('it-IT'),
+        lead.fullName,
+        lead.email,
+        lead.phone,
+        lead.scammerCompany,
+        lead.amountLost,
+        lead.status,
+        lead.priority,
+        lead.caseDetails
+      ])
+    ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `leads_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success('Lead esportati con successo');
+  };
+
+  const handleImportCSV = async () => {
+    if (!csvFile) {
+      toast.error('Seleziona un file CSV');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const text = e.target.result;
+        const rows = text.split('\n').slice(1); // Skip header
+        
+        const token = localStorage.getItem('crmToken');
+        const headers = { Authorization: `Bearer ${token}` };
+        
+        let imported = 0;
+        for (const row of rows) {
+          if (!row.trim()) continue;
+          
+          const [fullName, email, phone, scammerCompany, amountLost, caseDetails] = row.split(',').map(cell => cell.replace(/^"|"$/g, ''));
+          
+          try {
+            await axios.post(`${API}/leads/submit`, {
+              fullName,
+              email,
+              phone,
+              scammerCompany,
+              amountLost,
+              caseDetails
+            });
+            imported++;
+          } catch (error) {
+            console.error('Error importing row:', error);
+          }
+        }
+        
+        toast.success(`${imported} lead importati con successo`);
+        setShowImportModal(false);
+        setCsvFile(null);
+        fetchData();
+      } catch (error) {
+        toast.error('Errore nell\'importazione del CSV');
+      }
+    };
+    
+    reader.readAsText(csvFile);
   };
 
   const handleEdit = (lead) => {
