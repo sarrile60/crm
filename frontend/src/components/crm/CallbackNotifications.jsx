@@ -169,7 +169,13 @@ const CallbackNotifications = ({ onCallbackAlert }) => {
                     </div>
                   )}
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Ora Callback:</label>
+                    <label className="text-sm font-semibold text-gray-600">Stato:</label>
+                    <p className="text-lg font-bold text-[#D4AF37]">{urgentCallback.status}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">
+                      {urgentCallback?.status?.startsWith('Deposit') ? 'Ora Deposit:' : 'Ora Callback:'}
+                    </label>
                     <p className="text-black font-semibold">
                       {new Date(urgentCallback.callback_date).toLocaleTimeString('it-IT', { 
                         hour: '2-digit', 
@@ -182,10 +188,10 @@ const CallbackNotifications = ({ onCallbackAlert }) => {
               <div className="flex gap-3">
                 <Button
                   onClick={() => handleCallbackNow(urgentCallback)}
-                  className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none text-lg py-6 font-bold"
+                  className={`flex-1 text-white rounded-none text-lg py-6 font-bold ${urgentCallback?.status?.startsWith('Deposit') ? 'bg-blue-600 hover:bg-blue-700' : 'bg-red-600 hover:bg-red-700'}`}
                 >
                   <Phone className="w-5 h-5 mr-2" />
-                  CHIAMA ORA
+                  {urgentCallback?.status?.startsWith('Deposit') ? 'GESTISCI ORA' : 'CHIAMA ORA'}
                 </Button>
                 <Button
                   onClick={() => setShowUrgentModal(false)}
