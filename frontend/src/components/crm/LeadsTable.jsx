@@ -407,8 +407,22 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
 
   const formatPhoneForCall = (phone) => {
     // Remove spaces and special chars, keep only digits
-    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    const cleanPhone = phone.replace(/[^0-9x]/g, '');
+    // If it's masked (contains x), extract just the visible digits for display purposes
+    // For calling, we need the full number from backend
+    if (cleanPhone.startsWith('39')) {
+      return `tel:+${cleanPhone}`;
+    }
     return `tel:+39${cleanPhone}`;
+  };
+
+  const formatPhoneDisplay = (phone) => {
+    // If already has +39, don't add it again
+    if (phone.startsWith('+39') || phone.startsWith('39')) {
+      return phone.startsWith('+') ? phone : `+${phone}`;
+    }
+    // If it's just the number without country code
+    return `+39 ${phone}`;
   };
 
   const getStatusColor = (status) => {
