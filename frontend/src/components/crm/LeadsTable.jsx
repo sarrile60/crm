@@ -11,13 +11,20 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const LeadsTable = ({ currentUser }) => {
+const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
   const [leads, setLeads] = useState([]);
   const [users, setUsers] = useState([]);
   const [statuses, setStatuses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+
+  // Handle urgent callback lead
+  useEffect(() => {
+    if (urgentCallbackLead) {
+      handleViewDetails(urgentCallbackLead);
+    }
+  }, [urgentCallbackLead]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [filters, setFilters] = useState({
