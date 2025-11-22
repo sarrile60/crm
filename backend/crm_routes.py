@@ -302,7 +302,7 @@ async def get_crm_leads(
 @crm_router.get("/leads/{lead_id}")
 async def get_lead_detail(lead_id: str, current_user: dict = Depends(get_current_user)):
     """Get lead details"""
-    lead = await db.leads.find_one({"id": lead_id})
+    lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
     
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
