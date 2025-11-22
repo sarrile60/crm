@@ -120,12 +120,79 @@ const CallbackNotifications = ({ onCallbackAlert }) => {
       >
         <Bell className="w-6 h-6 text-white" />
         {reminders.length > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
             {reminders.length}
           </span>
         )}
       </button>
 
+      {/* Urgent Callback Alert Modal */}
+      <Dialog open={showUrgentModal} onOpenChange={setShowUrgentModal}>
+        <DialogContent className="max-w-lg bg-red-50 border-4 border-red-600">
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-bold text-red-600 flex items-center gap-3">
+              <Phone className="w-8 h-8 animate-bounce" />
+              CALLBACK URGENTE!
+            </DialogTitle>
+          </DialogHeader>
+          {urgentCallback && (
+            <div className="space-y-4">
+              <div className="bg-white border-2 border-red-600 p-6">
+                <div className="flex items-center gap-2 text-red-600 font-bold mb-4">
+                  <Clock className="w-6 h-6" />
+                  <span className="text-xl">Tra meno di 1 minuto!</span>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Cliente:</label>
+                    <p className="text-xl font-bold text-black">{urgentCallback.fullName}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Telefono:</label>
+                    <p className="text-2xl font-bold text-[#D4AF37]">+39 {urgentCallback.phone}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Importo:</label>
+                    <p className="text-lg font-semibold text-black">{urgentCallback.amountLost}</p>
+                  </div>
+                  {urgentCallback.callback_notes && (
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">Note:</label>
+                      <p className="text-black">{urgentCallback.callback_notes}</p>
+                    </div>
+                  )}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Ora Callback:</label>
+                    <p className="text-black font-semibold">
+                      {new Date(urgentCallback.callback_date).toLocaleTimeString('it-IT', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => handleCallbackNow(urgentCallback)}
+                  className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none text-lg py-6 font-bold"
+                >
+                  <Phone className="w-5 h-5 mr-2" />
+                  CHIAMA ORA
+                </Button>
+                <Button
+                  onClick={() => setShowUrgentModal(false)}
+                  className="bg-gray-300 text-black hover:bg-gray-400 rounded-none px-6"
+                >
+                  Più Tardi
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Regular Reminders Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-2xl bg-white">
           <DialogHeader>
