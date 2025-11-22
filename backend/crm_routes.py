@@ -423,7 +423,7 @@ async def get_reminders(current_user: dict = Depends(get_current_user)):
         "callback_date": {"$lte": datetime.utcnow()}
     }
     
-    reminders = await db.callback_reminders.find(query).sort("callback_date", 1).to_list(1000)
+    reminders = await db.callback_reminders.find(query, {"_id": 0}).sort("callback_date", 1).to_list(1000)
     return reminders
 
 @crm_router.put("/reminders/{reminder_id}/complete")
