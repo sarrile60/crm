@@ -449,40 +449,100 @@ const LeadsTable = ({ currentUser }) => {
       {/* Detail Modal */}
       {showDetailModal && selectedLead && (
         <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-          <DialogContent className="max-w-2xl bg-white">
+          <DialogContent className="max-w-4xl bg-white max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-black">Dettagli Lead</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Nome Completo</label>
-                  <p className="text-black font-semibold">{selectedLead.fullName}</p>
+            <div className="space-y-6">
+              {/* Lead Info */}
+              <div>
+                <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2">Informazioni Lead</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Nome Completo</label>
+                    <p className="text-black font-semibold">{selectedLead.fullName}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Email</label>
+                    <p className="text-black">{selectedLead.email}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Telefono</label>
+                    <p className="text-black">+39 {selectedLead.phone}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Importo Perso</label>
+                    <p className="text-black font-semibold">{selectedLead.amountLost}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Azienda Truffatrice</label>
+                    <p className="text-black">{selectedLead.scammerCompany}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Data Creazione</label>
+                    <p className="text-black">{new Date(selectedLead.created_at).toLocaleString('it-IT')}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Stato</label>
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(selectedLead.status)}`}>
+                      {selectedLead.status}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Priorità</label>
+                    <p className={`font-semibold ${getPriorityColor(selectedLead.priority)}`}>{selectedLead.priority}</p>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Email</label>
-                  <p className="text-black">{selectedLead.email}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Telefono</label>
-                  <p className="text-black">+39 {selectedLead.phone}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Importo Perso</label>
-                  <p className="text-black font-semibold">{selectedLead.amountLost}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Azienda Truffatrice</label>
-                  <p className="text-black">{selectedLead.scammerCompany}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Data Creazione</label>
-                  <p className="text-black">{new Date(selectedLead.created_at).toLocaleString('it-IT')}</p>
+                <div className="mt-4">
+                  <label className="text-sm font-semibold text-gray-600">Dettagli Caso</label>
+                  <p className="text-black mt-2 p-4 bg-gray-50 border border-gray-200 whitespace-pre-wrap">{selectedLead.caseDetails}</p>
                 </div>
               </div>
+
+              {/* Comments Section */}
               <div>
-                <label className="text-sm font-semibold text-gray-600">Dettagli Caso</label>
-                <p className="text-black mt-2 p-4 bg-gray-50 border border-gray-200">{selectedLead.caseDetails}</p>
+                <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2 flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5" />
+                  Commenti e Note
+                </h3>
+                
+                {/* Add New Comment */}
+                <div className="bg-gray-50 border-2 border-gray-200 p-4 mb-4">
+                  <label className="block text-sm font-semibold text-black mb-2">Aggiungi Nota</label>
+                  <Textarea
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    placeholder="Scrivi una nota o commento su questo lead..."
+                    rows={3}
+                    className="bg-white border-gray-300 rounded-none mb-3"
+                  />
+                  <Button onClick={handleAddNote} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Aggiungi Nota
+                  </Button>
+                </div>
+
+                {/* Notes List */}
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {leadNotes.length === 0 ? (
+                    <p className="text-center text-gray-600 py-4">Nessuna nota ancora</p>
+                  ) : (
+                    leadNotes.map((note) => (
+                      <div key={note.id} className="bg-white border border-gray-200 p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <p className="font-semibold text-black">{note.user_name}</p>
+                            <p className="text-xs text-gray-600">{new Date(note.created_at).toLocaleString('it-IT')}</p>
+                          </div>
+                          {note.is_internal && (
+                            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Interno</span>
+                          )}
+                        </div>
+                        <p className="text-gray-700 whitespace-pre-wrap">{note.note}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </DialogContent>
