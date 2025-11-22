@@ -168,6 +168,16 @@ async def update_user(user_id: str, update_data: UserUpdate, current_user: dict 
     if not update_dict:
         raise HTTPException(status_code=400, detail="No update data provided")
     
+    # If email is being updated, check it doesn't exist
+    if "email" in update_dict:
+        existing = await db.crm_users.find_one({"email": update_dict["email"], "id": {"$ne": user_id}})
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already in use by another user")
+    
+    # If password is being updated, hash it
+    if "password" in update_dict:
+        update_dict["password"] = hash_password(update_dict["password"])
+    
     result = await db.crm_users.update_one(
         {"id": user_id},
         {"$set": update_dict}
