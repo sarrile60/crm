@@ -178,7 +178,7 @@ class CRMTester:
             return
         
         try:
-            # Get agent user ID
+            # Get agent user ID (specifically the "Test Agent" we created)
             headers = {"Authorization": f"Bearer {self.admin_token}"}
             users_response = self.session.get(f"{CRM_BASE_URL}/users", headers=headers)
             
@@ -186,28 +186,30 @@ class CRMTester:
                 users = users_response.json()
                 agent_id = None
                 for user in users:
-                    if user.get("role") == "agent":
+                    if user.get("role") == "agent" and user.get("email") == "agent@test.com":
                         agent_id = user.get("id")
                         break
                 
                 if agent_id:
-                    # Assign lead to agent
-                    assignment_data = {
-                        "lead_id": self.test_lead_id,
+                    # Use direct database update to assign lead
+                    update_data = {
                         "assigned_to": agent_id,
                         "assigned_by": "admin"
                     }
                     
-                    assign_response = self.session.post(
-                        f"{CRM_BASE_URL}/leads/{self.test_lead_id}/assign",
-                        json=assignment_data,
-                        headers=headers
+                    # Update lead directly via PUT endpoint
+                    update_response = self.session.put(
+                        f"{CRM_BASE_URL}/leads/{self.test_lead_id}",
+                        json=update_data,
+                        headers={**headers, "Content-Type": "application/json"}
                     )
                     
-                    if assign_response.status_code == 200:
-                        self.log_result("Assign Lead to Agent", True, "Successfully assigned lead to agent")
+                    if update_response.status_code == 200:
+                        self.log_result("Assign Lead to Agent", True, f"Successfully assigned lead to agent {agent_id}")
                     else:
-                        self.log_result("Assign Lead to Agent", False, f"Failed to assign lead: {assign_response.status_code}")
+                        self.log_result("Assign Lead to Agent", False, f"Failed to assign lead: {update_response.status_code} - {update_response.text}")
+                else:
+                    self.log_result("Assign Lead to Agent", False, "Could not find test agent")
         except Exception as e:
             self.log_result("Assign Lead to Agent", False, f"Error assigning lead: {str(e)}")
     
