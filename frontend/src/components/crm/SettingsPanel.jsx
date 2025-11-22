@@ -139,12 +139,56 @@ const SettingsPanel = () => {
         </div>
       </div>
 
+      {/* Teams Section */}
+      <div className="bg-white border-2 border-gray-200 p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-bold text-black">Gestione Team</h3>
+          <Button onClick={() => setShowCreateTeamModal(true)} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
+            <Plus className="w-4 h-4 mr-2" />
+            Nuovo Team
+          </Button>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="text-left p-3 font-semibold text-black">Nome Team</th>
+                <th className="text-left p-3 font-semibold text-black">Descrizione</th>
+                <th className="text-left p-3 font-semibold text-black">Supervisor</th>
+                <th className="text-left p-3 font-semibold text-black">Membri</th>
+              </tr>
+            </thead>
+            <tbody>
+              {teams.map((team) => {
+                const teamMembers = users.filter(u => u.team_id === team.id);
+                const supervisor = users.find(u => u.id === team.supervisor_id);
+                return (
+                  <tr key={team.id} className="border-t border-gray-200">
+                    <td className="p-3 font-semibold text-black">{team.name}</td>
+                    <td className="p-3 text-gray-700">{team.description || 'N/A'}</td>
+                    <td className="p-3 text-gray-700">{supervisor?.full_name || 'Nessuno'}</td>
+                    <td className="p-3 text-gray-700">{teamMembers.length} utenti</td>
+                  </tr>
+                );
+              })}
+              {teams.length === 0 && (
+                <tr>
+                  <td colSpan="4" className="p-4 text-center text-gray-600">Nessun team creato</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* Info Section */}
       <div className="bg-gray-50 border-2 border-gray-200 p-6">
         <h3 className="text-xl font-bold text-black mb-4">Informazioni Sistema</h3>
         <div className="space-y-2 text-gray-700">
           <p><strong>Versione CRM:</strong> 1.0.0</p>
           <p><strong>Stati Attivi:</strong> {statuses.length}</p>
+          <p><strong>Team Attivi:</strong> {teams.length}</p>
         </div>
       </div>
 
