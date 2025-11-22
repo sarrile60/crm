@@ -9,6 +9,7 @@ from typing import Optional
 import jwt
 from datetime import datetime, timedelta
 from models import Lead, LeadCreate, Analytics, AdminLogin, AdminToken
+from crm_routes import crm_router
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
