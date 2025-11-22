@@ -600,22 +600,28 @@ const LeadsTable = ({ currentUser }) => {
                   </SelectContent>
                 </Select>
               </div>
-              {editData.status === 'callback' && (
+              {editData.status === 'Callback' && (
                 <>
+                  <div className="bg-yellow-50 border-2 border-yellow-400 p-4 mb-4">
+                    <p className="text-sm font-semibold text-black mb-2">⚠️ Callback richiesto</p>
+                    <p className="text-xs text-gray-700">Devi impostare data e ora per il callback. Riceverai una notifica 1 minuto prima.</p>
+                  </div>
                   <div>
-                    <label className="block text-sm font-semibold text-black mb-2">Data Callback</label>
+                    <label className="block text-sm font-semibold text-black mb-2">Data e Ora Callback *</label>
                     <Input
                       type="datetime-local"
                       value={editData.callback_date}
                       onChange={(e) => setEditData({ ...editData, callback_date: e.target.value })}
                       className="bg-white border-gray-300 rounded-none"
+                      required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-black mb-2">Note Callback</label>
+                    <label className="block text-sm font-semibold text-black mb-2">Note Callback (Opzionale)</label>
                     <Textarea
                       value={editData.callback_notes}
                       onChange={(e) => setEditData({ ...editData, callback_notes: e.target.value })}
+                      placeholder="Aggiungi note sul callback..."
                       className="bg-white border-gray-300 rounded-none"
                       rows={3}
                     />
