@@ -235,6 +235,54 @@ const SettingsPanel = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Create Team Modal */}
+      {showCreateTeamModal && (
+        <Dialog open={showCreateTeamModal} onOpenChange={setShowCreateTeamModal}>
+          <DialogContent className="max-w-md bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-black">Crea Nuovo Team</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Nome Team</label>
+                <Input
+                  value={newTeam.name}
+                  onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
+                  placeholder="Es. Team Italia Nord"
+                  className="bg-white border-gray-300 rounded-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Descrizione</label>
+                <Input
+                  value={newTeam.description}
+                  onChange={(e) => setNewTeam({ ...newTeam, description: e.target.value })}
+                  placeholder="Descrizione team (opzionale)"
+                  className="bg-white border-gray-300 rounded-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Supervisor</label>
+                <Select value={newTeam.supervisor_id || "_none"} onValueChange={(value) => setNewTeam({ ...newTeam, supervisor_id: value === "_none" ? "" : value })}>
+                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                    <SelectValue placeholder="Seleziona supervisor" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="_none">Nessun supervisor</SelectItem>
+                    {users.filter(u => u.role === 'supervisor' || u.role === 'manager').map(user => (
+                      <SelectItem key={user.id} value={user.id}>{user.full_name} ({user.role})</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={handleCreateTeam} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
+                Crea Team
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
