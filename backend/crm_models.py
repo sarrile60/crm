@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 import uuid
 
@@ -34,7 +34,7 @@ class User(BaseModel):
     role: UserRole
     team_id: Optional[str] = None
     is_active: bool = True
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     created_by: Optional[str] = None
     last_login: Optional[datetime] = None
 
@@ -61,7 +61,7 @@ class Team(BaseModel):
     name: str
     description: Optional[str] = None
     supervisor_id: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     is_active: bool = True
 
 class TeamCreate(BaseModel):
@@ -76,7 +76,7 @@ class CustomStatus(BaseModel):
     color: str  # Hex color code
     order: int
     is_active: bool = True
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class CustomStatusCreate(BaseModel):
     name: str
@@ -100,8 +100,8 @@ class LeadEnhanced(BaseModel):
     callback_date: Optional[datetime] = None
     callback_notes: Optional[str] = None
     tags: List[str] = []
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     last_contacted: Optional[datetime] = None
 
 class LeadUpdate(BaseModel):
@@ -117,6 +117,13 @@ class LeadAssignment(BaseModel):
     assigned_to: str
     assigned_by: str
 
+# Mass Update Model
+class MassUpdateData(BaseModel):
+    lead_ids: List[str]
+    status: Optional[str] = None
+    team_id: Optional[str] = None
+    assigned_to: Optional[str] = None
+
 # Activity Log Models
 class ActivityLog(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -125,7 +132,7 @@ class ActivityLog(BaseModel):
     user_name: str
     action: str  # "status_changed", "assigned", "note_added", etc.
     details: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ActivityLogCreate(BaseModel):
     lead_id: str
@@ -142,7 +149,7 @@ class LeadNote(BaseModel):
     user_name: str
     note: str
     is_internal: bool = True
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class LeadNoteCreate(BaseModel):
     lead_id: str
@@ -157,7 +164,7 @@ class CallbackReminder(BaseModel):
     callback_date: datetime
     notes: str
     is_completed: bool = False
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     completed_at: Optional[datetime] = None
 
 class CallbackReminderCreate(BaseModel):
