@@ -461,6 +461,46 @@ async def complete_reminder(reminder_id: str, current_user: dict = Depends(get_c
     
     return {"success": True}
 
+# ==================== MASS UPDATE ROUTES ====================
+
+@crm_router.post("/leads/mass-update", dependencies=[Depends(require_role(["admin", "manager", "supervisor"]))])
+async def mass_update_leads(update_data: MassUpdateData, current_user: dict = Depends(get_current_user)):
+    """Mass update multiple leads"""
+    if not update_data.lead_ids:
+        raise HTTPException(status_code=400, detail="No leads selected")
+    
+    # Build update dict
+    update_dict = {}
+    if update_data.status:
+        update_dict["status"] = update_data.status
+    if update_data.team_id:
+        update_dict["team_id"] = update_data.team_id
+    if update_data.assigned_to:
+        update_dict["assigned_to"] = update_data.assigned_to
+    
+    if not update_dict:
+        raise HTTPException(status_code=400, detail="No update data provided")
+    
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    # Update leads
+    result = await db.leads.update_many(
+        {"id": {"$in": update_data.lead_ids}},
+        {"$set": update_dict}
+    )
+    
+    # Log activity
+    activity = ActivityLog(
+        lead_id="mass_update",
+        user_id=current_user["id"],
+        user_name=current_user["full_name"],
+        action="mass_update",
+        details=f"Mass updated {result.modified_count} leads"
+    )
+    await db.activity_logs.insert_one(activity.dict())
+    
+    return {"success": True, "updated_count": result.modified_count}
+
 # ==================== DASHBOARD STATS ====================
 
 @crm_router.get("/dashboard/stats")
