@@ -294,6 +294,12 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: |
+      FIXING USER-REPORTED ISSUES:
+      1. ✅ Fixed Mass Update modal SelectItem error (empty value)
+      2. ✅ Reset agent passwords to TestPass123!
+      3. 🔄 Adding status editor in lead detail modal
+      4. 🔄 Adding inline status dropdown in table view
+      
       Implemented all 4 requested CRM features:
       
       BACKEND:
