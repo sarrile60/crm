@@ -58,6 +58,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
   const [leadNotes, setLeadNotes] = useState([]);
   const [newNote, setNewNote] = useState('');
   const [currentLeadIndex, setCurrentLeadIndex] = useState(0);
+  const [inlineEditLeadId, setInlineEditLeadId] = useState(null);
+  const [inlineStatusData, setInlineStatusData] = useState({
+    status: '',
+    callback_date: '',
+    callback_notes: ''
+  });
 
   useEffect(() => {
     fetchData();
