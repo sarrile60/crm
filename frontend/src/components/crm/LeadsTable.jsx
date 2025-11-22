@@ -300,6 +300,20 @@ const LeadsTable = ({ currentUser }) => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold text-black">Gestione Lead</h2>
+        <div className="flex gap-3">
+          <Button onClick={() => setShowCreateModal(true)} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
+            <Plus className="w-4 h-4 mr-2" />
+            Crea Lead
+          </Button>
+          <Button onClick={() => setShowImportModal(true)} className="bg-blue-600 text-white hover:bg-blue-700 rounded-none">
+            <Upload className="w-4 h-4 mr-2" />
+            Importa CSV
+          </Button>
+          <Button onClick={handleExportCSV} className="bg-green-600 text-white hover:bg-green-700 rounded-none">
+            <Download className="w-4 h-4 mr-2" />
+            Esporta CSV
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
