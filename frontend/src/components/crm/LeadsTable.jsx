@@ -165,12 +165,12 @@ const LeadsTable = ({ currentUser }) => {
           </div>
           <div>
             <label className="block text-sm font-semibold text-black mb-2">Stato</label>
-            <Select value={filters.status} onValueChange={(value) => setFilters({ ...filters, status: value })}>
+            <Select value={filters.status || "all"} onValueChange={(value) => setFilters({ ...filters, status: value === "all" ? "" : value })}>
               <SelectTrigger className="bg-white border-gray-300 rounded-none">
                 <SelectValue placeholder="Tutti" />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="">Tutti</SelectItem>
+                <SelectItem value="all">Tutti</SelectItem>
                 {statuses.map(status => (
                   <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
                 ))}
