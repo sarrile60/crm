@@ -44,22 +44,29 @@ const CallbackNotifications = ({ onCallbackAlert }) => {
       
       const now = new Date();
       
+      // Statuses that require callback notifications
+      const callbackStatuses = ['Callback', 'Potential Callback', 'Pharos in progress'];
+      const depositStatuses = ['Deposit 1', 'Deposit 2', 'Deposit 3', 'Deposit 4', 'Deposit 5'];
+      const allNotifyStatuses = [...callbackStatuses, ...depositStatuses];
+      
       // Check for callbacks within the next 1 minute
       for (const lead of allLeads) {
-        if (lead.status === 'Callback' && lead.callback_date) {
+        if (allNotifyStatuses.includes(lead.status) && lead.callback_date) {
           const callbackTime = new Date(lead.callback_date);
           const timeDiff = callbackTime - now;
           
           // Alert if callback is within 30 seconds to 90 seconds from now
           if (timeDiff > 30000 && timeDiff <= 90000) {
-            // Check if we already alerted for this callback
-            const alerted = localStorage.getItem(`callback_alerted_${lead.id}`);
+            // Check if we already alerted for this specific callback time
+            const alertKey = `callback_alerted_${lead.id}_${lead.callback_date}`;
+            const alerted = localStorage.getItem(alertKey);
+            
             if (!alerted) {
               setUrgentCallback(lead);
               setShowUrgentModal(true);
-              localStorage.setItem(`callback_alerted_${lead.id}`, 'true');
+              localStorage.setItem(alertKey, 'true');
               
-              // Play alert sound (optional)
+              // Play alert sound
               playAlertSound();
             }
           }
