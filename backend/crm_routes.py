@@ -291,6 +291,12 @@ async def get_crm_leads(
         ]
     
     leads = await db.leads.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    
+    # Mask phone numbers based on user role
+    for lead in leads:
+        if "phone" in lead:
+            lead["phone"] = mask_phone_number(lead["phone"], current_user["role"])
+    
     return leads
 
 @crm_router.get("/leads/{lead_id}")
