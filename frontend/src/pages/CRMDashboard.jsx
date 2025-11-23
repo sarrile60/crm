@@ -119,7 +119,7 @@ const CRMDashboard = () => {
             <FileText className="w-4 h-4 inline mr-2" />
             Leads
           </button>
-          {(currentUser?.role === 'admin' || currentUser?.role === 'manager') && (
+          {currentUser?.role === 'admin' && (
             <button
               onClick={() => setActiveTab('users')}
               className={`px-4 py-2 font-semibold transition-all ${
@@ -200,7 +200,7 @@ const CRMDashboard = () => {
                 <Button onClick={() => setActiveTab('leads')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
                   Visualizza Tutti i Lead
                 </Button>
-                {(currentUser?.role === 'admin' || currentUser?.role === 'manager') && (
+                {currentUser?.role === 'admin' && (
                   <Button onClick={() => setActiveTab('users')} className="bg-black text-white hover:bg-gray-800 rounded-none">
                     Gestione Utenti
                   </Button>
