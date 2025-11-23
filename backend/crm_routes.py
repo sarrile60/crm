@@ -329,7 +329,7 @@ async def get_crm_leads(
     for lead in leads:
         if "phone" in lead:
             lead["phone_real"] = lead["phone"]  # Real number for tel: link
-            lead["phone_display"] = mask_phone_for_display(lead["phone"])  # Masked for display
+            lead["phone_display"] = mask_phone_for_display(lead["phone"], current_user["role"])  # Masked for display based on role
     
     return leads
 
