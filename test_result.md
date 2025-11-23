@@ -248,6 +248,9 @@ frontend:
       - working: true
         agent: "main"
         comment: "✅ SMART AUTO-DISMISSAL IMPLEMENTED. Notifications now automatically disappear when lead status is changed away from callback-requiring statuses (Callback, Deposit 1-5, etc.). Logic: Shows upcoming callbacks + overdue within 48 hours. When user handles callback and updates lead status to 'In Progress', 'Closed', 'Won', etc., the notification disappears automatically on next refresh (30s). Added user-friendly tip in modal: 'Le notifiche scompaiono automaticamente quando aggiorni lo stato del lead'. Natural workflow: Click notification → Call → Update status → Notification gone. Tested with admin account showing 7 pending callbacks, all displaying correctly with proper formatting."
+      - working: true
+        agent: "main"
+        comment: "✅ OVERDUE-ONLY LOGIC IMPLEMENTED per user request. Changed notification logic to show ONLY overdue callbacks (scaduto), not upcoming ones. Notifications disappear when: 1) Agent changes callback time to future (reschedules), 2) Agent changes lead status. Updated UI: Section title 'Callback Scaduti' with red phone icon, shows time overdue ('SCADUTO 1 giorni fa', '23 ore fa', '22 ore fa'), all callbacks have red background, updated tip to 'Mostra solo callback scaduti. Scompaiono quando cambi lo stato o riprogrammi l'ora'. Tested showing 6 overdue callbacks with proper time-overdue calculations."
 
   - task: "Created Date formatting in Italian"
     implemented: true
