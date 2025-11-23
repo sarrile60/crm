@@ -406,3 +406,47 @@ async def get_unread_count(current_user: dict = Depends(get_current_user)):
         "team": team_unread,
         "total": direct_unread + team_unread
     }
+
+@chat_router.get("/admin/all-chats")
+async def get_all_chats_admin(current_user: dict = Depends(get_current_user)):
+    """Admin only: Get all chat conversations to spy on"""
+    user = await db.crm_users.find_one({"id": current_user["id"]}, {"_id": 0})
+    
+    if user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    
+    # Get all teams
+    teams = await db.teams.find({}, {"_id": 0}).to_list(100)
+    
+    # Get all direct message conversations
+    direct_messages = await db.chat_messages.find(
+        {"type": "direct"},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(100).to_list(100)
+    
+    # Get all team messages
+    team_messages = await db.chat_messages.find(
+        {"type": "team"},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(100).to_list(100)
+    
+    return {
+        "teams": teams,
+        "direct_messages": direct_messages,
+        "team_messages": team_messages
+    }
+
+@chat_router.get("/messages/all-team-messages")
+async def get_all_team_messages_admin(team_id: str = None, current_user: dict = Depends(get_current_user)):
+    """Admin can see all team messages from any team"""
+    user = await db.crm_users.find_one({"id": current_user["id"]}, {"_id": 0})
+    
+    if user["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    
+    query = {"type": "team"}
+    if team_id:
+        query["team_id"] = team_id
+    
+    messages = await db.chat_messages.find(query, {"_id": 0}).sort("created_at", -1).limit(200).to_list(200)
+    return list(reversed(messages))
