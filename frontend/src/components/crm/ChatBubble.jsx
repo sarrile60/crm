@@ -158,7 +158,7 @@ const ChatBubble = ({ currentUser }) => {
             playNotificationSound();
           }
           
-          // ALWAYS add message if it's relevant, regardless of view
+          // ALWAYS add message if it's relevant to current view
           let shouldAddMessage = false;
           
           if (message.type === 'team') {
@@ -168,34 +168,34 @@ const ChatBubble = ({ currentUser }) => {
               shouldAddMessage = true;
             }
           } else if (message.type === 'direct') {
-            // For direct messages, only add if we're in the direct tab AND viewing the relevant conversation
-            // OR if we're not in direct tab (for notifications)
-            if (activeTabRef.current === 'direct' && selectedContactRef.current) {
-              // We're viewing a specific contact - only add messages for THIS conversation
-              const isFromSelectedContact = message.sender_id === selectedContactRef.current.id && message.recipient_id === currentUser.id;
-              const isToSelectedContact = message.sender_id === currentUser.id && message.recipient_id === selectedContactRef.current.id;
-              
-              if (isFromSelectedContact || isToSelectedContact) {
-                shouldAddMessage = true;
-              }
-            } else if (activeTabRef.current !== 'direct') {
-              // We're on a different tab (team or not viewing direct messages)
-              // Add if message involves current user (for unread counts and notifications)
-              if (message.sender_id === currentUser.id || message.recipient_id === currentUser.id) {
-                shouldAddMessage = true;
-              }
+            // For direct messages - check if it's part of the conversation being viewed
+            const isMessageWithSelectedContact = selectedContactRef.current && (
+              (message.sender_id === selectedContactRef.current.id && message.recipient_id === currentUser.id) ||
+              (message.sender_id === currentUser.id && message.recipient_id === selectedContactRef.current.id)
+            );
+            
+            // Add message if:
+            // 1. We're viewing direct tab with this contact's conversation
+            // 2. OR we're on team tab (so message waits in background)
+            if (activeTabRef.current === 'direct' && isMessageWithSelectedContact) {
+              shouldAddMessage = true;
+              console.log('✅ Adding message - viewing conversation with this contact');
+            } else if (activeTabRef.current === 'team' && (message.sender_id === currentUser.id || message.recipient_id === currentUser.id)) {
+              // On team tab - add all direct messages for current user (they'll be shown when switching to direct tab)
+              shouldAddMessage = true;
+              console.log('✅ Adding message - on team tab, will show when switching to direct');
             }
           }
           
           if (shouldAddMessage) {
-            console.log('Adding message to list');
+            console.log('📨 Adding message to list:', message.content.substring(0, 30) + '...');
             setMessages(prev => {
               const exists = prev.some(m => m.id === message.id);
               if (exists) {
-                console.log('Message already exists, skipping');
+                console.log('⚠️ Message already exists, skipping');
                 return prev;
               }
-              console.log('Adding new message');
+              console.log('✅ Message added successfully');
               return [...prev, message];
             });
             
