@@ -388,7 +388,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
               Notifiche ({totalNotifications})
             </DialogTitle>
             <p className="text-sm text-gray-500 mt-2">
-              💡 Le notifiche scompaiono automaticamente quando aggiorni lo stato del lead
+              💡 Mostra solo callback scaduti. Scompaiono quando cambi lo stato o riprogrammi l'ora
             </p>
           </DialogHeader>
           <div className="space-y-6 max-h-[600px] overflow-y-auto">
