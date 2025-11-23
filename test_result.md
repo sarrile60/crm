@@ -245,6 +245,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "✅ NOTIFICATION SYSTEM ENHANCED. Bell icon in header now shows comprehensive notifications panel. Features: 1) Shows all pending callbacks with status (Callback, Deposit, etc.), 2) Displays total notification count badge on bell icon, 3) Each callback shows: client name, phone (clickable tel: link), amount, callback date/time, status badge, time remaining, 4) Visual indicators for overdue callbacks (red background), 5) Quick action button to open lead directly, 6) Sections for 'Callback in Attesa' and 'Promemoria', 7) Empty state with icon when no notifications. Auto-refreshes every 30 seconds. Tested and working correctly."
+      - working: true
+        agent: "main"
+        comment: "✅ SMART AUTO-DISMISSAL IMPLEMENTED. Notifications now automatically disappear when lead status is changed away from callback-requiring statuses (Callback, Deposit 1-5, etc.). Logic: Shows upcoming callbacks + overdue within 48 hours. When user handles callback and updates lead status to 'In Progress', 'Closed', 'Won', etc., the notification disappears automatically on next refresh (30s). Added user-friendly tip in modal: 'Le notifiche scompaiono automaticamente quando aggiorni lo stato del lead'. Natural workflow: Click notification → Call → Update status → Notification gone. Tested with admin account showing 7 pending callbacks, all displaying correctly with proper formatting."
 
   - task: "Created Date formatting in Italian"
     implemented: true
