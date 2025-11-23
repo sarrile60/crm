@@ -16,6 +16,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const [showUrgentModal, setShowUrgentModal] = useState(false);
   const [snoozeData, setSnoozeData] = useState({});
   const [totalNotifications, setTotalNotifications] = useState(0);
+  const [urgentCallbackQueue, setUrgentCallbackQueue] = useState([]);
 
   useEffect(() => {
     fetchReminders();
