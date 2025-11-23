@@ -298,7 +298,7 @@ async def get_chat_contacts(current_user: dict = Depends(get_current_user)):
     return contacts
 
 @chat_router.post("/upload")
-async def upload_file(file: UploadFile = File(...), token: dict = Depends(verify_token)):
+async def upload_file(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
     """Upload a file for chat"""
     try:
         # Read file content
@@ -313,7 +313,7 @@ async def upload_file(file: UploadFile = File(...), token: dict = Depends(verify
             "filename": file.filename,
             "content_type": file.content_type,
             "data": file_data,
-            "uploaded_by": token["id"],
+            "uploaded_by": current_user["id"],
             "uploaded_at": datetime.now(timezone.utc)
         }
         
