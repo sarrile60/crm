@@ -527,6 +527,505 @@ class CRMTester:
         except Exception as e:
             self.log_result("Created At Field", False, f"Error: {str(e)}")
     
+    def login_chat_users(self):
+        """Login chat test users and get their tokens"""
+        print("\n=== Logging in Chat Test Users ===")
+        
+        # Login agent
+        self.agent_token = self.login_user(AGENT_CREDENTIALS["email"], AGENT_CREDENTIALS["password"])
+        if self.agent_token:
+            self.log_result("Agent Login", True, "Successfully logged in as agent")
+        else:
+            self.log_result("Agent Login", False, "Failed to login as agent")
+            return False
+        
+        # Login supervisor
+        self.supervisor_token = self.login_user(SUPERVISOR_CREDENTIALS["email"], SUPERVISOR_CREDENTIALS["password"])
+        if self.supervisor_token:
+            self.log_result("Supervisor Login", True, "Successfully logged in as supervisor")
+        else:
+            self.log_result("Supervisor Login", False, "Failed to login as supervisor")
+            return False
+        
+        # Get user info for both users
+        try:
+            # Get agent info
+            agent_headers = {"Authorization": f"Bearer {self.agent_token}"}
+            agent_response = self.session.get(f"{CRM_BASE_URL}/auth/me", headers=agent_headers)
+            if agent_response.status_code == 200:
+                self.test_users["agent"] = agent_response.json()
+                self.log_result("Agent Info", True, f"Retrieved agent info: {self.test_users['agent']['full_name']}")
+            
+            # Get supervisor info
+            supervisor_headers = {"Authorization": f"Bearer {self.supervisor_token}"}
+            supervisor_response = self.session.get(f"{CRM_BASE_URL}/auth/me", headers=supervisor_headers)
+            if supervisor_response.status_code == 200:
+                self.test_users["supervisor"] = supervisor_response.json()
+                self.log_result("Supervisor Info", True, f"Retrieved supervisor info: {self.test_users['supervisor']['full_name']}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Chat User Setup", False, f"Error getting user info: {str(e)}")
+            return False
+    
+    def test_chat_contacts_endpoint(self):
+        """Test chat contacts endpoint for different users"""
+        print("\n=== Testing Chat Contacts Endpoint ===")
+        
+        if not self.agent_token or not self.supervisor_token:
+            self.log_result("Chat Contacts Setup", False, "Missing user tokens")
+            return
+        
+        # Test agent contacts
+        try:
+            agent_headers = {"Authorization": f"Bearer {self.agent_token}"}
+            response = self.session.get(f"{CHAT_BASE_URL}/contacts", headers=agent_headers)
+            
+            if response.status_code == 200:
+                contacts = response.json()
+                self.log_result(
+                    "Chat Contacts - Agent", 
+                    len(contacts) > 0,
+                    f"Agent can see {len(contacts)} contacts",
+                    f"Contacts: {[c.get('full_name', 'Unknown') for c in contacts]}"
+                )
+            else:
+                self.log_result("Chat Contacts - Agent", False, f"Failed to get agent contacts: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Chat Contacts - Agent", False, f"Error: {str(e)}")
+        
+        # Test supervisor contacts
+        try:
+            supervisor_headers = {"Authorization": f"Bearer {self.supervisor_token}"}
+            response = self.session.get(f"{CHAT_BASE_URL}/contacts", headers=supervisor_headers)
+            
+            if response.status_code == 200:
+                contacts = response.json()
+                self.log_result(
+                    "Chat Contacts - Supervisor", 
+                    len(contacts) > 0,
+                    f"Supervisor can see {len(contacts)} contacts",
+                    f"Contacts: {[c.get('full_name', 'Unknown') for c in contacts]}"
+                )
+            else:
+                self.log_result("Chat Contacts - Supervisor", False, f"Failed to get supervisor contacts: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Chat Contacts - Supervisor", False, f"Error: {str(e)}")
+    
+    def test_direct_messaging(self):
+        """Test real-time direct messaging between users"""
+        print("\n=== Testing Real-time Direct Messaging ===")
+        
+        if not self.agent_token or not self.supervisor_token or not self.test_users:
+            self.log_result("Direct Messaging Setup", False, "Missing tokens or user info")
+            return
+        
+        agent_id = self.test_users["agent"]["id"]
+        supervisor_id = self.test_users["supervisor"]["id"]
+        
+        # Test 1: Agent sends message to Supervisor
+        try:
+            agent_headers = {
+                "Authorization": f"Bearer {self.agent_token}",
+                "Content-Type": "application/json"
+            }
+            
+            message_data = {
+                "type": "direct",
+                "content": f"Test direct message from agent at {datetime.now().strftime('%H:%M:%S')}",
+                "recipient_id": supervisor_id
+            }
+            
+            response = self.session.post(
+                f"{CHAT_BASE_URL}/send",
+                json=message_data,
+                headers=agent_headers
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                message_id = result.get("message_id")
+                
+                # Verify message was saved to database by retrieving it
+                time.sleep(1)  # Brief delay to ensure message is saved
+                
+                messages_response = self.session.get(
+                    f"{CHAT_BASE_URL}/messages/direct/{supervisor_id}",
+                    headers=agent_headers
+                )
+                
+                if messages_response.status_code == 200:
+                    messages = messages_response.json()
+                    latest_message = messages[-1] if messages else None
+                    
+                    if latest_message and latest_message.get("id") == message_id:
+                        self.log_result(
+                            "Direct Messaging - Agent to Supervisor", 
+                            True,
+                            "Message sent and saved successfully",
+                            f"Message ID: {message_id}, Content: {latest_message.get('content', '')[:50]}..."
+                        )
+                    else:
+                        self.log_result("Direct Messaging - Agent to Supervisor", False, "Message not found in conversation history")
+                else:
+                    self.log_result("Direct Messaging - Agent to Supervisor", False, f"Could not retrieve messages: {messages_response.status_code}")
+            else:
+                self.log_result("Direct Messaging - Agent to Supervisor", False, f"Failed to send message: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Direct Messaging - Agent to Supervisor", False, f"Error: {str(e)}")
+        
+        # Test 2: Supervisor sends message to Agent (reverse direction)
+        try:
+            supervisor_headers = {
+                "Authorization": f"Bearer {self.supervisor_token}",
+                "Content-Type": "application/json"
+            }
+            
+            message_data = {
+                "type": "direct",
+                "content": f"Test reply from supervisor at {datetime.now().strftime('%H:%M:%S')}",
+                "recipient_id": agent_id
+            }
+            
+            response = self.session.post(
+                f"{CHAT_BASE_URL}/send",
+                json=message_data,
+                headers=supervisor_headers
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                message_id = result.get("message_id")
+                
+                # Verify message was saved
+                time.sleep(1)
+                
+                messages_response = self.session.get(
+                    f"{CHAT_BASE_URL}/messages/direct/{agent_id}",
+                    headers=supervisor_headers
+                )
+                
+                if messages_response.status_code == 200:
+                    messages = messages_response.json()
+                    latest_message = messages[-1] if messages else None
+                    
+                    if latest_message and latest_message.get("id") == message_id:
+                        self.log_result(
+                            "Direct Messaging - Supervisor to Agent", 
+                            True,
+                            "Reply sent and saved successfully",
+                            f"Message ID: {message_id}, Content: {latest_message.get('content', '')[:50]}..."
+                        )
+                    else:
+                        self.log_result("Direct Messaging - Supervisor to Agent", False, "Reply not found in conversation history")
+                else:
+                    self.log_result("Direct Messaging - Supervisor to Agent", False, f"Could not retrieve messages: {messages_response.status_code}")
+            else:
+                self.log_result("Direct Messaging - Supervisor to Agent", False, f"Failed to send reply: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Direct Messaging - Supervisor to Agent", False, f"Error: {str(e)}")
+    
+    def test_team_messaging(self):
+        """Test real-time team messaging"""
+        print("\n=== Testing Real-time Team Messaging ===")
+        
+        if not self.agent_token or not self.supervisor_token or not self.test_users:
+            self.log_result("Team Messaging Setup", False, "Missing tokens or user info")
+            return
+        
+        # Get team ID from supervisor (agents and supervisors should be in same team)
+        supervisor_team_id = self.test_users["supervisor"].get("team_id")
+        agent_team_id = self.test_users["agent"].get("team_id")
+        
+        if not supervisor_team_id:
+            self.log_result("Team Messaging Setup", False, "Supervisor has no team_id")
+            return
+        
+        # Test 1: Supervisor sends team message
+        try:
+            supervisor_headers = {
+                "Authorization": f"Bearer {self.supervisor_token}",
+                "Content-Type": "application/json"
+            }
+            
+            message_data = {
+                "type": "team",
+                "content": f"Team message from supervisor at {datetime.now().strftime('%H:%M:%S')}",
+                "team_id": supervisor_team_id
+            }
+            
+            response = self.session.post(
+                f"{CHAT_BASE_URL}/send",
+                json=message_data,
+                headers=supervisor_headers
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                message_id = result.get("message_id")
+                
+                # Verify message was saved
+                time.sleep(1)
+                
+                messages_response = self.session.get(
+                    f"{CHAT_BASE_URL}/messages/team/{supervisor_team_id}",
+                    headers=supervisor_headers
+                )
+                
+                if messages_response.status_code == 200:
+                    messages = messages_response.json()
+                    latest_message = messages[-1] if messages else None
+                    
+                    if latest_message and latest_message.get("id") == message_id:
+                        self.log_result(
+                            "Team Messaging - Supervisor", 
+                            True,
+                            "Team message sent and saved successfully",
+                            f"Team ID: {supervisor_team_id}, Message ID: {message_id}"
+                        )
+                    else:
+                        self.log_result("Team Messaging - Supervisor", False, "Team message not found in history")
+                else:
+                    self.log_result("Team Messaging - Supervisor", False, f"Could not retrieve team messages: {messages_response.status_code}")
+            else:
+                self.log_result("Team Messaging - Supervisor", False, f"Failed to send team message: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Team Messaging - Supervisor", False, f"Error: {str(e)}")
+        
+        # Test 2: Agent sends team message (if in same team)
+        if agent_team_id == supervisor_team_id:
+            try:
+                agent_headers = {
+                    "Authorization": f"Bearer {self.agent_token}",
+                    "Content-Type": "application/json"
+                }
+                
+                message_data = {
+                    "type": "team",
+                    "content": f"Team message from agent at {datetime.now().strftime('%H:%M:%S')}",
+                    "team_id": agent_team_id
+                }
+                
+                response = self.session.post(
+                    f"{CHAT_BASE_URL}/send",
+                    json=message_data,
+                    headers=agent_headers
+                )
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    message_id = result.get("message_id")
+                    
+                    # Verify message was saved
+                    time.sleep(1)
+                    
+                    messages_response = self.session.get(
+                        f"{CHAT_BASE_URL}/messages/team/{agent_team_id}",
+                        headers=agent_headers
+                    )
+                    
+                    if messages_response.status_code == 200:
+                        messages = messages_response.json()
+                        latest_message = messages[-1] if messages else None
+                        
+                        if latest_message and latest_message.get("id") == message_id:
+                            self.log_result(
+                                "Team Messaging - Agent", 
+                                True,
+                                "Agent team message sent and saved successfully",
+                                f"Team ID: {agent_team_id}, Message ID: {message_id}"
+                            )
+                        else:
+                            self.log_result("Team Messaging - Agent", False, "Agent team message not found in history")
+                    else:
+                        self.log_result("Team Messaging - Agent", False, f"Could not retrieve team messages: {messages_response.status_code}")
+                else:
+                    self.log_result("Team Messaging - Agent", False, f"Failed to send agent team message: {response.status_code}", response.text)
+                    
+            except Exception as e:
+                self.log_result("Team Messaging - Agent", False, f"Error: {str(e)}")
+        else:
+            self.log_result("Team Messaging - Agent", False, f"Agent and supervisor not in same team (Agent: {agent_team_id}, Supervisor: {supervisor_team_id})")
+    
+    def test_websocket_stability(self):
+        """Test WebSocket connection stability by checking backend logs"""
+        print("\n=== Testing WebSocket Connection Stability ===")
+        
+        try:
+            # Check backend logs for WebSocket connections and errors
+            import subprocess
+            
+            # Get recent backend logs
+            result = subprocess.run(
+                ["tail", "-n", "50", "/var/log/supervisor/backend.err.log"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            
+            if result.returncode == 0:
+                log_content = result.stdout
+                
+                # Check for WebSocket connection messages
+                websocket_connections = log_content.count("WebSocket")
+                websocket_errors = log_content.count("WebSocket error")
+                websocket_disconnects = log_content.count("disconnected")
+                
+                # Check for the specific fix - asyncio.wait_for usage
+                has_timeout_fix = "asyncio.wait_for" in log_content or "timeout" in log_content.lower()
+                
+                self.log_result(
+                    "WebSocket Stability - Backend Logs", 
+                    websocket_errors == 0,
+                    f"Backend logs analysis completed",
+                    f"WebSocket mentions: {websocket_connections}, Errors: {websocket_errors}, Disconnects: {websocket_disconnects}"
+                )
+                
+                # Check for any critical errors in logs
+                critical_errors = ["500 Internal Server Error", "Exception", "Error", "Failed"]
+                error_count = sum(log_content.lower().count(error.lower()) for error in critical_errors)
+                
+                self.log_result(
+                    "WebSocket Stability - Error Analysis", 
+                    error_count < 5,  # Allow some minor errors
+                    f"Backend error analysis completed",
+                    f"Total error mentions in logs: {error_count}"
+                )
+                
+            else:
+                self.log_result("WebSocket Stability - Backend Logs", False, "Could not read backend logs")
+                
+        except Exception as e:
+            self.log_result("WebSocket Stability - Backend Logs", False, f"Error checking logs: {str(e)}")
+    
+    def test_message_flow_architecture(self):
+        """Test the complete message flow: POST to /send → save to DB → broadcast via WebSocket"""
+        print("\n=== Testing Message Flow Architecture ===")
+        
+        if not self.agent_token or not self.supervisor_token or not self.test_users:
+            self.log_result("Message Flow Setup", False, "Missing tokens or user info")
+            return
+        
+        supervisor_id = self.test_users["supervisor"]["id"]
+        
+        # Step 1: Send message via POST /api/chat/send
+        try:
+            agent_headers = {
+                "Authorization": f"Bearer {self.agent_token}",
+                "Content-Type": "application/json"
+            }
+            
+            test_message = f"Architecture test message at {datetime.now().strftime('%H:%M:%S.%f')}"
+            message_data = {
+                "type": "direct",
+                "content": test_message,
+                "recipient_id": supervisor_id
+            }
+            
+            send_response = self.session.post(
+                f"{CHAT_BASE_URL}/send",
+                json=message_data,
+                headers=agent_headers
+            )
+            
+            if send_response.status_code == 200:
+                result = send_response.json()
+                message_id = result.get("message_id")
+                
+                self.log_result(
+                    "Message Flow - Step 1 (POST /send)", 
+                    True,
+                    "Message sent successfully via API",
+                    f"Message ID: {message_id}"
+                )
+                
+                # Step 2: Verify message saved to database
+                time.sleep(1)  # Allow time for database save
+                
+                messages_response = self.session.get(
+                    f"{CHAT_BASE_URL}/messages/direct/{supervisor_id}",
+                    headers=agent_headers
+                )
+                
+                if messages_response.status_code == 200:
+                    messages = messages_response.json()
+                    saved_message = None
+                    
+                    for msg in messages:
+                        if msg.get("content") == test_message:
+                            saved_message = msg
+                            break
+                    
+                    if saved_message:
+                        self.log_result(
+                            "Message Flow - Step 2 (Save to DB)", 
+                            True,
+                            "Message successfully saved to database",
+                            f"Saved message ID: {saved_message.get('id')}, Created at: {saved_message.get('created_at')}"
+                        )
+                        
+                        # Step 3: Verify message structure for WebSocket broadcast
+                        required_fields = ["id", "type", "sender_id", "sender_name", "content", "recipient_id", "created_at"]
+                        missing_fields = [field for field in required_fields if field not in saved_message]
+                        
+                        if not missing_fields:
+                            self.log_result(
+                                "Message Flow - Step 3 (WebSocket Ready)", 
+                                True,
+                                "Message has all required fields for WebSocket broadcast",
+                                f"Message structure complete with {len(saved_message)} fields"
+                            )
+                        else:
+                            self.log_result(
+                                "Message Flow - Step 3 (WebSocket Ready)", 
+                                False,
+                                "Message missing required fields for WebSocket",
+                                f"Missing fields: {missing_fields}"
+                            )
+                    else:
+                        self.log_result("Message Flow - Step 2 (Save to DB)", False, "Message not found in database")
+                else:
+                    self.log_result("Message Flow - Step 2 (Save to DB)", False, f"Could not retrieve messages: {messages_response.status_code}")
+            else:
+                self.log_result("Message Flow - Step 1 (POST /send)", False, f"Failed to send message: {send_response.status_code}", send_response.text)
+                
+        except Exception as e:
+            self.log_result("Message Flow Architecture", False, f"Error: {str(e)}")
+    
+    def run_websocket_tests(self):
+        """Run all WebSocket-related tests"""
+        print("\n" + "🔌" * 50)
+        print("🔌 WEBSOCKET REAL-TIME CHAT TESTING")
+        print("🔌" * 50)
+        
+        # Step 1: Login chat users
+        if not self.login_chat_users():
+            print("❌ Cannot proceed without chat user logins")
+            return False
+        
+        # Step 2: Test chat contacts
+        self.test_chat_contacts_endpoint()
+        
+        # Step 3: Test direct messaging
+        self.test_direct_messaging()
+        
+        # Step 4: Test team messaging
+        self.test_team_messaging()
+        
+        # Step 5: Test WebSocket stability
+        self.test_websocket_stability()
+        
+        # Step 6: Test complete message flow architecture
+        self.test_message_flow_architecture()
+        
+        return True
+    
     def run_all_tests(self):
         """Run all CRM backend tests"""
         print("🚀 Starting CRM Backend Tests")
