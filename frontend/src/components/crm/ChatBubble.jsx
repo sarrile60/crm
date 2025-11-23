@@ -255,6 +255,26 @@ const ChatBubble = ({ currentUser }) => {
       
       const { file_url, file_name } = uploadRes.data;
       
+      // Add file message optimistically
+      const tempMessage = {
+        id: `temp_${Date.now()}`,
+        type: activeTab,
+        sender_id: currentUser.id,
+        sender_name: currentUser.full_name,
+        sender_role: currentUser.role,
+        content: `📎 File: ${file_name}`,
+        file_url,
+        file_name,
+        created_at: new Date().toISOString(),
+        ...(activeTab === 'team' && { team_id: currentUser.team_id }),
+        ...(activeTab === 'direct' && { 
+          recipient_id: selectedContact?.id,
+          recipient_name: selectedContact?.full_name
+        })
+      };
+      
+      setMessages(prev => [...prev, tempMessage]);
+      
       // Send message with file
       const messageData = {
         type: activeTab,
@@ -265,7 +285,13 @@ const ChatBubble = ({ currentUser }) => {
         ...(activeTab === 'direct' && { recipient_id: selectedContact?.id })
       };
       
-      await axios.post(`${API}/chat/send`, messageData, { headers });
+      const response = await axios.post(`${API}/chat/send`, messageData, { headers });
+      
+      // Update with real message ID
+      const realMessageId = response.data.message_id;
+      setMessages(prev => prev.map(msg => 
+        msg.id === tempMessage.id ? { ...msg, id: realMessageId } : msg
+      ));
       
       toast.success('File caricato e inviato');
       
