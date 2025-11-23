@@ -392,15 +392,15 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
             </p>
           </DialogHeader>
           <div className="space-y-6 max-h-[600px] overflow-y-auto">
-            {/* Pending Callbacks Section */}
+            {/* Overdue Callbacks Section */}
             <div>
               <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
-                <Phone className="w-5 h-5 text-[#D4AF37]" />
-                Callback in Attesa ({pendingCallbacks.length})
+                <Phone className="w-5 h-5 text-red-600" />
+                Callback Scaduti ({pendingCallbacks.length})
               </h3>
               {pendingCallbacks.length === 0 ? (
                 <p className="text-center text-gray-500 py-4 bg-gray-50 border border-gray-200">
-                  Nessun callback in attesa
+                  Nessun callback scaduto
                 </p>
               ) : (
                 <div className="space-y-3">
