@@ -52,12 +52,12 @@ const CRMLogin = () => {
         <div className="bg-gray-50 border-2 border-[#D4AF37] p-8 shadow-xl">
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label className="block text-black mb-2 text-sm font-semibold">Email</label>
+              <label className="block text-black mb-2 text-sm font-semibold">Username</label>
               <Input
-                type="email"
-                value={credentials.email}
-                onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-                placeholder="admin@1lawsolicitors.com"
+                type="text"
+                value={credentials.username}
+                onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+                placeholder="admin_f87450ce5d66"
                 className="bg-white border-gray-300 text-black rounded-none"
                 required
               />
