@@ -122,10 +122,11 @@ const Home = () => {
         });
       } else {
         toast({
-        title: "Errore",
-        description: "Si è verificato un errore. Riprova più tardi.",
-        variant: "destructive"
-      });
+          title: "Errore",
+          description: "Si è verificato un errore. Riprova più tardi.",
+          variant: "destructive"
+        });
+      }
     } finally {
       setLoading(false);
     }
