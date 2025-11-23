@@ -148,8 +148,8 @@ async def create_user(user_data: UserCreate, current_user: dict = Depends(get_cu
     return {"success": True, "user_id": user.id}
 
 @crm_router.get("/users")
-async def get_users(current_user: dict = Depends(require_role(["admin", "supervisor"]))):
-    """Get all users"""
+async def get_users(current_user: dict = Depends(get_current_user)):
+    """Get all users - accessible by all roles (agents need to see names in leads)"""
     users = await db.crm_users.find({}, {"password": 0, "_id": 0}).to_list(1000)
     return users
 
