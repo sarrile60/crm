@@ -231,11 +231,17 @@ const ChatBubble = ({ currentUser }) => {
     }
   };
 
-  const fetchTeamMessages = async () => {
+  const fetchTeamMessages = async (teamId) => {
     try {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
-      const res = await axios.get(`${API}/chat/messages/team/${currentUser.team_id}`, { headers });
+      
+      // Admin can view any team's messages
+      const endpoint = currentUser.role === 'admin' 
+        ? `${API}/chat/messages/all-team-messages?team_id=${teamId}`
+        : `${API}/chat/messages/team/${teamId}`;
+      
+      const res = await axios.get(endpoint, { headers });
       setMessages(res.data);
       
       // Mark all as read
