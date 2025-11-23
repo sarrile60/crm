@@ -525,14 +525,18 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
             <Plus className="w-4 h-4 mr-2" />
             Crea Lead
           </Button>
-          <Button onClick={() => setShowImportModal(true)} className="bg-blue-600 text-white hover:bg-blue-700 rounded-none">
-            <Upload className="w-4 h-4 mr-2" />
-            Importa CSV
-          </Button>
-          <Button onClick={handleExportCSV} className="bg-green-600 text-white hover:bg-green-700 rounded-none">
-            <Download className="w-4 h-4 mr-2" />
-            Esporta CSV
-          </Button>
+          {currentUser.role === 'admin' && (
+            <>
+              <Button onClick={() => setShowImportModal(true)} className="bg-blue-600 text-white hover:bg-blue-700 rounded-none">
+                <Upload className="w-4 h-4 mr-2" />
+                Importa CSV
+              </Button>
+              <Button onClick={handleExportCSV} className="bg-green-600 text-white hover:bg-green-700 rounded-none">
+                <Download className="w-4 h-4 mr-2" />
+                Esporta CSV
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
