@@ -20,11 +20,17 @@ const ChatBubble = ({ currentUser }) => {
   const [contacts, setContacts] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [teamUnread, setTeamUnread] = useState(0);
+  const [directUnread, setDirectUnread] = useState(0);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [ws, setWs] = useState(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
+  const [allTeams, setAllTeams] = useState([]);
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationData, setNotificationData] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
