@@ -168,10 +168,22 @@ const ChatBubble = ({ currentUser }) => {
               shouldAddMessage = true;
             }
           } else if (message.type === 'direct') {
-            // Add if it's to/from current user
-            if (message.sender_id === currentUser.id || 
-                message.recipient_id === currentUser.id) {
-              shouldAddMessage = true;
+            // For direct messages, only add if we're in the direct tab AND viewing the relevant conversation
+            // OR if we're not in direct tab (for notifications)
+            if (activeTabRef.current === 'direct' && selectedContactRef.current) {
+              // We're viewing a specific contact - only add messages for THIS conversation
+              const isFromSelectedContact = message.sender_id === selectedContactRef.current.id && message.recipient_id === currentUser.id;
+              const isToSelectedContact = message.sender_id === currentUser.id && message.recipient_id === selectedContactRef.current.id;
+              
+              if (isFromSelectedContact || isToSelectedContact) {
+                shouldAddMessage = true;
+              }
+            } else if (activeTabRef.current !== 'direct') {
+              // We're on a different tab (team or not viewing direct messages)
+              // Add if message involves current user (for unread counts and notifications)
+              if (message.sender_id === currentUser.id || message.recipient_id === currentUser.id) {
+                shouldAddMessage = true;
+              }
             }
           }
           
