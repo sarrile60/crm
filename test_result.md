@@ -103,11 +103,15 @@
 #====================================================================================================
 
 user_problem_statement: |
-  User requested 4 new CRM features:
+  User requested complete removal of chat functionality from the CRM system.
+  
+  Previous features implemented:
   1. Created Date Column - Rename "Data" to "Created Date" with Italian format (1 nov 13:51)
   2. Mass Update - Checkboxes for lead selection, mass update button for Admin/Manager/Supervisor to update Team/Status/Assigned User
   3. Lead Details Navigation - Clickable client name opens detail modal with left/right arrows to navigate through filtered leads
   4. Phone Privacy & Click-to-Call - Admin sees full number, others see masked (+39 xxxxxxxx7890), all numbers clickable with tel: link
+  
+  LATEST CHANGE: Chat system removed - all chat-related files and code deleted from the project.
 
 backend:
   - task: "Add created_at field with timezone-aware datetime"
