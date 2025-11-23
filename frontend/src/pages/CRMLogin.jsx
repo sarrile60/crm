@@ -83,8 +83,7 @@ const CRMLogin = () => {
           </form>
           
           <div className="mt-6 text-center text-sm text-gray-600">
-            <p>Account predefinito:</p>
-            <p className="font-mono">admin@1lawsolicitors.com / Admin@123456</p>
+            <p>Usa il tuo username e password per accedere</p>
           </div>
         </div>
 
