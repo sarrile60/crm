@@ -335,7 +335,6 @@ const UserManagement = ({ currentUser }) => {
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="manager">Manager</SelectItem>
                     <SelectItem value="supervisor">Supervisor</SelectItem>
                     <SelectItem value="agent">Agent</SelectItem>
                   </SelectContent>
