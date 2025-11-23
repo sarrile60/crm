@@ -14,6 +14,33 @@ import jwt
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# JWT Secret
+JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-here-change-in-production')
+JWT_ALGORITHM = 'HS256'
+
+# Token verification function
+async def get_current_user(authorization: Optional[str] = Header(None)):
+    if not authorization or not authorization.startswith('Bearer '):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    token = authorization.split(' ')[1]
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+def verify_token_sync(token: str) -> dict:
+    """Synchronous token verification for WebSocket"""
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    except:
+        return None
+
 chat_router = APIRouter(prefix="/chat", tags=["chat"])
 
 # WebSocket connection manager
