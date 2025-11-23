@@ -47,8 +47,11 @@ class CRMTester:
     def __init__(self):
         self.session = requests.Session()
         self.admin_token = None
+        self.agent_token = None
+        self.supervisor_token = None
         self.test_lead_id = None
         self.test_results = []
+        self.test_users = {}
         
     def log_result(self, test_name, success, message, details=None):
         """Log test result"""
