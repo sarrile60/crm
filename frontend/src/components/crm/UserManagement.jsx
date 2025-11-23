@@ -18,14 +18,14 @@ const UserManagement = ({ currentUser }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newUser, setNewUser] = useState({
-    email: '',
+    username: '',
     full_name: '',
     password: '',
     role: 'agent',
     team_id: ''
   });
   const [editUser, setEditUser] = useState({
-    email: '',
+    username: '',
     full_name: '',
     password: '',
     role: '',
