@@ -142,9 +142,9 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
             manager.disconnect(user_id)
 
 @chat_router.post("/send")
-async def send_message(message_data: SendMessage, token: str = Depends(verify_token)):
+async def send_message(message_data: SendMessage, current_user: dict = Depends(get_current_user)):
     """Send a message (team or direct)"""
-    sender = await db.crm_users.find_one({"id": token["id"]}, {"_id": 0})
+    sender = await db.crm_users.find_one({"id": current_user["id"]}, {"_id": 0})
     
     if not sender:
         raise HTTPException(status_code=404, detail="User not found")
