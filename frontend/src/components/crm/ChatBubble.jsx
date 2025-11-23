@@ -434,6 +434,20 @@ const ChatBubble = ({ currentUser }) => {
     setNewMessage(prev => prev + emojiObject.emoji);
   };
 
+  const highlightMentions = (text) => {
+    // Highlight @mentions with gold background
+    const mentionRegex = /@(\w+)/g;
+    const parts = text.split(mentionRegex);
+    
+    return parts.map((part, index) => {
+      if (index % 2 === 1) {
+        // This is a mention
+        return <span key={index} className="bg-yellow-200 px-1 rounded font-semibold">@{part}</span>;
+      }
+      return part;
+    });
+  };
+
   if (!isOpen) {
     return (
       <>
