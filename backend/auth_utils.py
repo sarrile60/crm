@@ -4,6 +4,12 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 import os
 import secrets
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load environment variables from .env file
+env_path = Path(__file__).parent / '.env'
+load_dotenv(dotenv_path=env_path)
 
 # JWT Configuration (MUST be set in environment)
 JWT_SECRET = os.environ.get('JWT_SECRET')
