@@ -494,17 +494,23 @@ const ChatBubble = ({ currentUser }) => {
         <>
           {/* Tabs */}
           <div className="flex border-b border-gray-300">
-            {currentUser.team_id && (
+            {(currentUser.team_id || currentUser.role === 'admin') && (
               <button
                 onClick={() => {
                   setActiveTab('team');
                   setSelectedContact(null);
-                  fetchTeamMessages();
+                  const teamId = currentUser.role === 'admin' ? selectedTeamId : currentUser.team_id;
+                  if (teamId) fetchTeamMessages(teamId);
                 }}
-                className={`flex-1 py-3 px-4 font-semibold flex items-center justify-center gap-2 ${activeTab === 'team' ? 'bg-[#D4AF37] text-black' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`flex-1 py-3 px-4 font-semibold flex items-center justify-center gap-2 relative ${activeTab === 'team' ? 'bg-[#D4AF37] text-black' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
               >
                 <Users className="w-4 h-4" />
                 Team Chat
+                {teamUnread > 0 && (
+                  <span className="absolute top-1 right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {teamUnread}
+                  </span>
+                )}
               </button>
             )}
             <button
@@ -512,12 +518,36 @@ const ChatBubble = ({ currentUser }) => {
                 setActiveTab('direct');
                 setMessages([]);
               }}
-              className={`flex-1 py-3 px-4 font-semibold flex items-center justify-center gap-2 ${activeTab === 'direct' ? 'bg-[#D4AF37] text-black' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              className={`flex-1 py-3 px-4 font-semibold flex items-center justify-center gap-2 relative ${activeTab === 'direct' ? 'bg-[#D4AF37] text-black' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
               <User className="w-4 h-4" />
               Messaggi Diretti
+              {directUnread > 0 && (
+                <span className="absolute top-1 right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {directUnread}
+                </span>
+              )}
             </button>
           </div>
+          
+          {/* Admin Team Selector */}
+          {currentUser.role === 'admin' && activeTab === 'team' && allTeams.length > 0 && (
+            <div className="p-3 bg-gray-50 border-b border-gray-300">
+              <label className="text-xs font-semibold text-gray-600 block mb-1">Seleziona Team (Admin):</label>
+              <select
+                value={selectedTeamId || ''}
+                onChange={(e) => {
+                  setSelectedTeamId(e.target.value);
+                  fetchTeamMessages(e.target.value);
+                }}
+                className="w-full p-2 border border-gray-300 rounded text-sm"
+              >
+                {allTeams.map(team => (
+                  <option key={team.id} value={team.id}>{team.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Contact List (Direct Messages) */}
           {activeTab === 'direct' && !selectedContact && (
