@@ -356,7 +356,7 @@ async def get_lead_detail(lead_id: str, current_user: dict = Depends(get_current
     # Add masked phone for display and keep real phone for calling
     if "phone" in lead:
         lead["phone_real"] = lead["phone"]  # Real number for tel: link
-        lead["phone_display"] = mask_phone_for_display(lead["phone"])  # Masked for display
+        lead["phone_display"] = mask_phone_for_display(lead["phone"], current_user["role"])  # Masked for display based on role
     
     return lead
 
