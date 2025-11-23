@@ -154,7 +154,7 @@ const UserManagement = ({ currentUser }) => {
           <thead className="bg-black">
             <tr>
               <th className="text-left text-white p-4 font-semibold">Nome</th>
-              <th className="text-left text-white p-4 font-semibold">Email</th>
+              <th className="text-left text-white p-4 font-semibold">Username</th>
               <th className="text-left text-white p-4 font-semibold">Ruolo</th>
               <th className="text-left text-white p-4 font-semibold">Team</th>
               <th className="text-left text-white p-4 font-semibold">Stato</th>
@@ -166,7 +166,7 @@ const UserManagement = ({ currentUser }) => {
             {users.map((user) => (
               <tr key={user.id} className="border-t border-gray-200 hover:bg-gray-50">
                 <td className="p-4 text-black font-semibold">{user.full_name}</td>
-                <td className="p-4 text-gray-700">{user.email}</td>
+                <td className="p-4 text-gray-700">{user.username}</td>
                 <td className="p-4">
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getRoleBadge(user.role)}`}>
                     {user.role}
