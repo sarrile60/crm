@@ -341,8 +341,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Frontend: Chat notification popup system"
-  stuck_tasks: []
+    - "Chat notification popup system"
+  stuck_tasks:
+    - "Chat notification popup system"
   test_all: false
   test_priority: "high_first"
 
