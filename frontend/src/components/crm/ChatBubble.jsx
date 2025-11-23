@@ -283,6 +283,9 @@ const ChatBubble = ({ currentUser }) => {
     
     const messageContent = newMessage;
     
+    // Get the correct team ID (for admin viewing other teams or user's own team)
+    const teamId = currentUser.role === 'admin' && selectedTeamId ? selectedTeamId : currentUser.team_id;
+    
     // Optimistic update - add message immediately to UI
     const tempMessage = {
       id: `temp_${Date.now()}`,
@@ -292,7 +295,7 @@ const ChatBubble = ({ currentUser }) => {
       sender_role: currentUser.role,
       content: messageContent,
       created_at: new Date().toISOString(),
-      ...(activeTab === 'team' && { team_id: currentUser.team_id }),
+      ...(activeTab === 'team' && { team_id: teamId }),
       ...(activeTab === 'direct' && { 
         recipient_id: selectedContact?.id,
         recipient_name: selectedContact?.full_name
@@ -311,7 +314,7 @@ const ChatBubble = ({ currentUser }) => {
       const messageData = {
         type: activeTab,
         content: messageContent,
-        ...(activeTab === 'team' && { team_id: currentUser.team_id }),
+        ...(activeTab === 'team' && { team_id: teamId }),
         ...(activeTab === 'direct' && { recipient_id: selectedContact?.id })
       };
       
