@@ -15,7 +15,7 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # JWT Secret
-JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-here-change-in-production')
+JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
 JWT_ALGORITHM = 'HS256'
 
 # Token verification function
