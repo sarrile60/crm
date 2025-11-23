@@ -215,6 +215,9 @@ const CRMDashboard = () => {
         {activeTab === 'users' && <UserManagement currentUser={currentUser} />}
         {activeTab === 'settings' && <SettingsPanel />}
       </main>
+      
+      {/* Chat Bubble */}
+      {currentUser && <ChatBubble currentUser={currentUser} />}
     </div>
   );
 };
