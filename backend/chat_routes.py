@@ -150,8 +150,14 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
         
         try:
             while True:
-                data = await websocket.receive_text()
-                # Keep connection alive, actual messaging happens via REST API
+                # Receive and handle ping/pong to keep connection alive
+                try:
+                    data = await websocket.receive_text()
+                    # Echo back to keep connection alive (heartbeat)
+                    if data == "ping":
+                        await websocket.send_text("pong")
+                except:
+                    pass
                 
         except WebSocketDisconnect:
             manager.disconnect(user_id)
@@ -160,6 +166,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
                 {"id": user_id},
                 {"$set": {"online": False}}
             )
+            print(f"❌ User {user_id} disconnected")
             
     except Exception as e:
         print(f"WebSocket error: {e}")
