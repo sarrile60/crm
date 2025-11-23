@@ -41,7 +41,7 @@ def verify_token_sync(token: str) -> dict:
     except:
         return None
 
-chat_router = APIRouter(prefix="/chat", tags=["chat"])
+chat_router = APIRouter(prefix="/api/chat", tags=["chat"])
 
 # WebSocket connection manager
 class ConnectionManager:
