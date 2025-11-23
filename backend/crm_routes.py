@@ -64,7 +64,7 @@ def mask_phone_number(phone: str, user_role: str) -> str:
 @crm_router.post("/auth/login")
 async def login(credentials: UserLogin):
     """CRM user login"""
-    user = await db.crm_users.find_one({"email": credentials.email})
+    user = await db.crm_users.find_one({"username": credentials.username})
     
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -84,7 +84,7 @@ async def login(credentials: UserLogin):
     # Create token
     token = create_access_token({
         "user_id": user["id"],
-        "email": user["email"],
+        "username": user["username"],
         "role": user["role"]
     })
     
@@ -92,7 +92,7 @@ async def login(credentials: UserLogin):
         "token": token,
         "user": {
             "id": user["id"],
-            "email": user["email"],
+            "username": user["username"],
             "full_name": user["full_name"],
             "role": user["role"],
             "team_id": user.get("team_id")
