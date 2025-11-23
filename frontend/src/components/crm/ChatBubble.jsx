@@ -71,11 +71,21 @@ const ChatBubble = ({ currentUser }) => {
         
         // Check if message belongs to current view
         if (activeTab === 'team' && message.type === 'team' && message.team_id === currentUser.team_id) {
-          setMessages(prev => [...prev, message]);
+          // Avoid duplicates - check if message already exists
+          setMessages(prev => {
+            const exists = prev.some(m => m.id === message.id);
+            if (exists) return prev;
+            return [...prev, message];
+          });
           markAsRead(message.id);
         } else if (activeTab === 'direct' && message.type === 'direct') {
           if ((message.sender_id === selectedContact?.id) || (message.recipient_id === selectedContact?.id)) {
-            setMessages(prev => [...prev, message]);
+            // Avoid duplicates
+            setMessages(prev => {
+              const exists = prev.some(m => m.id === message.id);
+              if (exists) return prev;
+              return [...prev, message];
+            });
             markAsRead(message.id);
           }
         }
@@ -83,8 +93,27 @@ const ChatBubble = ({ currentUser }) => {
         // Update unread count
         fetchUnreadCount();
       } else if (data.type === 'message_sent') {
-        // Confirmation that message was sent
-        setMessages(prev => [...prev, data.message]);
+        // Server confirmation - update temp message with real ID if needed
+        const message = data.message;
+        setMessages(prev => {
+          // Check if we already have this message (from optimistic update)
+          const hasTempMessage = prev.some(m => m.id.toString().startsWith('temp_'));
+          if (hasTempMessage) {
+            // Replace most recent temp message with real one
+            const lastTempIndex = prev.length - 1;
+            if (prev[lastTempIndex]?.id.toString().startsWith('temp_')) {
+              const updated = [...prev];
+              updated[lastTempIndex] = message;
+              return updated;
+            }
+          }
+          
+          // Check if message already exists
+          const exists = prev.some(m => m.id === message.id);
+          if (exists) return prev;
+          
+          return [...prev, message];
+        });
       }
     };
     
