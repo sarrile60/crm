@@ -135,15 +135,15 @@ const ChatBubble = ({ currentUser }) => {
           const message = data.message;
           console.log('Processing new message:', message);
           
-          // Show notification popup if chat is closed or different tab
+          // Show notification popup if chat is closed or different tab (use refs for latest state)
           const isInCurrentView = (
-            (activeTab === 'team' && message.type === 'team' && (message.team_id === currentUser.team_id || (currentUser.role === 'admin' && message.team_id === selectedTeamId))) ||
-            (activeTab === 'direct' && message.type === 'direct' && (message.sender_id === selectedContact?.id || message.recipient_id === selectedContact?.id))
+            (activeTabRef.current === 'team' && message.type === 'team' && (message.team_id === currentUser.team_id || (currentUser.role === 'admin' && message.team_id === selectedTeamIdRef.current))) ||
+            (activeTabRef.current === 'direct' && message.type === 'direct' && (message.sender_id === selectedContactRef.current?.id || message.recipient_id === selectedContactRef.current?.id))
           );
           
-          console.log('Is in current view:', isInCurrentView, 'isOpen:', isOpen);
+          console.log('Is in current view:', isInCurrentView, 'isOpen:', isOpenRef.current);
           
-          if (!isOpen || !isInCurrentView) {
+          if (!isOpenRef.current || !isInCurrentView) {
             // Show notification popup
             setNotificationData({
               sender: message.sender_name,
