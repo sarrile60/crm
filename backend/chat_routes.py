@@ -268,7 +268,7 @@ async def get_chat_contacts(current_user: dict = Depends(get_current_user)):
     contacts = []
     
     if user["role"] == "agent":
-        # Agents can message supervisors and admin
+        # Agents can message supervisors in their team and admin
         supervisors = await db.crm_users.find(
             {"role": "supervisor", "team_id": user.get("team_id")},
             {"_id": 0, "password": 0}
@@ -280,12 +280,16 @@ async def get_chat_contacts(current_user: dict = Depends(get_current_user)):
         contacts = supervisors + admin
         
     elif user["role"] == "supervisor":
-        # Supervisors can message admin
+        # Supervisors can message all agents in their team and admin
+        agents_in_team = await db.crm_users.find(
+            {"role": "agent", "team_id": user.get("team_id")},
+            {"_id": 0, "password": 0}
+        ).to_list(100)
         admin = await db.crm_users.find(
             {"role": "admin"},
             {"_id": 0, "password": 0}
         ).to_list(100)
-        contacts = admin
+        contacts = agents_in_team + admin
         
     elif user["role"] == "admin":
         # Admin can message everyone
