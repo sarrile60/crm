@@ -352,6 +352,9 @@ const ChatBubble = ({ currentUser }) => {
       
       const { file_url, file_name } = uploadRes.data;
       
+      // Get the correct team ID
+      const teamId = currentUser.role === 'admin' && selectedTeamId ? selectedTeamId : currentUser.team_id;
+      
       // Add file message optimistically
       const tempMessage = {
         id: `temp_${Date.now()}`,
@@ -363,7 +366,7 @@ const ChatBubble = ({ currentUser }) => {
         file_url,
         file_name,
         created_at: new Date().toISOString(),
-        ...(activeTab === 'team' && { team_id: currentUser.team_id }),
+        ...(activeTab === 'team' && { team_id: teamId }),
         ...(activeTab === 'direct' && { 
           recipient_id: selectedContact?.id,
           recipient_name: selectedContact?.full_name
@@ -378,7 +381,7 @@ const ChatBubble = ({ currentUser }) => {
         content: `📎 File: ${file_name}`,
         file_url,
         file_name,
-        ...(activeTab === 'team' && { team_id: currentUser.team_id }),
+        ...(activeTab === 'team' && { team_id: teamId }),
         ...(activeTab === 'direct' && { recipient_id: selectedContact?.id })
       };
       
