@@ -73,7 +73,7 @@ const UserManagement = ({ currentUser }) => {
   const handleEditUser = (user) => {
     setSelectedUser(user);
     setEditUser({
-      email: user.email,
+      username: user.username,
       full_name: user.full_name,
       password: '', // Leave blank, only update if filled
       role: user.role,
