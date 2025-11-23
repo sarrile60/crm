@@ -32,6 +32,28 @@ const ChatBubble = ({ currentUser }) => {
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationData, setNotificationData] = useState(null);
+  
+  // Refs to avoid stale closure in WebSocket
+  const activeTabRef = useRef(activeTab);
+  const selectedContactRef = useRef(selectedContact);
+  const selectedTeamIdRef = useRef(selectedTeamId);
+  const isOpenRef = useRef(isOpen);
+  
+  useEffect(() => {
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
+  
+  useEffect(() => {
+    selectedContactRef.current = selectedContact;
+  }, [selectedContact]);
+  
+  useEffect(() => {
+    selectedTeamIdRef.current = selectedTeamId;
+  }, [selectedTeamId]);
+  
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
 
   // WebSocket connection - only connect once
   useEffect(() => {
