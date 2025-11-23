@@ -44,9 +44,49 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
 
       const res = await axios.get(`${API}/crm/reminders`, { headers });
       setReminders(res.data);
+      updateTotalNotifications(res.data.length, pendingCallbacks.length);
     } catch (error) {
       console.error('Error fetching reminders:', error);
     }
+  };
+
+  const fetchPendingCallbacks = async () => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const leadsRes = await axios.get(`${API}/crm/leads`, { headers });
+      const allLeads = leadsRes.data;
+      
+      // Statuses that require callback notifications
+      const callbackStatuses = ['Callback', 'Potential Callback', 'Pharos in progress'];
+      const depositStatuses = ['Deposit 1', 'Deposit 2', 'Deposit 3', 'Deposit 4', 'Deposit 5'];
+      const allNotifyStatuses = [...callbackStatuses, ...depositStatuses];
+      
+      // Filter leads with callback dates that are still pending
+      const now = new Date();
+      const pending = allLeads.filter(lead => {
+        if (!allNotifyStatuses.includes(lead.status) || !lead.callback_date) {
+          return false;
+        }
+        
+        const callbackTime = new Date(lead.callback_date);
+        // Show callbacks that are upcoming or within last 24 hours
+        return callbackTime > now || (now - callbackTime < 24 * 60 * 60 * 1000);
+      });
+      
+      // Sort by callback date (soonest first)
+      pending.sort((a, b) => new Date(a.callback_date) - new Date(b.callback_date));
+      
+      setPendingCallbacks(pending);
+      updateTotalNotifications(reminders.length, pending.length);
+    } catch (error) {
+      console.error('Error fetching pending callbacks:', error);
+    }
+  };
+
+  const updateTotalNotifications = (remindersCount, callbacksCount) => {
+    setTotalNotifications(remindersCount + callbacksCount);
   };
 
   const checkSnoozedCallbacks = () => {
