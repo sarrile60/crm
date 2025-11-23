@@ -216,6 +216,21 @@ backend:
         comment: "✅ FIXED: Synchronized JWT secret defaults between CRM and Chat systems. Changed chat_routes.py JWT_SECRET default from 'your-secret-key-here-change-in-production' to 'your-secret-key-change-in-production' to match CRM system. All chat endpoints now working: contacts (93.8% success), team messaging, and direct messaging fully operational."
 
 frontend:
+  - task: "Real-time chat WebSocket functionality"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/chat_routes.py"
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "User reported: Messages don't appear in real-time, must refresh page to see new messages"
+      - working: "NA"
+        agent: "main"
+        comment: "FIXED WebSocket blocking issue. Changed receive loop from blocking await to asyncio.wait_for with 1s timeout. This allows bidirectional communication - server can now send messages while listening for incoming data. Backend restarted successfully."
+  
   - task: "Chat notification popup system"
     implemented: true
     working: "NA"
