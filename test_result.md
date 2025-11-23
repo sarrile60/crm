@@ -220,50 +220,17 @@ backend:
         comment: "✅ FIXED: Synchronized JWT secret defaults between CRM and Chat systems. Changed chat_routes.py JWT_SECRET default from 'your-secret-key-here-change-in-production' to 'your-secret-key-change-in-production' to match CRM system. All chat endpoints now working: contacts (93.8% success), team messaging, and direct messaging fully operational."
 
 frontend:
-  - task: "Real-time chat WebSocket functionality"
-    implemented: true
-    working: true
-    file: "/app/backend/chat_routes.py"
-    stuck_count: 1
-    priority: "critical"
-    needs_retesting: false
-    status_history:
-      - working: false
-        agent: "user"
-        comment: "User reported: Messages don't appear in real-time, must refresh page to see new messages"
-      - working: "NA"
-        agent: "main"
-        comment: "FIXED WebSocket blocking issue. Changed receive loop from blocking await to asyncio.wait_for with 1s timeout. This allows bidirectional communication - server can now send messages while listening for incoming data. Backend restarted successfully."
-      - working: true
-        agent: "testing"
-        comment: "✅ WEBSOCKET FIX VERIFIED: Real-time chat functionality is now working correctly. WebSocket connection stability confirmed with 81.8% success rate. Key findings: 1) Direct messaging Agent→Supervisor working perfectly with instant message delivery and database persistence, 2) Team messaging working with proper broadcast to team members, 3) Message flow architecture complete: POST /send → save to DB → WebSocket broadcast, 4) Backend logs show successful message sending with confirmation messages, 5) No WebSocket errors or connection issues detected. The asyncio.wait_for timeout fix has resolved the blocking issue - messages now appear in real-time without page refresh. Minor: Supervisor→Agent messaging blocked by hierarchy rules (expected behavior), different team assignments for test users (configuration issue, not WebSocket bug)."
-  
-  - task: "Chat notification popup system"
-    implemented: true
-    working: false
-    file: "/app/frontend/src/components/crm/ChatBubble.jsx"
-    stuck_count: 1
-    priority: "critical"
+  - task: "Chat system - REMOVED"
+    implemented: false
+    working: "NA"
+    file: "DELETED"
+    stuck_count: 0
+    priority: "NA"
     needs_retesting: false
     status_history:
       - working: "NA"
-        agent: "testing"
-        comment: "NEW TESTING REQUEST: Comprehensive testing of chat notification popup system with two users messaging each other. Testing WebSocket real-time messaging, popup notifications, @mentions, unread badges, and admin team spy functionality."
-      - working: false
-        agent: "user"
-        comment: "User reported: When viewing a direct message conversation, new messages from that contact don't appear in real-time. User must switch tabs to see them."
-      - working: "NA"
         agent: "main"
-        comment: "FIXED real-time message display issue. Problem: WebSocket was adding ALL direct messages to messages state, not filtering by selected contact. When viewing Contact A, messages from Contact B would also be added. Fix: Added logic to only add messages that belong to the currently viewed conversation. Now checks if message is specifically to/from the selected contact when in direct message view. Frontend hot-reloaded successfully."
-      - working: false
-        agent: "user"
-        comment: "User reported: Still not working. Messages don't appear in real-time when viewing the conversation."
-      - working: "NA"
-        agent: "main"
-        comment: "Added comprehensive console logging to debug the issue. Logs now show: WebSocket message received, current state (activeTab, selectedContact, isOpen), message routing decision logic. This will help identify exactly why messages aren't appearing. Frontend compiled successfully. Ready for testing with browser console open to see the logs."
-      - working: false
-        agent: "testing"
-        comment: "❌ CRITICAL ISSUE CONFIRMED: Real-time chat functionality is NOT working. Multiple issues identified: 1) Chat interface rendering problem - chat bubble opens but no tabs are visible, indicating UI rendering failure, 2) API permission error - 403 Forbidden when trying to send messages via /api/chat/send endpoint, 3) WebSocket connections are established successfully but message delivery is blocked by permission issues. Backend logs show successful WebSocket connections but 403 errors on message sending. The comprehensive console logging added by main agent is not visible in the UI, suggesting the chat interface is not rendering properly. Root cause appears to be permission/authentication issues preventing message sending, combined with potential UI rendering problems in the chat component."
+        comment: "✅ CHAT SYSTEM COMPLETELY REMOVED per user request. Deleted files: /app/backend/chat_routes.py, /app/backend/chat_models.py, /app/frontend/src/components/crm/ChatBubble.jsx. Modified files: server.py (removed chat router), CRMDashboard.jsx (removed ChatBubble component). Backend and frontend restarted successfully. CRM is now fully functional without chat."
 
   - task: "Created Date formatting in Italian"
     implemented: true
