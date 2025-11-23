@@ -386,7 +386,7 @@ async def update_lead(lead_id: str, update_data: LeadUpdate, current_user: dict 
     return {"success": True}
 
 @crm_router.post("/leads/{lead_id}/assign")
-async def assign_lead(assignment: LeadAssignment, current_user: dict = Depends(require_role(["admin", "manager", "supervisor"]))):
+async def assign_lead(assignment: LeadAssignment, current_user: dict = Depends(require_role(["admin", "supervisor"]))):
     """Assign lead to agent"""
     # Verify agent exists
     agent = await db.crm_users.find_one({"id": assignment.assigned_to})
