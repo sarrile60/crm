@@ -151,8 +151,6 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
         
         try:
             # Keep connection alive and handle incoming messages
-            import asyncio
-            
             while True:
                 try:
                     # Use wait_for with timeout to prevent blocking
