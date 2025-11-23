@@ -1027,7 +1027,7 @@ class CRMTester:
         return True
     
     def run_all_tests(self):
-        """Run all CRM backend tests"""
+        """Run all CRM backend tests including WebSocket functionality"""
         print("🚀 Starting CRM Backend Tests")
         print("=" * 50)
         
@@ -1042,11 +1042,14 @@ class CRMTester:
         # Step 3: Create test lead
         self.create_test_lead()
         
-        # Step 4: Run all tests
+        # Step 4: Run CRM tests
         self.test_phone_masking()
         self.test_mass_update_permissions()
         self.test_mass_update_functionality()
         self.test_created_at_field()
+        
+        # Step 5: Run WebSocket tests (CRITICAL FIX TESTING)
+        self.run_websocket_tests()
         
         # Summary
         print("\n" + "=" * 50)
@@ -1069,6 +1072,18 @@ class CRMTester:
                     print(f"  • {result['test']}: {result['message']}")
                     if result["details"]:
                         print(f"    Details: {result['details']}")
+        
+        # Separate WebSocket test results
+        websocket_tests = [r for r in self.test_results if "WebSocket" in r["test"] or "Direct Messaging" in r["test"] or "Team Messaging" in r["test"] or "Message Flow" in r["test"] or "Chat Contacts" in r["test"]]
+        websocket_passed = sum(1 for r in websocket_tests if r["success"])
+        websocket_total = len(websocket_tests)
+        
+        if websocket_total > 0:
+            print(f"\n🔌 WEBSOCKET TEST RESULTS:")
+            print(f"WebSocket Tests: {websocket_total}")
+            print(f"✅ Passed: {websocket_passed}")
+            print(f"❌ Failed: {websocket_total - websocket_passed}")
+            print(f"WebSocket Success Rate: {(websocket_passed/websocket_total)*100:.1f}%")
         
         return failed_tests == 0
 
