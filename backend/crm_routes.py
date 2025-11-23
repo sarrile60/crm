@@ -201,7 +201,7 @@ async def delete_user(user_id: str, current_user: dict = Depends(get_current_use
 
 # ==================== TEAM MANAGEMENT ROUTES ====================
 
-@crm_router.post("/teams", dependencies=[Depends(require_role(["admin", "manager"]))])
+@crm_router.post("/teams", dependencies=[Depends(require_role(["admin"]))])
 async def create_team(team_data: TeamCreate, current_user: dict = Depends(get_current_user)):
     """Create new team"""
     team = Team(**team_data.dict())
