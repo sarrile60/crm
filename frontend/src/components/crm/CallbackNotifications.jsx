@@ -63,7 +63,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       const depositStatuses = ['Deposit 1', 'Deposit 2', 'Deposit 3', 'Deposit 4', 'Deposit 5'];
       const allNotifyStatuses = [...callbackStatuses, ...depositStatuses];
       
-      // Filter leads with callback dates that are still pending
+      // Filter leads - ONLY show OVERDUE callbacks (scaduto)
       const now = new Date();
       const pending = allLeads.filter(lead => {
         // Only show if status requires callback AND has callback date
@@ -73,17 +73,14 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
         
         const callbackTime = new Date(lead.callback_date);
         
-        // Show callbacks that are:
-        // 1. In the future (upcoming)
-        // 2. OR overdue but within last 48 hours (give them time to handle)
-        const timeSinceCallback = now - callbackTime;
-        const isUpcoming = callbackTime > now;
-        const isRecentlyOverdue = timeSinceCallback > 0 && timeSinceCallback < (48 * 60 * 60 * 1000); // 48 hours
+        // ONLY show callbacks that are OVERDUE (past the callback time)
+        // When agent changes callback time to future, it disappears automatically
+        const isOverdue = callbackTime < now;
         
-        return isUpcoming || isRecentlyOverdue;
+        return isOverdue;
       });
       
-      // Sort by callback date (soonest first, overdue at top)
+      // Sort by callback date (most overdue first - oldest at top)
       pending.sort((a, b) => new Date(a.callback_date) - new Date(b.callback_date));
       
       setPendingCallbacks(pending);
