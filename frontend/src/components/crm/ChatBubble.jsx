@@ -623,7 +623,7 @@ const ChatBubble = ({ currentUser }) => {
                             {!isOwn && activeTab === 'team' && (
                               <p className="text-xs font-semibold text-gray-600 mb-1">{msg.sender_name}</p>
                             )}
-                            <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                            <p className="text-sm whitespace-pre-wrap break-words">{highlightMentions(msg.content)}</p>
                             {msg.file_url && (
                               <a href={`${API}${msg.file_url}`} target="_blank" rel="noopener noreferrer" className="text-xs underline mt-2 block">
                                 📎 {msg.file_name}
