@@ -182,6 +182,22 @@ const ChatBubble = ({ currentUser }) => {
     setWs(websocket);
   };
 
+  const fetchAllTeams = async () => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.get(`${API}/crm/teams`, { headers });
+      setAllTeams(res.data);
+      
+      // Auto-select first team if admin has no team
+      if (!currentUser.team_id && res.data.length > 0) {
+        setSelectedTeamId(res.data[0].id);
+      }
+    } catch (error) {
+      console.error('Error fetching teams:', error);
+    }
+  };
+
   const fetchContacts = async () => {
     try {
       const token = localStorage.getItem('crmToken');
@@ -190,6 +206,28 @@ const ChatBubble = ({ currentUser }) => {
       setContacts(res.data);
     } catch (error) {
       console.error('Error fetching contacts:', error);
+    }
+  };
+  
+  const playNotificationSound = () => {
+    try {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 600;
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+      console.error('Error playing sound:', error);
     }
   };
 
