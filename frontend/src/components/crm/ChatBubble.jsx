@@ -170,9 +170,9 @@ const ChatBubble = ({ currentUser }) => {
           let shouldAddMessage = false;
           
           if (message.type === 'team') {
-            // Add if it's for current user's team or admin viewing this team
+            // Add if it's for current user's team or admin viewing this team (use ref for latest state)
             if (message.team_id === currentUser.team_id || 
-                (currentUser.role === 'admin' && message.team_id === selectedTeamId)) {
+                (currentUser.role === 'admin' && message.team_id === selectedTeamIdRef.current)) {
               shouldAddMessage = true;
             }
           } else if (message.type === 'direct') {
