@@ -347,9 +347,10 @@ async def get_lead_detail(lead_id: str, current_user: dict = Depends(get_current
             raise HTTPException(status_code=403, detail="Access denied - lead not in your team")
     # Admin can access all leads (no check needed)
     
-    # Mask phone number based on user role
+    # Add masked phone for display and keep real phone for calling
     if "phone" in lead:
-        lead["phone"] = mask_phone_number(lead["phone"], current_user["role"])
+        lead["phone_real"] = lead["phone"]  # Real number for tel: link
+        lead["phone_display"] = mask_phone_for_display(lead["phone"])  # Masked for display
     
     return lead
 
