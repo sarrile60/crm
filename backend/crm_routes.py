@@ -292,9 +292,9 @@ async def get_crm_leads(
     # Apply additional filters
     if status:
         query["status"] = status
-    if assigned_to and current_user["role"] in ["admin", "manager", "supervisor"]:
+    if assigned_to and current_user["role"] in ["admin", "supervisor"]:
         query["assigned_to"] = assigned_to
-    if team_id and current_user["role"] in ["admin", "manager"]:
+    if team_id and current_user["role"] == "admin":
         query["team_id"] = team_id
     if priority:
         query["priority"] = priority
