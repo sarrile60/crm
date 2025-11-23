@@ -49,13 +49,25 @@ def require_role(required_roles: List[str]):
     return role_checker
 
 # Phone masking utility
-def mask_phone_number(phone: str, user_role: str) -> str:
+def mask_phone_for_display(phone: str) -> str:
     """
-    Return full phone number for all internal users (admin, supervisor, agent)
-    They need to call clients, so no masking applied
+    Mask phone number for visual display in CRM
+    Returns masked version like: +39 xxx xxx x445
     """
-    # All internal users can see full phone numbers
-    return phone
+    if not phone or len(phone) <= 4:
+        return phone
+    
+    # Show country code and last 4 digits
+    # Example: +39 335453156464445 -> +39 xxx xxx x445
+    if phone.startswith('+'):
+        country_code = phone[:3]  # +39
+        last_4 = phone[-4:]       # last 4 digits
+        masked_middle = ' xxx xxx x'
+        return f"{country_code}{masked_middle}{last_4}"
+    else:
+        # No country code, just mask middle
+        last_4 = phone[-4:]
+        return f"xxx xxx x{last_4}"
 
 # ==================== AUTHENTICATION ROUTES ====================
 
