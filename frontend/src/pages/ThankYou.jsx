@@ -97,6 +97,15 @@ const ThankYou = () => {
           </p>
         </div>
       </footer>
+
+      {/* Lead Conversion Tracking Pixel */}
+      <iframe 
+        src="https://1law-studiolegale.com/pixels/pixel_page_lead.html" 
+        width="1" 
+        height="1" 
+        style={{display: 'none', border: 'none'}} 
+        title="Lead Tracking"
+      />
     </div>
   );
 };
