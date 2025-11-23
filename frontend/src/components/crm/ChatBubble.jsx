@@ -226,17 +226,17 @@ const ChatBubble = ({ currentUser }) => {
     };
     
     websocket.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error('❌ WebSocket error:', error);
+      toast.error('Connessione chat persa, riconnessione...', { duration: 2000 });
     };
     
     websocket.onclose = () => {
-      console.log('WebSocket disconnected');
-      // Attempt to reconnect after 5 seconds
+      console.log('🔌 WebSocket disconnected - Attempting reconnection');
+      // Attempt to reconnect immediately
       setTimeout(() => {
-        if (isOpen) {
-          connectWebSocket();
-        }
-      }, 5000);
+        console.log('🔄 Reconnecting WebSocket...');
+        connectWebSocket();
+      }, 1000); // Reconnect after 1 second
     };
     
     setWs(websocket);
