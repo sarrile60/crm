@@ -165,6 +165,11 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       
       for (const lead of allLeads) {
         if (allNotifyStatuses.includes(lead.status) && lead.callback_date) {
+          // ONLY alert for leads assigned to current user
+          if (lead.assigned_to !== currentUser.id) {
+            continue;
+          }
+          
           const callbackTime = new Date(lead.callback_date);
           const timeDiff = callbackTime - now;
           
