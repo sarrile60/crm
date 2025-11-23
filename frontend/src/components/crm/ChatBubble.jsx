@@ -19,6 +19,7 @@ const ChatBubble = ({ currentUser }) => {
   const [newMessage, setNewMessage] = useState('');
   const [contacts, setContacts] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
+  const [contactsWithMetadata, setContactsWithMetadata] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [teamUnread, setTeamUnread] = useState(0);
   const [directUnread, setDirectUnread] = useState(0);
