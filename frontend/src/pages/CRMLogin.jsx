@@ -12,7 +12,7 @@ const API = `${BACKEND_URL}/api`;
 const CRMLogin = () => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
-    email: '',
+    username: '',
     password: ''
   });
   const [loading, setLoading] = useState(false);
