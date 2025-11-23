@@ -245,6 +245,12 @@ frontend:
       - working: "NA"
         agent: "testing"
         comment: "NEW TESTING REQUEST: Comprehensive testing of chat notification popup system with two users messaging each other. Testing WebSocket real-time messaging, popup notifications, @mentions, unread badges, and admin team spy functionality."
+      - working: false
+        agent: "user"
+        comment: "User reported: When viewing a direct message conversation, new messages from that contact don't appear in real-time. User must switch tabs to see them."
+      - working: "NA"
+        agent: "main"
+        comment: "FIXED real-time message display issue. Problem: WebSocket was adding ALL direct messages to messages state, not filtering by selected contact. When viewing Contact A, messages from Contact B would also be added. Fix: Added logic to only add messages that belong to the currently viewed conversation. Now checks if message is specifically to/from the selected contact when in direct message view. Frontend hot-reloaded successfully."
 
   - task: "Created Date formatting in Italian"
     implemented: true
