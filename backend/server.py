@@ -55,6 +55,119 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# ============================================
+# SECURITY MIDDLEWARE (EMERGENT-COMPATIBLE)
+# ============================================
+
+import time
+from fastapi import Request
+from collections import defaultdict
+
+# Rate limiting storage (in-memory for Emergent)
+rate_limit_storage = defaultdict(lambda: {"requests": [], "login_attempts": 0, "locked_until": 0})
+
+@app.middleware("http")
+async def security_middleware(request: Request, call_next):
+    """
+    Production security middleware - application level
+    Blocks sensitive files, adds headers, rate limits
+    """
+    path = request.url.path
+    client_ip = request.client.host
+    current_time = time.time()
+    
+    # 1. BLOCK SENSITIVE FILE ACCESS
+    blocked_extensions = ['.env', '.py', '.pyc', '.pyo', '.git', '.log']
+    blocked_paths = ['/backend/', '/.git/', '/__pycache__/', '/internal/', '/scripts/']
+    
+    if any(path.endswith(ext) for ext in blocked_extensions):
+        logger.warning(f"Blocked access to sensitive file: {path} from {client_ip}")
+        raise HTTPException(status_code=404, detail="Not found")
+    
+    if any(blocked in path for blocked in blocked_paths):
+        logger.warning(f"Blocked access to sensitive path: {path} from {client_ip}")
+        raise HTTPException(status_code=404, detail="Not found")
+    
+    # 2. RATE LIMITING (Application Level)
+    if os.environ.get('RATE_LIMIT_ENABLED', 'true').lower() == 'true':
+        client_data = rate_limit_storage[client_ip]
+        
+        # Clean old requests (older than window)
+        rate_window = int(os.environ.get('RATE_LIMIT_WINDOW_SECONDS', 60))
+        client_data["requests"] = [t for t in client_data["requests"] if current_time - t < rate_window]
+        
+        # Check if rate limit exceeded
+        max_requests = int(os.environ.get('RATE_LIMIT_REQUESTS', 100))
+        if len(client_data["requests"]) >= max_requests:
+            logger.warning(f"Rate limit exceeded for {client_ip}")
+            raise HTTPException(status_code=429, detail="Too many requests. Please slow down.")
+        
+        # Record this request
+        client_data["requests"].append(current_time)
+        
+        # Extra strict rate limiting for login endpoints
+        if '/login' in path:
+            login_window = int(os.environ.get('LOGIN_RATE_WINDOW_SECONDS', 300))
+            login_requests = [t for t in client_data["requests"] if current_time - t < login_window and '/login' in path]
+            
+            if len(login_requests) > int(os.environ.get('LOGIN_RATE_LIMIT', 5)):
+                logger.warning(f"Login rate limit exceeded for {client_ip}")
+                raise HTTPException(status_code=429, detail="Too many login attempts. Try again later.")
+    
+    # 3. PROCESS REQUEST
+    response = await call_next(request)
+    
+    # 4. ADD SECURITY HEADERS
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    
+    # Content Security Policy
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: https:; "
+        "font-src 'self'; "
+        "connect-src 'self'; "
+        "frame-ancestors 'none'"
+    )
+    response.headers["Content-Security-Policy"] = csp
+    
+    # Remove server identification
+    response.headers.pop("server", None)
+    response.headers.pop("x-powered-by", None)
+    
+    return response
+
+@app.middleware("http")
+async def logging_middleware(request: Request, call_next):
+    """Log requests (excluding sensitive paths)"""
+    path = request.url.path
+    
+    # Don't log sensitive paths
+    if any(word in path.lower() for word in ['password', 'secret', 'token', 'credential']):
+        return await call_next(request)
+    
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    
+    logger.info(
+        f"{request.method} {path} - "
+        f"Status: {response.status_code} - "
+        f"Time: {process_time:.3f}s - "
+        f"IP: {request.client.host}"
+    )
+    
+    return response
+
+# ============================================
+# HELPER FUNCTIONS
+# ============================================
+
 # Helper function to create JWT token
 def create_access_token(data: dict):
     to_encode = data.copy()
