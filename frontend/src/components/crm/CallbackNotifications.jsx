@@ -390,6 +390,9 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
               <Bell className="w-6 h-6" />
               Notifiche ({totalNotifications})
             </DialogTitle>
+            <p className="text-sm text-gray-500 mt-2">
+              💡 Le notifiche scompaiono automaticamente quando aggiorni lo stato del lead
+            </p>
           </DialogHeader>
           <div className="space-y-6 max-h-[600px] overflow-y-auto">
             {/* Pending Callbacks Section */}
