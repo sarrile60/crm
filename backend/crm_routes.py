@@ -526,6 +526,58 @@ async def mass_update_leads(update_data: MassUpdateData, current_user: dict = De
     
     return {"success": True, "updated_count": result.modified_count}
 
+
+# ==================== LEAD CREATION ROUTE ====================
+
+@crm_router.post("/leads/create")
+async def create_crm_lead(lead_data: dict, current_user: dict = Depends(get_current_user)):
+    """Create a new lead with auto-assignment to creator's team and user"""
+    try:
+        # Create lead with auto-assignment
+        lead_id = str(uuid.uuid4())
+        
+        # Base lead data from input
+        lead = {
+            "id": lead_id,
+            "fullName": lead_data.get("fullName"),
+            "email": lead_data.get("email"),
+            "phone": lead_data.get("phone"),
+            "scammerCompany": lead_data.get("scammerCompany"),
+            "amountLost": lead_data.get("amountLost"),
+            "caseDetails": lead_data.get("caseDetails"),
+            "status": lead_data.get("status", "New"),
+            "priority": lead_data.get("priority", "medium"),
+            "source": "CRM - Created by user",
+            "createdAt": datetime.now(timezone.utc),
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        }
+        
+        # Auto-assign to creator's team and user
+        if current_user.get("team_id"):
+            lead["team_id"] = current_user["team_id"]
+        
+        lead["assigned_to"] = current_user["id"]
+        lead["assigned_to_name"] = current_user["full_name"]
+        
+        # Insert into database
+        await db.leads.insert_one(lead)
+        
+        # Log activity
+        activity = ActivityLog(
+            lead_id=lead_id,
+            user_id=current_user["id"],
+            user_name=current_user["full_name"],
+            action="create_lead",
+            details=f"Created lead: {lead['fullName']}"
+        )
+        await db.activity_logs.insert_one(activity.dict())
+        
+        return {"success": True, "lead_id": lead_id, "message": "Lead created successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ==================== CALLBACK SNOOZE ALERTS ====================
 
 @crm_router.post("/callback-snooze-alert")
