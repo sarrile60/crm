@@ -271,6 +271,8 @@ const ChatBubble = ({ currentUser }) => {
       const headers = { Authorization: `Bearer ${token}` };
       const res = await axios.get(`${API}/chat/unread-count`, { headers });
       setUnreadCount(res.data.total);
+      setTeamUnread(res.data.team);
+      setDirectUnread(res.data.direct);
     } catch (error) {
       console.error('Error fetching unread count:', error);
     }
