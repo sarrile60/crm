@@ -168,11 +168,20 @@ async def logging_middleware(request: Request, call_next):
 # HELPER FUNCTIONS
 # ============================================
 
-# Helper function to create JWT token
+# Helper function to create JWT token (secured)
 def create_access_token(data: dict):
+    """Create JWT token with expiration and security claims"""
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(hours=24)
-    to_encode.update({"exp": expire})
+    expiration_hours = int(os.environ.get('JWT_EXPIRATION_HOURS', 24))
+    expire = datetime.now(timezone.utc) + timedelta(hours=expiration_hours)
+    
+    # Add security claims
+    import secrets
+    to_encode.update({
+        "exp": expire,
+        "iat": datetime.now(timezone.utc),
+        "jti": secrets.token_hex(16)  # Unique token ID
+    })
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return encoded_jwt
 
