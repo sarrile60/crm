@@ -109,22 +109,19 @@ const Home = () => {
     try {
       await axios.post(`${API}/leads/submit`, formData);
       
-      toast({
-        title: "Richiesta inviata con successo!",
-        description: "Il nostro team legale esaminerà il tuo caso e ti contatterà presto."
-      });
+      // Redirect to thank you page on success
+      navigate('/thank-you');
       
-      setFormData({
-        fullName: '',
-        email: '',
-        phone: '',
-        scammerCompany: '',
-        amountLost: '',
-        caseDetails: ''
-      });
-      setFormStep(1);
     } catch (error) {
-      toast({
+      // Handle duplicate registration error
+      if (error.response?.status === 409) {
+        toast({
+          title: "Registrazione già esistente",
+          description: error.response?.data?.detail || "Hai già inviato una richiesta. Il nostro team ti contatterà presto.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
         title: "Errore",
         description: "Si è verificato un errore. Riprova più tardi.",
         variant: "destructive"
