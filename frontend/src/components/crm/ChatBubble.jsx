@@ -436,17 +436,36 @@ const ChatBubble = ({ currentUser }) => {
 
   if (!isOpen) {
     return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-[#D4AF37] text-black rounded-full p-4 shadow-lg hover:bg-[#C5A028] transition-all z-50"
-      >
-        <MessageCircle className="w-6 h-6" />
-        {unreadCount > 0 && (
-          <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
-            {unreadCount}
-          </span>
+      <>
+        {/* Notification Popup */}
+        {showNotification && notificationData && (
+          <div className="fixed top-20 right-6 bg-white border-2 border-[#D4AF37] shadow-2xl rounded-lg p-4 z-50 animate-slide-in max-w-sm">
+            <div className="flex items-start gap-3">
+              <MessageCircle className="w-6 h-6 text-[#D4AF37] flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <p className="font-bold text-black mb-1">Nuovo messaggio da {notificationData.sender}</p>
+                <p className="text-sm text-gray-700 line-clamp-2">{notificationData.content}</p>
+                <p className="text-xs text-gray-500 mt-1">{notificationData.time.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</p>
+              </div>
+              <button onClick={() => setShowNotification(false)} className="text-gray-400 hover:text-black">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         )}
-      </button>
+        
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-6 right-6 bg-[#D4AF37] text-black rounded-full p-4 shadow-lg hover:bg-[#C5A028] transition-all z-50"
+        >
+          <MessageCircle className="w-6 h-6" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+              {unreadCount}
+            </span>
+          )}
+        </button>
+      </>
     );
   }
 
