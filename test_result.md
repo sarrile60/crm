@@ -233,6 +233,18 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "✅ CHAT SYSTEM COMPLETELY REMOVED per user request. Deleted files: /app/backend/chat_routes.py, /app/backend/chat_models.py, /app/frontend/src/components/crm/ChatBubble.jsx. Modified files: server.py (removed chat router), CRMDashboard.jsx (removed ChatBubble component). Backend and frontend restarted successfully. CRM is now fully functional without chat."
+  
+  - task: "Enhanced Notification System"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/crm/CallbackNotifications.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ NOTIFICATION SYSTEM ENHANCED. Bell icon in header now shows comprehensive notifications panel. Features: 1) Shows all pending callbacks with status (Callback, Deposit, etc.), 2) Displays total notification count badge on bell icon, 3) Each callback shows: client name, phone (clickable tel: link), amount, callback date/time, status badge, time remaining, 4) Visual indicators for overdue callbacks (red background), 5) Quick action button to open lead directly, 6) Sections for 'Callback in Attesa' and 'Promemoria', 7) Empty state with icon when no notifications. Auto-refreshes every 30 seconds. Tested and working correctly."
 
   - task: "Created Date formatting in Italian"
     implemented: true
