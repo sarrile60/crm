@@ -1,7 +1,7 @@
 # 🔒 COMPLETE TECHNICAL SECURITY AUDIT REPORT
 ## 1 LAW SOLICITORS CRM System
 **Generated:** November 23, 2025  
-**System:** https://legal-hub-27.preview.emergentagent.com
+**System:** https://lawfirm-ops.preview.emergentagent.com
 
 ---
 
@@ -155,10 +155,10 @@ Any attacker can:
 ```
 Risk Level: CRITICAL (10/10)
 Accessible Files:
-✓ https://legal-hub-27.preview.emergentagent.com/backend/.env
-✓ https://legal-hub-27.preview.emergentagent.com/backend/server.py
-✓ https://legal-hub-27.preview.emergentagent.com/backend/auth_utils.py
-✓ https://legal-hub-27.preview.emergentagent.com/backend/crm_routes.py
+✓ https://lawfirm-ops.preview.emergentagent.com/backend/.env
+✓ https://lawfirm-ops.preview.emergentagent.com/backend/server.py
+✓ https://lawfirm-ops.preview.emergentagent.com/backend/auth_utils.py
+✓ https://lawfirm-ops.preview.emergentagent.com/backend/crm_routes.py
 
 Exposed Information:
 - JWT secret key
@@ -442,7 +442,7 @@ Filtering:
 
 ### Public Landing Page Structure
 ```
-URL: https://legal-hub-27.preview.emergentagent.com/
+URL: https://lawfirm-ops.preview.emergentagent.com/
 Technology: React SPA
 
 Components:
@@ -606,7 +606,7 @@ class LeadCreate(BaseModel):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://legal-hub-27.preview.emergentagent.com",
+        "https://lawfirm-ops.preview.emergentagent.com",
         "https://yourdomain.com"
     ],  # Specific domains only
     allow_credentials=True,
