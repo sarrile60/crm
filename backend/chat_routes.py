@@ -243,9 +243,9 @@ async def get_team_messages(team_id: str, limit: int = 50, current_user: dict = 
     return list(reversed(messages))
 
 @chat_router.get("/messages/direct/{other_user_id}")
-async def get_direct_messages(other_user_id: str, limit: int = 50, token: dict = Depends(verify_token)):
+async def get_direct_messages(other_user_id: str, limit: int = 50, current_user: dict = Depends(get_current_user)):
     """Get direct messages with another user"""
-    user_id = token["id"]
+    user_id = current_user["id"]
     
     messages = await db.chat_messages.find({
         "type": "direct",
