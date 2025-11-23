@@ -8,7 +8,6 @@ import LeadsTable from '../components/crm/LeadsTable';
 import UserManagement from '../components/crm/UserManagement';
 import SettingsPanel from '../components/crm/SettingsPanel';
 import CallbackNotifications from '../components/crm/CallbackNotifications';
-import ChatBubble from '../components/crm/ChatBubble';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
