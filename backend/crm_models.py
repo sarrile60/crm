@@ -88,7 +88,7 @@ class CustomStatusCreate(BaseModel):
 class LeadEnhanced(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     fullName: str
-    email: EmailStr
+    email: str
     phone: str
     scammerCompany: str
     amountLost: str
