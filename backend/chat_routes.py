@@ -169,7 +169,12 @@ async def send_message(message_data: SendMessage, current_user: dict = Depends(g
             raise HTTPException(status_code=404, detail="Recipient not found")
         
         # Check hierarchical permissions
-        if not can_message(sender["role"], recipient["role"]):
+        if not can_message(
+            sender["role"], 
+            recipient["role"],
+            sender.get("team_id", ""),
+            recipient.get("team_id", "")
+        ):
             raise HTTPException(
                 status_code=403, 
                 detail=f"You cannot send messages to {recipient['role']}s. Check hierarchy rules."
