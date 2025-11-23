@@ -216,6 +216,18 @@ backend:
         comment: "✅ FIXED: Synchronized JWT secret defaults between CRM and Chat systems. Changed chat_routes.py JWT_SECRET default from 'your-secret-key-here-change-in-production' to 'your-secret-key-change-in-production' to match CRM system. All chat endpoints now working: contacts (93.8% success), team messaging, and direct messaging fully operational."
 
 frontend:
+  - task: "Chat notification popup system"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/crm/ChatBubble.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "NEW TESTING REQUEST: Comprehensive testing of chat notification popup system with two users messaging each other. Testing WebSocket real-time messaging, popup notifications, @mentions, unread badges, and admin team spy functionality."
+
   - task: "Created Date formatting in Italian"
     implemented: true
     working: "NA"
