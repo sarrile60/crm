@@ -227,9 +227,9 @@ async def send_message(message_data: SendMessage, current_user: dict = Depends(g
     return {"success": True, "message_id": message.id}
 
 @chat_router.get("/messages/team/{team_id}")
-async def get_team_messages(team_id: str, limit: int = 50, token: dict = Depends(verify_token)):
+async def get_team_messages(team_id: str, limit: int = 50, current_user: dict = Depends(get_current_user)):
     """Get team chat messages"""
-    user = await db.crm_users.find_one({"id": token["id"]}, {"_id": 0})
+    user = await db.crm_users.find_one({"id": current_user["id"]}, {"_id": 0})
     
     # Verify user is in team or admin
     if user.get("team_id") != team_id and user["role"] != "admin":
