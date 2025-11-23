@@ -201,7 +201,6 @@ async def root():
 # Include the routers in the main app
 app.include_router(api_router)
 app.include_router(crm_router)
-app.include_router(chat_router)
 
 app.add_middleware(
     CORSMiddleware,
