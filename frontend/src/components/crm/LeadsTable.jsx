@@ -508,7 +508,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
     return <div className="text-center py-12">Caricamento lead...</div>;
   }
 
-  const canMassUpdate = ['admin', 'manager', 'supervisor'].includes(currentUser.role);
+  const canMassUpdate = ['admin', 'supervisor'].includes(currentUser.role);
 
   return (
     <div>
