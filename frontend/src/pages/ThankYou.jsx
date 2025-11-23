@@ -69,16 +69,6 @@ const ThankYou = () => {
             </ul>
           </div>
 
-          {/* Contact Info */}
-          <div className="bg-gray-50 p-6 rounded mb-8">
-            <p className="text-gray-700 mb-2">
-              <strong>Hai domande urgenti?</strong>
-            </p>
-            <p className="text-gray-600">
-              Contattaci: <a href="mailto:info@1lawsolicitors.com" className="text-[#D4AF37] hover:underline font-semibold">info@1lawsolicitors.com</a>
-            </p>
-          </div>
-
           {/* Back Button */}
           <Button 
             onClick={() => navigate('/')}
