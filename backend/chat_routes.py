@@ -360,9 +360,9 @@ async def mark_message_read(message_id: str, current_user: dict = Depends(get_cu
     return {"success": True}
 
 @chat_router.get("/unread-count")
-async def get_unread_count(token: dict = Depends(verify_token)):
+async def get_unread_count(current_user: dict = Depends(get_current_user)):
     """Get count of unread messages"""
-    user_id = token["id"]
+    user_id = current_user["id"]
     
     # Count direct messages where user is recipient and hasn't read
     direct_unread = await db.chat_messages.count_documents({
