@@ -399,10 +399,12 @@ const ChatBubble = ({ currentUser }) => {
       })
     };
     
-    // Add to messages immediately
-    setMessages(prev => [...prev, tempMessage]);
+    // Clear input IMMEDIATELY for instant feel
     setNewMessage('');
     setShowEmojiPicker(false);
+    
+    // Add to messages immediately
+    setMessages(prev => [...prev, tempMessage]);
     
     try {
       const token = localStorage.getItem('crmToken');
@@ -415,7 +417,8 @@ const ChatBubble = ({ currentUser }) => {
         ...(activeTab === 'direct' && { recipient_id: selectedContact?.id })
       };
       
-      const response = await axios.post(`${API}/chat/send`, messageData, { headers });
+      // Send in background - don't await, let WebSocket handle confirmation
+      axios.post(`${API}/chat/send`, messageData, { headers }).then(response => {
       
       // Replace temp message with real one from server
       const realMessageId = response.data.message_id;
