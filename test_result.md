@@ -349,32 +349,30 @@ test_plan:
 
   - agent: "testing"
     message: |
-      🎯 NEW TESTING REQUEST: Chat Notification Popup System
+      ❌ CRITICAL CHAT SYSTEM FAILURE IDENTIFIED
       
-      USER REQUEST: Test the chat notification popup system with two users messaging each other.
+      COMPREHENSIVE TESTING COMPLETED - MULTIPLE CRITICAL ISSUES FOUND:
       
-      TESTING SCOPE:
-      - Real-time WebSocket messaging between users
-      - Popup notifications appearing top-right when messages received
-      - Notification behavior when chat is closed vs open on different tab
-      - @Mention notifications with special highlighting
-      - Unread badges and contact list previews
-      - Admin team spy functionality
+      🔴 PRIMARY ISSUES:
+      1. **Chat Interface Rendering Failure**: Chat bubble opens but no tabs (Team Chat, Direct Messages) are visible or functional
+      2. **API Permission Error**: 403 Forbidden errors when attempting to send messages via /api/chat/send endpoint
+      3. **UI Component Malfunction**: Chat window appears empty with no interactive elements
       
-      TEST USERS:
-      - User A: agent@test.com / TestPass123!
-      - User B: supervisor@test.com / TestPass123!
-      - Admin: admin@1lawsolicitors.com / Admin@123456
+      🔍 TECHNICAL ANALYSIS:
+      - WebSocket connections establish successfully (confirmed in backend logs)
+      - Authentication tokens are valid (users can login successfully)
+      - Backend chat routes are responding but rejecting message sending with 403 errors
+      - Frontend chat component is not rendering tabs or contact lists properly
+      - Console logging added by main agent is not visible, indicating UI rendering issues
       
-      PRIORITY: HIGH - Real-time chat functionality is critical for user experience
+      📊 TEST RESULTS:
+      - ❌ Real-time messaging: FAILED (cannot send messages due to 403 errors)
+      - ❌ Chat interface: FAILED (tabs and contacts not rendering)
+      - ✅ WebSocket connection: SUCCESS (connections established)
+      - ❌ Message delivery: FAILED (blocked by permission errors)
       
-      Will test comprehensive chat notification flow including:
-      1. Popup notifications when chat closed
-      2. Popup notifications when on different tab
-      3. @Mention special notifications
-      4. Unread badge updates
-      5. Contact list previews and sorting
-      6. Admin team messaging capabilities
+      🚨 IMMEDIATE ACTION REQUIRED:
+      This is a CRITICAL system failure affecting core chat functionality. Users cannot send or receive messages in real-time.
 
   - agent: "main"
     message: |
