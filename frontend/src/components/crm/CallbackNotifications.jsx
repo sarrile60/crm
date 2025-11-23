@@ -164,6 +164,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       }
       
       fetchReminders();
+      fetchPendingCallbacks();
     } catch (error) {
       console.error('Error checking callbacks:', error);
     }
