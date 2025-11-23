@@ -27,10 +27,13 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
     
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        # Normalize token structure - convert user_id to id if needed
+        if "user_id" in payload and "id" not in payload:
+            payload["id"] = payload["user_id"]
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.JWTError:
+    except jwt.JWTError as e:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 def verify_token_sync(token: str) -> dict:
