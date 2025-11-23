@@ -111,6 +111,11 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   };
 
   const checkSnoozedCallbacks = () => {
+    // SKIP popup notifications for admins completely
+    if (currentUser.role === 'admin') {
+      return;
+    }
+    
     const now = Date.now();
     const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
     
