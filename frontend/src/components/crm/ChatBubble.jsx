@@ -170,21 +170,28 @@ const ChatBubble = ({ currentUser }) => {
             }
           } else if (message.type === 'direct') {
             // For direct messages - check if it's part of the conversation being viewed
+            console.log('   Checking direct message: from', message.sender_id, 'to', message.recipient_id);
+            console.log('   Current user:', currentUser.id, '| Selected contact:', selectedContactRef.current?.id);
+            
             const isMessageWithSelectedContact = selectedContactRef.current && (
               (message.sender_id === selectedContactRef.current.id && message.recipient_id === currentUser.id) ||
               (message.sender_id === currentUser.id && message.recipient_id === selectedContactRef.current.id)
             );
+            
+            console.log('   Is message with selected contact?', isMessageWithSelectedContact);
             
             // Add message if:
             // 1. We're viewing direct tab with this contact's conversation
             // 2. OR we're on team tab (so message waits in background)
             if (activeTabRef.current === 'direct' && isMessageWithSelectedContact) {
               shouldAddMessage = true;
-              console.log('✅ Adding message - viewing conversation with this contact');
+              console.log('✅ Decision: ADD - viewing conversation with this contact');
             } else if (activeTabRef.current === 'team' && (message.sender_id === currentUser.id || message.recipient_id === currentUser.id)) {
               // On team tab - add all direct messages for current user (they'll be shown when switching to direct tab)
               shouldAddMessage = true;
-              console.log('✅ Adding message - on team tab, will show when switching to direct');
+              console.log('✅ Decision: ADD - on team tab, will show when switching to direct');
+            } else {
+              console.log('❌ Decision: SKIP - not relevant to current view');
             }
           }
           
