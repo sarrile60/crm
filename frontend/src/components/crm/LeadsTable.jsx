@@ -1072,13 +1072,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                     <p className="text-xs text-gray-700">Imposta la data per questo deposito. Riceverai una notifica 1 minuto prima.</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-black mb-2">Data Deposit *</label>
-                    <Input
-                      type="datetime-local"
+                    <SmartDateTimePicker
                       value={editData.callback_date}
-                      onChange={(e) => setEditData({ ...editData, callback_date: e.target.value })}
-                      className="bg-white border-gray-300 rounded-none"
-                      required
+                      onChange={(value) => setEditData({ ...editData, callback_date: value })}
+                      currentUser={currentUser}
+                      currentLeadId={selectedLead?.id}
                     />
                   </div>
                   <div>
