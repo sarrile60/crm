@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 CRM Backend Testing Suite
-Tests phone masking, mass update endpoint, and created_at field functionality
+Tests phone masking, mass update endpoint, created_at field functionality, and WebSocket chat functionality
 """
 
 import requests
@@ -9,10 +9,13 @@ import json
 import sys
 from datetime import datetime
 import uuid
+import time
+import asyncio
 
 # Configuration
 BASE_URL = "https://legal-hub-27.preview.emergentagent.com/api"
 CRM_BASE_URL = f"{BASE_URL}/crm"
+CHAT_BASE_URL = f"{BASE_URL}/chat"
 
 # Test credentials
 ADMIN_CREDENTIALS = {
