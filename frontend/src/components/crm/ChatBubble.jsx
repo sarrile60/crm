@@ -33,9 +33,20 @@ const ChatBubble = ({ currentUser }) => {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationData, setNotificationData] = useState(null);
 
+  // WebSocket connection - only connect once
+  useEffect(() => {
+    connectWebSocket();
+    
+    return () => {
+      if (ws) {
+        ws.close();
+      }
+    };
+  }, []); // Only run once on mount
+
+  // Fetch data when chat opens or tab changes
   useEffect(() => {
     if (isOpen) {
-      connectWebSocket();
       fetchContacts();
       fetchUnreadCount();
       
@@ -52,12 +63,6 @@ const ChatBubble = ({ currentUser }) => {
         }
       }
     }
-    
-    return () => {
-      if (ws) {
-        ws.close();
-      }
-    };
   }, [isOpen, activeTab, selectedTeamId]);
 
   useEffect(() => {
