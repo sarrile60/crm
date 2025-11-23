@@ -144,6 +144,11 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
 
   const checkUpcomingCallbacks = async () => {
     try {
+      // SKIP popup notifications for admins completely
+      if (currentUser.role === 'admin') {
+        return;
+      }
+      
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
