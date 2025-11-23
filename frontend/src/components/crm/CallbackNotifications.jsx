@@ -99,6 +99,8 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     const now = Date.now();
     const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
     
+    const newAlerts = [];
+    
     Object.keys(snoozeDataFromStorage).forEach(leadId => {
       const snooze = snoozeDataFromStorage[leadId];
       
@@ -106,9 +108,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       if (snooze.snoozeUntil <= now) {
         // Re-trigger the callback alert
         if (snooze.lead) {
-          setUrgentCallback(snooze.lead);
-          setShowUrgentModal(true);
-          playAlertSound();
+          newAlerts.push(snooze.lead);
           
           // Update snooze data
           snoozeDataFromStorage[leadId] = {
@@ -119,6 +119,12 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
         }
       }
     });
+    
+    // Add all new alerts to queue
+    if (newAlerts.length > 0) {
+      setUrgentCallbackQueue(prev => [...prev, ...newAlerts]);
+      playAlertSound();
+    }
   };
 
   const checkUpcomingCallbacks = async () => {
