@@ -38,8 +38,17 @@ const ChatBubble = ({ currentUser }) => {
       fetchContacts();
       fetchUnreadCount();
       
-      if (activeTab === 'team' && currentUser.team_id) {
-        fetchTeamMessages();
+      // Fetch teams for admin
+      if (currentUser.role === 'admin') {
+        fetchAllTeams();
+      }
+      
+      if (activeTab === 'team') {
+        if (currentUser.role === 'admin' && selectedTeamId) {
+          fetchTeamMessages(selectedTeamId);
+        } else if (currentUser.team_id) {
+          fetchTeamMessages(currentUser.team_id);
+        }
       }
     }
     
@@ -48,7 +57,7 @@ const ChatBubble = ({ currentUser }) => {
         ws.close();
       }
     };
-  }, [isOpen, activeTab]);
+  }, [isOpen, activeTab, selectedTeamId]);
 
   useEffect(() => {
     if (selectedContact && activeTab === 'direct') {
