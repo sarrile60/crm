@@ -213,6 +213,22 @@ async def init_analytics():
 @api_router.post("/leads/submit")
 async def submit_lead(lead_data: LeadCreate):
     try:
+        # Check for duplicate registration - by email OR phone
+        existing_lead = await db.leads.find_one({
+            "$or": [
+                {"email": lead_data.email},
+                {"phone": lead_data.phone}
+            ]
+        })
+        
+        if existing_lead:
+            # Lead already exists - return error
+            logger.warning(f"Duplicate registration attempt: {lead_data.email}")
+            raise HTTPException(
+                status_code=409, 
+                detail="Hai già inviato una richiesta. Il nostro team legale ti contatterà presto."
+            )
+        
         lead = Lead(**lead_data.dict())
         lead_dict = lead.dict()
         
@@ -230,6 +246,9 @@ async def submit_lead(lead_data: LeadCreate):
         
         logger.info(f"New lead submitted: {lead.fullName}")
         return {"success": True, "message": "Lead submitted successfully"}
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
     except Exception as e:
         logger.error(f"Error submitting lead: {str(e)}")
         raise HTTPException(status_code=500, detail="Error submitting lead")
