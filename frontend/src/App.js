@@ -5,6 +5,7 @@ import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import CRMLogin from './pages/CRMLogin';
 import CRMDashboard from './pages/CRMDashboard';
+import ThankYou from './pages/ThankYou';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/thank-you" element={<ThankYou />} />
           <Route path="/admin-portal-login" element={<AdminLogin />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/crm/login" element={<CRMLogin />} />
