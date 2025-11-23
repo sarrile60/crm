@@ -660,10 +660,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   </td>
                   <td className="p-4">
                     <a 
-                      href={formatPhoneForCall(lead.phone)} 
+                      href={formatPhoneForCall(lead.phone_real || lead.phone)} 
                       className="text-blue-600 hover:text-blue-800 font-mono underline"
+                      title="Click to call (real number hidden for security)"
                     >
-                      {formatPhoneDisplay(lead.phone)}
+                      {lead.phone_display || formatPhoneDisplay(lead.phone)}
                     </a>
                   </td>
                   <td className="p-4 text-gray-700">{lead.email}</td>
