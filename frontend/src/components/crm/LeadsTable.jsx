@@ -777,10 +777,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   <div>
                     <label className="text-sm font-semibold text-gray-600">Telefono</label>
                     <a 
-                      href={formatPhoneForCall(selectedLead.phone)} 
+                      href={formatPhoneForCall(selectedLead.phone_real || selectedLead.phone)} 
                       className="text-blue-600 hover:text-blue-800 underline font-semibold block"
+                      title="Click to call (real number hidden for security)"
                     >
-                      {formatPhoneDisplay(selectedLead.phone)}
+                      {selectedLead.phone_display || formatPhoneDisplay(selectedLead.phone)}
                     </a>
                   </div>
                   <div>
