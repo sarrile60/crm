@@ -28,7 +28,7 @@ class LeadPriority(str, Enum):
 # User Models
 class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    email: EmailStr
+    username: str
     full_name: str
     role: UserRole
     team_id: Optional[str] = None
@@ -38,19 +38,19 @@ class User(BaseModel):
     last_login: Optional[datetime] = None
 
 class UserCreate(BaseModel):
-    email: EmailStr
+    username: str
     full_name: str
     password: str
     role: UserRole
     team_id: Optional[str] = None
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    username: str
     password: str
 
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
-    email: Optional[EmailStr] = None
+    username: Optional[str] = None
     password: Optional[str] = None
     role: Optional[UserRole] = None
     team_id: Optional[str] = None
