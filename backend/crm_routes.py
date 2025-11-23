@@ -115,15 +115,15 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
 @crm_router.post("/users", dependencies=[Depends(require_role(["admin"]))])
 async def create_user(user_data: UserCreate, current_user: dict = Depends(get_current_user)):
     """Create new CRM user (Admin only)"""
-    # Check if email already exists
-    existing = await db.crm_users.find_one({"email": user_data.email})
+    # Check if username already exists
+    existing = await db.crm_users.find_one({"username": user_data.username})
     if existing:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="Username already exists")
     
     # Create user
     hashed_pw = hash_password(user_data.password)
     user = User(
-        email=user_data.email,
+        username=user_data.username,
         full_name=user_data.full_name,
         role=user_data.role,
         team_id=user_data.team_id,
