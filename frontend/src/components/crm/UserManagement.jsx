@@ -90,7 +90,7 @@ const UserManagement = ({ currentUser }) => {
       // Build update payload - only include fields that have values
       const updateData = {
         full_name: editUser.full_name,
-        email: editUser.email,
+        username: editUser.username,
         role: editUser.role,
         team_id: editUser.team_id || null
       };
