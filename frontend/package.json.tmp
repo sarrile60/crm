@@ -1,0 +1,15 @@
+{
+  "name": "legal-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "serve": "^14.2.1"
+  },
+  "scripts": {
+    "start": "serve -s build -l 3000",
+    "dev": "craco start",
+    "build": "GENERATE_SOURCEMAP=false craco build",
+    "test": "craco test",
+    "eject": "react-scripts eject"
+  }
+}
