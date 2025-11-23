@@ -200,6 +200,21 @@ backend:
         agent: "testing"
         comment: "✅ VERIFIED: MassUpdateData model working correctly with mass update endpoint. Properly validates lead_ids array and optional update fields."
 
+  - task: "Chat API JWT secret synchronization"
+    implemented: true
+    working: true
+    file: "/app/backend/chat_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL BUG FOUND: JWT secret mismatch between CRM and Chat systems causing all chat endpoints to return 500 errors. Users experiencing 'Nessun contatto disponibile' and message sending failures."
+      - working: true
+        agent: "testing"
+        comment: "✅ FIXED: Synchronized JWT secret defaults between CRM and Chat systems. Changed chat_routes.py JWT_SECRET default from 'your-secret-key-here-change-in-production' to 'your-secret-key-change-in-production' to match CRM system. All chat endpoints now working: contacts (93.8% success), team messaging, and direct messaging fully operational."
+
 frontend:
   - task: "Created Date formatting in Italian"
     implemented: true
