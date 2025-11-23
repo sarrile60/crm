@@ -236,11 +236,11 @@ frontend:
   
   - task: "Chat notification popup system"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/components/crm/ChatBubble.jsx"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "testing"
@@ -257,6 +257,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "Added comprehensive console logging to debug the issue. Logs now show: WebSocket message received, current state (activeTab, selectedContact, isOpen), message routing decision logic. This will help identify exactly why messages aren't appearing. Frontend compiled successfully. Ready for testing with browser console open to see the logs."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE CONFIRMED: Real-time chat functionality is NOT working. Multiple issues identified: 1) Chat interface rendering problem - chat bubble opens but no tabs are visible, indicating UI rendering failure, 2) API permission error - 403 Forbidden when trying to send messages via /api/chat/send endpoint, 3) WebSocket connections are established successfully but message delivery is blocked by permission issues. Backend logs show successful WebSocket connections but 403 errors on message sending. The comprehensive console logging added by main agent is not visible in the UI, suggesting the chat interface is not rendering properly. Root cause appears to be permission/authentication issues preventing message sending, combined with potential UI rendering problems in the chat component."
 
   - task: "Created Date formatting in Italian"
     implemented: true
