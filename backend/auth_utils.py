@@ -40,26 +40,46 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return False
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Create JWT access token"""
+    """
+    Create JWT access token with security claims
+    Includes: exp, iat, jti for enhanced security
+    """
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(hours=JWT_EXPIRATION_HOURS)
     
-    to_encode.update({"exp": expire})
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS)
+    
+    # Add security claims
+    to_encode.update({
+        "exp": expire,
+        "iat": datetime.now(timezone.utc),  # Issued at
+        "jti": secrets.token_hex(16)  # Unique token ID
+    })
+    
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return encoded_jwt
 
 def decode_token(token: str) -> dict:
-    """Decode and verify JWT token"""
+    """
+    Decode and verify JWT token with enhanced validation
+    """
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        
+        # Validate required fields exist
+        required_fields = ['exp', 'iat']
+        for field in required_fields:
+            if field not in payload:
+                raise jwt.InvalidTokenError(f"Missing required field: {field}")
+        
         return payload
+        
     except jwt.ExpiredSignatureError:
         raise Exception("Token has expired")
-    except jwt.InvalidTokenError:
-        raise Exception("Invalid token")
+    except jwt.InvalidTokenError as e:
+        raise Exception(f"Invalid token: {str(e)}")
 
 def get_user_from_token(token: str) -> dict:
     """Extract user info from token"""
