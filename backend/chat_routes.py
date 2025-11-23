@@ -149,15 +149,36 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
         }, user_id)
         
         try:
+            # Keep connection alive and handle incoming messages
+            import asyncio
+            
             while True:
-                # Receive and handle ping/pong to keep connection alive
                 try:
-                    data = await websocket.receive_text()
-                    # Echo back to keep connection alive (heartbeat)
+                    # Use wait_for with timeout to prevent blocking
+                    # This allows the connection to remain open for outgoing messages
+                    # while also checking for incoming data
+                    data = await asyncio.wait_for(
+                        websocket.receive_text(), 
+                        timeout=1.0  # Check every second
+                    )
+                    
+                    # Handle heartbeat ping
                     if data == "ping":
                         await websocket.send_text("pong")
-                except:
-                    pass
+                        
+                except asyncio.TimeoutError:
+                    # Timeout is normal - just means no data received
+                    # Connection stays alive, allowing outgoing broadcasts
+                    continue
+                    
+                except WebSocketDisconnect:
+                    # Client disconnected
+                    raise
+                    
+                except Exception as e:
+                    # Other errors (malformed data, etc.)
+                    print(f"WebSocket receive error for user {user_id}: {e}")
+                    continue
                 
         except WebSocketDisconnect:
             manager.disconnect(user_id)
