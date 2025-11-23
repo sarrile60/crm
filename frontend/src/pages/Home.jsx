@@ -208,10 +208,6 @@ const Home = () => {
                 <CheckCircle className="w-5 h-5 text-[#D4AF37]" />
                 <span>Casi Internazionali</span>
               </div>
-              <div className="flex items-center gap-2 text-gray-700">
-                <Users className="w-5 h-5 text-[#D4AF37]" />
-                <span>Partnership con INTERPOL</span>
-              </div>
             </div>
 
             {/* Trust Indicators Section */}
