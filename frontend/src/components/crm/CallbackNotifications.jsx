@@ -82,6 +82,11 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
           return false;
         }
         
+        // ONLY show notifications for leads assigned to current user
+        if (lead.assigned_to !== currentUser.id) {
+          return false;
+        }
+        
         const callbackTime = new Date(lead.callback_date);
         
         // ONLY show callbacks that are OVERDUE (past the callback time)
