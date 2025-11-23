@@ -23,6 +23,16 @@ ADMIN_CREDENTIALS = {
     "password": "Admin@123456"
 }
 
+AGENT_CREDENTIALS = {
+    "email": "agent@test.com",
+    "password": "TestPass123!"
+}
+
+SUPERVISOR_CREDENTIALS = {
+    "email": "supervisor@test.com",
+    "password": "TestPass123!"
+}
+
 # Test data
 TEST_LEAD_DATA = {
     "fullName": "Marco Rossi",
