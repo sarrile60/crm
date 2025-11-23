@@ -6,6 +6,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import { useToast } from '../hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
