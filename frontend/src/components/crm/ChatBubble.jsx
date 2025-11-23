@@ -104,70 +104,85 @@ const ChatBubble = ({ currentUser }) => {
     };
     
     websocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      
-      if (data.type === 'new_message') {
-        // Add new message to list
-        const message = data.message;
+      try {
+        const data = JSON.parse(event.data);
+        console.log('WebSocket message received:', data);
         
-        // Show notification popup if chat is closed or different tab
-        const isInCurrentView = (
-          (activeTab === 'team' && message.type === 'team' && (message.team_id === currentUser.team_id || (currentUser.role === 'admin' && message.team_id === selectedTeamId))) ||
-          (activeTab === 'direct' && message.type === 'direct' && (message.sender_id === selectedContact?.id || message.recipient_id === selectedContact?.id))
-        );
-        
-        if (!isOpen || !isInCurrentView) {
-          // Show notification popup
-          setNotificationData({
-            sender: message.sender_name,
-            content: message.content,
-            type: message.type,
-            time: new Date()
-          });
-          setShowNotification(true);
+        if (data.type === 'new_message') {
+          // Add new message to list
+          const message = data.message;
+          console.log('Processing new message:', message);
           
-          // Auto-hide after 5 seconds
-          setTimeout(() => setShowNotification(false), 5000);
+          // Show notification popup if chat is closed or different tab
+          const isInCurrentView = (
+            (activeTab === 'team' && message.type === 'team' && (message.team_id === currentUser.team_id || (currentUser.role === 'admin' && message.team_id === selectedTeamId))) ||
+            (activeTab === 'direct' && message.type === 'direct' && (message.sender_id === selectedContact?.id || message.recipient_id === selectedContact?.id))
+          );
           
-          // Play sound
-          playNotificationSound();
-        }
-        
-        // Check for @mentions
-        if (message.content.includes(`@${currentUser.full_name}`) || message.content.includes(`@${currentUser.email}`)) {
-          toast.info(`${message.sender_name} ti ha menzionato!`, { duration: 5000 });
-          playNotificationSound();
-        }
-        
-        // Check if message belongs to current view
-        if (activeTab === 'team' && message.type === 'team' && (message.team_id === currentUser.team_id || (currentUser.role === 'admin' && message.team_id === selectedTeamId))) {
-          // Avoid duplicates - check if message already exists
-          setMessages(prev => {
-            const exists = prev.some(m => m.id === message.id);
-            if (exists) return prev;
-            return [...prev, message];
-          });
-          if (isInCurrentView) {
-            markAsRead(message.id);
+          console.log('Is in current view:', isInCurrentView, 'isOpen:', isOpen);
+          
+          if (!isOpen || !isInCurrentView) {
+            // Show notification popup
+            setNotificationData({
+              sender: message.sender_name,
+              content: message.content,
+              type: message.type,
+              time: new Date()
+            });
+            setShowNotification(true);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => setShowNotification(false), 5000);
+            
+            // Play sound
+            playNotificationSound();
           }
-        } else if (activeTab === 'direct' && message.type === 'direct') {
-          if ((message.sender_id === selectedContact?.id) || (message.recipient_id === selectedContact?.id)) {
-            // Avoid duplicates
+          
+          // Check for @mentions
+          if (message.content.includes(`@${currentUser.full_name}`) || message.content.includes(`@${currentUser.email}`)) {
+            toast.info(`${message.sender_name} ti ha menzionato!`, { duration: 5000 });
+            playNotificationSound();
+          }
+          
+          // ALWAYS add message if it's relevant, regardless of view
+          let shouldAddMessage = false;
+          
+          if (message.type === 'team') {
+            // Add if it's for current user's team or admin viewing this team
+            if (message.team_id === currentUser.team_id || 
+                (currentUser.role === 'admin' && message.team_id === selectedTeamId)) {
+              shouldAddMessage = true;
+            }
+          } else if (message.type === 'direct') {
+            // Add if it's to/from current user
+            if (message.sender_id === currentUser.id || 
+                message.recipient_id === currentUser.id) {
+              shouldAddMessage = true;
+            }
+          }
+          
+          if (shouldAddMessage) {
+            console.log('Adding message to list');
             setMessages(prev => {
               const exists = prev.some(m => m.id === message.id);
-              if (exists) return prev;
+              if (exists) {
+                console.log('Message already exists, skipping');
+                return prev;
+              }
+              console.log('Adding new message');
               return [...prev, message];
             });
+            
             if (isInCurrentView) {
               markAsRead(message.id);
             }
           }
-        }
-        
-        // Update unread count and contact list
-        fetchUnreadCount();
-        if (activeTab === 'direct' && !selectedContact) {
-          fetchContacts(); // Refresh contact list to update previews
+          
+          // Update unread count and contact list
+          fetchUnreadCount();
+          if (activeTab === 'direct' && !selectedContact) {
+            fetchContacts(); // Refresh contact list to update previews
+          }
         }
       } else if (data.type === 'message_sent') {
         // Server confirmation - update temp message with real ID if needed
