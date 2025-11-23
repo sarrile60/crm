@@ -6,7 +6,6 @@ import uuid
 
 class UserRole(str, Enum):
     ADMIN = "admin"
-    MANAGER = "manager"
     SUPERVISOR = "supervisor"
     AGENT = "agent"
 
