@@ -81,15 +81,25 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # Helper function to check hierarchical messaging permissions
-def can_message(sender_role: str, recipient_role: str) -> bool:
+def can_message(sender_role: str, recipient_role: str, sender_team: str, recipient_team: str) -> bool:
     """Check if sender can message recipient based on hierarchy"""
-    hierarchy = {
-        "agent": ["supervisor", "admin"],
-        "supervisor": ["admin"],
-        "admin": ["supervisor", "agent"]  # Admin can message anyone
-    }
+    # Admin can message anyone
+    if sender_role == "admin":
+        return True
     
-    return recipient_role in hierarchy.get(sender_role, [])
+    # Agent can message supervisor and admin
+    if sender_role == "agent":
+        return recipient_role in ["supervisor", "admin"]
+    
+    # Supervisor can message agents in their team and admin
+    if sender_role == "supervisor":
+        if recipient_role == "admin":
+            return True
+        if recipient_role == "agent" and sender_team == recipient_team:
+            return True
+        return False
+    
+    return False
 
 @chat_router.websocket("/ws/{token}")
 async def websocket_endpoint(websocket: WebSocket, token: str):
