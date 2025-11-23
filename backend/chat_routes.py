@@ -113,19 +113,27 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
     """WebSocket endpoint for real-time chat"""
     user_id = None
     try:
+        # Accept connection first
+        await websocket.accept()
+        
         # Verify token and get user
         payload = verify_token_sync(token)
         if not payload:
+            await websocket.send_json({"error": "Invalid token"})
             await websocket.close(code=1008)
             return
+        
         user_id = payload.get("id")
+        if not user_id:
+            user_id = payload.get("user_id")  # Try alternative format
         
         if not user_id:
+            await websocket.send_json({"error": "No user ID in token"})
             await websocket.close(code=1008)
             return
         
-        # Connect user
-        await manager.connect(user_id, websocket)
+        # Add to connections
+        manager.active_connections[user_id] = websocket
         
         # Mark user as online
         await db.crm_users.update_one(
