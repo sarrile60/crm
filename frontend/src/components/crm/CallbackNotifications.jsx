@@ -373,40 +373,136 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
         </DialogContent>
       </Dialog>
 
-      {/* Regular Reminders Modal */}
+      {/* Notifications Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="max-w-2xl bg-white">
+        <DialogContent className="max-w-3xl bg-white">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-black">Callback in Attesa</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-black flex items-center gap-2">
+              <Bell className="w-6 h-6" />
+              Notifiche ({totalNotifications})
+            </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 max-h-[500px] overflow-y-auto">
-            {reminders.length === 0 ? (
-              <p className="text-center text-gray-600 py-8">Nessun callback in attesa</p>
-            ) : (
-              reminders.map((reminder) => (
-                <div key={reminder.id} className="border-2 border-gray-200 p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="font-semibold text-black mb-2">
-                        Lead ID: {reminder.lead_id}
-                      </p>
-                      <p className="text-sm text-gray-700 mb-2">
-                        <strong>Data Callback:</strong> {new Date(reminder.callback_date).toLocaleString('it-IT')}
-                      </p>
-                      <p className="text-sm text-gray-700">
-                        <strong>Note:</strong> {reminder.notes || 'Nessuna nota'}
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => handleCompleteReminder(reminder.id)}
-                      size="sm"
-                      className="bg-green-600 text-white hover:bg-green-700 rounded-none ml-4"
-                    >
-                      Completa
-                    </Button>
-                  </div>
+          <div className="space-y-6 max-h-[600px] overflow-y-auto">
+            {/* Pending Callbacks Section */}
+            <div>
+              <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
+                <Phone className="w-5 h-5 text-[#D4AF37]" />
+                Callback in Attesa ({pendingCallbacks.length})
+              </h3>
+              {pendingCallbacks.length === 0 ? (
+                <p className="text-center text-gray-500 py-4 bg-gray-50 border border-gray-200">
+                  Nessun callback in attesa
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {pendingCallbacks.map((lead) => {
+                    const callbackTime = new Date(lead.callback_date);
+                    const now = new Date();
+                    const isPast = callbackTime < now;
+                    const timeDiff = Math.abs(callbackTime - now);
+                    const minutesAway = Math.floor(timeDiff / (1000 * 60));
+                    const hoursAway = Math.floor(minutesAway / 60);
+                    
+                    return (
+                      <div 
+                        key={lead.id} 
+                        className={`border-2 p-4 ${isPast ? 'bg-red-50 border-red-300' : 'bg-white border-gray-200'}`}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <p className="font-bold text-black text-lg">{lead.fullName}</p>
+                              <span className={`text-xs px-2 py-1 rounded ${lead.status.startsWith('Deposit') ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                {lead.status}
+                              </span>
+                            </div>
+                            <div className="space-y-1 text-sm">
+                              <p className="text-gray-700">
+                                <strong>Telefono:</strong> <a href={`tel:+39${lead.phone}`} className="text-[#D4AF37] hover:underline">+39 {lead.phone}</a>
+                              </p>
+                              <p className="text-gray-700">
+                                <strong>Importo:</strong> {lead.amountLost}
+                              </p>
+                              <p className={`font-semibold ${isPast ? 'text-red-600' : 'text-gray-800'}`}>
+                                <Clock className="w-4 h-4 inline mr-1" />
+                                {callbackTime.toLocaleString('it-IT', { 
+                                  day: '2-digit',
+                                  month: 'short',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                                {isPast ? ' (SCADUTO)' : ` (tra ${hoursAway > 0 ? hoursAway + 'h' : minutesAway + 'min'})`}
+                              </p>
+                              {lead.callback_notes && (
+                                <p className="text-gray-600 text-xs italic">
+                                  "{lead.callback_notes}"
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <Button
+                            onClick={() => {
+                              setShowModal(false);
+                              if (onCallbackAlert) {
+                                onCallbackAlert(lead);
+                              }
+                            }}
+                            size="sm"
+                            className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold whitespace-nowrap"
+                          >
+                            <Phone className="w-4 h-4 mr-1" />
+                            Apri Lead
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              ))
+              )}
+            </div>
+
+            {/* Reminders Section */}
+            {reminders.length > 0 && (
+              <div>
+                <h3 className="text-lg font-bold text-black mb-3">
+                  Promemoria ({reminders.length})
+                </h3>
+                <div className="space-y-3">
+                  {reminders.map((reminder) => (
+                    <div key={reminder.id} className="border-2 border-gray-200 bg-white p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="font-semibold text-black mb-2">
+                            Lead ID: {reminder.lead_id}
+                          </p>
+                          <p className="text-sm text-gray-700 mb-2">
+                            <strong>Data Callback:</strong> {new Date(reminder.callback_date).toLocaleString('it-IT')}
+                          </p>
+                          <p className="text-sm text-gray-700">
+                            <strong>Note:</strong> {reminder.notes || 'Nessuna nota'}
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() => handleCompleteReminder(reminder.id)}
+                          size="sm"
+                          className="bg-green-600 text-white hover:bg-green-700 rounded-none ml-4"
+                        >
+                          Completa
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Empty State */}
+            {pendingCallbacks.length === 0 && reminders.length === 0 && (
+              <div className="text-center py-12">
+                <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 text-lg">Nessuna notifica</p>
+                <p className="text-gray-400 text-sm">Tutte le notifiche compariranno qui</p>
+              </div>
             )}
           </div>
         </DialogContent>
