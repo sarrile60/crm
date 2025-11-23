@@ -801,7 +801,7 @@ const Home = () => {
                 type: 'Piattaforma Trading Fake',
                 amount: '€68.000',
                 outcome: 'Recupero completo tramite identificazione proprietari e azione legale UK',
-                duration: '6 mesi'
+                duration: '1 settimana'
               },
               {
                 type: 'Truffa Investimenti',
