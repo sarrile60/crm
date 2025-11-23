@@ -22,13 +22,17 @@ db = client[os.environ['DB_NAME']]
 # Initialize CRM database
 init_crm_db(db)
 
-# JWT Secret
-JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-here-change-in-production')
-JWT_ALGORITHM = 'HS256'
+# JWT Secret (MUST be set in .env - no default allowed)
+JWT_SECRET = os.environ.get('JWT_SECRET')
+if not JWT_SECRET or JWT_SECRET == 'your-secret-key-here-change-in-production':
+    raise ValueError("JWT_SECRET must be set in .env file with a strong value")
+JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
 
-# Admin credentials (hardcoded as per requirement)
-ADMIN_USERNAME = 'admin'
-ADMIN_PASSWORD = 'Satoshi@10benz'
+# Admin credentials (loaded from environment)
+ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
+if not ADMIN_USERNAME or not ADMIN_PASSWORD:
+    raise ValueError("ADMIN_USERNAME and ADMIN_PASSWORD must be set in .env file")
 
 # Create the main app without a prefix
 app = FastAPI()
