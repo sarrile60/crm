@@ -189,8 +189,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
     }
 
     try {
-      await axios.post(`${API}/leads/submit`, newLead);
-      toast.success('Lead creato con successo');
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      // Use CRM endpoint which auto-assigns to creator's team and user
+      await axios.post(`${API}/crm/leads/create`, newLead, { headers });
+      
+      toast.success(`Lead creato con successo e assegnato a te${currentUser.team_id ? ' e al tuo team' : ''}`);
       setShowCreateModal(false);
       setNewLead({
         fullName: '',
