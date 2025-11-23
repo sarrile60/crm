@@ -1220,12 +1220,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                 <p className="text-xs text-gray-700">Stato selezionato: <strong>{inlineStatusData.status}</strong></p>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Data e Ora *</label>
-                <Input
-                  type="datetime-local"
+                <SmartDateTimePicker
                   value={inlineStatusData.callback_date}
-                  onChange={(e) => setInlineStatusData({ ...inlineStatusData, callback_date: e.target.value })}
-                  className="bg-white border-gray-300 rounded-none"
+                  onChange={(value) => setInlineStatusData({ ...inlineStatusData, callback_date: value })}
+                  currentUser={currentUser}
+                  currentLeadId={selectedLead?.id}
                 />
               </div>
               <div>
