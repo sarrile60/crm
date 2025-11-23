@@ -34,15 +34,23 @@ ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
 if not ADMIN_USERNAME or not ADMIN_PASSWORD:
     raise ValueError("ADMIN_USERNAME and ADMIN_PASSWORD must be set in .env file")
 
-# Create the main app without a prefix
-app = FastAPI()
+# Create the main app without a prefix (production settings)
+DEBUG_MODE = os.environ.get('DEBUG', 'false').lower() == 'true'
+app = FastAPI(
+    title="1 LAW SOLICITORS CRM API",
+    debug=DEBUG_MODE,
+    docs_url=None if not DEBUG_MODE else "/docs",  # Disable docs in production
+    redoc_url=None if not DEBUG_MODE else "/redoc",
+    openapi_url=None if not DEBUG_MODE else "/openapi.json"
+)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
 # Configure logging
+LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
 logging.basicConfig(
-    level=logging.INFO,
+    level=getattr(logging, LOG_LEVEL),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
