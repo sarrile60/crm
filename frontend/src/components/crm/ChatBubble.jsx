@@ -609,20 +609,57 @@ const ChatBubble = ({ currentUser }) => {
 
           {/* Contact List (Direct Messages) */}
           {activeTab === 'direct' && !selectedContact && (
-            <div className="flex-1 overflow-y-auto p-4">
-              <p className="text-sm text-gray-600 mb-3">Seleziona un contatto:</p>
-              {contacts.length === 0 ? (
+            <div className="flex-1 overflow-y-auto">
+              {contactsWithMetadata.length === 0 ? (
                 <p className="text-center text-gray-500 py-8">Nessun contatto disponibile</p>
               ) : (
-                <div className="space-y-2">
-                  {contacts.map(contact => (
+                <div>
+                  {contactsWithMetadata.map(contact => (
                     <button
                       key={contact.id}
                       onClick={() => setSelectedContact(contact)}
-                      className="w-full text-left p-3 border border-gray-200 hover:bg-gray-50 rounded"
+                      className={`w-full text-left p-3 border-b border-gray-200 hover:bg-gray-50 transition-colors flex items-start gap-3 ${contact.unreadCount > 0 ? 'bg-yellow-50' : ''}`}
                     >
-                      <p className="font-semibold text-black">{contact.full_name}</p>
-                      <p className="text-xs text-gray-600">{contact.role}</p>
+                      {/* Avatar/Initial */}
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 ${contact.unreadCount > 0 ? 'bg-[#D4AF37]' : 'bg-gray-400'}`}>
+                        {contact.full_name.charAt(0).toUpperCase()}
+                      </div>
+                      
+                      {/* Contact Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <p className={`font-semibold text-black truncate ${contact.unreadCount > 0 ? 'font-bold' : ''}`}>
+                            {contact.full_name}
+                          </p>
+                          {contact.lastMessage && (
+                            <p className="text-xs text-gray-500 flex-shrink-0 ml-2">
+                              {new Date(contact.lastMessage.created_at).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <p className={`text-sm text-gray-600 truncate ${contact.unreadCount > 0 ? 'font-semibold text-black' : ''}`}>
+                            {contact.lastMessage ? (
+                              <>
+                                {contact.lastMessage.sender_id === currentUser.id && <span className="text-gray-500">Tu: </span>}
+                                {contact.lastMessage.content.substring(0, 30)}
+                                {contact.lastMessage.content.length > 30 && '...'}
+                              </>
+                            ) : (
+                              <span className="text-gray-400 italic">Nessun messaggio</span>
+                            )}
+                          </p>
+                          
+                          {contact.unreadCount > 0 && (
+                            <span className="bg-red-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 ml-2">
+                              {contact.unreadCount}
+                            </span>
+                          )}
+                        </div>
+                        
+                        <p className="text-xs text-gray-500 mt-1">{contact.role}</p>
+                      </div>
                     </button>
                   ))}
                 </div>
