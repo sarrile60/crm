@@ -24,10 +24,9 @@ PASSWORD_MIN_LENGTH = int(os.environ.get('PASSWORD_MIN_LENGTH', 12))
 def hash_password(password: str) -> str:
     """
     Hash a password using bcrypt with configured rounds
-    Enforces minimum password length
+    NO RESTRICTIONS - accepts any password
     """
-    if len(password) < PASSWORD_MIN_LENGTH:
-        raise ValueError(f"Password must be at least {PASSWORD_MIN_LENGTH} characters")
+    # NO PASSWORD LENGTH CHECK - User can choose any password
     
     salt = bcrypt.gensalt(rounds=BCRYPT_ROUNDS)
     hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
