@@ -10,7 +10,6 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from models import Lead, LeadCreate, Analytics, AdminLogin, AdminToken
 from crm_routes import crm_router, init_crm_db
-from chat_routes import chat_router
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
