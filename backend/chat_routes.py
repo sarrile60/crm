@@ -258,9 +258,9 @@ async def get_direct_messages(other_user_id: str, limit: int = 50, current_user:
     return list(reversed(messages))
 
 @chat_router.get("/contacts")
-async def get_chat_contacts(token: dict = Depends(verify_token)):
+async def get_chat_contacts(current_user: dict = Depends(get_current_user)):
     """Get list of users the current user can chat with (hierarchical)"""
-    user = await db.crm_users.find_one({"id": token["id"]}, {"_id": 0})
+    user = await db.crm_users.find_one({"id": current_user["id"]}, {"_id": 0})
     
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
