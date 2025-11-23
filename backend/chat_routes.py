@@ -94,9 +94,13 @@ def can_message(sender_role: str, recipient_role: str) -> bool:
 @chat_router.websocket("/ws/{token}")
 async def websocket_endpoint(websocket: WebSocket, token: str):
     """WebSocket endpoint for real-time chat"""
+    user_id = None
     try:
         # Verify token and get user
-        payload = verify_token(token)
+        payload = verify_token_sync(token)
+        if not payload:
+            await websocket.close(code=1008)
+            return
         user_id = payload.get("id")
         
         if not user_id:
