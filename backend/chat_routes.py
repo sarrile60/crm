@@ -37,8 +37,12 @@ def verify_token_sync(token: str) -> dict:
     """Synchronous token verification for WebSocket"""
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        # Normalize token structure - convert user_id to id
+        if "user_id" in payload and "id" not in payload:
+            payload["id"] = payload["user_id"]
         return payload
-    except:
+    except Exception as e:
+        print(f"Token verification error: {e}")
         return None
 
 chat_router = APIRouter(prefix="/api/chat", tags=["chat"])
