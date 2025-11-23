@@ -75,6 +75,26 @@ const ChatBubble = ({ currentUser }) => {
     scrollToBottom();
   }, [messages]);
 
+  // Periodic polling as backup (every 10 seconds)
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const interval = setInterval(() => {
+      // Only fetch if we're viewing messages
+      if (activeTab === 'team' && (currentUser.team_id || selectedTeamId)) {
+        const teamId = currentUser.role === 'admin' && selectedTeamId ? selectedTeamId : currentUser.team_id;
+        if (teamId) fetchTeamMessages(teamId);
+      } else if (activeTab === 'direct' && selectedContact) {
+        fetchDirectMessages(selectedContact.id);
+      }
+      
+      // Always update unread counts
+      fetchUnreadCount();
+    }, 10000); // Every 10 seconds
+    
+    return () => clearInterval(interval);
+  }, [isOpen, activeTab, selectedContact, selectedTeamId]);
+
   const connectWebSocket = () => {
     const token = localStorage.getItem('crmToken');
     const websocket = new WebSocket(`${WS_URL}/api/chat/ws/${token}`);
