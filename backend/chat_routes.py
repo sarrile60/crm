@@ -330,7 +330,7 @@ async def upload_file(file: UploadFile = File(...), current_user: dict = Depends
         raise HTTPException(status_code=500, detail=str(e))
 
 @chat_router.get("/files/{file_id}")
-async def get_file(file_id: str, token: dict = Depends(verify_token)):
+async def get_file(file_id: str, current_user: dict = Depends(get_current_user)):
     """Download a chat file"""
     file_doc = await db.chat_files.find_one({"id": file_id}, {"_id": 0})
     
