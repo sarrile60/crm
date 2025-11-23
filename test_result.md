@@ -306,7 +306,35 @@ test_plan:
   test_all: true
   test_priority: "high_first"
 
-agent_communication:
+  - agent: "testing"
+    message: |
+      🎯 NEW TESTING REQUEST: Chat Notification Popup System
+      
+      USER REQUEST: Test the chat notification popup system with two users messaging each other.
+      
+      TESTING SCOPE:
+      - Real-time WebSocket messaging between users
+      - Popup notifications appearing top-right when messages received
+      - Notification behavior when chat is closed vs open on different tab
+      - @Mention notifications with special highlighting
+      - Unread badges and contact list previews
+      - Admin team spy functionality
+      
+      TEST USERS:
+      - User A: agent@test.com / TestPass123!
+      - User B: supervisor@test.com / TestPass123!
+      - Admin: admin@1lawsolicitors.com / Admin@123456
+      
+      PRIORITY: HIGH - Real-time chat functionality is critical for user experience
+      
+      Will test comprehensive chat notification flow including:
+      1. Popup notifications when chat closed
+      2. Popup notifications when on different tab
+      3. @Mention special notifications
+      4. Unread badge updates
+      5. Contact list previews and sorting
+      6. Admin team messaging capabilities
+
   - agent: "main"
     message: |
       FIXING USER-REPORTED ISSUES:
