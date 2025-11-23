@@ -892,7 +892,7 @@ const Home = () => {
                 Quanto tempo richiede il recupero fondi?
               </AccordionTrigger>
               <AccordionContent className="text-gray-700 text-base leading-relaxed">
-                Dipende dalla complessità del caso. Casi semplici con broker regolamentati possono richiedere 3-6 mesi. Casi internazionali complessi possono richiedere 8-14 mesi. Durante la consulenza iniziale forniremo una stima basata sul tuo caso specifico.
+                Garantiamo risultati rapidi. In molti casi, otteniamo risposte e risultati entro 1 settimana dall'avvio dell'azione legale. Casi internazionali complessi possono richiedere più tempo. Durante la consulenza iniziale forniremo una stima basata sul tuo caso specifico.
               </AccordionContent>
             </AccordionItem>
 
