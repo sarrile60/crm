@@ -1,0 +1,27 @@
+# Production Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+gunicorn==21.2.0
+
+# Database
+motor==3.3.2
+pymongo==4.6.1
+
+# Security & Authentication
+python-jose[cryptography]==3.3.0
+bcrypt==4.1.2
+python-multipart==0.0.6
+
+# Configuration & Validation
+pydantic==2.5.3
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+
+# Rate Limiting (production would use Redis)
+slowapi==0.1.9
+
+# Monitoring & Logging
+python-json-logger==2.0.7
