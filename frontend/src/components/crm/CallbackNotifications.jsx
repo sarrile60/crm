@@ -66,16 +66,24 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       // Filter leads with callback dates that are still pending
       const now = new Date();
       const pending = allLeads.filter(lead => {
+        // Only show if status requires callback AND has callback date
         if (!allNotifyStatuses.includes(lead.status) || !lead.callback_date) {
           return false;
         }
         
         const callbackTime = new Date(lead.callback_date);
-        // Show callbacks that are upcoming or within last 24 hours
-        return callbackTime > now || (now - callbackTime < 24 * 60 * 60 * 1000);
+        
+        // Show callbacks that are:
+        // 1. In the future (upcoming)
+        // 2. OR overdue but within last 48 hours (give them time to handle)
+        const timeSinceCallback = now - callbackTime;
+        const isUpcoming = callbackTime > now;
+        const isRecentlyOverdue = timeSinceCallback > 0 && timeSinceCallback < (48 * 60 * 60 * 1000); // 48 hours
+        
+        return isUpcoming || isRecentlyOverdue;
       });
       
-      // Sort by callback date (soonest first)
+      // Sort by callback date (soonest first, overdue at top)
       pending.sort((a, b) => new Date(a.callback_date) - new Date(b.callback_date));
       
       setPendingCallbacks(pending);
