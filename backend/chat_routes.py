@@ -1,15 +1,15 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException, UploadFile, File
-from typing import List, Dict
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException, UploadFile, File, Header
+from typing import List, Dict, Optional
 import json
 from datetime import datetime, timezone
 from chat_models import Message, SendMessage, MessageType, ChatUser
-from auth_utils import verify_token
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
 from pathlib import Path
 import uuid
 import base64
+import jwt
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
