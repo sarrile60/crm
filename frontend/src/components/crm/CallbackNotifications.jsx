@@ -18,6 +18,16 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const [totalNotifications, setTotalNotifications] = useState(0);
   const [urgentCallbackQueue, setUrgentCallbackQueue] = useState([]);
 
+  // Process queue - show next callback popup when current one is closed
+  useEffect(() => {
+    if (urgentCallbackQueue.length > 0 && !showUrgentModal) {
+      const nextCallback = urgentCallbackQueue[0];
+      setUrgentCallback(nextCallback);
+      setShowUrgentModal(true);
+      setUrgentCallbackQueue(prev => prev.slice(1)); // Remove from queue
+    }
+  }, [urgentCallbackQueue, showUrgentModal]);
+
   useEffect(() => {
     fetchReminders();
     fetchPendingCallbacks();
