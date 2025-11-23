@@ -212,7 +212,7 @@ async def send_message(message_data: SendMessage, current_user: dict = Depends(g
         # Save to database
         await db.chat_messages.insert_one(message.dict())
         
-        # Send via WebSocket
+        # Send via WebSocket IMMEDIATELY to recipient
         await manager.send_personal_message({
             "type": "new_message",
             "message": message.dict()
@@ -223,6 +223,8 @@ async def send_message(message_data: SendMessage, current_user: dict = Depends(g
             "type": "message_sent",
             "message": message.dict()
         }, sender["id"])
+        
+        print(f"✅ Direct message sent: {sender['full_name']} → {recipient['full_name']}")
         
     elif message_data.type == MessageType.TEAM:
         if not message_data.team_id:
