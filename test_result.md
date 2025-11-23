@@ -379,6 +379,33 @@ test_plan:
       3. Lead navigation with filters applied
       4. Click-to-call phone links
   
+  - agent: "main"
+    message: |
+      🔧 FIXING CRITICAL WEBSOCKET BUG - Real-time chat not working
+      
+      ROOT CAUSE IDENTIFIED:
+      The WebSocket handling loop in chat_routes.py (lines 151-161) has a critical flaw:
+      - Line 155: `await websocket.receive_text()` is BLOCKING
+      - This blocks the entire coroutine, preventing the server from SENDING messages
+      - When manager.send_personal_message() is called from /send endpoint, it cannot reach clients
+      - Clients never receive messages in real-time, only when polling/refreshing
+      
+      SOLUTION:
+      Rewrite WebSocket loop to be non-blocking using asyncio.wait() with timeout
+      - Keep connection alive with periodic checks
+      - Allow bidirectional communication (send AND receive)
+      - Handle incoming heartbeat pings properly
+      - Don't block on receive, allowing outgoing broadcasts to work
+      
+      FILES TO MODIFY:
+      - /app/backend/chat_routes.py (WebSocket endpoint function)
+      
+      TESTING REQUIRED:
+      - Backend testing with two users sending messages
+      - Verify messages appear instantly without page refresh
+      - Test team chat and direct messages
+      - Verify WebSocket stability
+  
   - agent: "testing"
     message: |
       🎉 BACKEND TESTING COMPLETED - ALL TESTS PASSING (100% SUCCESS RATE)
