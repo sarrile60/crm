@@ -235,12 +235,12 @@ const UserManagement = ({ currentUser }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Email</label>
+                <label className="block text-sm font-semibold text-black mb-2">Username</label>
                 <Input
-                  type="email"
-                  value={newUser.email}
-                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                  placeholder="mario@1lawsolicitors.com"
+                  type="text"
+                  value={newUser.username}
+                  onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                  placeholder="mario_rossi"
                   className="bg-white border-gray-300 rounded-none"
                 />
               </div>
