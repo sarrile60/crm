@@ -84,15 +84,46 @@ const ChatBubble = ({ currentUser }) => {
         // Add new message to list
         const message = data.message;
         
+        // Show notification popup if chat is closed or different tab
+        const isInCurrentView = (
+          (activeTab === 'team' && message.type === 'team' && (message.team_id === currentUser.team_id || (currentUser.role === 'admin' && message.team_id === selectedTeamId))) ||
+          (activeTab === 'direct' && message.type === 'direct' && (message.sender_id === selectedContact?.id || message.recipient_id === selectedContact?.id))
+        );
+        
+        if (!isOpen || !isInCurrentView) {
+          // Show notification popup
+          setNotificationData({
+            sender: message.sender_name,
+            content: message.content,
+            type: message.type,
+            time: new Date()
+          });
+          setShowNotification(true);
+          
+          // Auto-hide after 5 seconds
+          setTimeout(() => setShowNotification(false), 5000);
+          
+          // Play sound
+          playNotificationSound();
+        }
+        
+        // Check for @mentions
+        if (message.content.includes(`@${currentUser.full_name}`) || message.content.includes(`@${currentUser.email}`)) {
+          toast.info(`${message.sender_name} ti ha menzionato!`, { duration: 5000 });
+          playNotificationSound();
+        }
+        
         // Check if message belongs to current view
-        if (activeTab === 'team' && message.type === 'team' && message.team_id === currentUser.team_id) {
+        if (activeTab === 'team' && message.type === 'team' && (message.team_id === currentUser.team_id || (currentUser.role === 'admin' && message.team_id === selectedTeamId))) {
           // Avoid duplicates - check if message already exists
           setMessages(prev => {
             const exists = prev.some(m => m.id === message.id);
             if (exists) return prev;
             return [...prev, message];
           });
-          markAsRead(message.id);
+          if (isInCurrentView) {
+            markAsRead(message.id);
+          }
         } else if (activeTab === 'direct' && message.type === 'direct') {
           if ((message.sender_id === selectedContact?.id) || (message.recipient_id === selectedContact?.id)) {
             // Avoid duplicates
@@ -101,7 +132,9 @@ const ChatBubble = ({ currentUser }) => {
               if (exists) return prev;
               return [...prev, message];
             });
-            markAsRead(message.id);
+            if (isInCurrentView) {
+              markAsRead(message.id);
+            }
           }
         }
         
