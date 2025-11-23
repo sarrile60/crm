@@ -227,6 +227,9 @@ const ChatBubble = ({ currentUser }) => {
           
           return [...prev, message];
         });
+        }
+      } catch (error) {
+        console.error('Error handling WebSocket message:', error);
       }
     };
     
