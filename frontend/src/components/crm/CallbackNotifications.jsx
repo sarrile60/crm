@@ -146,6 +146,8 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
       
       // Check for callbacks within the next 1 minute
+      const newUrgentCallbacks = [];
+      
       for (const lead of allLeads) {
         if (allNotifyStatuses.includes(lead.status) && lead.callback_date) {
           const callbackTime = new Date(lead.callback_date);
@@ -164,15 +166,17 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
             const alerted = localStorage.getItem(alertKey);
             
             if (!alerted) {
-              setUrgentCallback(lead);
-              setShowUrgentModal(true);
+              newUrgentCallbacks.push(lead);
               localStorage.setItem(alertKey, 'true');
-              
-              // Play alert sound
-              playAlertSound();
             }
           }
         }
+      }
+      
+      // Add all new urgent callbacks to queue
+      if (newUrgentCallbacks.length > 0) {
+        setUrgentCallbackQueue(prev => [...prev, ...newUrgentCallbacks]);
+        playAlertSound();
       }
       
       fetchReminders();
