@@ -250,11 +250,19 @@ async def send_message(message_data: SendMessage, current_user: dict = Depends(g
         # Save to database
         await db.chat_messages.insert_one(message.dict())
         
-        # Broadcast to team via WebSocket
+        # Broadcast to team via WebSocket IMMEDIATELY
         await manager.broadcast_to_team({
             "type": "new_message",
             "message": message.dict()
         }, message_data.team_id, sender["id"], db)
+        
+        # Send confirmation to sender
+        await manager.send_personal_message({
+            "type": "message_sent",
+            "message": message.dict()
+        }, sender["id"])
+        
+        print(f"✅ Team message sent: {sender['full_name']} → Team {message_data.team_id}")
     
     return {"success": True, "message_id": message.id}
 
