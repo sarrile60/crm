@@ -705,7 +705,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
-                      {(currentUser.role === 'admin' || currentUser.role === 'manager' || currentUser.role === 'supervisor') && (
+                      {(currentUser.role === 'admin' || currentUser.role === 'supervisor') && (
                         <Button
                           onClick={() => handleAssign(lead)}
                           size="sm"
