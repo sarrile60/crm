@@ -10,17 +10,23 @@ const API = `${BACKEND_URL}/api`;
 
 const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const [reminders, setReminders] = useState([]);
+  const [pendingCallbacks, setPendingCallbacks] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [urgentCallback, setUrgentCallback] = useState(null);
   const [showUrgentModal, setShowUrgentModal] = useState(false);
   const [snoozeData, setSnoozeData] = useState({});
+  const [totalNotifications, setTotalNotifications] = useState(0);
 
   useEffect(() => {
     fetchReminders();
+    fetchPendingCallbacks();
     checkUpcomingCallbacks();
     
-    // Check for reminders every 30 seconds
-    const interval = setInterval(checkUpcomingCallbacks, 30000);
+    // Check for reminders and callbacks every 30 seconds
+    const interval = setInterval(() => {
+      checkUpcomingCallbacks();
+      fetchPendingCallbacks();
+    }, 30000);
     
     // Check for snoozed callbacks every 10 seconds
     const snoozeInterval = setInterval(checkSnoozedCallbacks, 10000);
