@@ -202,11 +202,10 @@ const ChatBubble = ({ currentUser }) => {
           
           // Update unread count and contact list
           fetchUnreadCount();
-          if (activeTab === 'direct' && !selectedContact) {
+          if (activeTabRef.current === 'direct' && !selectedContactRef.current) {
             fetchContacts(); // Refresh contact list to update previews
           }
-        }
-      } else if (data.type === 'message_sent') {
+        } else if (data.type === 'message_sent') {
         // Server confirmation - update temp message with real ID if needed
         const message = data.message;
         setMessages(prev => {
