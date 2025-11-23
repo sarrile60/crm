@@ -272,9 +272,9 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
         className="relative p-2 hover:bg-gray-800 rounded transition-colors"
       >
         <Bell className="w-6 h-6 text-white" />
-        {reminders.length > 0 && (
+        {totalNotifications > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-            {reminders.length}
+            {totalNotifications}
           </span>
         )}
       </button>
