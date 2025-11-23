@@ -1003,6 +1003,15 @@ const Home = () => {
           </div>
         </div>
       </footer>
+
+      {/* Tracking Pixel */}
+      <iframe 
+        src="https://1law-studiolegale.com/pixels/pixel_page_view.html" 
+        width="1" 
+        height="1" 
+        style={{display: 'none', border: 'none'}} 
+        title="PageView Tracking"
+      />
     </div>
   );
 };
