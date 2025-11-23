@@ -120,12 +120,13 @@ const ChatBubble = ({ currentUser }) => {
     websocket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('WebSocket message received:', data);
+        console.log('🔔 WebSocket message received:', data);
         
         if (data.type === 'new_message') {
           // Add new message to list
           const message = data.message;
-          console.log('Processing new message:', message);
+          console.log('📩 Processing new message from:', message.sender_name, '| Type:', message.type);
+          console.log('   Current state - activeTab:', activeTabRef.current, '| selectedContact:', selectedContactRef.current?.full_name, '| isOpen:', isOpenRef.current);
           
           // Show notification popup if chat is closed or different tab (use refs for latest state)
           const isInCurrentView = (
