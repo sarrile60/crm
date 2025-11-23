@@ -111,8 +111,8 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   };
 
   const checkSnoozedCallbacks = () => {
-    // SKIP popup notifications for admins completely
-    if (currentUser.role === 'admin') {
+    // SKIP popup notifications for admins and supervisors - only agents get popups
+    if (currentUser.role === 'admin' || currentUser.role === 'supervisor') {
       return;
     }
     
