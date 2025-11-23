@@ -308,8 +308,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Backend: Test mass update endpoint with different roles"
-    - "Backend: Test phone masking for different user roles"
+    - "Frontend: Chat notification popup system"
     - "Frontend: Test Created Date formatting"
     - "Frontend: Test mass update selection and update"
     - "Frontend: Test lead navigation arrows"
