@@ -420,16 +420,19 @@ const ChatBubble = ({ currentUser }) => {
       // Send in background - don't await, let WebSocket handle confirmation
       axios.post(`${API}/chat/send`, messageData, { headers }).then(response => {
       
-      // Replace temp message with real one from server
-      const realMessageId = response.data.message_id;
-      setMessages(prev => prev.map(msg => 
-        msg.id === tempMessage.id ? { ...msg, id: realMessageId } : msg
-      ));
+        // Replace temp message with real one from server
+        const realMessageId = response.data.message_id;
+        setMessages(prev => prev.map(msg => 
+          msg.id === tempMessage.id ? { ...msg, id: realMessageId } : msg
+        ));
+      }).catch(error => {
+        // Remove the temporary message on error
+        setMessages(prev => prev.filter(msg => msg.id !== tempMessage.id));
+        toast.error(error.response?.data?.detail || 'Errore nell\'invio del messaggio');
+      });
       
     } catch (error) {
-      // Remove the temporary message on error
-      setMessages(prev => prev.filter(msg => msg.id !== tempMessage.id));
-      toast.error(error.response?.data?.detail || 'Errore nell\'invio del messaggio');
+      console.error('Error in sendMessage:', error);
     }
   };
 
