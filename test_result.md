@@ -251,6 +251,12 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "FIXED real-time message display issue. Problem: WebSocket was adding ALL direct messages to messages state, not filtering by selected contact. When viewing Contact A, messages from Contact B would also be added. Fix: Added logic to only add messages that belong to the currently viewed conversation. Now checks if message is specifically to/from the selected contact when in direct message view. Frontend hot-reloaded successfully."
+      - working: false
+        agent: "user"
+        comment: "User reported: Still not working. Messages don't appear in real-time when viewing the conversation."
+      - working: "NA"
+        agent: "main"
+        comment: "Added comprehensive console logging to debug the issue. Logs now show: WebSocket message received, current state (activeTab, selectedContact, isOpen), message routing decision logic. This will help identify exactly why messages aren't appearing. Frontend compiled successfully. Ready for testing with browser console open to see the logs."
 
   - task: "Created Date formatting in Italian"
     implemented: true
