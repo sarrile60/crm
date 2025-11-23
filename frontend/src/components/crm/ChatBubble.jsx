@@ -205,6 +205,43 @@ const ChatBubble = ({ currentUser }) => {
       const headers = { Authorization: `Bearer ${token}` };
       const res = await axios.get(`${API}/chat/contacts`, { headers });
       setContacts(res.data);
+      
+      // Fetch metadata for each contact (last message + unread count)
+      const contactsWithMeta = await Promise.all(
+        res.data.map(async (contact) => {
+          try {
+            // Get last message with this contact
+            const messagesRes = await axios.get(`${API}/chat/messages/direct/${contact.id}`, { 
+              headers,
+              params: { limit: 1 }
+            });
+            const lastMessage = messagesRes.data.length > 0 ? messagesRes.data[messagesRes.data.length - 1] : null;
+            
+            // Count unread messages from this contact
+            const allMessagesRes = await axios.get(`${API}/chat/messages/direct/${contact.id}`, { headers });
+            const unreadCount = allMessagesRes.data.filter(
+              msg => msg.sender_id === contact.id && !msg.read_by?.includes(currentUser.id)
+            ).length;
+            
+            return {
+              ...contact,
+              lastMessage,
+              unreadCount
+            };
+          } catch (error) {
+            return { ...contact, lastMessage: null, unreadCount: 0 };
+          }
+        })
+      );
+      
+      // Sort by most recent message
+      contactsWithMeta.sort((a, b) => {
+        if (!a.lastMessage) return 1;
+        if (!b.lastMessage) return -1;
+        return new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at);
+      });
+      
+      setContactsWithMetadata(contactsWithMeta);
     } catch (error) {
       console.error('Error fetching contacts:', error);
     }
