@@ -158,23 +158,51 @@ const ChatBubble = ({ currentUser }) => {
   const sendMessage = async () => {
     if (!newMessage.trim() && !uploading) return;
     
+    const messageContent = newMessage;
+    
+    // Optimistic update - add message immediately to UI
+    const tempMessage = {
+      id: `temp_${Date.now()}`,
+      type: activeTab,
+      sender_id: currentUser.id,
+      sender_name: currentUser.full_name,
+      sender_role: currentUser.role,
+      content: messageContent,
+      created_at: new Date().toISOString(),
+      ...(activeTab === 'team' && { team_id: currentUser.team_id }),
+      ...(activeTab === 'direct' && { 
+        recipient_id: selectedContact?.id,
+        recipient_name: selectedContact?.full_name
+      })
+    };
+    
+    // Add to messages immediately
+    setMessages(prev => [...prev, tempMessage]);
+    setNewMessage('');
+    setShowEmojiPicker(false);
+    
     try {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
       
       const messageData = {
         type: activeTab,
-        content: newMessage,
+        content: messageContent,
         ...(activeTab === 'team' && { team_id: currentUser.team_id }),
         ...(activeTab === 'direct' && { recipient_id: selectedContact?.id })
       };
       
-      await axios.post(`${API}/chat/send`, messageData, { headers });
+      const response = await axios.post(`${API}/chat/send`, messageData, { headers });
       
-      setNewMessage('');
-      setShowEmojiPicker(false);
+      // Replace temp message with real one from server
+      const realMessageId = response.data.message_id;
+      setMessages(prev => prev.map(msg => 
+        msg.id === tempMessage.id ? { ...msg, id: realMessageId } : msg
+      ));
       
     } catch (error) {
+      // Remove the temporary message on error
+      setMessages(prev => prev.filter(msg => msg.id !== tempMessage.id));
       toast.error(error.response?.data?.detail || 'Errore nell\'invio del messaggio');
     }
   };
