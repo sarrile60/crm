@@ -14,6 +14,7 @@ const API = `${BACKEND_URL}/api`;
 
 const Home = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [formStep, setFormStep] = useState(1);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
