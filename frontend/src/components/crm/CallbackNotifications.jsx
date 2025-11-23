@@ -407,15 +407,24 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                   {pendingCallbacks.map((lead) => {
                     const callbackTime = new Date(lead.callback_date);
                     const now = new Date();
-                    const isPast = callbackTime < now;
-                    const timeDiff = Math.abs(callbackTime - now);
-                    const minutesAway = Math.floor(timeDiff / (1000 * 60));
-                    const hoursAway = Math.floor(minutesAway / 60);
+                    const timeDiff = now - callbackTime; // How long overdue
+                    const minutesOverdue = Math.floor(timeDiff / (1000 * 60));
+                    const hoursOverdue = Math.floor(minutesOverdue / 60);
+                    const daysOverdue = Math.floor(hoursOverdue / 24);
+                    
+                    let overdueText = '';
+                    if (daysOverdue > 0) {
+                      overdueText = `${daysOverdue} giorni fa`;
+                    } else if (hoursOverdue > 0) {
+                      overdueText = `${hoursOverdue} ore fa`;
+                    } else {
+                      overdueText = `${minutesOverdue} minuti fa`;
+                    }
                     
                     return (
                       <div 
                         key={lead.id} 
-                        className={`border-2 p-4 ${isPast ? 'bg-red-50 border-red-300' : 'bg-white border-gray-200'}`}
+                        className="border-2 p-4 bg-red-50 border-red-300"
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
@@ -432,7 +441,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                               <p className="text-gray-700">
                                 <strong>Importo:</strong> {lead.amountLost}
                               </p>
-                              <p className={`font-semibold ${isPast ? 'text-red-600' : 'text-gray-800'}`}>
+                              <p className="font-semibold text-red-600">
                                 <Clock className="w-4 h-4 inline mr-1" />
                                 {callbackTime.toLocaleString('it-IT', { 
                                   day: '2-digit',
@@ -440,7 +449,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                                   hour: '2-digit',
                                   minute: '2-digit'
                                 })}
-                                {isPast ? ' (SCADUTO)' : ` (tra ${hoursAway > 0 ? hoursAway + 'h' : minutesAway + 'min'})`}
+                                {' '}<span className="text-red-700 font-bold">(SCADUTO {overdueText})</span>
                               </p>
                               {lead.callback_notes && (
                                 <p className="text-gray-600 text-xs italic">
