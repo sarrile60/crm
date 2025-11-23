@@ -271,7 +271,7 @@ const SettingsPanel = () => {
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="_none">Nessun supervisor</SelectItem>
-                    {users.filter(u => u.role === 'supervisor' || u.role === 'manager').map(user => (
+                    {users.filter(u => u.role === 'supervisor').map(user => (
                       <SelectItem key={user.id} value={user.id}>{user.full_name} ({user.role})</SelectItem>
                     ))}
                   </SelectContent>
