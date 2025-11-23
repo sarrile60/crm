@@ -488,7 +488,7 @@ async def complete_reminder(reminder_id: str, current_user: dict = Depends(get_c
 
 # ==================== MASS UPDATE ROUTES ====================
 
-@crm_router.post("/leads/mass-update", dependencies=[Depends(require_role(["admin", "manager", "supervisor"]))])
+@crm_router.post("/leads/mass-update", dependencies=[Depends(require_role(["admin", "supervisor"]))])
 async def mass_update_leads(update_data: MassUpdateData, current_user: dict = Depends(get_current_user)):
     """Mass update multiple leads"""
     if not update_data.lead_ids:
