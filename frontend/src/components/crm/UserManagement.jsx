@@ -63,7 +63,7 @@ const UserManagement = ({ currentUser }) => {
       await axios.post(`${API}/crm/users`, newUser, { headers });
       toast.success('Utente creato con successo');
       setShowCreateModal(false);
-      setNewUser({ email: '', full_name: '', password: '', role: 'agent', team_id: '' });
+      setNewUser({ username: '', full_name: '', password: '', role: 'agent', team_id: '' });
       fetchData();
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Errore nella creazione dell\'utente');
