@@ -348,9 +348,9 @@ async def get_file(file_id: str, current_user: dict = Depends(get_current_user))
     )
 
 @chat_router.put("/messages/{message_id}/read")
-async def mark_message_read(message_id: str, token: dict = Depends(verify_token)):
+async def mark_message_read(message_id: str, current_user: dict = Depends(get_current_user)):
     """Mark a message as read"""
-    user_id = token["id"]
+    user_id = current_user["id"]
     
     await db.chat_messages.update_one(
         {"id": message_id},
