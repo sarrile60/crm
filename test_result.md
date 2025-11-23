@@ -326,12 +326,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Backend: Real-time chat WebSocket functionality (CRITICAL FIX)"
     - "Frontend: Chat notification popup system"
-  stuck_tasks:
-    - "Real-time chat WebSocket functionality"
+  stuck_tasks: []
   test_all: false
-  test_priority: "stuck_first"
+  test_priority: "high_first"
 
   - agent: "testing"
     message: |
