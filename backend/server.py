@@ -336,12 +336,15 @@ async def root():
 app.include_router(api_router)
 app.include_router(crm_router)
 
+# CORS Configuration (Restricted for Production)
+cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://legal-hub-27.preview.emergentagent.com').split(',')
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=[origin.strip() for origin in cors_origins],  # Specific origins only
+    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Explicit methods
+    allow_headers=["Authorization", "Content-Type"],  # Explicit headers
+    max_age=3600  # Cache preflight for 1 hour
 )
 
 @app.on_event("startup")
