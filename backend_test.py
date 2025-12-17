@@ -1797,7 +1797,11 @@ class CRMTester:
         self.test_mass_update_functionality()
         self.test_created_at_field()
         
-        # Step 5: Test Permission Engine Integration (NEW)
+        # Step 5: Test Data Visibility Rules (NEW)
+        self.test_data_visibility_rules_api()
+        self.test_visibility_enforcement()
+        
+        # Step 6: Test Permission Engine Integration
         self.test_permission_engine_integration()
         
         # Step 6: Run deletion tests
