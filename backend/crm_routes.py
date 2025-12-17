@@ -367,23 +367,23 @@ async def get_crm_leads(
 
 @crm_router.get("/leads/{lead_id}")
 async def get_lead_detail(lead_id: str, current_user: dict = Depends(get_current_user)):
-    """Get lead details"""
+    """Get lead details - uses permission engine for access control"""
     lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
     
     if not lead:
         raise HTTPException(status_code=404, detail="Lead not found")
     
-    # Check permissions based on role
-    if current_user["role"] == "agent":
-        # Agents can only access their assigned leads
-        if lead.get("assigned_to") != current_user["id"]:
-            raise HTTPException(status_code=403, detail="Access denied")
-    elif current_user["role"] == "supervisor":
-        # Supervisors can only access leads from their team
-        user_team_id = current_user.get("team_id")
-        if not user_team_id or lead.get("team_id") != user_team_id:
-            raise HTTPException(status_code=403, detail="Access denied - lead not in your team")
-    # Admin can access all leads (no check needed)
+    # Check permission using permission engine (GUI-configured)
+    permission_result = await permission_engine.check_permission(
+        user_id=current_user["id"],
+        entity="leads",
+        action=PermissionAction.READ,
+        resource_owner_id=lead.get("assigned_to"),
+        resource_team_id=lead.get("team_id")
+    )
+    
+    if not permission_result.allowed:
+        raise HTTPException(status_code=403, detail=f"Access denied: {permission_result.reason}")
     
     # Add masked phone for display and keep real phone for calling
     if "phone" in lead:
