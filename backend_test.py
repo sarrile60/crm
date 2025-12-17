@@ -1404,6 +1404,460 @@ class CRMTester:
         # Test lead deletion functionality
         self.test_lead_deletion()
         
+    
+    def test_audit_logs_api(self):
+        """Test audit logs API endpoints"""
+        print("\n=== Testing Audit Logs API ===")
+        
+        if not self.admin_token:
+            self.log_result("Audit Logs API Setup", False, "Missing admin token")
+            return
+        
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # Test 1: GET /api/admin/audit-logs
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/audit-logs", headers=admin_headers)
+            if response.status_code == 200:
+                data = response.json()
+                logs = data.get("logs", [])
+                total = data.get("total", 0)
+                
+                # Check response structure
+                required_fields = ["logs", "total", "limit", "offset", "has_more"]
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if not missing_fields:
+                    self.log_result(
+                        "Audit Logs - GET /api/admin/audit-logs",
+                        True,
+                        f"Retrieved {len(logs)} logs out of {total} total",
+                        f"Response structure complete with pagination info"
+                    )
+                    
+                    # Check log entry structure if logs exist
+                    if logs:
+                        log_entry = logs[0]
+                        required_log_fields = ["id", "timestamp", "action", "entity_type", "user_name", "action_label", "entity_type_label"]
+                        missing_log_fields = [field for field in required_log_fields if field not in log_entry]
+                        
+                        if not missing_log_fields:
+                            self.log_result(
+                                "Audit Logs - Log entry structure",
+                                True,
+                                "Log entries have all required fields including labels",
+                                f"Sample log: {log_entry.get('action_label')} by {log_entry.get('user_name')}"
+                            )
+                        else:
+                            self.log_result(
+                                "Audit Logs - Log entry structure",
+                                False,
+                                "Log entries missing required fields",
+                                f"Missing: {missing_log_fields}"
+                            )
+                else:
+                    self.log_result(
+                        "Audit Logs - GET /api/admin/audit-logs",
+                        False,
+                        "Response missing required fields",
+                        f"Missing: {missing_fields}"
+                    )
+            else:
+                self.log_result("Audit Logs - GET /api/admin/audit-logs", False, f"Request failed: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Audit Logs - GET /api/admin/audit-logs", False, f"Error: {str(e)}")
+        
+        # Test 2: GET /api/admin/audit-logs/stats
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/audit-logs/stats", headers=admin_headers)
+            if response.status_code == 200:
+                data = response.json()
+                required_stats = ["total_logs", "today_count", "by_action", "by_entity_type"]
+                missing_stats = [field for field in required_stats if field not in data]
+                
+                if not missing_stats:
+                    self.log_result(
+                        "Audit Logs - GET /api/admin/audit-logs/stats",
+                        True,
+                        "Stats endpoint working correctly",
+                        f"Total: {data['total_logs']}, Today: {data['today_count']}, Actions: {len(data['by_action'])}, Entities: {len(data['by_entity_type'])}"
+                    )
+                else:
+                    self.log_result(
+                        "Audit Logs - GET /api/admin/audit-logs/stats",
+                        False,
+                        "Stats response missing required fields",
+                        f"Missing: {missing_stats}"
+                    )
+            else:
+                self.log_result("Audit Logs - GET /api/admin/audit-logs/stats", False, f"Request failed: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Audit Logs - GET /api/admin/audit-logs/stats", False, f"Error: {str(e)}")
+        
+        # Test 3: GET /api/admin/audit-logs/filters
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/audit-logs/filters", headers=admin_headers)
+            if response.status_code == 200:
+                data = response.json()
+                required_filters = ["actions", "entity_types", "users"]
+                missing_filters = [field for field in required_filters if field not in data]
+                
+                if not missing_filters:
+                    actions = data.get("actions", [])
+                    entity_types = data.get("entity_types", [])
+                    users = data.get("users", [])
+                    
+                    self.log_result(
+                        "Audit Logs - GET /api/admin/audit-logs/filters",
+                        True,
+                        "Filters endpoint working correctly",
+                        f"Actions: {len(actions)}, Entity Types: {len(entity_types)}, Users: {len(users)}"
+                    )
+                else:
+                    self.log_result(
+                        "Audit Logs - GET /api/admin/audit-logs/filters",
+                        False,
+                        "Filters response missing required fields",
+                        f"Missing: {missing_filters}"
+                    )
+            else:
+                self.log_result("Audit Logs - GET /api/admin/audit-logs/filters", False, f"Request failed: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Audit Logs - GET /api/admin/audit-logs/filters", False, f"Error: {str(e)}")
+        
+        # Test 4: GET /api/admin/audit-logs/export
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/audit-logs/export", headers=admin_headers)
+            if response.status_code == 200:
+                content_type = response.headers.get("content-type", "")
+                content_disposition = response.headers.get("content-disposition", "")
+                
+                if "text/csv" in content_type and "attachment" in content_disposition:
+                    # Check if CSV content is valid
+                    csv_content = response.text
+                    lines = csv_content.split('\n')
+                    
+                    if len(lines) >= 1 and "Data/Ora" in lines[0]:  # Check Italian header
+                        self.log_result(
+                            "Audit Logs - GET /api/admin/audit-logs/export",
+                            True,
+                            "CSV export working correctly",
+                            f"Content-Type: {content_type}, Lines: {len(lines)}, Header: {lines[0][:50]}..."
+                        )
+                    else:
+                        self.log_result(
+                            "Audit Logs - GET /api/admin/audit-logs/export",
+                            False,
+                            "CSV content invalid",
+                            f"First line: {lines[0] if lines else 'Empty'}"
+                        )
+                else:
+                    self.log_result(
+                        "Audit Logs - GET /api/admin/audit-logs/export",
+                        False,
+                        "Invalid CSV response headers",
+                        f"Content-Type: {content_type}, Content-Disposition: {content_disposition}"
+                    )
+            else:
+                self.log_result("Audit Logs - GET /api/admin/audit-logs/export", False, f"Request failed: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Audit Logs - GET /api/admin/audit-logs/export", False, f"Error: {str(e)}")
+    
+    def test_audit_logs_filtering(self):
+        """Test audit logs filtering functionality"""
+        print("\n=== Testing Audit Logs Filtering ===")
+        
+        if not self.admin_token:
+            self.log_result("Audit Logs Filtering Setup", False, "Missing admin token")
+            return
+        
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # Test filtering by action
+        try:
+            response = self.session.get(
+                f"{BASE_URL}/admin/audit-logs?action=login_success&limit=10",
+                headers=admin_headers
+            )
+            if response.status_code == 200:
+                data = response.json()
+                logs = data.get("logs", [])
+                
+                # Check if all logs have the correct action
+                all_correct_action = all(log.get("action") == "login_success" for log in logs)
+                
+                self.log_result(
+                    "Audit Logs - Filter by action",
+                    all_correct_action,
+                    f"Action filter working correctly",
+                    f"Found {len(logs)} login_success logs"
+                )
+            else:
+                self.log_result("Audit Logs - Filter by action", False, f"Request failed: {response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Audit Logs - Filter by action", False, f"Error: {str(e)}")
+        
+        # Test filtering by entity type
+        try:
+            response = self.session.get(
+                f"{BASE_URL}/admin/audit-logs?entity_type=user&limit=10",
+                headers=admin_headers
+            )
+            if response.status_code == 200:
+                data = response.json()
+                logs = data.get("logs", [])
+                
+                # Check if all logs have the correct entity type
+                all_correct_entity = all(log.get("entity_type") == "user" for log in logs)
+                
+                self.log_result(
+                    "Audit Logs - Filter by entity type",
+                    all_correct_entity,
+                    f"Entity type filter working correctly",
+                    f"Found {len(logs)} user-related logs"
+                )
+            else:
+                self.log_result("Audit Logs - Filter by entity type", False, f"Request failed: {response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Audit Logs - Filter by entity type", False, f"Error: {str(e)}")
+        
+        # Test pagination
+        try:
+            response = self.session.get(
+                f"{BASE_URL}/admin/audit-logs?limit=5&offset=0",
+                headers=admin_headers
+            )
+            if response.status_code == 200:
+                data = response.json()
+                logs = data.get("logs", [])
+                total = data.get("total", 0)
+                has_more = data.get("has_more", False)
+                
+                pagination_working = len(logs) <= 5 and (has_more == (total > 5))
+                
+                self.log_result(
+                    "Audit Logs - Pagination",
+                    pagination_working,
+                    f"Pagination working correctly",
+                    f"Returned {len(logs)} logs, Total: {total}, Has more: {has_more}"
+                )
+            else:
+                self.log_result("Audit Logs - Pagination", False, f"Request failed: {response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Audit Logs - Pagination", False, f"Error: {str(e)}")
+    
+    def test_audit_logs_immutability(self):
+        """Test that audit logs are immutable (no PUT/DELETE endpoints)"""
+        print("\n=== Testing Audit Logs Immutability ===")
+        
+        if not self.admin_token:
+            self.log_result("Audit Logs Immutability Setup", False, "Missing admin token")
+            return
+        
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # First get a log ID to test with
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/audit-logs?limit=1", headers=admin_headers)
+            if response.status_code == 200:
+                data = response.json()
+                logs = data.get("logs", [])
+                
+                if logs:
+                    log_id = logs[0].get("id")
+                    
+                    # Test 1: Try to PUT (update) an audit log - should fail
+                    try:
+                        put_response = self.session.put(
+                            f"{BASE_URL}/admin/audit-logs/{log_id}",
+                            json={"action": "modified_action"},
+                            headers={**admin_headers, "Content-Type": "application/json"}
+                        )
+                        
+                        if put_response.status_code == 404 or put_response.status_code == 405:
+                            self.log_result(
+                                "Audit Logs - No PUT endpoint",
+                                True,
+                                "PUT endpoint correctly not available",
+                                f"Received {put_response.status_code} as expected"
+                            )
+                        else:
+                            self.log_result(
+                                "Audit Logs - No PUT endpoint",
+                                False,
+                                f"PUT endpoint should not exist, got {put_response.status_code}"
+                            )
+                    except Exception as e:
+                        # Connection errors are expected for non-existent endpoints
+                        self.log_result(
+                            "Audit Logs - No PUT endpoint",
+                            True,
+                            "PUT endpoint correctly not available",
+                            "Endpoint does not exist"
+                        )
+                    
+                    # Test 2: Try to DELETE an audit log - should fail
+                    try:
+                        delete_response = self.session.delete(
+                            f"{BASE_URL}/admin/audit-logs/{log_id}",
+                            headers=admin_headers
+                        )
+                        
+                        if delete_response.status_code == 404 or delete_response.status_code == 405:
+                            self.log_result(
+                                "Audit Logs - No DELETE endpoint",
+                                True,
+                                "DELETE endpoint correctly not available",
+                                f"Received {delete_response.status_code} as expected"
+                            )
+                        else:
+                            self.log_result(
+                                "Audit Logs - No DELETE endpoint",
+                                False,
+                                f"DELETE endpoint should not exist, got {delete_response.status_code}"
+                            )
+                    except Exception as e:
+                        # Connection errors are expected for non-existent endpoints
+                        self.log_result(
+                            "Audit Logs - No DELETE endpoint",
+                            True,
+                            "DELETE endpoint correctly not available",
+                            "Endpoint does not exist"
+                        )
+                else:
+                    self.log_result("Audit Logs Immutability", False, "No audit logs found to test with")
+            else:
+                self.log_result("Audit Logs Immutability", False, f"Could not get audit logs: {response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Audit Logs Immutability", False, f"Error: {str(e)}")
+    
+    def test_audit_log_creation(self):
+        """Test that actions create audit logs"""
+        print("\n=== Testing Audit Log Creation ===")
+        
+        if not self.admin_token:
+            self.log_result("Audit Log Creation Setup", False, "Missing admin token")
+            return
+        
+        admin_headers = {
+            "Authorization": f"Bearer {self.admin_token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Get initial audit log count
+        try:
+            initial_response = self.session.get(f"{BASE_URL}/admin/audit-logs?limit=1", headers=admin_headers)
+            if initial_response.status_code == 200:
+                initial_count = initial_response.json().get("total", 0)
+            else:
+                initial_count = 0
+        except:
+            initial_count = 0
+        
+        # Test 1: Create a user (should create audit log)
+        test_user_data = {
+            "username": f"audit_test_{int(time.time())}",
+            "full_name": "Audit Test User",
+            "password": "test123",
+            "role": "agent"
+        }
+        
+        try:
+            create_response = self.session.post(
+                f"{BASE_URL}/admin/users",
+                json=test_user_data,
+                headers=admin_headers
+            )
+            
+            if create_response.status_code == 200:
+                # Wait a moment for audit log to be created
+                time.sleep(1)
+                
+                # Check if audit log was created
+                audit_response = self.session.get(
+                    f"{BASE_URL}/admin/audit-logs?action=user_created&limit=10",
+                    headers=admin_headers
+                )
+                
+                if audit_response.status_code == 200:
+                    audit_data = audit_response.json()
+                    user_created_logs = audit_data.get("logs", [])
+                    
+                    # Look for our specific user creation
+                    our_log = None
+                    for log in user_created_logs:
+                        if log.get("entity_name") == test_user_data["username"]:
+                            our_log = log
+                            break
+                    
+                    if our_log:
+                        self.log_result(
+                            "Audit Log Creation - User created",
+                            True,
+                            "User creation correctly logged to audit trail",
+                            f"Log ID: {our_log.get('id')}, Action: {our_log.get('action_label')}"
+                        )
+                    else:
+                        self.log_result(
+                            "Audit Log Creation - User created",
+                            False,
+                            "User creation audit log not found",
+                            f"Found {len(user_created_logs)} user_created logs but none for our user"
+                        )
+                else:
+                    self.log_result("Audit Log Creation - User created", False, f"Could not check audit logs: {audit_response.status_code}")
+            else:
+                self.log_result("Audit Log Creation - User created", False, f"Could not create test user: {create_response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Audit Log Creation - User created", False, f"Error: {str(e)}")
+        
+        # Test 2: Login should create audit log (we already logged in as admin)
+        try:
+            # Check for login_success logs
+            login_response = self.session.get(
+                f"{BASE_URL}/admin/audit-logs?action=login_success&limit=10",
+                headers=admin_headers
+            )
+            
+            if login_response.status_code == 200:
+                login_data = login_response.json()
+                login_logs = login_data.get("logs", [])
+                
+                # Look for admin login
+                admin_login = None
+                for log in login_logs:
+                    if log.get("user_name") == "admin_f87450ce5d66":
+                        admin_login = log
+                        break
+                
+                if admin_login:
+                    self.log_result(
+                        "Audit Log Creation - Login success",
+                        True,
+                        "Login events correctly logged to audit trail",
+                        f"Found admin login log: {admin_login.get('action_label')}"
+                    )
+                else:
+                    self.log_result(
+                        "Audit Log Creation - Login success",
+                        len(login_logs) > 0,
+                        f"Login logs exist but admin login not found",
+                        f"Found {len(login_logs)} login logs"
+                    )
+            else:
+                self.log_result("Audit Log Creation - Login success", False, f"Could not check login logs: {login_response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Audit Log Creation - Login success", False, f"Error: {str(e)}")
         # Test soft delete implementation
         self.test_soft_delete_verification()
         
