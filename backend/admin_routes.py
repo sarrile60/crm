@@ -3,9 +3,9 @@ Admin Panel API Routes
 Serves Admin GUI configuration only - no business logic
 All changes persist to database and take effect immediately
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from datetime import datetime, timezone
 import logging
 
