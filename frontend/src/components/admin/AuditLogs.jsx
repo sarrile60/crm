@@ -343,7 +343,7 @@ const AuditLogs = () => {
                   <SelectValue placeholder="Tutte le azioni" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tutte le azioni</SelectItem>
+                  <SelectItem value="all">Tutte le azioni</SelectItem>
                   {filterOptions.actions.map(a => (
                     <SelectItem key={a.value} value={a.value}>
                       {a.label}
