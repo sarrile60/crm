@@ -394,6 +394,44 @@ const UserManagement = ({ currentUser }) => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Delete User Confirmation Modal */}
+      {showDeleteModal && userToDelete && (
+        <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+          <DialogContent className="max-w-md bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
+                <AlertTriangle className="w-6 h-6" />
+                Conferma Eliminazione
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-gray-700">
+                Sei sicuro di voler eliminare l'utente <strong>{userToDelete.full_name}</strong> ({userToDelete.username})?
+              </p>
+              <p className="text-sm text-gray-500">
+                L'utente verrà disattivato e non potrà più accedere al sistema. 
+                I lead assegnati a questo utente rimarranno nel sistema.
+              </p>
+              <div className="flex gap-3 pt-4">
+                <Button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
+                >
+                  Annulla
+                </Button>
+                <Button
+                  onClick={handleConfirmDelete}
+                  className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Elimina
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
