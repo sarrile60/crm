@@ -205,3 +205,37 @@ class VisibilityMatrixRow(BaseModel):
     phone: str       # "full", "masked", "hidden"
     email: str
     address: str
+
+
+
+# ============================================
+# AUDIT LOG MODELS
+# ============================================
+
+class AuditLog(BaseModel):
+    """
+    Audit log entry - immutable, read-only record of system actions
+    Cannot be modified or deleted after creation
+    """
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    action: str  # Action type (e.g., "user_created", "login_success")
+    entity_type: str  # Entity category (e.g., "user", "team", "auth")
+    user_id: Optional[str] = None  # Who performed the action
+    user_name: str = "System"  # Username for display
+    entity_id: Optional[str] = None  # Affected entity ID
+    entity_name: Optional[str] = None  # Affected entity name/description
+    details: Dict[str, Any] = Field(default_factory=dict)  # Additional context
+    ip_address: Optional[str] = None  # Client IP
+
+
+class AuditLogFilter(BaseModel):
+    """Filter parameters for audit log queries"""
+    user_id: Optional[str] = None
+    action: Optional[str] = None
+    entity_type: Optional[str] = None
+    date_from: Optional[datetime] = None
+    date_to: Optional[datetime] = None
+    search: Optional[str] = None
+    limit: int = 100
+    offset: int = 0
