@@ -94,18 +94,49 @@ async def login(credentials: UserLogin):
     user = await db.crm_users.find_one({"username": credentials.username})
     
     if not user:
+        # Log failed login attempt
+        await log_auth_event(
+            action=AuditAction.LOGIN_FAILED,
+            username=credentials.username,
+            success=False,
+            details={"reason": "User not found"}
+        )
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     if not user.get("is_active", True):
+        # Log failed login due to inactive account
+        await log_auth_event(
+            action=AuditAction.LOGIN_FAILED,
+            username=credentials.username,
+            user_id=user["id"],
+            success=False,
+            details={"reason": "Account inactive"}
+        )
         raise HTTPException(status_code=401, detail="Account is inactive")
     
     if not verify_password(credentials.password, user["password"]):
+        # Log failed login due to wrong password
+        await log_auth_event(
+            action=AuditAction.LOGIN_FAILED,
+            username=credentials.username,
+            user_id=user["id"],
+            success=False,
+            details={"reason": "Invalid password"}
+        )
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     # Update last login
     await db.crm_users.update_one(
         {"id": user["id"]},
         {"$set": {"last_login": datetime.now(timezone.utc)}}
+    )
+    
+    # Log successful login
+    await log_auth_event(
+        action=AuditAction.LOGIN_SUCCESS,
+        username=user["username"],
+        user_id=user["id"],
+        success=True
     )
     
     # Create token
