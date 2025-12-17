@@ -323,7 +323,7 @@ const AuditLogs = () => {
                   <SelectValue placeholder="Tutti gli utenti" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tutti gli utenti</SelectItem>
+                  <SelectItem value="all">Tutti gli utenti</SelectItem>
                   {filterOptions.users.map(u => (
                     <SelectItem key={u.user_id} value={u.user_id}>
                       {u.user_name}
