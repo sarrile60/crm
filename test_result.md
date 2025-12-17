@@ -385,9 +385,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Chat notification popup system"
-  stuck_tasks:
-    - "Chat notification popup system"
+    - "Admin Panel - Role Management"
+    - "Admin Panel - Permission Matrix"
+    - "Admin Panel - Entity Configuration"
+    - "Admin Panel - Administration Menu"
+    - "Admin Panel - Backend API"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
