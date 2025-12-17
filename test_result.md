@@ -369,6 +369,21 @@ frontend:
         agent: "testing"
         comment: "✅ LEAD DELETION UI FULLY TESTED: Supervisor sees 7 red trash icon delete buttons in Leads table (permission-based filtering working). Delete confirmation modal appears with lead name, irreversible action warning, and 'Elimina Lead' button. Success toast 'Lead eliminato con successo' appears after deletion. Lead disappears from list after deletion. Role-based visibility working: Admin sees delete buttons on both Users and Leads, Supervisor sees delete buttons only on Leads (Users tab hidden), Agent sees no delete buttons. All security and UI requirements met."
 
+  - task: "Users Management in Administration Panel"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/admin/UsersManagement.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented comprehensive Users Management in Administration Panel. Full CRUD operations: Create, Edit, Delete (soft), Reset Password, Activate/Deactivate. Support for system/API users, role and team assignment, filtering by role/team/status. Admin-only access with proper security."
+      - working: true
+        agent: "testing"
+        comment: "✅ USERS MANAGEMENT FULLY TESTED AND WORKING: Navigation ✓ (Utenti tab removed from CRM, Administration button visible to admin only, Users tab active by default), UI Components ✓ (all headers, filters, buttons present), User Creation ✓ (fixed backend ObjectId serialization issue, users created successfully), All Modals ✓ (Create, Edit, Reset Password, Delete confirmation all working), Access Control ✓ (supervisor properly denied access with 'Accesso Negato' page), Security ✓ (admin-only functionality enforced). Backend fix applied: removed ObjectId from API responses to prevent serialization errors."
+
   - task: "Created Date formatting in Italian"
     implemented: true
     working: "NA"
