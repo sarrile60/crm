@@ -137,13 +137,18 @@ const UsersManagement = () => {
   };
 
   const handleResetPassword = async () => {
+    if (!adminPassword) {
+      toast.error('Inserisci la tua password attuale per confermare');
+      return;
+    }
+    
     if (!newPassword || newPassword.length < 4) {
-      toast.error('La password deve essere di almeno 4 caratteri');
+      toast.error('La nuova password deve essere di almeno 4 caratteri');
       return;
     }
     
     if (newPassword !== confirmPassword) {
-      toast.error('Le password non corrispondono');
+      toast.error('Le nuove password non corrispondono');
       return;
     }
 
@@ -152,12 +157,16 @@ const UsersManagement = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.put(`${API}/admin/users/${selectedUser.id}/password`, 
-        { password: newPassword }, 
+        { 
+          admin_password: adminPassword,
+          new_password: newPassword 
+        }, 
         { headers }
       );
       toast.success('Password reimpostata con successo');
       setShowResetPasswordModal(false);
       setSelectedUser(null);
+      setAdminPassword('');
       setNewPassword('');
       setConfirmPassword('');
       setShowPassword(false);
