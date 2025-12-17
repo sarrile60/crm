@@ -318,10 +318,10 @@ async def create_user_admin(user_data: dict, current_user: dict = Depends(get_cu
     
     await db.crm_users.insert_one(new_user)
     
-    # Remove password from response
-    del new_user["password"]
+    # Remove password and _id from response to avoid serialization issues
+    response_user = {k: v for k, v in new_user.items() if k not in ["password", "_id"]}
     logger.info(f"User {new_user['username']} created by admin {current_user['username']}")
-    return new_user
+    return response_user
 
 
 @admin_router.put("/users/{user_id}", dependencies=[Depends(require_admin)])
