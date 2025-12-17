@@ -145,6 +145,15 @@ const CRMDashboard = () => {
               Impostazioni
             </button>
           )}
+          {currentUser?.role === 'admin' && (
+            <button
+              onClick={() => navigate('/crm/admin')}
+              className="px-4 py-2 font-semibold transition-all text-gray-600 hover:text-black bg-[#D4AF37] bg-opacity-10 hover:bg-opacity-20 border border-[#D4AF37] ml-4"
+            >
+              <Shield className="w-4 h-4 inline mr-2" />
+              Administration
+            </button>
+          )}
         </div>
       </nav>
 
