@@ -510,7 +510,8 @@ async def assign_role_to_user(user_id: str, role_id: str):
         return {"success": True, "message": "Role already assigned"}
     
     user_role = UserRole(user_id=user_id, role_id=role_id)
-    await db.user_roles.insert_one(user_role.dict())
+    # Use utility to avoid ObjectId serialization issue
+    await insert_and_return_clean(db.user_roles, user_role.dict())
     
     logger.info(f"Role {role_id} assigned to user {user_id}")
     return {"success": True}
