@@ -523,3 +523,178 @@ async def remove_role_from_user(user_id: str, role_id: str):
     
     logger.info(f"Role {role_id} removed from user {user_id}")
     return {"success": True}
+
+
+# ============================================
+# TEAMS MANAGEMENT (Full CRUD via Admin GUI)
+# ============================================
+
+@admin_router.get("/teams", dependencies=[Depends(require_admin)])
+async def get_all_teams():
+    """Get all teams for admin management - includes archived teams"""
+    teams = await db.teams.find({}, {"_id": 0}).to_list(1000)
+    return teams
+
+
+@admin_router.post("/teams", dependencies=[Depends(require_admin)])
+async def create_team_admin(team_data: dict, current_user: dict = Depends(get_current_user)):
+    """Create new team via Admin GUI"""
+    from uuid import uuid4
+    from datetime import datetime, timezone
+    
+    # Validate required fields
+    if not team_data.get("name"):
+        raise HTTPException(status_code=400, detail="Team name is required")
+    
+    # Check if team name already exists
+    existing = await db.teams.find_one({"name": team_data["name"]})
+    if existing:
+        raise HTTPException(status_code=400, detail="Team name already exists")
+    
+    # Validate supervisor if provided (must be admin or supervisor role)
+    supervisor_id = team_data.get("supervisor_id")
+    if supervisor_id:
+        supervisor = await db.crm_users.find_one({"id": supervisor_id, "deleted_at": None})
+        if not supervisor:
+            raise HTTPException(status_code=400, detail="Supervisor not found")
+        if supervisor.get("role", "").lower() not in ["admin", "supervisor"]:
+            raise HTTPException(status_code=400, detail="Only users with Admin or Supervisor role can be team supervisors")
+    
+    # Build team document
+    team_id = str(uuid4())
+    new_team = {
+        "id": team_id,
+        "name": team_data["name"],
+        "description": team_data.get("description", ""),
+        "supervisor_id": supervisor_id or None,
+        "archived_at": None,
+        "created_at": datetime.now(timezone.utc),
+        "created_by": current_user["id"]
+    }
+    
+    await db.teams.insert_one(new_team)
+    
+    logger.info(f"Team {new_team['name']} created by admin {current_user['username']}")
+    return {
+        "id": team_id,
+        "name": new_team["name"],
+        "description": new_team["description"],
+        "supervisor_id": new_team["supervisor_id"],
+        "archived_at": None,
+        "created_at": new_team["created_at"].isoformat()
+    }
+
+
+@admin_router.put("/teams/{team_id}", dependencies=[Depends(require_admin)])
+async def update_team_admin(team_id: str, team_data: dict, current_user: dict = Depends(get_current_user)):
+    """Update team via Admin GUI"""
+    from datetime import datetime, timezone
+    
+    team = await db.teams.find_one({"id": team_id})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    if team.get("archived_at"):
+        raise HTTPException(status_code=400, detail="Cannot edit an archived team")
+    
+    # Build update document
+    update_fields = {}
+    
+    if "name" in team_data and team_data["name"] != team["name"]:
+        # Check if new name is available
+        existing = await db.teams.find_one({"name": team_data["name"], "id": {"$ne": team_id}})
+        if existing:
+            raise HTTPException(status_code=400, detail="Team name already exists")
+        update_fields["name"] = team_data["name"]
+    
+    if "description" in team_data:
+        update_fields["description"] = team_data["description"]
+    
+    if "supervisor_id" in team_data:
+        supervisor_id = team_data["supervisor_id"]
+        if supervisor_id:
+            supervisor = await db.crm_users.find_one({"id": supervisor_id, "deleted_at": None})
+            if not supervisor:
+                raise HTTPException(status_code=400, detail="Supervisor not found")
+            if supervisor.get("role", "").lower() not in ["admin", "supervisor"]:
+                raise HTTPException(status_code=400, detail="Only users with Admin or Supervisor role can be team supervisors")
+        update_fields["supervisor_id"] = supervisor_id or None
+    
+    update_fields["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.teams.update_one({"id": team_id}, {"$set": update_fields})
+    
+    logger.info(f"Team {team_id} updated by admin {current_user['username']}")
+    return {"success": True}
+
+
+@admin_router.delete("/teams/{team_id}", dependencies=[Depends(require_admin)])
+async def archive_team_admin(team_id: str, request_data: dict = None, current_user: dict = Depends(get_current_user)):
+    """Archive team via Admin GUI - requires reassignment of members"""
+    from datetime import datetime, timezone
+    
+    team = await db.teams.find_one({"id": team_id})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    if team.get("archived_at"):
+        raise HTTPException(status_code=400, detail="Team already archived")
+    
+    # Get team members
+    members = await db.crm_users.find({
+        "$or": [
+            {"team_id": team_id},
+            {"team_ids": team_id}
+        ],
+        "deleted_at": None
+    }).to_list(1000)
+    
+    # If team has members, require reassignment
+    if members:
+        reassign_to = request_data.get("reassign_to_team_id") if request_data else None
+        if not reassign_to:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Team has {len(members)} members. Please specify a team to reassign them to."
+            )
+        
+        # Validate reassignment team exists and is not archived
+        target_team = await db.teams.find_one({"id": reassign_to, "archived_at": None})
+        if not target_team:
+            raise HTTPException(status_code=400, detail="Target team not found or is archived")
+        
+        # Reassign all members
+        for member in members:
+            update_data = {}
+            
+            # Update team_id if it matches
+            if member.get("team_id") == team_id:
+                update_data["team_id"] = reassign_to
+            
+            # Update team_ids array
+            if member.get("team_ids"):
+                new_team_ids = [t for t in member["team_ids"] if t != team_id]
+                if reassign_to not in new_team_ids:
+                    new_team_ids.append(reassign_to)
+                update_data["team_ids"] = new_team_ids
+            
+            # Update default_team_id if it matches
+            if member.get("default_team_id") == team_id:
+                update_data["default_team_id"] = reassign_to
+            
+            if update_data:
+                await db.crm_users.update_one({"id": member["id"]}, {"$set": update_data})
+        
+        logger.info(f"Reassigned {len(members)} members from team {team_id} to {reassign_to}")
+    
+    # Archive the team
+    await db.teams.update_one(
+        {"id": team_id},
+        {"$set": {
+            "archived_at": datetime.now(timezone.utc),
+            "archived_by": current_user["id"]
+        }}
+    )
+    
+    logger.info(f"Team {team_id} archived by admin {current_user['username']}")
+    return {"success": True, "members_reassigned": len(members)}
