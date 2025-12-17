@@ -334,6 +334,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ USER DELETION FULLY TESTED: Admin can successfully delete users (soft delete with deleted_at timestamp and is_active=false). Admin correctly prevented from deleting own account (400 error). Supervisor properly denied access (403 Forbidden). Soft delete implementation verified - deleted users no longer appear in API responses but records preserved in database. All security checks working correctly."
+      - working: true
+        agent: "testing"
+        comment: "✅ USER DELETION UI FULLY TESTED: Admin sees 5 red trash icon delete buttons in Users table. Delete confirmation modal appears with proper warning content including user name/username, soft-delete warning text, and 'Conferma Eliminazione' title. Cancel and Delete buttons work correctly. Success toast 'Utente eliminato con successo' appears after deletion. User disappears from list after deletion. All UI components working perfectly."
 
   - task: "Lead Deletion (Permission Engine Based)"
     implemented: true
@@ -346,6 +349,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "✅ LEAD DELETION FULLY TESTED: Admin can delete any lead successfully. Supervisor can delete team leads (permission engine allows team-scoped delete). Supervisor correctly denied access to leads from other teams (403 Permission denied). Permission engine working correctly with proper team-based access control. All deletion operations logged to activity logs."
+      - working: true
+        agent: "testing"
+        comment: "✅ LEAD DELETION UI FULLY TESTED: Supervisor sees 7 red trash icon delete buttons in Leads table (permission-based filtering working). Delete confirmation modal appears with lead name, irreversible action warning, and 'Elimina Lead' button. Success toast 'Lead eliminato con successo' appears after deletion. Lead disappears from list after deletion. Role-based visibility working: Admin sees delete buttons on both Users and Leads, Supervisor sees delete buttons only on Leads (Users tab hidden), Agent sees no delete buttons. All security and UI requirements met."
 
   - task: "Created Date formatting in Italian"
     implemented: true
