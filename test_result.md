@@ -1162,7 +1162,7 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Audit Logs Testing - COMPLETED"
+    - "Audit Logs UI Testing - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
