@@ -534,7 +534,6 @@ async def get_all_teams():
 async def create_team_admin(team_data: dict, current_user: dict = Depends(get_current_user)):
     """Create new team via Admin GUI"""
     from uuid import uuid4
-    from datetime import datetime, timezone
     
     # Validate required fields
     if not team_data.get("name"):
@@ -566,20 +565,11 @@ async def create_team_admin(team_data: dict, current_user: dict = Depends(get_cu
         "created_by": current_user["id"]
     }
     
-    # Store created_at before insert (MongoDB adds _id which causes serialization issues)
-    created_at_str = new_team["created_at"].isoformat()
-    
-    await db.teams.insert_one(new_team)
+    # Use utility to insert and get clean document (no _id)
+    clean_team = await insert_and_return_clean(db.teams, new_team)
     
     logger.info(f"Team {team_data['name']} created by admin {current_user['username']}")
-    return {
-        "id": team_id,
-        "name": team_data["name"],
-        "description": team_data.get("description", ""),
-        "supervisor_id": supervisor_id or None,
-        "archived_at": None,
-        "created_at": created_at_str
-    }
+    return clean_document_for_response(clean_team)
 
 
 @admin_router.put("/teams/{team_id}", dependencies=[Depends(require_admin)])
