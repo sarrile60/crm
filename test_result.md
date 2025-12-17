@@ -268,6 +268,9 @@ frontend:
       - working: true
         agent: "main"
         comment: "✅ ENTITY CONFIGURATION UI COMPLETE. Shows all entities (leads, contacts, deposits, calls, accounts) with display name, icon, order, and enabled status. Enable/disable toggle. Inline edit for display name and icon. Configuration tips section."
+      - working: true
+        agent: "testing"
+        comment: "✅ ENTITY CONFIGURATION TESTED: Backend API (/api/admin/entities) returns all 5 expected entities (leads, contacts, deposits, calls, accounts) with proper structure including display_name, icon, enabled status, and order. All entities are enabled by default. Tab navigation works correctly. Entity table structure is properly implemented."
 
   - task: "Admin Panel - Administration Menu"
     implemented: true
