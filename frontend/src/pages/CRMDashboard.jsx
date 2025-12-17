@@ -198,8 +198,8 @@ const CRMDashboard = () => {
                   Visualizza Tutti i Lead
                 </Button>
                 {currentUser?.role === 'admin' && (
-                  <Button onClick={() => setActiveTab('users')} className="bg-black text-white hover:bg-gray-800 rounded-none">
-                    Gestione Utenti
+                  <Button onClick={() => navigate('/crm/admin')} className="bg-black text-white hover:bg-gray-800 rounded-none">
+                    Pannello Amministrazione
                   </Button>
                 )}
               </div>
