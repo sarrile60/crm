@@ -224,13 +224,22 @@ const UserManagement = ({ currentUser }) => {
                         <Edit className="w-4 h-4" />
                       </Button>
                       {user.id !== currentUser.id && (
-                        <Button
-                          onClick={() => handleToggleActive(user.id, user.is_active)}
-                          size="sm"
-                          className={`${user.is_active ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white rounded-none`}
-                        >
-                          {user.is_active ? 'Disattiva' : 'Attiva'}
-                        </Button>
+                        <>
+                          <Button
+                            onClick={() => handleToggleActive(user.id, user.is_active)}
+                            size="sm"
+                            className={`${user.is_active ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'} text-white rounded-none`}
+                          >
+                            {user.is_active ? 'Disattiva' : 'Attiva'}
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteClick(user)}
+                            size="sm"
+                            className="bg-red-600 hover:bg-red-700 text-white rounded-none"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </>
                       )}
                     </div>
                   )}
