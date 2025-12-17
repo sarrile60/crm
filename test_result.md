@@ -323,6 +323,30 @@ frontend:
         agent: "main"
         comment: "✅ OVERDUE-ONLY LOGIC IMPLEMENTED per user request. Changed notification logic to show ONLY overdue callbacks (scaduto), not upcoming ones. Notifications disappear when: 1) Agent changes callback time to future (reschedules), 2) Agent changes lead status. Updated UI: Section title 'Callback Scaduti' with red phone icon, shows time overdue ('SCADUTO 1 giorni fa', '23 ore fa', '22 ore fa'), all callbacks have red background, updated tip to 'Mostra solo callback scaduti. Scompaiono quando cambi lo stato o riprogrammi l'ora'. Tested showing 6 overdue callbacks with proper time-overdue calculations."
 
+  - task: "User Deletion (Admin Only - Soft Delete)"
+    implemented: true
+    working: true
+    file: "/app/backend/crm_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ USER DELETION FULLY TESTED: Admin can successfully delete users (soft delete with deleted_at timestamp and is_active=false). Admin correctly prevented from deleting own account (400 error). Supervisor properly denied access (403 Forbidden). Soft delete implementation verified - deleted users no longer appear in API responses but records preserved in database. All security checks working correctly."
+
+  - task: "Lead Deletion (Permission Engine Based)"
+    implemented: true
+    working: true
+    file: "/app/backend/crm_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ LEAD DELETION FULLY TESTED: Admin can delete any lead successfully. Supervisor can delete team leads (permission engine allows team-scoped delete). Supervisor correctly denied access to leads from other teams (403 Permission denied). Permission engine working correctly with proper team-based access control. All deletion operations logged to activity logs."
+
   - task: "Created Date formatting in Italian"
     implemented: true
     working: "NA"
