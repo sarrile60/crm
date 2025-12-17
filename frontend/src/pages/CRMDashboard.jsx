@@ -119,19 +119,7 @@ const CRMDashboard = () => {
             <FileText className="w-4 h-4 inline mr-2" />
             Leads
           </button>
-          {currentUser?.role === 'admin' && (
-            <button
-              onClick={() => setActiveTab('users')}
-              className={`px-4 py-2 font-semibold transition-all ${
-                activeTab === 'users'
-                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                  : 'text-gray-600 hover:text-black'
-              }`}
-            >
-              <Users className="w-4 h-4 inline mr-2" />
-              Utenti
-            </button>
-          )}
+          {/* Users tab moved to Administration Panel */}
           {currentUser?.role === 'admin' && (
             <button
               onClick={() => setActiveTab('settings')}
