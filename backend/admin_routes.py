@@ -572,16 +572,19 @@ async def create_team_admin(team_data: dict, current_user: dict = Depends(get_cu
         "created_by": current_user["id"]
     }
     
+    # Store created_at before insert (MongoDB adds _id which causes serialization issues)
+    created_at_str = new_team["created_at"].isoformat()
+    
     await db.teams.insert_one(new_team)
     
-    logger.info(f"Team {new_team['name']} created by admin {current_user['username']}")
+    logger.info(f"Team {team_data['name']} created by admin {current_user['username']}")
     return {
         "id": team_id,
-        "name": new_team["name"],
-        "description": new_team["description"],
-        "supervisor_id": new_team["supervisor_id"],
+        "name": team_data["name"],
+        "description": team_data.get("description", ""),
+        "supervisor_id": supervisor_id or None,
         "archived_at": None,
-        "created_at": new_team["created_at"].isoformat()
+        "created_at": created_at_str
     }
 
 
