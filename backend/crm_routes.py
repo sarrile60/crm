@@ -797,13 +797,13 @@ async def mark_alert_read(alert_id: str, current_user: dict = Depends(get_curren
 
 @crm_router.get("/dashboard/stats")
 async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
-    """Get dashboard statistics"""
-    query = {}
-    
-    if current_user["role"] == "agent":
-        query["assigned_to"] = current_user["id"]
-    elif current_user["role"] == "supervisor":
-        query["team_id"] = current_user.get("team_id")
+    """Get dashboard statistics - uses permission engine for data scoping"""
+    # Get data scope filter from permission engine (GUI-configured)
+    scope_filter = await permission_engine.get_data_scope_filter(
+        user_id=current_user["id"],
+        entity="leads"
+    )
+    query = {**scope_filter}
     
     total_leads = await db.leads.count_documents(query)
     new_leads = await db.leads.count_documents({**query, "status": "new"})
