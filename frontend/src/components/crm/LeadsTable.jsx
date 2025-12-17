@@ -741,13 +741,23 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                         <Edit className="w-4 h-4" />
                       </Button>
                       {(currentUser.role === 'admin' || currentUser.role === 'supervisor') && (
-                        <Button
-                          onClick={() => handleAssign(lead)}
-                          size="sm"
-                          className="bg-green-600 text-white hover:bg-green-700 rounded-none"
-                        >
-                          <UserPlus className="w-4 h-4" />
-                        </Button>
+                        <>
+                          <Button
+                            onClick={() => handleAssign(lead)}
+                            size="sm"
+                            className="bg-green-600 text-white hover:bg-green-700 rounded-none"
+                          >
+                            <UserPlus className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteClick(lead)}
+                            size="sm"
+                            className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                            title="Elimina Lead"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </>
                       )}
                     </div>
                   </td>
