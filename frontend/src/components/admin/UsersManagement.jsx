@@ -46,6 +46,7 @@ const UsersManagement = () => {
     is_system_user: false
   });
   
+  const [adminPassword, setAdminPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
