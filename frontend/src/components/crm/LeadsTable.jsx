@@ -1322,6 +1322,46 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Delete Lead Confirmation Modal */}
+      {showDeleteModal && leadToDelete && (
+        <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+          <DialogContent className="max-w-md bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
+                <AlertTriangle className="w-6 h-6" />
+                Conferma Eliminazione
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-gray-700">
+                Sei sicuro di voler eliminare il lead <strong>{leadToDelete.fullName}</strong>?
+              </p>
+              <div className="bg-red-50 border border-red-200 p-3 rounded">
+                <p className="text-sm text-red-700">
+                  <strong>⚠️ Attenzione:</strong> Questa azione è irreversibile. 
+                  Tutte le note e l'attività del lead verranno eliminate.
+                </p>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <Button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
+                >
+                  Annulla
+                </Button>
+                <Button
+                  onClick={handleConfirmDelete}
+                  className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Elimina Lead
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
