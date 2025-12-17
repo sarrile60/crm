@@ -125,6 +125,28 @@ const UserManagement = ({ currentUser }) => {
     }
   };
 
+  const handleDeleteClick = (user) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!userToDelete) return;
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.delete(`${API}/crm/users/${userToDelete.id}`, { headers });
+      toast.success('Utente eliminato con successo');
+      setShowDeleteModal(false);
+      setUserToDelete(null);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Errore nell\'eliminazione dell\'utente');
+    }
+  };
+
   const getRoleBadge = (role) => {
     const colors = {
       admin: 'bg-red-100 text-red-800',
