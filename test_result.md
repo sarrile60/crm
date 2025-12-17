@@ -103,12 +103,13 @@
 #====================================================================================================
 
 user_problem_statement: |
-  Build comprehensive Admin Panel (Phase 1) for GUI-driven configuration of roles, permissions, and entities.
-  - Role Management: Full CRUD for roles with system role warnings
-  - Permission Matrix: EspoCRM-style grid with scope dropdowns (none, own, team, all) for each action
-  - Entity Configuration: Enable/disable entities, editable display names and icons
-  - Administration menu visible only to admin users
-  - Backend API routes under /api/admin prefix
+  Build comprehensive Admin Panel (Phase 2) - Users Management via GUI.
+  - Users Management in Administration Panel (replaced Utenti tab in CRM Dashboard)
+  - Full CRUD for users: Create, Edit, Delete (soft), Reset Password, Activate/Deactivate
+  - Support for system/API users
+  - Role and team assignment from GUI-configured lists
+  - Filter by role, team, status
+  - Admins only can access user management
   
   Previous features implemented:
   1. Created Date Column - Rename "Data" to "Created Date" with Italian format (1 nov 13:51)
