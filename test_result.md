@@ -464,7 +464,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Permission Engine Integration Testing - COMPLETED"
+    - "Users Management Testing - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
