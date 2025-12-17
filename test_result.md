@@ -1124,8 +1124,7 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Audit Logs API"
-    - "Audit Logs UI"
+    - "Audit Logs Testing - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
