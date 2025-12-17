@@ -1797,7 +1797,10 @@ class CRMTester:
         self.test_mass_update_functionality()
         self.test_created_at_field()
         
-        # Step 5: Run deletion tests (NEW)
+        # Step 5: Test Permission Engine Integration (NEW)
+        self.test_permission_engine_integration()
+        
+        # Step 6: Run deletion tests
         self.run_deletion_tests()
         
         # Step 6: Run WebSocket tests (CRITICAL FIX TESTING)
