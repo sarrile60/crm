@@ -596,6 +596,17 @@ async def create_team_admin(team_data: dict, current_user: dict = Depends(get_cu
     clean_team = await insert_and_return_clean(db.teams, new_team)
     
     logger.info(f"Team {team_data['name']} created by admin {current_user['username']}")
+    
+    # Log audit event
+    await log_team_action(
+        action=AuditAction.TEAM_CREATED,
+        actor_id=current_user["id"],
+        actor_name=current_user["username"],
+        team_id=team_id,
+        team_name=team_data["name"],
+        details={"supervisor_id": supervisor_id}
+    )
+    
     return clean_document_for_response(clean_team)
 
 
