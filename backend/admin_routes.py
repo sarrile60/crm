@@ -365,23 +365,37 @@ async def update_user_admin(user_id: str, user_data: dict, current_user: dict = 
 
 @admin_router.put("/users/{user_id}/password", dependencies=[Depends(require_admin)])
 async def reset_user_password(user_id: str, password_data: dict, current_user: dict = Depends(get_current_user)):
-    """Reset user password via Admin GUI"""
-    from auth_utils import hash_password
+    """Reset user password via Admin GUI - requires admin password verification"""
+    from auth_utils import hash_password, verify_password
     
+    # Verify admin's password first
+    admin_password = password_data.get("admin_password")
+    if not admin_password:
+        raise HTTPException(status_code=400, detail="Admin password is required for verification")
+    
+    # Get admin user with password to verify
+    admin_user = await db.crm_users.find_one({"id": current_user["id"]})
+    if not admin_user:
+        raise HTTPException(status_code=404, detail="Admin user not found")
+    
+    if not verify_password(admin_password, admin_user.get("password", "")):
+        raise HTTPException(status_code=401, detail="Password amministratore non valida")
+    
+    # Now proceed with the password reset
     user = await db.crm_users.find_one({"id": user_id})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
-    new_password = password_data.get("password")
+    new_password = password_data.get("new_password")
     if not new_password or len(new_password) < 4:
-        raise HTTPException(status_code=400, detail="Password must be at least 4 characters")
+        raise HTTPException(status_code=400, detail="La nuova password deve essere di almeno 4 caratteri")
     
     await db.crm_users.update_one(
         {"id": user_id},
         {"$set": {"password": hash_password(new_password)}}
     )
     
-    logger.info(f"Password reset for user {user_id} by admin {current_user['username']}")
+    logger.info(f"Password reset for user {user_id} by admin {current_user['username']} (verified)")
     return {"success": True}
 
 
