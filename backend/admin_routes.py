@@ -913,3 +913,251 @@ async def delete_visibility_rule(scope_type: str, scope_id: str, field_name: str
     logger.info(f"Visibility rule deleted: {scope_type}/{scope_id}/{field_name} by {current_user['username']}")
     return {"success": True}
 
+
+
+# ============================================
+# AUDIT LOGS (Read-Only, Admin-Only)
+# ============================================
+
+@admin_router.get("/audit-logs", dependencies=[Depends(require_admin)])
+async def get_audit_logs(
+    user_id: Optional[str] = None,
+    action: Optional[str] = None,
+    entity_type: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    search: Optional[str] = None,
+    limit: int = 100,
+    offset: int = 0
+):
+    """
+    Get audit logs with filters - for Audit Logs UI
+    Logs are immutable and read-only
+    """
+    query = {}
+    
+    # Apply filters
+    if user_id:
+        query["user_id"] = user_id
+    if action:
+        query["action"] = action
+    if entity_type:
+        query["entity_type"] = entity_type
+    
+    # Date range filter
+    if date_from or date_to:
+        query["timestamp"] = {}
+        if date_from:
+            try:
+                query["timestamp"]["$gte"] = datetime.fromisoformat(date_from.replace('Z', '+00:00'))
+            except ValueError:
+                pass
+        if date_to:
+            try:
+                query["timestamp"]["$lte"] = datetime.fromisoformat(date_to.replace('Z', '+00:00'))
+            except ValueError:
+                pass
+        if not query["timestamp"]:
+            del query["timestamp"]
+    
+    # Search filter (searches in entity_name and user_name)
+    if search:
+        query["$or"] = [
+            {"entity_name": {"$regex": search, "$options": "i"}},
+            {"user_name": {"$regex": search, "$options": "i"}}
+        ]
+    
+    # Get total count for pagination
+    total_count = await db.audit_logs.count_documents(query)
+    
+    # Fetch logs with pagination
+    logs = await db.audit_logs.find(query, {"_id": 0}) \
+        .sort("timestamp", -1) \
+        .skip(offset) \
+        .limit(limit) \
+        .to_list(limit)
+    
+    # Add display labels
+    for log in logs:
+        log["action_label"] = ACTION_LABELS.get(log["action"], log["action"])
+        log["entity_type_label"] = ENTITY_TYPE_LABELS.get(log["entity_type"], log["entity_type"])
+        # Convert timestamp to ISO string
+        if isinstance(log.get("timestamp"), datetime):
+            log["timestamp"] = log["timestamp"].isoformat()
+    
+    return {
+        "logs": logs,
+        "total": total_count,
+        "limit": limit,
+        "offset": offset,
+        "has_more": (offset + len(logs)) < total_count
+    }
+
+
+@admin_router.get("/audit-logs/filters", dependencies=[Depends(require_admin)])
+async def get_audit_log_filters():
+    """
+    Get available filter options for audit logs UI
+    """
+    # Get distinct users who have audit entries
+    users_pipeline = [
+        {"$group": {"_id": {"user_id": "$user_id", "user_name": "$user_name"}}},
+        {"$project": {"_id": 0, "user_id": "$_id.user_id", "user_name": "$_id.user_name"}}
+    ]
+    users = await db.audit_logs.aggregate(users_pipeline).to_list(100)
+    
+    return {
+        "actions": [
+            {"value": action, "label": label}
+            for action, label in ACTION_LABELS.items()
+        ],
+        "entity_types": [
+            {"value": etype, "label": label}
+            for etype, label in ENTITY_TYPE_LABELS.items()
+        ],
+        "users": [u for u in users if u.get("user_id")]
+    }
+
+
+@admin_router.get("/audit-logs/export", dependencies=[Depends(require_admin)])
+async def export_audit_logs(
+    user_id: Optional[str] = None,
+    action: Optional[str] = None,
+    entity_type: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Export audit logs as CSV
+    """
+    from fastapi.responses import StreamingResponse
+    import io
+    import csv
+    
+    query = {}
+    
+    # Apply same filters as get_audit_logs
+    if user_id:
+        query["user_id"] = user_id
+    if action:
+        query["action"] = action
+    if entity_type:
+        query["entity_type"] = entity_type
+    
+    if date_from or date_to:
+        query["timestamp"] = {}
+        if date_from:
+            try:
+                query["timestamp"]["$gte"] = datetime.fromisoformat(date_from.replace('Z', '+00:00'))
+            except ValueError:
+                pass
+        if date_to:
+            try:
+                query["timestamp"]["$lte"] = datetime.fromisoformat(date_to.replace('Z', '+00:00'))
+            except ValueError:
+                pass
+        if not query["timestamp"]:
+            del query["timestamp"]
+    
+    # Fetch all matching logs (limit to 10000 for safety)
+    logs = await db.audit_logs.find(query, {"_id": 0}) \
+        .sort("timestamp", -1) \
+        .limit(10000) \
+        .to_list(10000)
+    
+    # Log the export action
+    from audit_utils import create_audit_log
+    await create_audit_log(
+        action="audit_logs_exported",
+        entity_type="audit",
+        user_id=current_user["id"],
+        user_name=current_user["username"],
+        entity_name="Audit Logs",
+        details={"filters": {"user_id": user_id, "action": action, "entity_type": entity_type}, "count": len(logs)}
+    )
+    
+    # Create CSV
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Header
+    writer.writerow([
+        "Data/Ora", "Utente", "Azione", "Tipo Entità", 
+        "Entità", "Dettagli", "IP"
+    ])
+    
+    # Data rows
+    for log in logs:
+        timestamp = log.get("timestamp")
+        if isinstance(timestamp, datetime):
+            timestamp = timestamp.strftime("%d/%m/%Y %H:%M:%S")
+        
+        writer.writerow([
+            timestamp,
+            log.get("user_name", ""),
+            ACTION_LABELS.get(log.get("action"), log.get("action", "")),
+            ENTITY_TYPE_LABELS.get(log.get("entity_type"), log.get("entity_type", "")),
+            log.get("entity_name", ""),
+            str(log.get("details", {})),
+            log.get("ip_address", "")
+        ])
+    
+    output.seek(0)
+    
+    # Return as downloadable CSV
+    filename = f"audit_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+@admin_router.get("/audit-logs/stats", dependencies=[Depends(require_admin)])
+async def get_audit_log_stats():
+    """
+    Get audit log statistics for dashboard
+    """
+    from datetime import timedelta
+    
+    now = datetime.now(timezone.utc)
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    week_start = today_start - timedelta(days=7)
+    
+    # Count by action type (last 7 days)
+    pipeline = [
+        {"$match": {"timestamp": {"$gte": week_start}}},
+        {"$group": {"_id": "$action", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    action_counts = await db.audit_logs.aggregate(pipeline).to_list(100)
+    
+    # Count by entity type (last 7 days)
+    pipeline = [
+        {"$match": {"timestamp": {"$gte": week_start}}},
+        {"$group": {"_id": "$entity_type", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    entity_counts = await db.audit_logs.aggregate(pipeline).to_list(100)
+    
+    # Today's activity
+    today_count = await db.audit_logs.count_documents({"timestamp": {"$gte": today_start}})
+    
+    # Total logs
+    total_count = await db.audit_logs.count_documents({})
+    
+    return {
+        "total_logs": total_count,
+        "today_count": today_count,
+        "by_action": [
+            {"action": a["_id"], "label": ACTION_LABELS.get(a["_id"], a["_id"]), "count": a["count"]}
+            for a in action_counts
+        ],
+        "by_entity_type": [
+            {"entity_type": e["_id"], "label": ENTITY_TYPE_LABELS.get(e["_id"], e["_id"]), "count": e["count"]}
+            for e in entity_counts
+        ]
+    }
+
