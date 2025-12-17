@@ -727,3 +727,42 @@ test_plan:
       - Security controls: Role-based permissions enforced correctly ✓
       
       🚀 DELETION FEATURES ARE PRODUCTION READY - All security and functionality requirements met!
+
+  - agent: "testing"
+    message: |
+      🎯 USER AND LEAD DELETION UI TESTING COMPLETED - 100% SUCCESS RATE
+      
+      📊 COMPREHENSIVE UI TEST RESULTS (12/12 TESTS PASSED):
+      
+      ✅ ADMIN USER DELETION UI:
+      - Admin login successful with provided credentials ✓
+      - Users tab accessible to admin ✓
+      - 5 red trash icon delete buttons visible in Users table ✓
+      - Delete confirmation modal appears with proper content ✓
+      - Modal shows: "Conferma Eliminazione" title, user name/username, soft-delete warning ✓
+      - Cancel and "Elimina" buttons functional ✓
+      - Success toast "Utente eliminato con successo" appears ✓
+      - User disappears from list after deletion ✓
+      
+      ✅ SUPERVISOR LEAD DELETION UI:
+      - Supervisor login successful (maurizio1/12345) ✓
+      - Leads tab accessible to supervisor ✓
+      - 7 red trash icon delete buttons visible (permission-based filtering working) ✓
+      - Delete confirmation modal appears with lead name and irreversible warning ✓
+      - "Elimina Lead" button functional ✓
+      - Success toast "Lead eliminato con successo" appears ✓
+      - Lead disappears from list after deletion ✓
+      
+      ✅ ROLE-BASED SECURITY VERIFICATION:
+      - Admin: Can see delete buttons on BOTH Users and Leads tabs ✓
+      - Supervisor: Can see delete buttons ONLY on Leads (Users tab hidden) ✓
+      - Agent: Cannot see delete buttons (security working correctly) ✓
+      - Users tab properly hidden from non-admin users ✓
+      
+      🔧 TECHNICAL DETAILS:
+      - Delete buttons use .lucide-trash-2 class selector ✓
+      - Modals use proper Italian text and warning icons ✓
+      - Permission engine correctly filters visible delete buttons ✓
+      - All toast notifications working correctly ✓
+      
+      🚀 DELETION UI IS PRODUCTION READY - All requirements from test specification met perfectly!
