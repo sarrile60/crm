@@ -476,7 +476,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Users Management Testing - COMPLETED"
+    - "Teams Management in Administration Panel"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
