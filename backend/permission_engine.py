@@ -41,12 +41,20 @@ class PermissionEngine:
             PermissionResult with allowed flag and scope
         """
         try:
-            # Get user's roles
-            user_roles = await self.db.user_roles.find({"user_id": user_id}).to_list(100)
-            if not user_roles:
-                return PermissionResult(allowed=False, scope=PermissionScope.NONE, reason="No roles assigned")
+            # Get user to find their role
+            user = await self.db.crm_users.find_one({"id": user_id})
+            if not user:
+                return PermissionResult(allowed=False, scope=PermissionScope.NONE, reason="User not found")
             
-            role_ids = [ur["role_id"] for ur in user_roles]
+            user_role_name = user.get("role")
+            user_team_id = user.get("team_id")
+            
+            # Find the role document
+            role = await self.db.roles.find_one({"name": user_role_name})
+            if not role:
+                return PermissionResult(allowed=False, scope=PermissionScope.NONE, reason="Role not found in system")
+            
+            role_ids = [role["id"]]
             
             # Get permissions for these roles and this entity/action
             permissions = await self.db.permissions.find({
