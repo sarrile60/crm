@@ -2582,6 +2582,12 @@ class CRMTester:
         # Step 8: Run WebSocket tests (CRITICAL FIX TESTING)
         self.run_websocket_tests()
         
+        # Step 9: Run audit logs tests
+        self.test_audit_logs_api()
+        self.test_audit_logs_filtering()
+        self.test_audit_logs_immutability()
+        self.test_audit_log_creation()
+        
         # Summary
         print("\n" + "=" * 50)
         print("📊 TEST SUMMARY")
