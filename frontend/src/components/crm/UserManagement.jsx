@@ -31,6 +31,8 @@ const UserManagement = ({ currentUser }) => {
     role: '',
     team_id: ''
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   useEffect(() => {
     fetchData();
