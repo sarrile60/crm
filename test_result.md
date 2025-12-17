@@ -253,6 +253,9 @@ frontend:
       - working: true
         agent: "main"
         comment: "✅ PERMISSION MATRIX UI COMPLETE. EspoCRM-style grid with entities as rows and actions (Read, Create, Edit, Delete, Assign, Export) as columns. Scope dropdowns (none, own, team, all for read/edit/delete, yes/no for create/assign/export). Role selector with description. Bulk save functionality. Changes persist immediately via API."
+      - working: true
+        agent: "testing"
+        comment: "✅ PERMISSION MATRIX TESTED: Tab loads correctly with role selector dropdown. Backend API (/api/admin/roles/{id}/permissions) returns proper permission matrix data showing admin role with 'all' and 'yes' permissions for all 5 entities (leads, contacts, deposits, calls, accounts). Permission scopes and save functionality working. UI renders permission legend correctly."
 
   - task: "Admin Panel - Entity Configuration"
     implemented: true
