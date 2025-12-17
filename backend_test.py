@@ -347,9 +347,9 @@ class CRMTester:
         
         # Test users and their expected access
         test_cases = [
-            ("admin@1lawsolicitors.com", "Admin@123456", "admin", True),
+            ("admin_f87450ce5d66", "zTFjPAcs*-(NL-qbj@AP0TcWt*8)nV4f6K(ZcVP_", "admin", True),
             ("manager@test.com", "TestPass123!", "manager", True),
-            ("supervisor@test.com", "TestPass123!", "supervisor", True),
+            ("maurizio1", "12345", "supervisor", True),
             ("agent@test.com", "TestPass123!", "agent", False)  # Should fail with 403
         ]
         
