@@ -479,7 +479,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Teams Management in Administration Panel"
+    - "Teams Management Testing - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
