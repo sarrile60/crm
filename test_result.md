@@ -1020,7 +1020,7 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Data Visibility Rules Testing - COMPLETED"
+    - "Data Visibility Rules UI Testing - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
