@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://lawcrm-admin.preview.emergentagent.com/api"
+BASE_URL = "https://law-crm-admin.preview.emergentagent.com/api"
 CRM_BASE_URL = f"{BASE_URL}/crm"
 
 # Test credentials as specified by user
