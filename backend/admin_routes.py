@@ -16,9 +16,15 @@ from admin_models import (
     PermissionMatrixRow, RoleWithPermissions,
     PermissionAction, PermissionScope,
     UserRole, UserTeam,
-    VisibilityRule, VisibilityRuleCreate, VisibilityRuleBulkUpdate, VisibilityLevel
+    VisibilityRule, VisibilityRuleCreate, VisibilityRuleBulkUpdate, VisibilityLevel,
+    AuditLogFilter
 )
 from db_utils import insert_and_return_clean, clean_document_for_response
+from audit_utils import (
+    AuditAction, EntityType, ACTION_LABELS, ENTITY_TYPE_LABELS,
+    log_user_action, log_team_action, log_role_action, 
+    log_permission_change, log_visibility_change
+)
 
 # Will be set from server.py to avoid circular import
 db = None
