@@ -510,7 +510,7 @@ async def assign_lead(assignment: LeadAssignment, current_user: dict = Depends(g
         raise HTTPException(status_code=404, detail="Agent not found")
     
     # Update lead
-    result = await db.leads.update_one(
+    await db.leads.update_one(
         {"id": assignment.lead_id},
         {"$set": {
             "assigned_to": assignment.assigned_to,
@@ -518,9 +518,6 @@ async def assign_lead(assignment: LeadAssignment, current_user: dict = Depends(g
             "updated_at": datetime.now(timezone.utc)
         }}
     )
-    
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Lead not found")
     
     # Log activity
     activity = ActivityLog(
