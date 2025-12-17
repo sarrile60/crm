@@ -2122,10 +2122,10 @@ class CRMTester:
         # Step 6: Test Permission Engine Integration
         self.test_permission_engine_integration()
         
-        # Step 6: Run deletion tests
+        # Step 7: Run deletion tests
         self.run_deletion_tests()
         
-        # Step 6: Run WebSocket tests (CRITICAL FIX TESTING)
+        # Step 8: Run WebSocket tests (CRITICAL FIX TESTING)
         self.run_websocket_tests()
         
         # Summary
