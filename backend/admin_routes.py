@@ -169,7 +169,7 @@ async def get_role_permissions(role_id: str):
     Get permission matrix for role - for Permission Matrix UI
     Returns grid data for all entities
     """
-    role = await db.roles.find_one({"id": role_id})
+    role = await db.roles.find_one({"id": role_id}, {"_id": 0})
     if not role:
         raise HTTPException(status_code=404, detail="Role not found")
     
