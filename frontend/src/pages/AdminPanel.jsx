@@ -71,6 +71,7 @@ const AdminPanel = () => {
   }
 
   const tabs = [
+    { id: 'users', label: 'Users', icon: UserCog, component: UsersManagement },
     { id: 'roles', label: 'Roles', icon: Shield, component: RoleManagement },
     { id: 'permissions', label: 'Permission Matrix', icon: Database, component: PermissionMatrix },
     { id: 'entities', label: 'Entity Configuration', icon: Settings, component: EntityConfiguration }
