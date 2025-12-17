@@ -20,9 +20,13 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Initialize CRM database
+# Initialize databases
 init_crm_db(db)
 init_admin_db(db)
+
+# Initialize audit logging
+from audit_utils import init_audit_db
+init_audit_db(db)
 
 # JWT Secret (MUST be set in .env - no default allowed)
 JWT_SECRET = os.environ.get('JWT_SECRET')
