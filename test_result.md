@@ -965,15 +965,18 @@ backend:
 frontend:
   - task: "Data Visibility Rules UI"
     implemented: true
-    working: true
+    working: "NA"
     file: "DataVisibilityRules.jsx, AdminPanel.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Implemented visibility matrix UI with filters and save functionality"
+      - working: "NA"
+        agent: "testing"
+        comment: "Frontend UI testing not performed as per system limitations. Backend API fully tested and working. UI components should be tested by main agent or user."
 
 test_plan:
   current_focus:
