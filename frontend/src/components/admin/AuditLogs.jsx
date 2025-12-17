@@ -338,7 +338,7 @@ const AuditLogs = () => {
             <div>
               <label className="text-sm text-gray-500 block mb-1">Azione</label>
               <Select
-                value={filters.action}
+                value={filters.action || 'all'}
                 onValueChange={(value) => handleFilterChange('action', value)}
               >
                 <SelectTrigger className="rounded-none">
