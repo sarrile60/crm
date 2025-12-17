@@ -683,13 +683,27 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                     </button>
                   </td>
                   <td className="p-4">
-                    <a 
-                      href={formatPhoneForCall(lead.phone_real || lead.phone)} 
-                      className="text-blue-600 hover:text-blue-800 font-mono underline"
-                      title="Click to call (real number hidden for security)"
-                    >
-                      {lead.phone_display || formatPhoneDisplay(lead.phone)}
-                    </a>
+                    {/* Phone visibility controlled by backend - respect empty string as "hidden" */}
+                    {lead.phone_display !== undefined && lead.phone_display !== null ? (
+                      lead.phone_display ? (
+                        <a 
+                          href={formatPhoneForCall(lead.phone_real || lead.phone)} 
+                          className="text-blue-600 hover:text-blue-800 font-mono underline"
+                          title="Click to call"
+                        >
+                          {lead.phone_display}
+                        </a>
+                      ) : (
+                        <span className="text-gray-400 italic">Nascosto</span>
+                      )
+                    ) : (
+                      <a 
+                        href={formatPhoneForCall(lead.phone)} 
+                        className="text-blue-600 hover:text-blue-800 font-mono underline"
+                      >
+                        {formatPhoneDisplay(lead.phone)}
+                      </a>
+                    )}
                   </td>
                   <td className="p-4 text-gray-700">{lead.email}</td>
                   <td className="p-4 text-gray-700">{lead.amountLost}</td>
