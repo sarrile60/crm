@@ -19,17 +19,17 @@ CHAT_BASE_URL = f"{BASE_URL}/chat"
 
 # Test credentials
 ADMIN_CREDENTIALS = {
-    "email": "admin@1lawsolicitors.com",
-    "password": "Admin@123456"
+    "username": "admin_f87450ce5d66",
+    "password": "zTFjPAcs*-(NL-qbj@AP0TcWt*8)nV4f6K(ZcVP_"
+}
+
+SUPERVISOR_CREDENTIALS = {
+    "username": "maurizio1", 
+    "password": "12345"
 }
 
 AGENT_CREDENTIALS = {
     "email": "agent@test.com",
-    "password": "TestPass123!"
-}
-
-SUPERVISOR_CREDENTIALS = {
-    "email": "supervisor@test.com",
     "password": "TestPass123!"
 }
 
