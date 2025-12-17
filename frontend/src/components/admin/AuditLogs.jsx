@@ -142,7 +142,8 @@ const AuditLogs = () => {
 
   useEffect(() => {
     fetchLogs(true);
-  }, [filters]); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
+  }, [filters]);
 
   const handleFilterChange = (key, value) => {
     // Convert "all" back to empty string for API
