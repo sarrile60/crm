@@ -992,8 +992,7 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Data Visibility Rules API"
-    - "Data Visibility Rules UI"
+    - "Data Visibility Rules Testing - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
