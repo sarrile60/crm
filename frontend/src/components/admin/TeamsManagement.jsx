@@ -634,6 +634,22 @@ const TeamsManagement = () => {
             </DialogTitle>
           </DialogHeader>
           <div className="mt-4">
+            {/* Add Members Button */}
+            {selectedTeam && !selectedTeam.archived_at && (
+              <div className="mb-4">
+                <Button 
+                  onClick={() => {
+                    setShowMembersModal(false);
+                    openManageMembersModal(selectedTeam);
+                  }}
+                  className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Aggiungi Membri
+                </Button>
+              </div>
+            )}
+            
             {selectedTeam && getTeamMembers(selectedTeam.id).length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 Nessun membro in questo team
@@ -647,6 +663,7 @@ const TeamsManagement = () => {
                       <th className="text-left p-3 font-semibold">Username</th>
                       <th className="text-left p-3 font-semibold">Ruolo</th>
                       <th className="text-left p-3 font-semibold">Team Predefinito</th>
+                      <th className="text-left p-3 font-semibold">Azioni</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -677,6 +694,18 @@ const TeamsManagement = () => {
                             <span className="text-gray-400">No</span>
                           )}
                         </td>
+                        <td className="p-3">
+                          {!selectedTeam.archived_at && (
+                            <Button
+                              onClick={() => handleRemoveMemberFromTeam(member.id)}
+                              size="sm"
+                              className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                              title="Rimuovi dal team"
+                            >
+                              <UserMinus className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -689,6 +718,126 @@ const TeamsManagement = () => {
                 className="bg-gray-200 text-black hover:bg-gray-300 rounded-none"
               >
                 Chiudi
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Manage Members Modal - Add Users to Team */}
+      <Dialog open={showManageMembersModal} onOpenChange={setShowManageMembersModal}>
+        <DialogContent className="max-w-2xl bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-black flex items-center gap-2">
+              <UserPlus className="w-6 h-6 text-green-600" />
+              Aggiungi Membri al Team: {selectedTeam?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            {/* Options */}
+            <div className="mb-4 flex items-center gap-2">
+              <Checkbox
+                id="setAsDefault"
+                checked={setAsDefault}
+                onCheckedChange={(checked) => setSetAsDefault(checked)}
+              />
+              <label htmlFor="setAsDefault" className="text-sm text-gray-700">
+                Imposta come team predefinito per i nuovi membri
+              </label>
+            </div>
+
+            {/* Available Users List */}
+            <div className="border border-gray-200 rounded max-h-80 overflow-y-auto">
+              {selectedTeam && getAvailableUsersForTeam(selectedTeam.id).length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  Tutti gli utenti attivi sono già membri di questo team
+                </div>
+              ) : (
+                <table className="w-full">
+                  <thead className="bg-gray-100 sticky top-0">
+                    <tr>
+                      <th className="text-left p-3 font-semibold w-12">
+                        <Checkbox
+                          checked={selectedTeam && selectedUsersToAdd.length === getAvailableUsersForTeam(selectedTeam.id).length && selectedUsersToAdd.length > 0}
+                          onCheckedChange={(checked) => {
+                            if (checked && selectedTeam) {
+                              setSelectedUsersToAdd(getAvailableUsersForTeam(selectedTeam.id).map(u => u.id));
+                            } else {
+                              setSelectedUsersToAdd([]);
+                            }
+                          }}
+                        />
+                      </th>
+                      <th className="text-left p-3 font-semibold">Nome</th>
+                      <th className="text-left p-3 font-semibold">Ruolo</th>
+                      <th className="text-left p-3 font-semibold">Team Attuale</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedTeam && getAvailableUsersForTeam(selectedTeam.id).map(user => (
+                      <tr 
+                        key={user.id} 
+                        className={`border-t border-gray-200 hover:bg-gray-50 cursor-pointer ${
+                          selectedUsersToAdd.includes(user.id) ? 'bg-green-50' : ''
+                        }`}
+                        onClick={() => toggleUserSelection(user.id)}
+                      >
+                        <td className="p-3">
+                          <Checkbox
+                            checked={selectedUsersToAdd.includes(user.id)}
+                            onCheckedChange={() => toggleUserSelection(user.id)}
+                          />
+                        </td>
+                        <td className="p-3">
+                          <div>
+                            <span className="font-medium">{user.full_name}</span>
+                            <span className="text-gray-500 text-sm ml-2">@{user.username}</span>
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                            user.role === 'admin' ? 'bg-red-100 text-red-700' :
+                            user.role === 'supervisor' ? 'bg-blue-100 text-blue-700' :
+                            'bg-green-100 text-green-700'
+                          }`}>
+                            {user.role}
+                          </span>
+                        </td>
+                        <td className="p-3 text-gray-600 text-sm">
+                          {user.team_id ? (
+                            teams.find(t => t.id === user.team_id)?.name || 'N/A'
+                          ) : (
+                            <span className="text-gray-400">Nessuno</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {/* Selected count */}
+            {selectedUsersToAdd.length > 0 && (
+              <div className="mt-3 text-sm text-green-600 font-medium">
+                {selectedUsersToAdd.length} utenti selezionati
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-4">
+              <Button 
+                onClick={() => setShowManageMembersModal(false)}
+                className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
+              >
+                Annulla
+              </Button>
+              <Button 
+                onClick={handleAddMembersToTeam}
+                disabled={selectedUsersToAdd.length === 0}
+                className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none disabled:opacity-50"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Aggiungi {selectedUsersToAdd.length > 0 ? `(${selectedUsersToAdd.length})` : ''}
               </Button>
             </div>
           </div>
