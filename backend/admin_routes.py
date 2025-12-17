@@ -35,7 +35,7 @@ admin_router = APIRouter(prefix="/admin", tags=["admin"])
 # AUTHENTICATION DEPENDENCY
 # ============================================
 
-async def get_current_user(authorization: str = Depends(lambda: None)):
+async def get_current_user(authorization: Optional[str] = Header(None)):
     """
     Get current user from JWT token
     Copied from crm_routes to avoid circular dependency
