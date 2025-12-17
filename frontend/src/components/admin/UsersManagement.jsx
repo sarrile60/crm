@@ -448,24 +448,31 @@ const UsersManagement = () => {
                         >
                           <Key className="w-4 h-4" />
                         </Button>
-                        {user.id !== currentUser?.id && !user.deleted_at && (
+                        {/* Show activate/deactivate and delete buttons for all users except self */}
+                        {user.id !== currentUser?.id && (
                           <>
-                            <Button
-                              onClick={() => handleToggleStatus(user)}
-                              size="sm"
-                              className={`${user.is_active ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'} text-white rounded-none`}
-                              title={user.is_active ? 'Disattiva' : 'Attiva'}
-                            >
-                              {user.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                            </Button>
-                            <Button
-                              onClick={() => openDeleteModal(user)}
-                              size="sm"
-                              className="bg-red-600 text-white hover:bg-red-700 rounded-none"
-                              title="Elimina"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                            {/* Only show activate/deactivate if user is not deleted */}
+                            {!user.deleted_at && (
+                              <Button
+                                onClick={() => handleToggleStatus(user)}
+                                size="sm"
+                                className={`${user.is_active ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'} text-white rounded-none`}
+                                title={user.is_active ? 'Disattiva' : 'Attiva'}
+                              >
+                                {user.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                              </Button>
+                            )}
+                            {/* Only show delete if user is not already deleted */}
+                            {!user.deleted_at && (
+                              <Button
+                                onClick={() => openDeleteModal(user)}
+                                size="sm"
+                                className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                                title="Elimina"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
                           </>
                         )}
                       </div>
