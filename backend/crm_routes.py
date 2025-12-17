@@ -765,13 +765,21 @@ async def notify_supervisor_callback_ignored(
 
 @crm_router.get("/supervisor-alerts")
 async def get_supervisor_alerts(current_user: dict = Depends(get_current_user)):
-    """Get alerts for supervisor"""
-    if current_user["role"] not in ["supervisor", "admin"]:
+    """Get alerts for supervisor - uses permission engine for access control"""
+    # Check if user has team or all scope for leads (supervisors/admins)
+    permission_result = await permission_engine.check_permission(
+        user_id=current_user["id"],
+        entity="leads",
+        action=PermissionAction.READ
+    )
+    
+    # Only users with team or all scope can see alerts
+    if permission_result.scope not in [PermissionScope.TEAM, PermissionScope.ALL]:
         return []
     
     query = {"supervisor_id": current_user["id"], "read": False}
-    if current_user["role"] == "admin":
-        query = {"read": False}  # Admin sees all
+    if permission_result.scope == PermissionScope.ALL:
+        query = {"read": False}  # Full access users see all alerts
     
     alerts = await db.supervisor_alerts.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
     return alerts
