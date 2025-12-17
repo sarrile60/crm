@@ -305,6 +305,21 @@ frontend:
         agent: "testing"
         comment: "✅ BACKEND API FULLY TESTED: All admin endpoints working perfectly. GET /api/admin/roles returns 3 system roles (admin, supervisor, agent). GET /api/admin/entities returns all 5 entities with proper structure. GET /api/admin/roles/{id}/permissions returns complete permission matrix. Security working correctly - supervisor gets 403 Forbidden when accessing admin APIs. Authentication and authorization properly implemented."
   
+  - task: "Permission Engine Integration in CRM Routes"
+    implemented: true
+    working: true
+    file: "/app/backend/crm_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Integrated GUI-configured permission engine into all CRM routes. Lead listing, detail access, updates, assignments, and dashboard stats now use permission_engine.get_data_scope_filter() and check_permission() methods instead of hard-coded role checks. All permissions controlled by Admin GUI configuration in database."
+      - working: true
+        agent: "testing"
+        comment: "✅ PERMISSION ENGINE INTEGRATION FULLY TESTED (18/18 tests passed). Admin sees ALL leads (14), Supervisor sees TEAM leads only (6 with consistent team_id), Agent sees OWN leads only (0 - none assigned). Lead detail access properly controlled: Admin accesses any lead (200), Supervisor accesses team leads (200) but denied other team leads (403), Agent denied access to other leads (403). Update and assignment permissions working correctly. Dashboard stats consistent with data scoping. GUI-configured permission engine working perfectly - no hard-coded role logic."
+
   - task: "Enhanced Notification System"
     implemented: true
     working: true
