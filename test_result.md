@@ -433,11 +433,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Admin Panel - Role Management"
-    - "Admin Panel - Permission Matrix"
-    - "Admin Panel - Entity Configuration"
-    - "Admin Panel - Administration Menu"
-    - "Admin Panel - Backend API"
+    - "User Deletion UI Testing"
+    - "Lead Deletion UI Testing"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
