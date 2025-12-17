@@ -291,10 +291,13 @@ const ScopeDropdown = ({ value, onChange, type }) => {
   ];
 
   const options = type === 'yesno' ? yesNoOptions : scopeOptions;
-  const currentOption = options.find(opt => opt.value === value);
+  
+  // Ensure we have a valid value, default to first option if undefined
+  const safeValue = value || (type === 'yesno' ? 'no' : 'none');
+  const currentOption = options.find(opt => opt.value === safeValue);
 
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select value={safeValue} onValueChange={onChange}>
       <SelectTrigger className={`bg-white border-gray-300 rounded-none ${currentOption?.color || ''}`}>
         <SelectValue />
       </SelectTrigger>
