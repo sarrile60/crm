@@ -156,3 +156,52 @@ class RoleWithPermissions(BaseModel):
     """Role with its full permission matrix - for UI display"""
     role: Role
     permissions: List[PermissionMatrixRow]
+
+
+# ============================================
+# DATA VISIBILITY RULES
+# ============================================
+
+class VisibilityLevel(str, Enum):
+    """Visibility levels for field masking - configurable via GUI"""
+    FULL = "full"      # Show complete data
+    MASKED = "masked"  # Show partial data (e.g., last 4 digits)
+    HIDDEN = "hidden"  # Hide completely
+
+
+class VisibilityRule(BaseModel):
+    """
+    Data visibility rule - configured via Admin GUI
+    Controls how sensitive fields are displayed based on role/team
+    Backend enforces these rules - frontend never handles masking logic
+    """
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    scope_type: str  # "role" or "team"
+    scope_id: str    # role_id or team_id
+    field_name: str  # "phone", "email", "address"
+    visibility: VisibilityLevel = VisibilityLevel.MASKED
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class VisibilityRuleCreate(BaseModel):
+    """Create visibility rule via Admin GUI"""
+    scope_type: str  # "role" or "team"
+    scope_id: str
+    field_name: str
+    visibility: str  # "full", "masked", "hidden"
+
+
+class VisibilityRuleBulkUpdate(BaseModel):
+    """Bulk update visibility rules from Admin GUI"""
+    rules: List[Dict[str, Any]]  # [{scope_type, scope_id, field_name, visibility}, ...]
+
+
+class VisibilityMatrixRow(BaseModel):
+    """Single row in Visibility Matrix UI - one role or team"""
+    scope_type: str
+    scope_id: str
+    scope_name: str  # Role name or Team name for display
+    phone: str       # "full", "masked", "hidden"
+    email: str
+    address: str
