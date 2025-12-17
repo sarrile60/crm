@@ -272,6 +272,179 @@ async def update_entity(entity_name: str, entity_data: EntityConfigUpdate):
 
 
 # ============================================
+# USERS MANAGEMENT (Full CRUD via Admin GUI)
+# ============================================
+
+@admin_router.get("/users", dependencies=[Depends(require_admin)])
+async def get_all_users():
+    """Get all users for admin management - includes deleted users"""
+    users = await db.crm_users.find({}, {"_id": 0, "password": 0}).to_list(1000)
+    return users
+
+
+@admin_router.post("/users", dependencies=[Depends(require_admin)])
+async def create_user_admin(user_data: dict, current_user: dict = Depends(get_current_user)):
+    """Create new user via Admin GUI"""
+    from auth_utils import hash_password
+    from uuid import uuid4
+    from datetime import datetime, timezone
+    
+    # Validate required fields
+    if not user_data.get("username") or not user_data.get("full_name") or not user_data.get("password"):
+        raise HTTPException(status_code=400, detail="Username, full_name, and password are required")
+    
+    # Check if username already exists
+    existing = await db.crm_users.find_one({"username": user_data["username"]})
+    if existing:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    
+    # Build user document
+    new_user = {
+        "id": str(uuid4()),
+        "username": user_data["username"],
+        "full_name": user_data["full_name"],
+        "password": hash_password(user_data["password"]),
+        "role": user_data.get("role", "agent"),
+        "team_id": user_data.get("team_ids", [None])[0] if user_data.get("team_ids") else user_data.get("default_team_id"),
+        "team_ids": user_data.get("team_ids", []),
+        "default_team_id": user_data.get("default_team_id"),
+        "is_active": True,
+        "is_system_user": user_data.get("is_system_user", False),
+        "deleted_at": None,
+        "created_at": datetime.now(timezone.utc),
+        "created_by": current_user["id"],
+        "last_login": None
+    }
+    
+    await db.crm_users.insert_one(new_user)
+    
+    # Remove password from response
+    del new_user["password"]
+    logger.info(f"User {new_user['username']} created by admin {current_user['username']}")
+    return new_user
+
+
+@admin_router.put("/users/{user_id}", dependencies=[Depends(require_admin)])
+async def update_user_admin(user_id: str, user_data: dict, current_user: dict = Depends(get_current_user)):
+    """Update user via Admin GUI"""
+    from datetime import datetime, timezone
+    
+    user = await db.crm_users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Build update document
+    update_fields = {}
+    
+    if "full_name" in user_data:
+        update_fields["full_name"] = user_data["full_name"]
+    if "username" in user_data and user_data["username"] != user["username"]:
+        # Check if new username is available
+        existing = await db.crm_users.find_one({"username": user_data["username"], "id": {"$ne": user_id}})
+        if existing:
+            raise HTTPException(status_code=400, detail="Username already exists")
+        update_fields["username"] = user_data["username"]
+    if "role" in user_data:
+        update_fields["role"] = user_data["role"]
+    if "team_ids" in user_data:
+        update_fields["team_ids"] = user_data["team_ids"]
+        # Set team_id to first team for backward compatibility
+        update_fields["team_id"] = user_data["team_ids"][0] if user_data["team_ids"] else None
+    if "default_team_id" in user_data:
+        update_fields["default_team_id"] = user_data["default_team_id"]
+    if "is_system_user" in user_data:
+        update_fields["is_system_user"] = user_data["is_system_user"]
+    
+    update_fields["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.crm_users.update_one({"id": user_id}, {"$set": update_fields})
+    
+    logger.info(f"User {user_id} updated by admin {current_user['username']}")
+    return {"success": True}
+
+
+@admin_router.put("/users/{user_id}/password", dependencies=[Depends(require_admin)])
+async def reset_user_password(user_id: str, password_data: dict, current_user: dict = Depends(get_current_user)):
+    """Reset user password via Admin GUI"""
+    from auth_utils import hash_password
+    
+    user = await db.crm_users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    new_password = password_data.get("password")
+    if not new_password or len(new_password) < 4:
+        raise HTTPException(status_code=400, detail="Password must be at least 4 characters")
+    
+    await db.crm_users.update_one(
+        {"id": user_id},
+        {"$set": {"password": hash_password(new_password)}}
+    )
+    
+    logger.info(f"Password reset for user {user_id} by admin {current_user['username']}")
+    return {"success": True}
+
+
+@admin_router.put("/users/{user_id}/status", dependencies=[Depends(require_admin)])
+async def update_user_status(user_id: str, status_data: dict, current_user: dict = Depends(get_current_user)):
+    """Activate/Deactivate user via Admin GUI"""
+    from datetime import datetime, timezone
+    
+    user = await db.crm_users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Cannot change own status
+    if user_id == current_user["id"]:
+        raise HTTPException(status_code=400, detail="Cannot change your own status")
+    
+    status = status_data.get("status")
+    if status not in ["active", "inactive"]:
+        raise HTTPException(status_code=400, detail="Status must be 'active' or 'inactive'")
+    
+    await db.crm_users.update_one(
+        {"id": user_id},
+        {"$set": {
+            "is_active": status == "active",
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    logger.info(f"User {user_id} status changed to {status} by admin {current_user['username']}")
+    return {"success": True}
+
+
+@admin_router.delete("/users/{user_id}", dependencies=[Depends(require_admin)])
+async def delete_user_admin(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Soft-delete user via Admin GUI"""
+    from datetime import datetime, timezone
+    
+    user = await db.crm_users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Cannot delete yourself
+    if user_id == current_user["id"]:
+        raise HTTPException(status_code=400, detail="Cannot delete your own account")
+    
+    # Check if already deleted
+    if user.get("deleted_at"):
+        raise HTTPException(status_code=400, detail="User already deleted")
+    
+    # Soft delete
+    await db.crm_users.update_one(
+        {"id": user_id},
+        {"$set": {
+            "deleted_at": datetime.now(timezone.utc),
+            "is_active": False
+        }}
+    )
+    
+    logger.info(f"User {user_id} deleted by admin {current_user['username']}")
+    return {"success": True}
+
+
+# ============================================
 # USER ROLES & TEAMS ASSIGNMENT
 # ============================================
 
