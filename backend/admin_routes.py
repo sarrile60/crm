@@ -342,6 +342,16 @@ async def create_user_admin(user_data: dict, current_user: dict = Depends(get_cu
     
     logger.info(f"User {clean_user['username']} created by admin {current_user['username']}")
     
+    # Log audit event
+    await log_user_action(
+        action=AuditAction.USER_CREATED,
+        actor_id=current_user["id"],
+        actor_name=current_user["username"],
+        target_user_id=user_id,
+        target_user_name=clean_user["username"],
+        details={"role": clean_user["role"], "team_ids": clean_user.get("team_ids", [])}
+    )
+    
     # Return clean response without password
     response = clean_document_for_response(clean_user)
     del response["password"]  # Never return password
