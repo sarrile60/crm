@@ -384,6 +384,18 @@ frontend:
         agent: "testing"
         comment: "✅ USERS MANAGEMENT FULLY TESTED AND WORKING: Navigation ✓ (Utenti tab removed from CRM, Administration button visible to admin only, Users tab active by default), UI Components ✓ (all headers, filters, buttons present), User Creation ✓ (fixed backend ObjectId serialization issue, users created successfully), All Modals ✓ (Create, Edit, Reset Password, Delete confirmation all working), Access Control ✓ (supervisor properly denied access with 'Accesso Negato' page), Security ✓ (admin-only functionality enforced). Backend fix applied: removed ObjectId from API responses to prevent serialization errors."
 
+  - task: "Teams Management in Administration Panel"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/admin/TeamsManagement.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented comprehensive Teams Management in Administration Panel. Full CRUD operations: Create, Edit, Archive teams. Support for supervisor assignment, member management, archive with reassignment. Admin-only access with proper security."
+
   - task: "Created Date formatting in Italian"
     implemented: true
     working: "NA"
