@@ -145,7 +145,9 @@ const AuditLogs = () => {
   }, [filters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+    // Convert "all" back to empty string for API
+    const actualValue = value === 'all' ? '' : value;
+    setFilters(prev => ({ ...prev, [key]: actualValue }));
   };
 
   const clearFilters = () => {
