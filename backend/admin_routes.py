@@ -768,3 +768,142 @@ async def remove_member_from_team(team_id: str, user_id: str, current_user: dict
     
     logger.info(f"Removed user {user_id} from team {team_id} by admin {current_user['username']}")
     return {"success": True}
+
+
+# ============================================
+# DATA VISIBILITY RULES (GUI Configuration)
+# ============================================
+
+@admin_router.get("/visibility-rules", dependencies=[Depends(require_admin)])
+async def get_visibility_rules():
+    """
+    Get all visibility rules - for Data Visibility UI
+    Returns a matrix of roles/teams with their field visibility settings
+    """
+    # Get all active roles
+    roles = await db.roles.find({}, {"_id": 0}).to_list(100)
+    
+    # Get all active teams
+    teams = await db.teams.find({"archived_at": None}, {"_id": 0}).to_list(100)
+    
+    # Get all visibility rules
+    rules = await db.visibility_rules.find({}, {"_id": 0}).to_list(1000)
+    
+    # Build rules map for quick lookup
+    rules_map = {}
+    for rule in rules:
+        key = f"{rule['scope_type']}:{rule['scope_id']}:{rule['field_name']}"
+        rules_map[key] = rule["visibility"]
+    
+    # Build matrix rows for roles
+    matrix = []
+    for role in roles:
+        matrix.append({
+            "scope_type": "role",
+            "scope_id": role["id"],
+            "scope_name": role["name"],
+            "phone": rules_map.get(f"role:{role['id']}:phone", "masked"),
+            "email": rules_map.get(f"role:{role['id']}:email", "masked"),
+            "address": rules_map.get(f"role:{role['id']}:address", "masked")
+        })
+    
+    # Build matrix rows for teams
+    for team in teams:
+        matrix.append({
+            "scope_type": "team",
+            "scope_id": team["id"],
+            "scope_name": team["name"],
+            "phone": rules_map.get(f"team:{team['id']}:phone", "masked"),
+            "email": rules_map.get(f"team:{team['id']}:email", "masked"),
+            "address": rules_map.get(f"team:{team['id']}:address", "masked")
+        })
+    
+    return {
+        "matrix": matrix,
+        "fields": ["phone", "email", "address"],
+        "visibility_options": ["full", "masked", "hidden"]
+    }
+
+
+@admin_router.put("/visibility-rules", dependencies=[Depends(require_admin)])
+async def update_visibility_rules(bulk_update: VisibilityRuleBulkUpdate, current_user: dict = Depends(get_current_user)):
+    """
+    Bulk update visibility rules from Admin GUI
+    Replaces all visibility rules with new configuration
+    """
+    # Delete all existing rules
+    await db.visibility_rules.delete_many({})
+    
+    # Insert new rules
+    new_rules = []
+    for rule_data in bulk_update.rules:
+        # Only store non-default rules (not "masked")
+        if rule_data.get("visibility", "masked") != "masked":
+            rule = VisibilityRule(
+                scope_type=rule_data["scope_type"],
+                scope_id=rule_data["scope_id"],
+                field_name=rule_data["field_name"],
+                visibility=VisibilityLevel(rule_data["visibility"])
+            )
+            new_rules.append(rule.dict())
+    
+    if new_rules:
+        # Use insert_many but we don't need to return anything
+        for rule in new_rules:
+            await insert_and_return_clean(db.visibility_rules, rule)
+    
+    logger.info(f"Visibility rules updated by admin {current_user['username']}, {len(new_rules)} rules saved")
+    return {"success": True, "count": len(new_rules)}
+
+
+@admin_router.post("/visibility-rules/single", dependencies=[Depends(require_admin)])
+async def create_visibility_rule(rule_data: VisibilityRuleCreate, current_user: dict = Depends(get_current_user)):
+    """Create or update a single visibility rule via Admin GUI"""
+    # Check if rule already exists for this scope/field combination
+    existing = await db.visibility_rules.find_one({
+        "scope_type": rule_data.scope_type,
+        "scope_id": rule_data.scope_id,
+        "field_name": rule_data.field_name
+    })
+    
+    if existing:
+        # Update existing rule
+        await db.visibility_rules.update_one(
+            {"id": existing["id"]},
+            {"$set": {
+                "visibility": rule_data.visibility,
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        logger.info(f"Visibility rule updated: {rule_data.scope_type}/{rule_data.scope_id}/{rule_data.field_name} -> {rule_data.visibility}")
+        return {"success": True, "action": "updated"}
+    else:
+        # Create new rule
+        rule = VisibilityRule(
+            scope_type=rule_data.scope_type,
+            scope_id=rule_data.scope_id,
+            field_name=rule_data.field_name,
+            visibility=VisibilityLevel(rule_data.visibility)
+        )
+        clean_rule = await insert_and_return_clean(db.visibility_rules, rule.dict())
+        
+        logger.info(f"Visibility rule created: {rule_data.scope_type}/{rule_data.scope_id}/{rule_data.field_name} -> {rule_data.visibility}")
+        return {"success": True, "action": "created", "rule": clean_document_for_response(clean_rule)}
+
+
+@admin_router.delete("/visibility-rules/{scope_type}/{scope_id}/{field_name}", dependencies=[Depends(require_admin)])
+async def delete_visibility_rule(scope_type: str, scope_id: str, field_name: str, current_user: dict = Depends(get_current_user)):
+    """Delete a visibility rule (reverts to default 'masked')"""
+    result = await db.visibility_rules.delete_one({
+        "scope_type": scope_type,
+        "scope_id": scope_id,
+        "field_name": field_name
+    })
+    
+    if result.deleted_count == 0:
+        # Not an error - rule might already be at default
+        return {"success": True, "message": "Rule was already at default"}
+    
+    logger.info(f"Visibility rule deleted: {scope_type}/{scope_id}/{field_name} by {current_user['username']}")
+    return {"success": True}
+
