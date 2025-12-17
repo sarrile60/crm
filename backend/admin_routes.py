@@ -298,16 +298,28 @@ async def create_user_admin(user_data: dict, current_user: dict = Depends(get_cu
     if existing:
         raise HTTPException(status_code=400, detail="Username already exists")
     
+    # Handle team_ids - filter out empty strings and 'none' values
+    team_ids = user_data.get("team_ids", [])
+    if isinstance(team_ids, list):
+        team_ids = [t for t in team_ids if t and t != 'none']
+    else:
+        team_ids = []
+    
+    default_team = user_data.get("default_team_id")
+    if default_team == 'none' or default_team == '':
+        default_team = None
+    
     # Build user document
+    user_id = str(uuid4())
     new_user = {
-        "id": str(uuid4()),
+        "id": user_id,
         "username": user_data["username"],
         "full_name": user_data["full_name"],
         "password": hash_password(user_data["password"]),
         "role": user_data.get("role", "agent"),
-        "team_id": user_data.get("team_ids", [None])[0] if user_data.get("team_ids") else user_data.get("default_team_id"),
-        "team_ids": user_data.get("team_ids", []),
-        "default_team_id": user_data.get("default_team_id"),
+        "team_id": team_ids[0] if team_ids else default_team,
+        "team_ids": team_ids,
+        "default_team_id": default_team,
         "is_active": True,
         "is_system_user": user_data.get("is_system_user", False),
         "deleted_at": None,
@@ -318,10 +330,22 @@ async def create_user_admin(user_data: dict, current_user: dict = Depends(get_cu
     
     await db.crm_users.insert_one(new_user)
     
-    # Remove password and _id from response to avoid serialization issues
-    response_user = {k: v for k, v in new_user.items() if k not in ["password", "_id"]}
+    # Build clean response without password and _id
     logger.info(f"User {new_user['username']} created by admin {current_user['username']}")
-    return response_user
+    return {
+        "id": user_id,
+        "username": new_user["username"],
+        "full_name": new_user["full_name"],
+        "role": new_user["role"],
+        "team_id": new_user["team_id"],
+        "team_ids": new_user["team_ids"],
+        "default_team_id": new_user["default_team_id"],
+        "is_active": new_user["is_active"],
+        "is_system_user": new_user["is_system_user"],
+        "deleted_at": None,
+        "created_at": new_user["created_at"].isoformat(),
+        "last_login": None
+    }
 
 
 @admin_router.put("/users/{user_id}", dependencies=[Depends(require_admin)])
