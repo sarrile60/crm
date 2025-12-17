@@ -906,3 +906,76 @@ test_plan:
       - Backend restarted and user creation now working perfectly ✓
       
       🚀 USERS MANAGEMENT IS PRODUCTION READY - All requirements from test specification met perfectly!
+  - agent: "main"
+    message: |
+      🔧 DATA VISIBILITY RULES IMPLEMENTATION COMPLETE
+      
+      📋 IMPLEMENTED FEATURES:
+      
+      1. BACKEND (db_utils.py + admin_routes.py + crm_routes.py):
+         - Created visibility rule utilities: mask_phone(), mask_email(), mask_address()
+         - Added visibility_rules collection in MongoDB
+         - API endpoints: GET/PUT /api/admin/visibility-rules for matrix CRUD
+         - Modified lead retrieval to apply visibility rules based on user role/team
+         - Admin always sees full data, others based on rules
+      
+      2. FRONTEND (DataVisibilityRules.jsx + AdminPanel.jsx):
+         - New "Data Visibility" tab in Administration Panel
+         - Matrix-style UI showing roles and teams
+         - Dropdown for each field: Full/Masked/Hidden
+         - Legend showing examples of each visibility level
+         - Filter buttons: All/Solo Ruoli/Solo Team
+         - Save functionality to update all rules at once
+      
+      3. DATA MODEL (admin_models.py):
+         - VisibilityLevel enum: full, masked, hidden
+         - VisibilityRule model with scope_type, scope_id, field_name, visibility
+         - VisibilityRuleBulkUpdate for batch updates
+      
+      ✅ MANUAL TESTING COMPLETED:
+      - API returns correct matrix with roles and teams
+      - Created a rule to set Agent phone to "hidden" - WORKING
+      - Admin user sees full data when fetching leads
+      - Supervisor sees masked phone/email when fetching leads
+      - Frontend UI displays correctly with all elements
+      
+      🧪 NEEDS TESTING BY TESTING AGENT:
+      - Test all CRUD operations for visibility rules
+      - Test visibility enforcement for different roles
+      - Test filter buttons in UI
+      - Test save/reset functionality
+      - Verify admin override (always sees full data)
+
+backend:
+  - task: "Data Visibility Rules API"
+    implemented: true
+    working: true
+    file: "admin_routes.py, db_utils.py, crm_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Implemented visibility rules API with CRUD operations and lead masking"
+
+frontend:
+  - task: "Data Visibility Rules UI"
+    implemented: true
+    working: true
+    file: "DataVisibilityRules.jsx, AdminPanel.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Implemented visibility matrix UI with filters and save functionality"
+
+test_plan:
+  current_focus:
+    - "Data Visibility Rules API"
+    - "Data Visibility Rules UI"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
