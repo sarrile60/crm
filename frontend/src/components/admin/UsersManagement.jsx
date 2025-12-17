@@ -47,12 +47,16 @@ const UsersManagement = () => {
   });
   
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     // Get current user from localStorage
     const user = localStorage.getItem('crmUser');
     if (user) {
-      setCurrentUser(JSON.parse(user));
+      const userData = JSON.parse(user);
+      setCurrentUser(userData);
+      console.log('Current admin user ID:', userData.id); // Debug
     }
     fetchData();
   }, []);
