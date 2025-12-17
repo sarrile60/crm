@@ -181,6 +181,71 @@ const TeamsManagement = () => {
     setShowMembersModal(true);
   };
 
+  const openManageMembersModal = (team) => {
+    setSelectedTeam(team);
+    setSelectedUsersToAdd([]);
+    setSetAsDefault(true);
+    setShowManageMembersModal(true);
+  };
+
+  // Get users NOT in this team
+  const getAvailableUsersForTeam = (teamId) => {
+    return users.filter(u => 
+      !u.deleted_at && 
+      u.is_active &&
+      u.team_id !== teamId &&
+      (!u.team_ids || !u.team_ids.includes(teamId))
+    );
+  };
+
+  const handleAddMembersToTeam = async () => {
+    if (!selectedTeam || selectedUsersToAdd.length === 0) {
+      toast.error('Seleziona almeno un utente da aggiungere');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.post(`${API}/admin/teams/${selectedTeam.id}/members`, {
+        user_ids: selectedUsersToAdd,
+        set_as_default: setAsDefault
+      }, { headers });
+
+      toast.success(`${selectedUsersToAdd.length} membri aggiunti al team`);
+      setSelectedUsersToAdd([]);
+      setShowManageMembersModal(false);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Errore nell\'aggiunta dei membri');
+    }
+  };
+
+  const handleRemoveMemberFromTeam = async (userId) => {
+    if (!selectedTeam) return;
+
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.delete(`${API}/admin/teams/${selectedTeam.id}/members/${userId}`, { headers });
+
+      toast.success('Membro rimosso dal team');
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Errore nella rimozione del membro');
+    }
+  };
+
+  const toggleUserSelection = (userId) => {
+    setSelectedUsersToAdd(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
