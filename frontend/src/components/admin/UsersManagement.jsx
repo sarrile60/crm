@@ -526,18 +526,18 @@ const UsersManagement = () => {
             <div>
               <label className="block text-sm font-semibold text-black mb-2">Team (Opzionale)</label>
               <Select 
-                value={formData.team_ids[0] || ''} 
+                value={formData.team_ids[0] || 'none'} 
                 onValueChange={(value) => setFormData({ 
                   ...formData, 
-                  team_ids: value ? [value] : [],
-                  default_team_id: value || ''
+                  team_ids: value !== 'none' ? [value] : [],
+                  default_team_id: value !== 'none' ? value : ''
                 })}
               >
                 <SelectTrigger className="bg-white border-gray-300 rounded-none">
                   <SelectValue placeholder="Seleziona team" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Nessun team</SelectItem>
+                  <SelectItem value="none">Nessun team</SelectItem>
                   {teams.map(team => (
                     <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
                   ))}
