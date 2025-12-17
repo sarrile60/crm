@@ -685,10 +685,10 @@ async def create_crm_lead(lead_data: dict, current_user: dict = Depends(get_curr
         lead["assigned_to"] = current_user["id"]
         lead["assigned_to_name"] = current_user["full_name"]
         
-        # Insert into database
-        await db.leads.insert_one(lead)
+        # Use utility to insert (avoids ObjectId serialization if we ever return the lead)
+        await insert_and_return_clean(db.leads, lead)
         
-        # Log activity
+        # Log activity (also use utility)
         activity = ActivityLog(
             lead_id=lead_id,
             user_id=current_user["id"],
@@ -696,7 +696,7 @@ async def create_crm_lead(lead_data: dict, current_user: dict = Depends(get_curr
             action="create_lead",
             details=f"Created lead: {lead['fullName']}"
         )
-        await db.activity_logs.insert_one(activity.dict())
+        await insert_and_return_clean(db.activity_logs, activity.dict())
         
         return {"success": True, "lead_id": lead_id, "message": "Lead created successfully"}
         
