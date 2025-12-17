@@ -796,49 +796,41 @@ test_plan:
 
   - agent: "testing"
     message: |
-      🎯 PERMISSION ENGINE INTEGRATION TESTING COMPLETED - 100% SUCCESS RATE
+      🎯 USERS MANAGEMENT TESTING COMPLETED - 100% SUCCESS RATE
       
-      📊 COMPREHENSIVE PERMISSION ENGINE TEST RESULTS (18/18 TESTS PASSED):
+      📊 COMPREHENSIVE USERS MANAGEMENT TEST RESULTS (ALL TESTS PASSED):
       
-      ✅ AUTHENTICATION VERIFICATION:
-      - Admin login (admin_f87450ce5d66): SUCCESS ✓
-      - Supervisor login (maurizio1): SUCCESS ✓  
-      - Agent login (test): SUCCESS ✓
-      - All test credentials from review request working correctly ✓
+      ✅ NAVIGATION & ACCESS CONTROL:
+      - Admin login successful with provided credentials ✓
+      - CRM Dashboard NO LONGER has "Utenti" tab (correctly moved to Administration Panel) ✓
+      - "Administration" button visible in nav for admin users only ✓
+      - Users tab is first tab and active by default in Administration Panel ✓
+      - Supervisor properly denied access to Administration Panel ✓
       
-      ✅ LEAD LISTING DATA SCOPING (GUI-CONFIGURED PERMISSION ENGINE):
-      - Admin sees ALL leads (14 leads): CORRECT ✓
-      - Supervisor sees ONLY team leads (6 leads with consistent team_id): CORRECT ✓
-      - Agent sees ONLY own leads (0 leads - none assigned): CORRECT ✓
-      - Permission engine properly filtering data based on GUI configuration ✓
+      ✅ USERS MANAGEMENT UI:
+      - "Users Management" header present ✓
+      - "Create User" button functional ✓
+      - All filter inputs present (Search, Role, Team, Status) ✓
+      - Users table with all required columns: Utente, Ruolo, Team, Stato, Ultimo Accesso, Tipo, Azioni ✓
+      - All 7 table headers correctly displayed ✓
       
-      ✅ LEAD DETAIL ACCESS CONTROL:
-      - Admin can access any lead detail: SUCCESS (200) ✓
-      - Supervisor can access team lead detail: SUCCESS (200) ✓
-      - Supervisor DENIED access to other team lead: CORRECT (403) ✓
-      - Agent DENIED access to other leads: CORRECT (403) ✓
-      - Permission engine enforcing resource-level access control ✓
+      ✅ CRUD OPERATIONS:
+      - Create User: Modal opens, form validation, user creation successful ✓
+      - Edit User: Modal opens with pre-filled data, modifications work ✓
+      - Reset Password: Modal opens, password reset functionality working ✓
+      - Activate/Deactivate: Status toggle buttons functional (6 found) ✓
+      - Delete User: Confirmation modal with proper warnings, soft delete working ✓
       
-      ✅ LEAD UPDATE PERMISSIONS:
-      - Supervisor can update team leads: SUCCESS (200) ✓
-      - Supervisor DENIED update to other team leads: CORRECT (403) ✓
-      - Permission engine controlling edit operations correctly ✓
+      ✅ ACCESS RESTRICTIONS:
+      - Supervisor login successful but NO access to Users Management ✓
+      - NO "Utenti" tab visible for supervisor ✓
+      - NO "Administration" button visible for supervisor ✓
+      - Direct access to /crm/admin shows "Accesso Negato" page with proper Italian explanation ✓
+      - "Torna al CRM" button present for navigation back ✓
       
-      ✅ LEAD ASSIGNMENT PERMISSIONS:
-      - Supervisor can assign team leads: SUCCESS (200) ✓
-      - Assignment permissions working through GUI-configured engine ✓
+      🔧 BACKEND FIX APPLIED:
+      - Fixed ObjectId serialization error in user creation endpoint ✓
+      - Removed _id field from API responses to prevent JSON serialization issues ✓
+      - Backend restarted and user creation now working perfectly ✓
       
-      ✅ DASHBOARD STATS DATA SCOPING:
-      - Admin dashboard stats (14 total) match visible leads (14): CONSISTENT ✓
-      - Supervisor dashboard stats (6 total) match visible leads (6): CONSISTENT ✓
-      - Agent dashboard stats (0 total) match visible leads (0): CONSISTENT ✓
-      - Dashboard properly respecting permission engine data scoping ✓
-      
-      🔧 TECHNICAL VERIFICATION:
-      - Permission engine integration in crm_routes.py: WORKING ✓
-      - GUI-configured permissions (not hard-coded roles): CONFIRMED ✓
-      - Database-driven permission evaluation: FUNCTIONAL ✓
-      - Team-based and ownership-based access control: OPERATIONAL ✓
-      - Data scoping filters applied correctly: VERIFIED ✓
-      
-      🚀 PERMISSION ENGINE IS PRODUCTION READY - All GUI-configured permissions working perfectly through database-driven engine!
+      🚀 USERS MANAGEMENT IS PRODUCTION READY - All requirements from test specification met perfectly!
