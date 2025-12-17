@@ -434,6 +434,48 @@ async def update_lead(lead_id: str, update_data: LeadUpdate, current_user: dict 
     
     return {"success": True}
 
+@crm_router.delete("/leads/{lead_id}")
+async def delete_lead(lead_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete lead - permission controlled via Admin GUI"""
+    lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
+    
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    
+    # Check permission using permission engine
+    permission_result = await permission_engine.check_permission(
+        user_id=current_user["id"],
+        entity="leads",
+        action=PermissionAction.DELETE,
+        resource_owner_id=lead.get("assigned_to"),
+        resource_team_id=lead.get("team_id")
+    )
+    
+    if not permission_result.allowed:
+        raise HTTPException(
+            status_code=403, 
+            detail=f"Permission denied: {permission_result.reason}"
+        )
+    
+    # Delete the lead
+    result = await db.leads.delete_one({"id": lead_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    
+    # Log activity
+    activity = ActivityLog(
+        lead_id=lead_id,
+        user_id=current_user["id"],
+        user_name=current_user["full_name"],
+        action="lead_deleted",
+        details=f"Deleted lead: {lead.get('fullName')}"
+    )
+    await db.activity_logs.insert_one(activity.dict())
+    
+    return {"success": True, "message": "Lead deleted successfully"}
+
+
 @crm_router.post("/leads/{lead_id}/assign")
 async def assign_lead(assignment: LeadAssignment, current_user: dict = Depends(require_role(["admin", "supervisor"]))):
     """Assign lead to agent"""
