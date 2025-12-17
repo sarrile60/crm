@@ -6,6 +6,7 @@ from typing import Optional, Dict, List
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from admin_models import PermissionScope, PermissionAction, PermissionResult
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
