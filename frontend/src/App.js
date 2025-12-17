@@ -6,6 +6,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import CRMLogin from './pages/CRMLogin';
 import CRMDashboard from './pages/CRMDashboard';
 import ThankYou from './pages/ThankYou';
+import AdminPanel from './pages/AdminPanel';
 import { Toaster } from './components/ui/sonner';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/crm/login" element={<CRMLogin />} />
           <Route path="/crm/dashboard" element={<CRMDashboard />} />
+          <Route path="/crm/admin" element={<AdminPanel />} />
         </Routes>
       </BrowserRouter>
       <Toaster />

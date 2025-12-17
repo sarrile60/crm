@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Scale, Users, TrendingUp, AlertCircle, LogOut, Settings, FileText, Bell } from 'lucide-react';
+import { Scale, Users, TrendingUp, AlertCircle, LogOut, Settings, FileText, Bell, Shield } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import axios from 'axios';
