@@ -115,10 +115,12 @@ async def create_role(role_data: RoleCreate):
         is_system=False
     )
     
-    await db.roles.insert_one(role.dict())
+    # Use utility to avoid ObjectId serialization issue
+    role_dict = role.dict()
+    clean_role = await insert_and_return_clean(db.roles, role_dict)
     
     logger.info(f"Role created: {role.name}")
-    return role
+    return clean_document_for_response(clean_role)
 
 
 @admin_router.put("/roles/{role_id}", dependencies=[Depends(require_admin)])
