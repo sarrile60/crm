@@ -890,6 +890,14 @@ async def update_visibility_rules(bulk_update: VisibilityRuleBulkUpdate, current
             await insert_and_return_clean(db.visibility_rules, rule)
     
     logger.info(f"Visibility rules updated by admin {current_user['username']}, {len(new_rules)} rules saved")
+    
+    # Log audit event
+    await log_visibility_change(
+        actor_id=current_user["id"],
+        actor_name=current_user["username"],
+        rules_count=len(new_rules)
+    )
+    
     return {"success": True, "count": len(new_rules)}
 
 
