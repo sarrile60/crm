@@ -16,6 +16,7 @@ from crm_models import (
 from auth_utils import hash_password, verify_password, create_access_token, get_user_from_token
 from permission_engine import get_permission_engine, PermissionEngine
 from admin_models import PermissionAction, PermissionScope
+from db_utils import insert_and_return_clean, clean_document_for_response
 
 # Create router
 crm_router = APIRouter(prefix="/api/crm")
