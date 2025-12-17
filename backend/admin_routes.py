@@ -290,7 +290,6 @@ async def create_user_admin(user_data: dict, current_user: dict = Depends(get_cu
     """Create new user via Admin GUI"""
     from auth_utils import hash_password
     from uuid import uuid4
-    from datetime import datetime, timezone
     
     # Validate required fields
     if not user_data.get("username") or not user_data.get("full_name") or not user_data.get("password"):
@@ -331,24 +330,15 @@ async def create_user_admin(user_data: dict, current_user: dict = Depends(get_cu
         "last_login": None
     }
     
-    await db.crm_users.insert_one(new_user)
+    # Use utility to insert and get clean document (no _id)
+    clean_user = await insert_and_return_clean(db.crm_users, new_user)
     
-    # Build clean response without password and _id
-    logger.info(f"User {new_user['username']} created by admin {current_user['username']}")
-    return {
-        "id": user_id,
-        "username": new_user["username"],
-        "full_name": new_user["full_name"],
-        "role": new_user["role"],
-        "team_id": new_user["team_id"],
-        "team_ids": new_user["team_ids"],
-        "default_team_id": new_user["default_team_id"],
-        "is_active": new_user["is_active"],
-        "is_system_user": new_user["is_system_user"],
-        "deleted_at": None,
-        "created_at": new_user["created_at"].isoformat(),
-        "last_login": None
-    }
+    logger.info(f"User {clean_user['username']} created by admin {current_user['username']}")
+    
+    # Return clean response without password
+    response = clean_document_for_response(clean_user)
+    del response["password"]  # Never return password
+    return response
 
 
 @admin_router.put("/users/{user_id}", dependencies=[Depends(require_admin)])
