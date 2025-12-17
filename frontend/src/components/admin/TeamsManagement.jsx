@@ -21,6 +21,7 @@ const TeamsManagement = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [showMembersModal, setShowMembersModal] = useState(false);
+  const [showManageMembersModal, setShowManageMembersModal] = useState(false);
   
   // Selected team
   const [selectedTeam, setSelectedTeam] = useState(null);
@@ -37,6 +38,10 @@ const TeamsManagement = () => {
   
   // Filter
   const [showArchived, setShowArchived] = useState(false);
+  
+  // Member management
+  const [selectedUsersToAdd, setSelectedUsersToAdd] = useState([]);
+  const [setAsDefault, setSetAsDefault] = useState(true);
 
   useEffect(() => {
     fetchData();
