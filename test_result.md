@@ -1002,7 +1002,7 @@ backend:
 frontend:
   - task: "Data Visibility Rules UI"
     implemented: true
-    working: "NA"
+    working: true
     file: "DataVisibilityRules.jsx, AdminPanel.jsx"
     stuck_count: 0
     priority: "high"
@@ -1014,6 +1014,9 @@ frontend:
       - working: "NA"
         agent: "testing"
         comment: "Frontend UI testing not performed as per system limitations. Backend API fully tested and working. UI components should be tested by main agent or user."
+      - working: true
+        agent: "testing"
+        comment: "✅ DATA VISIBILITY RULES UI FULLY TESTED (8/8 test requirements passed): Navigation ✓ (Admin login successful, Administration Panel accessible, Data Visibility tab functional), UI Elements ✓ (Page header 'Visibilità Dati', Legend section with 3 visibility boxes: Visibile/Mascherato/Nascosto, Filter buttons: Tutti/Solo Ruoli/Solo Team, Matrix table with columns: Tipo/Nome/Telefono/Email/Indirizzo, Role rows: Admin/Supervisor/Agent, Team rows: ITALY/ITALY 1/Test Team/Archive Test Team, 24 visibility dropdown selects), Dropdown Functionality ✓ (Visibility options working, 'Salva Modifiche' button activates on change), Save Functionality ✓ (Success toast 'Regole di visibilità salvate con successo' appears, changes persist), Info Box ✓ ('Come Funziona' heading with 7 bullet points explaining visibility levels). Minor: Filter functionality has some display issues but core filtering logic works. All major UI components and functionality working correctly as per test specification."
 
 test_plan:
   current_focus:
