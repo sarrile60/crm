@@ -363,7 +363,7 @@ const AuditLogs = () => {
                   <SelectValue placeholder="Tutti i tipi" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Tutti i tipi</SelectItem>
+                  <SelectItem value="all">Tutti i tipi</SelectItem>
                   {filterOptions.entity_types.map(e => (
                     <SelectItem key={e.value} value={e.value}>
                       {e.label}
