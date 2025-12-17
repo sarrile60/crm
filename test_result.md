@@ -448,8 +448,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "User Deletion UI Testing"
-    - "Lead Deletion UI Testing"
+    - "Permission Engine Integration Testing - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
