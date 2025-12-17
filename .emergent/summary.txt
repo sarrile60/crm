@@ -1,107 +1,197 @@
-<analysis>
-The project trajectory details the development and subsequent hardening of a full-stack CRM for a law firm, 1 LAW SOLICITORS. The application was built using React, FastAPI, and MongoDB. The initial phase focused on building core CRM features like role-based access control (Admin, Supervisor, Agent), team management, and lead management.
+<analysis>Here is the summary of the current session:
 
-A significant effort was spent on debugging a real-time chat feature, which ultimately failed to meet user expectations for real-time updates. After multiple unsuccessful fix attempts on both the backend () and frontend (), the user requested the complete removal of the chat functionality, which was executed successfully.
+**original_problem_statement:**
+The user's initial goal was to build and refine a full-stack CRM for their law firm, 1 LAW SOLICITORS, using React, FastAPI, and MongoDB. This included features like role-based access, lead management, a callback notification system, and security hardening.
 
-The focus then shifted to new feature development and refinement. A sophisticated notification system for overdue callbacks was implemented in , with its behavior iteratively refined based on user feedback. Permissions were tightened in  to restrict lead import/export to admins, and a secure backend endpoint was added for lead creation with auto-assignment.
+The most recent and critical requirement is to build a comprehensive, GUI-driven administration panel, similar to EspoCRM, to make the entire system configurable without needing future code edits.
 
-The final and most critical phase was a comprehensive security audit and production hardening, prompted by the user. This involved moving from a highly vulnerable state (hardcoded credentials, exposed source code, open database) to a secured, production-ready application specifically tailored for the Emergent hosting environment. This included generating strong secrets, enabling MongoDB authentication, adding security middleware to the backend, creating a production frontend build, and updating all configurations to run in a secure, non-development mode. The final interactions clarified the security posture and the meaning of deployment within the managed Emergent environment. The primary language detected is English. The next agent should respond in English.
-</analysis>
+**PRODUCT REQUIREMENTS (New Admin Panel):**
+-   **GUI-First Design:** ALL configuration (roles, permissions, data scopes, visibility) MUST be managed through a user-friendly admin GUI. No future changes should require code edits.
+-   **Administration Access:** A new Administration menu item visible ONLY to 'admin' role users.
+-   **User Management:** Full CRUD for users, assign multiple roles/teams, and override permissions.
+-   **Team Management:** Create/edit teams and define data visibility rules per team (Own, Team, Team + Children, All) for different entities (Leads, Contacts, etc.).
+-   **Role & Permission Matrix:** An EspoCRM-style grid UI to create unlimited roles and assign permissions (Read, Create, Edit, Delete, Assign, Export) for each entity with different scopes (none, own, team, all).
+-   **Data/Phone Visibility:** GUI to configure phone number visibility (Full, Masked, Hidden) per role/team.
+-   **Dynamic Rule Engine:** The backend must replace all hard-coded logic with a generic rule engine that enforces the GUI-defined configurations from the database on every request.
+-   **Phased Rollout:**
+    -   **Phase 1 (Current):** Role Management, Permission Matrix, Data Scope Engine (backend).
+    -   **Future Phases:** User Management, Team Management, Data Visibility, Audit Logs.
 
-<product_requirements>
-The application is an internal CRM for the 1 LAW SOLICITORS legal firm, designed to manage leads and internal operations with strict, role-based access control.
+**User's preferred language**: English
 
-**Core Features:**
-*   **User Roles:** Admin, Supervisor, Agent. Admins have full access. Supervisors and Agents are restricted to leads within their assigned team or assigned to them directly.
-*   **Lead Management:** A central dashboard to view, filter, and manage leads.
-    *   Admins can import/export leads via CSV. This functionality is hidden from Supervisors and Agents.
-    *   Leads created by Agents or Supervisors are automatically assigned to their team and to themselves.
-*   **Phone Security:** Phone numbers are masked for non-admin roles (e.g., ) and are clickable  links.
-*   **Notification System:** A bell icon in the header displays a dropdown with a count of *only* overdue (scaduto) callbacks.
-    *   The notification provides lead details and quick action buttons.
-    *   Notifications automatically disappear when the agent either changes the lead's status or reschedules the callback time.
+**what currently exists?**
+The application is a full-stack CRM with a React frontend, FastAPI backend, and MongoDB database. Core features include:
+-   **Authentication:** Username/password-based login system (migrated from email).
+-   **User Roles:** 'admin', 'supervisor', 'agent' roles exist as seed data in the new  DB collection.
+-   **Lead Management:** A dashboard to view, filter, and manage leads. Phone numbers are masked in the UI but available via  links for click-to-call.
+-   **Callback System:** A notification system for overdue callbacks. Popups are restricted to the assigned agent only. Includes a smart date/time picker that checks for scheduling conflicts.
+-   **Landing Page:** A public-facing page with a lead capture form, a Thank You page, and tracking pixels (PageView and Lead).
+-   **Admin Panel Foundation:** The backend foundation for the new admin panel is in place, including new database models (), a generic permission engine (), API routes (), and a seeding script (). The frontend components have been created as placeholder files.
 
-**Removed Features:**
-*   A real-time internal chat system was initially built but was completely removed from the codebase at the user's request due to persistent functionality issues.
-</product_requirements>
+**Last working item**:
+-   Last item agent was working: The agent was creating the placeholder frontend components for the new Admin Panel UI after getting user approval on the phased plan. The focus was on laying the groundwork for the GUI. The next step is to implement the  and  components.
+-   Status: IN PROGRESS
+-   Agent Testing Done: N
+-   Which testing method agent to use? Frontend testing agent
+-   User Testing Done: N
 
-<key_technical_concepts>
-- **Full-Stack Frameworks:** React (frontend), FastAPI (backend).
-- **Database:** MongoDB.
-- **Authentication & Security:** JWT for API security,  for password hashing, Role-Based Access Control (RBAC) logic.
-- **Production Hardening:**
-    - Secrets management via  files.
-    - Production frontend builds served with .
-    - FastAPI security middleware (CORS, CSP, rate limiting, access blocking).
-    - Enabled MongoDB authentication.
-- **UI/UX:**  components,  for icons, custom CSS.
-- **State Management:** React Hooks (, ).
-</key_technical_concepts>
+**All Pending/In progress Issue list**:
+-   Issue 1: Preview environment stability (P0)
+-   Issue 2: User login failures after deployment or caching (P1)
 
-<code_architecture>
-The application is a monorepo with separate  and  directories. The final state is a production-hardened application running within the Emergent container environment, where Supervisor manages the processes.
+Issues Detail:
+-   **Issue 1: Preview environment stability**
+    -   **Description:** The preview environment frequently returns a 404 error or a blank white page, requiring a manual frontend rebuild (yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.) and service restart to fix. This has happened multiple times.
+    -   **Attempted fixes:** Agent has repeatedly run yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. and frontend: ERROR (not running)
+frontend: started. This fixes the symptom but not the root cause.
+    -   **Next debug checklist:**
+        -   Investigate why the  directory is being deleted or becoming inaccessible.
+        -   Check the  configuration in  and supervisor logs for the frontend service to ensure it's correctly serving the static files.
+        -   Examine deployment scripts or environment behavior that might be clearing the build directory.
+    -   **Why fix this issue and what will be achieved with the fix?** A stable preview environment is crucial for development and testing, and fixing this will prevent constant interruptions and rework.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Frontend
+-   **Issue 2: User login failures after deployment or caching**
+    -   **Description:** The user has repeatedly reported being unable to log in (Invalid Credentials), especially after a new deployment or on a different device. Past causes included incorrect CORS settings, browser caching of old frontend code, and overly strict backend rate-limiting.
+    -   **Attempted fixes:** Agent has fixed CORS, removed rate-limiting, and advised the user to clear browser cache.
+    -   **Next debug checklist:**
+        -   Implement a cache-busting strategy in the frontend build process (e.g., using file hashes in filenames, which Vite/CRA does by default, but ensure  is served with  headers).
+        -   Verify that the deployed  in  is always correct for the production environment.
+    -   **Why fix this issue and what will be achieved with the fix?** This will resolve a major user frustration and ensure the application is reliably accessible after deployment.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Both
+
+**In progress Task List**:
+-   Task 1: Build comprehensive Admin Panel (Phase 1) (P0)
+
+Task Detail:
+-   **Task 1: Build comprehensive Admin Panel (Phase 1)**
+    -   **Where to resume:** Implement the frontend UI for the Admin Panel. The backend APIs are ready. The next component to build is .
+        -   File: 
+        -   Task: Create an EspoCRM-style grid that fetches roles and entities from the backend (, ). It should allow an admin to select a scope (none, own, team, all) from a dropdown for each permission (read, create, edit, delete) for each entity and role.
+    -   **What will be achieved with this?** This will create the core GUI for managing system-wide permissions, fulfilling the user's primary requirement of a code-free configuration system.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Blocked on something:** None
+
+**Upcoming and Future Tasks**
+-   **Upcoming Tasks (P1):**
+    -   **Admin Panel UI Integration:**
+        -   Create the  component.
+        -   Add an Administration link to the main navigation, visible only to admins.
+        -   Set up routing in  for the new admin pages.
+    -   **Replace Hard-coded Logic:**
+        -   Systematically remove all hard-coded role checks (e.g., ) in .
+        -   Replace them with calls to the new  to dynamically check permissions from the database.
+-   **Future Tasks (P2):**
+    -   **Admin Panel - Phase 2:** Build the remaining admin panels in the user-specified priority order:
+        1.  Users Management
+        2.  Teams Management
+        3.  Phone & Sensitive Data Visibility
+        4.  Audit Logs & Safety Controls
+    -   **Video Testimonials Section:** Add a client video testimonials section to the landing page (), as mentioned in the initial project brief.
+
+**Completed work in this session**
+-   Landing page content updated (removed INTERPOL, changed 6 mesi to 1 settimana).
+-   Authentication system fully migrated from email-based to username-based.
+-   Fixed multiple login issues related to backend errors, incorrect user collections, and missing fields.
+-   Removed all password and username validation restrictions.
+-   Restored custom lead statuses and assigned a default status to all leads.
+-   Implemented a smart callback scheduling system with conflict detection and a popup queue.
+-   Fixed agent permissions to allow them to see their assigned leads.
+-   Implemented smart phone number masking: numbers are masked in the UI but the full number is used in the  link for click-to-call.
+-   Admins can now see full, unmasked phone numbers.
+-   Callback notifications (popups) are now restricted to only the assigned agent.
+-   Added a Thank You page () and implemented backend logic to prevent duplicate lead submissions from the landing page form.
+-   Added tracking iframes for PageView (on ) and Lead conversion (on ).
+-   Fixed multiple deployment/preview issues (CORS, missing frontend build, rate limiting).
+-   **Admin Panel Foundation (Backend):** Created and seeded database collections (, , ), built a generic permission engine, and exposed admin API endpoints.
+
+**Earlier issues found/mentioned but not fixed**
+-   None that aren't already listed in the Pending/In progress Issue list.
+
+**Code Architecture**
 
 
+**Key Technical Concepts**
+-   **Full-Stack:** React (frontend), FastAPI (backend), MongoDB (database).
+-   **Authentication:** JWT,  password hashing, username-based login.
+-   **Permissions:** Previously role-based hard-coded logic. **Now transitioning to a GUI-driven, dynamic permission engine.**
+-   **Admin Configuration:** New backend models, API routes, and a permission engine to allow all system behavior (roles, permissions, scopes) to be configured via a GUI without code changes.
+-   **UI:** , , custom CSS, conditional rendering based on user roles.
+-   **State Management:** React Hooks (, , ).
 
--   ****
-    -   **Importance:** The main entry point for the FastAPI application. It initializes the app, database connection, and API routers.
-    -   **Changes:** Heavily modified for security. Debug mode was disabled, and security middleware was added to block direct access to  and  files, implement rate limiting, and add security headers (CSP, XSS protection). CORS was restricted to the production domain. All secrets (JWT, DB URL, etc.) are now loaded from the  file instead of being hardcoded.
+**key DB schema**
+-   : {id, username, full_name, hashed_password, role, team_id, ...}
+-   : {id, fullName, phone, email, status, assigned_to, team_id, ...}
+-   : {id, name, color, order}
+-   : {id, name}
+-   : {id, name, description, is_system} 
+-   : {id, role_id, entity_name, action, scope} 
+-   : {entity_name, display_name, icon, is_enabled} 
 
--   ****
-    -   **Importance:** Defines all CRM-related API endpoints for leads, users, and teams, including the critical role-based permission logic.
-    -   **Changes:** A new secure endpoint  was added for lead creation. This endpoint ensures that when a Supervisor or Agent creates a lead, it is automatically assigned to their team and to them as the assigned user.
+**All files of reference**
+-   : Contains the new API endpoints for the admin panel.
+-   : The core logic for checking permissions dynamically.
+-   : Pydantic models for the new admin collections.
+-   : One-time script used to populate the initial admin data.
+-   : The main container for all admin UI components.
+-   : Placeholder for the role management UI.
+-   : Placeholder for the core permission grid UI.
+-   : The public landing page, modified to add a tracking pixel.
+-   : The new page shown after lead form submission.
+-   : Modified to make popups user-specific.
+-   : Modified to replace hard-coded logic with permission checks. This will be an ongoing effort.
+-   : Modified to include the new admin router.
 
--   ****
-    -   **Importance:** The primary UI for displaying and interacting with the list of leads.
-    -   **Changes:** Logic was added to conditionally render the Importa CSV and Esporta CSV buttons, making them visible only to users with the 'admin' role. The  function was updated to call the new, secure backend endpoint () for creating leads, ensuring auto-assignment.
+**Critical Info for New Agent**
+-   **The user's number one priority is the GUI-driven Admin Panel.** The system must behave like EspoCRM, where an administrator can configure all roles, permissions, and data visibility rules without any code changes. The backend's role is to be a generic engine that strictly enforces the rules defined in the GUI.
+-   **Follow the phased plan.** Start by completing the frontend UI for Phase 1 (Role Management, Permission Matrix, Entity Configuration).
+-   **Beware of recurring issues.** The preview environment is brittle and may require yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. to fix 404s. User login issues are also common, often related to caching or deployment configurations. Be prepared to troubleshoot these.
+-   The new admin APIs are at the  prefix (e.g., ), not .
 
--   ****
-    -   **Importance:** This component manages the notification system triggered by the bell icon in the header.
-    -   **Changes:** This component was significantly refactored to meet user requirements. It now specifically fetches and displays *only overdue* callbacks. The UI was updated to show how long each callback is overdue. Logic was added to automatically refresh the list (and thus remove a notification) when a lead's status is changed or its callback time is rescheduled.
+**Last 10 User Messages and any pending user messages**
+1.  **User Request:** Add a full GUI-based administration panel like EspoCRM.
+2.  **Agent Response:** Asked for clarification on priorities for the large project.
+3.  **User Response:** Provided a strict phased plan: 1. Roles/Permissions/Data Scope, 2. Users, 3. Teams, etc.
+4.  **Agent Response:** Proposed a detailed implementation plan for Phase 1.
+5.  **User Response:** Approved Phase 1 with strict conditions: GUI-first design, no hard-coded logic, backend enforces GUI rules.
+6.  **Agent Response:** Agreed and started building the backend foundation.
+7.  **User Request:** Asked for supervisor and agent login credentials.
+8.  **User Report:** 404 request could not be found on preview.
+9.  **User Confirmation:** User (as an actor) confirmed the backend foundation for the admin panel is working and approved proceeding with the frontend UI.
+10. **Agent Response:** Acknowledged approval and started creating the frontend placeholder files for the admin panel UI.
 
--   ** and **
-    -   **Importance:** These files were originally created to implement the real-time chat feature.
-    -   **Changes:** Both files, along with , were **deleted** from the project at the user's explicit request after failed attempts to fix real-time functionality. All references to them in  and  were also removed.
-</code_architecture>
+**Project Health Check:**
+-   **Broken:**
+    -   The preview environment is unstable and frequently shows 404 errors until the frontend is rebuilt.
+-   **Mocked:**
+    -   None.
 
-<pending_tasks>
-- **Video Testimonials:** The user previously expressed interest in adding a client video testimonials section to the public-facing landing page but this task was deferred and has not been implemented.
-</pending_tasks>
+**3rd Party Integrations**
+-   None.
 
-<current_work>
-The most recent and conclusive work was the complete security hardening of the application for the Emergent hosting environment. This was a multi-step process that transitioned the application from a vulnerable development state to a secure, production-ready system.
+**Testing status**
+-   Testing agent used after significant changes: NO
+-   Troubleshoot agent used after agent stuck in loop: NO
+-   Test files created: []
+-   Known regressions: Lead statuses were accidentally deleted during the session but were later restored by the agent.
 
-**Key Actions Performed:**
-1.  **Secret Generation:** New, cryptographically strong credentials were generated for the Admin user, MongoDB user, and the JWT secret.
-2.  **Database Security:** MongoDB authentication was enabled. A dedicated admin and an application user were created via Current Mongosh Log ID:	6923116200ec153996b1ddf3
-Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.9
-Using MongoDB:		7.0.25
-Using Mongosh:		2.5.9
+**Credentials to test flow:**
+-   **Admin:**
+    -   Username: 
+    -   Password: 
+-   **Supervisor:**
+    -   Username: 
+    -   Password: 
+-   **Agent:**
+    -   Username: 
+    -   Password: 
 
-For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
-
-------
-   The server generated these startup warnings when booting
-   2025-11-23T13:51:28.046+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
-   2025-11-23T13:51:30.837+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
-   2025-11-23T13:51:30.837+00:00: You are running this process as the root user, which is not recommended
-   2025-11-23T13:51:30.837+00:00: Soft rlimits for open file descriptors too low
-------
-
-test> , and the database connection string in  was updated to include these new credentials. The database remains on  as managed by the Emergent environment.
-3.  **Backend Hardening:** The main  file was updated to disable debug mode, load all secrets from environment variables, and implement critical security middleware for rate-limiting, CORS, and blocking access to sensitive files.
-4.  **Frontend Production Build:** The React application was built for production (yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.), removing development tools and source maps. The  package was installed and configured via  to serve the static  folder on port 3000, which is the standard procedure for production frontends in the Emergent environment.
-5.  **Service Restart:** All services (, ) were restarted using Error: restart requires a process name
-restart <name>		Restart a process
-restart <gname>:*	Restart all processes in a group
-restart <name> <name>	Restart multiple processes or groups
-restart all		Restart all processes
-Note: restart does not reread config files. For that, see reread and update. to apply the new configurations and production builds.
-
-The final interaction involved confirming to the user that these changes are **live and active**, clarifying that deployment in the Emergent context means the running state of the application. The user was provided with all new credentials and instructed on how to verify the system is secure and operational.
-</current_work>
-
-<optional_next_step>
-Confirm with the user that they have successfully saved the new production credentials and have verified the functionality of the hardened application. Ask for the next feature or task they would like to prioritize.
-</optional_next_step>
+**What agent forgot to execute**
+-   The video testimonials feature requested in the initial project brief has not been implemented, as the user has since provided a much larger, higher-priority task (the Admin Panel). This should be considered a deferred, future task.</analysis>
