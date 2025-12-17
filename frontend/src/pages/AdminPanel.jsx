@@ -9,7 +9,7 @@ import UsersManagement from '../components/admin/UsersManagement';
 
 const AdminPanel = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('roles');
+  const [activeTab, setActiveTab] = useState('users');
   const [isAuthorized, setIsAuthorized] = useState(null); // null = checking, true = admin, false = not admin
   const [currentUser, setCurrentUser] = useState(null);
 
