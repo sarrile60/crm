@@ -17,7 +17,7 @@ from admin_models import (
     PermissionAction, PermissionScope,
     UserRole, UserTeam
 )
-from auth_utils import get_current_user
+from crm_routes import get_current_user
 from server import db  # Import db from server
 
 logger = logging.getLogger(__name__)
