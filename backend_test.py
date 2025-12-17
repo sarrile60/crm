@@ -1775,6 +1775,324 @@ class CRMTester:
             except Exception as e:
                 self.log_result(f"Permission Engine - {role.title()} Dashboard Stats", False, f"Error: {str(e)}")
 
+    def test_data_visibility_rules_api(self):
+        """Test Data Visibility Rules API endpoints"""
+        print("\n=== Testing Data Visibility Rules API ===")
+        
+        if not self.admin_token:
+            self.log_result("Data Visibility Rules Setup", False, "Missing admin token")
+            return
+        
+        admin_headers = {
+            "Authorization": f"Bearer {self.admin_token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Test 1: GET /api/admin/visibility-rules - Get visibility matrix
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/visibility-rules", headers=admin_headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                matrix = data.get("matrix", [])
+                fields = data.get("fields", [])
+                visibility_options = data.get("visibility_options", [])
+                
+                # Verify structure
+                has_roles = any(row.get("scope_type") == "role" for row in matrix)
+                has_teams = any(row.get("scope_type") == "team" for row in matrix)
+                expected_fields = ["phone", "email", "address"]
+                expected_options = ["full", "masked", "hidden"]
+                
+                success = (
+                    has_roles and 
+                    fields == expected_fields and 
+                    visibility_options == expected_options and
+                    len(matrix) > 0
+                )
+                
+                self.log_result(
+                    "Visibility Rules - GET matrix",
+                    success,
+                    "Retrieved visibility rules matrix successfully",
+                    f"Matrix rows: {len(matrix)}, Has roles: {has_roles}, Has teams: {has_teams}"
+                )
+            else:
+                self.log_result("Visibility Rules - GET matrix", False, f"Failed to get matrix: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Visibility Rules - GET matrix", False, f"Error: {str(e)}")
+        
+        # Test 2: POST /api/admin/visibility-rules/single - Create single rule
+        try:
+            # Find a role ID from the matrix for testing
+            matrix_response = self.session.get(f"{BASE_URL}/admin/visibility-rules", headers=admin_headers)
+            if matrix_response.status_code == 200:
+                matrix_data = matrix_response.json()
+                role_row = next((row for row in matrix_data["matrix"] if row["scope_type"] == "role"), None)
+                
+                if role_row:
+                    test_rule = {
+                        "scope_type": "role",
+                        "scope_id": role_row["scope_id"],
+                        "field_name": "phone",
+                        "visibility": "hidden"
+                    }
+                    
+                    response = self.session.post(
+                        f"{BASE_URL}/admin/visibility-rules/single",
+                        json=test_rule,
+                        headers=admin_headers
+                    )
+                    
+                    if response.status_code == 200:
+                        result = response.json()
+                        success = result.get("success", False)
+                        action = result.get("action", "")
+                        
+                        self.log_result(
+                            "Visibility Rules - POST single rule",
+                            success,
+                            f"Created/updated single rule successfully",
+                            f"Action: {action}, Rule: {role_row['scope_name']} phone -> hidden"
+                        )
+                    else:
+                        self.log_result("Visibility Rules - POST single rule", False, f"Failed to create rule: {response.status_code}", response.text)
+                else:
+                    self.log_result("Visibility Rules - POST single rule", False, "No role found in matrix for testing")
+            else:
+                self.log_result("Visibility Rules - POST single rule", False, "Could not get matrix for test setup")
+                
+        except Exception as e:
+            self.log_result("Visibility Rules - POST single rule", False, f"Error: {str(e)}")
+        
+        # Test 3: PUT /api/admin/visibility-rules - Bulk update rules
+        try:
+            # Get current matrix to build bulk update
+            matrix_response = self.session.get(f"{BASE_URL}/admin/visibility-rules", headers=admin_headers)
+            if matrix_response.status_code == 200:
+                matrix_data = matrix_response.json()
+                
+                # Create bulk update with some test rules
+                bulk_rules = []
+                for row in matrix_data["matrix"][:2]:  # Test with first 2 rows
+                    for field in ["phone", "email"]:
+                        bulk_rules.append({
+                            "scope_type": row["scope_type"],
+                            "scope_id": row["scope_id"],
+                            "field_name": field,
+                            "visibility": "full" if field == "phone" else "masked"
+                        })
+                
+                bulk_update = {"rules": bulk_rules}
+                
+                response = self.session.put(
+                    f"{BASE_URL}/admin/visibility-rules",
+                    json=bulk_update,
+                    headers=admin_headers
+                )
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    success = result.get("success", False)
+                    count = result.get("count", 0)
+                    
+                    self.log_result(
+                        "Visibility Rules - PUT bulk update",
+                        success,
+                        f"Bulk updated rules successfully",
+                        f"Updated {count} rules"
+                    )
+                else:
+                    self.log_result("Visibility Rules - PUT bulk update", False, f"Failed to bulk update: {response.status_code}", response.text)
+            else:
+                self.log_result("Visibility Rules - PUT bulk update", False, "Could not get matrix for bulk update test")
+                
+        except Exception as e:
+            self.log_result("Visibility Rules - PUT bulk update", False, f"Error: {str(e)}")
+        
+        # Test 4: DELETE /api/admin/visibility-rules/{scope_type}/{scope_id}/{field_name} - Delete rule
+        try:
+            # Delete the rule we created in test 2
+            matrix_response = self.session.get(f"{BASE_URL}/admin/visibility-rules", headers=admin_headers)
+            if matrix_response.status_code == 200:
+                matrix_data = matrix_response.json()
+                role_row = next((row for row in matrix_data["matrix"] if row["scope_type"] == "role"), None)
+                
+                if role_row:
+                    response = self.session.delete(
+                        f"{BASE_URL}/admin/visibility-rules/role/{role_row['scope_id']}/phone",
+                        headers=admin_headers
+                    )
+                    
+                    if response.status_code == 200:
+                        result = response.json()
+                        success = result.get("success", False)
+                        
+                        self.log_result(
+                            "Visibility Rules - DELETE rule",
+                            success,
+                            f"Deleted rule successfully (reverted to default)",
+                            f"Deleted: {role_row['scope_name']} phone rule"
+                        )
+                    else:
+                        self.log_result("Visibility Rules - DELETE rule", False, f"Failed to delete rule: {response.status_code}", response.text)
+                else:
+                    self.log_result("Visibility Rules - DELETE rule", False, "No role found for delete test")
+            else:
+                self.log_result("Visibility Rules - DELETE rule", False, "Could not get matrix for delete test")
+                
+        except Exception as e:
+            self.log_result("Visibility Rules - DELETE rule", False, f"Error: {str(e)}")
+    
+    def test_visibility_enforcement(self):
+        """Test visibility rule enforcement in lead data"""
+        print("\n=== Testing Visibility Rule Enforcement ===")
+        
+        if not self.admin_token or not self.test_lead_id:
+            self.log_result("Visibility Enforcement Setup", False, "Missing admin token or test lead")
+            return
+        
+        admin_headers = {
+            "Authorization": f"Bearer {self.admin_token}",
+            "Content-Type": "application/json"
+        }
+        
+        # Test 1: Admin should ALWAYS see full data (admin override)
+        try:
+            response = self.session.get(f"{CRM_BASE_URL}/leads", headers=admin_headers)
+            
+            if response.status_code == 200:
+                leads = response.json()
+                test_lead = None
+                for lead in leads:
+                    if lead.get("id") == self.test_lead_id:
+                        test_lead = lead
+                        break
+                
+                if test_lead:
+                    phone_display = test_lead.get("phone_display", test_lead.get("phone", ""))
+                    phone_real = test_lead.get("phone_real", test_lead.get("phone", ""))
+                    
+                    # Admin should see full phone numbers
+                    admin_sees_full = (
+                        phone_display == "+393451234567" and 
+                        phone_real == "+393451234567"
+                    )
+                    
+                    self.log_result(
+                        "Visibility Enforcement - Admin full access",
+                        admin_sees_full,
+                        "Admin sees full data as expected",
+                        f"phone_display: {phone_display}, phone_real: {phone_real}"
+                    )
+                else:
+                    self.log_result("Visibility Enforcement - Admin full access", False, "Test lead not found")
+            else:
+                self.log_result("Visibility Enforcement - Admin full access", False, f"Failed to get leads: {response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Visibility Enforcement - Admin full access", False, f"Error: {str(e)}")
+        
+        # Test 2: Supervisor should see masked data based on rules
+        supervisor_token = self.login_user("maurizio1", "12345")
+        if supervisor_token:
+            supervisor_headers = {"Authorization": f"Bearer {supervisor_token}"}
+            
+            try:
+                response = self.session.get(f"{CRM_BASE_URL}/leads", headers=supervisor_headers)
+                
+                if response.status_code == 200:
+                    leads = response.json()
+                    if leads:
+                        # Check first lead for masking
+                        lead = leads[0]
+                        phone_display = lead.get("phone_display", lead.get("phone", ""))
+                        phone_real = lead.get("phone_real", lead.get("phone", ""))
+                        
+                        # Supervisor should see masked phone by default
+                        supervisor_sees_masked = (
+                            "***" in phone_display or 
+                            phone_display.endswith("4567") or
+                            len(phone_display) < len(phone_real)
+                        )
+                        
+                        self.log_result(
+                            "Visibility Enforcement - Supervisor masked data",
+                            supervisor_sees_masked,
+                            "Supervisor sees masked data as expected",
+                            f"phone_display: {phone_display}, phone_real: {phone_real}"
+                        )
+                    else:
+                        self.log_result("Visibility Enforcement - Supervisor masked data", False, "No leads found for supervisor")
+                else:
+                    self.log_result("Visibility Enforcement - Supervisor masked data", False, f"Failed to get supervisor leads: {response.status_code}")
+                    
+            except Exception as e:
+                self.log_result("Visibility Enforcement - Supervisor masked data", False, f"Error: {str(e)}")
+        else:
+            self.log_result("Visibility Enforcement - Supervisor masked data", False, "Could not login as supervisor")
+        
+        # Test 3: Create rule to hide supervisor phone, then test enforcement
+        try:
+            # Get supervisor role ID
+            roles_response = self.session.get(f"{BASE_URL}/admin/roles", headers=admin_headers)
+            if roles_response.status_code == 200:
+                roles = roles_response.json()
+                supervisor_role = next((role for role in roles if role["name"].lower() == "supervisor"), None)
+                
+                if supervisor_role:
+                    # Create rule to hide phone for supervisor role
+                    hide_rule = {
+                        "scope_type": "role",
+                        "scope_id": supervisor_role["id"],
+                        "field_name": "phone",
+                        "visibility": "hidden"
+                    }
+                    
+                    rule_response = self.session.post(
+                        f"{BASE_URL}/admin/visibility-rules/single",
+                        json=hide_rule,
+                        headers=admin_headers
+                    )
+                    
+                    if rule_response.status_code == 200:
+                        # Now test that supervisor sees hidden phone
+                        if supervisor_token:
+                            leads_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=supervisor_headers)
+                            
+                            if leads_response.status_code == 200:
+                                leads = leads_response.json()
+                                if leads:
+                                    lead = leads[0]
+                                    phone_display = lead.get("phone_display", lead.get("phone", ""))
+                                    phone_real = lead.get("phone_real", lead.get("phone", ""))
+                                    
+                                    # Phone should be hidden (empty)
+                                    phone_hidden = (phone_display == "" and phone_real == "")
+                                    
+                                    self.log_result(
+                                        "Visibility Enforcement - Hidden phone rule",
+                                        phone_hidden,
+                                        "Supervisor phone hidden as per rule",
+                                        f"phone_display: '{phone_display}', phone_real: '{phone_real}'"
+                                    )
+                                else:
+                                    self.log_result("Visibility Enforcement - Hidden phone rule", False, "No leads found after rule creation")
+                            else:
+                                self.log_result("Visibility Enforcement - Hidden phone rule", False, f"Failed to get leads after rule: {leads_response.status_code}")
+                        else:
+                            self.log_result("Visibility Enforcement - Hidden phone rule", False, "No supervisor token for hidden test")
+                    else:
+                        self.log_result("Visibility Enforcement - Hidden phone rule", False, f"Failed to create hide rule: {rule_response.status_code}")
+                else:
+                    self.log_result("Visibility Enforcement - Hidden phone rule", False, "Supervisor role not found")
+            else:
+                self.log_result("Visibility Enforcement - Hidden phone rule", False, f"Failed to get roles: {roles_response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Visibility Enforcement - Hidden phone rule", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all CRM backend tests including deletion functionality"""
         print("🚀 Starting CRM Backend Tests")
