@@ -257,9 +257,9 @@ class CRMTester:
         
         # Test users with their expected phone visibility
         test_cases = [
-            ("admin@1lawsolicitors.com", "Admin@123456", "admin", "+393451234567"),  # Full phone
+            ("admin_f87450ce5d66", "zTFjPAcs*-(NL-qbj@AP0TcWt*8)nV4f6K(ZcVP_", "admin", "+393451234567"),  # Full phone
             ("manager@test.com", "TestPass123!", "manager", "xxxxxxxx4567"),  # Masked phone
-            ("supervisor@test.com", "TestPass123!", "supervisor", "xxxxxxxx4567"),  # Masked phone  
+            ("maurizio1", "12345", "supervisor", "xxxxxxxx4567"),  # Masked phone  
             ("agent@test.com", "TestPass123!", "agent", "xxxxxxxx4567")  # Masked phone
         ]
         
