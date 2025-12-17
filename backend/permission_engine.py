@@ -52,7 +52,7 @@ class PermissionEngine:
             
             # Find the role document (case-insensitive match)
             role = await self.db.roles.find_one({
-                "name": {"$regex": f"^{user_role_name}$", "$options": "i"}
+                "name": re.compile(f"^{user_role_name}$", re.IGNORECASE)
             })
             if not role:
                 return PermissionResult(allowed=False, scope=PermissionScope.NONE, reason="Role not found in system")
