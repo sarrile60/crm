@@ -229,12 +229,18 @@ class CRMTester:
         except Exception as e:
             self.log_result("Assign Lead to Agent", False, f"Error assigning lead: {str(e)}")
     
-    def login_user(self, email, password):
+    def login_user(self, username_or_email, password):
         """Login as specific user and return token"""
         try:
+            # Determine if it's username or email based on format
+            if "@" in username_or_email:
+                login_data = {"email": username_or_email, "password": password}
+            else:
+                login_data = {"username": username_or_email, "password": password}
+            
             response = self.session.post(
                 f"{CRM_BASE_URL}/auth/login",
-                json={"email": email, "password": password},
+                json=login_data,
                 headers={"Content-Type": "application/json"}
             )
             
