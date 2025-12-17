@@ -357,6 +357,7 @@ async def root():
 # Include the routers in the main app
 app.include_router(api_router)
 app.include_router(crm_router)
+app.include_router(admin_router)
 
 # CORS Configuration (Restricted for Production)
 cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://lawfirm-ops.preview.emergentagent.com').split(',')
