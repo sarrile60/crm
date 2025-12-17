@@ -15,7 +15,8 @@ from admin_models import (
     EntityConfig, EntityConfigUpdate,
     PermissionMatrixRow, RoleWithPermissions,
     PermissionAction, PermissionScope,
-    UserRole, UserTeam
+    UserRole, UserTeam,
+    VisibilityRule, VisibilityRuleCreate, VisibilityRuleBulkUpdate, VisibilityLevel
 )
 from db_utils import insert_and_return_clean, clean_document_for_response
 
