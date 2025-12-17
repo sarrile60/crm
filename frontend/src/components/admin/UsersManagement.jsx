@@ -311,34 +311,34 @@ const UsersManagement = () => {
               className="pl-10 bg-white border-gray-300 rounded-none"
             />
           </div>
-          <Select value={filters.role} onValueChange={(value) => setFilters({ ...filters, role: value })}>
+          <Select value={filters.role || "all"} onValueChange={(value) => setFilters({ ...filters, role: value === "all" ? "" : value })}>
             <SelectTrigger className="bg-white border-gray-300 rounded-none">
               <SelectValue placeholder="Filtra per ruolo" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tutti i ruoli</SelectItem>
+              <SelectItem value="all">Tutti i ruoli</SelectItem>
               {roles.map(role => (
                 <SelectItem key={role.id} value={role.name.toLowerCase()}>{role.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Select value={filters.team} onValueChange={(value) => setFilters({ ...filters, team: value })}>
+          <Select value={filters.team || "all"} onValueChange={(value) => setFilters({ ...filters, team: value === "all" ? "" : value })}>
             <SelectTrigger className="bg-white border-gray-300 rounded-none">
               <SelectValue placeholder="Filtra per team" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tutti i team</SelectItem>
+              <SelectItem value="all">Tutti i team</SelectItem>
               {teams.map(team => (
                 <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Select value={filters.status} onValueChange={(value) => setFilters({ ...filters, status: value })}>
+          <Select value={filters.status || "all"} onValueChange={(value) => setFilters({ ...filters, status: value === "all" ? "" : value })}>
             <SelectTrigger className="bg-white border-gray-300 rounded-none">
               <SelectValue placeholder="Filtra per stato" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Tutti gli stati</SelectItem>
+              <SelectItem value="all">Tutti gli stati</SelectItem>
               <SelectItem value="active">Attivo</SelectItem>
               <SelectItem value="inactive">Inattivo</SelectItem>
               <SelectItem value="deleted">Eliminato</SelectItem>
