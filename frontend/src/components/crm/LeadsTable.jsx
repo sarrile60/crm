@@ -705,7 +705,14 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                       </a>
                     )}
                   </td>
-                  <td className="p-4 text-gray-700">{lead.email}</td>
+                  <td className="p-4 text-gray-700">
+                    {/* Email visibility controlled by backend */}
+                    {lead.email_display !== undefined && lead.email_display !== null ? (
+                      lead.email_display || <span className="text-gray-400 italic">Nascosto</span>
+                    ) : (
+                      lead.email
+                    )}
+                  </td>
                   <td className="p-4 text-gray-700">{lead.amountLost}</td>
                   <td className="p-4">
                     <Select value={lead.status} onValueChange={(value) => handleInlineStatusChange(lead.id, value)}>
