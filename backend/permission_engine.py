@@ -111,12 +111,9 @@ class PermissionEngine:
             
             # Check TEAM scope
             if best_scope == PermissionScope.TEAM:
-                if resource_team_id:
+                if resource_team_id and user_team_id:
                     # Check if user is in the same team
-                    user_teams = await self.db.user_teams.find({"user_id": user_id}).to_list(100)
-                    user_team_ids = [ut["team_id"] for ut in user_teams]
-                    
-                    if resource_team_id in user_team_ids:
+                    if resource_team_id == user_team_id:
                         return PermissionResult(allowed=True, scope=best_scope, reason="Same team")
                 
                 return PermissionResult(allowed=False, scope=best_scope, reason="Different team")
