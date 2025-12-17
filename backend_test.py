@@ -1409,6 +1409,372 @@ class CRMTester:
         
         return True
 
+    def test_permission_engine_integration(self):
+        """Test permission engine integration in crm_routes.py"""
+        print("\n=== Testing Permission Engine Integration ===")
+        
+        # Test credentials from review request
+        test_credentials = [
+            {"username": "admin_f87450ce5d66", "password": "zTFjPAcs*-(NL-qbj@AP0TcWt*8)nV4f6K(ZcVP_", "role": "admin"},
+            {"username": "maurizio1", "password": "12345", "role": "supervisor"},
+            {"username": "test", "password": "123", "role": "agent"}
+        ]
+        
+        tokens = {}
+        
+        # Login all test users
+        for cred in test_credentials:
+            token = self.login_user(cred["username"], cred["password"])
+            if token:
+                tokens[cred["role"]] = token
+                self.log_result(f"Permission Engine - {cred['role']} login", True, f"Successfully logged in as {cred['role']}")
+            else:
+                self.log_result(f"Permission Engine - {cred['role']} login", False, f"Failed to login as {cred['role']}")
+                return
+        
+        # Test 1: Lead Listing - Data Scoping
+        self.test_lead_listing_data_scoping(tokens)
+        
+        # Test 2: Lead Detail Access
+        self.test_lead_detail_access(tokens)
+        
+        # Test 3: Lead Update Permissions
+        self.test_lead_update_permissions(tokens)
+        
+        # Test 4: Lead Assignment Permissions
+        self.test_lead_assignment_permissions(tokens)
+        
+        # Test 5: Dashboard Stats
+        self.test_dashboard_stats_scoping(tokens)
+    
+    def test_lead_listing_data_scoping(self, tokens):
+        """Test lead listing data scoping based on permission engine"""
+        print("\n--- Testing Lead Listing Data Scoping ---")
+        
+        # Admin should see ALL leads
+        if "admin" in tokens:
+            try:
+                headers = {"Authorization": f"Bearer {tokens['admin']}"}
+                response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
+                
+                if response.status_code == 200:
+                    admin_leads = response.json()
+                    self.log_result(
+                        "Permission Engine - Admin Lead Listing",
+                        len(admin_leads) > 0,
+                        f"Admin sees {len(admin_leads)} leads (should see ALL)",
+                        f"Admin has full access to all leads in system"
+                    )
+                else:
+                    self.log_result("Permission Engine - Admin Lead Listing", False, f"Failed to get admin leads: {response.status_code}")
+            except Exception as e:
+                self.log_result("Permission Engine - Admin Lead Listing", False, f"Error: {str(e)}")
+        
+        # Supervisor should see only TEAM leads
+        if "supervisor" in tokens:
+            try:
+                headers = {"Authorization": f"Bearer {tokens['supervisor']}"}
+                response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
+                
+                if response.status_code == 200:
+                    supervisor_leads = response.json()
+                    
+                    # Check if all leads have same team_id as supervisor's team
+                    if supervisor_leads:
+                        # Get supervisor info to check team_id
+                        me_response = self.session.get(f"{CRM_BASE_URL}/auth/me", headers=headers)
+                        if me_response.status_code == 200:
+                            supervisor_info = me_response.json()
+                            supervisor_team_id = supervisor_info.get("team_id")
+                            
+                            team_consistency = all(lead.get("team_id") == supervisor_team_id for lead in supervisor_leads)
+                            
+                            self.log_result(
+                                "Permission Engine - Supervisor Lead Listing",
+                                team_consistency,
+                                f"Supervisor sees {len(supervisor_leads)} team leads",
+                                f"Team consistency: {team_consistency}, Supervisor team: {supervisor_team_id}"
+                            )
+                        else:
+                            self.log_result("Permission Engine - Supervisor Lead Listing", False, "Could not get supervisor info")
+                    else:
+                        self.log_result(
+                            "Permission Engine - Supervisor Lead Listing",
+                            True,
+                            "Supervisor sees 0 leads (no team leads available)",
+                            "Empty result is valid if supervisor has no team leads"
+                        )
+                else:
+                    self.log_result("Permission Engine - Supervisor Lead Listing", False, f"Failed to get supervisor leads: {response.status_code}")
+            except Exception as e:
+                self.log_result("Permission Engine - Supervisor Lead Listing", False, f"Error: {str(e)}")
+        
+        # Agent should see only OWN leads (assigned to them)
+        if "agent" in tokens:
+            try:
+                headers = {"Authorization": f"Bearer {tokens['agent']}"}
+                response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
+                
+                if response.status_code == 200:
+                    agent_leads = response.json()
+                    
+                    # Get agent info to check assigned leads
+                    me_response = self.session.get(f"{CRM_BASE_URL}/auth/me", headers=headers)
+                    if me_response.status_code == 200:
+                        agent_info = me_response.json()
+                        agent_id = agent_info.get("id")
+                        
+                        # Check if all leads are assigned to this agent
+                        own_consistency = all(lead.get("assigned_to") == agent_id for lead in agent_leads)
+                        
+                        self.log_result(
+                            "Permission Engine - Agent Lead Listing",
+                            own_consistency or len(agent_leads) == 0,
+                            f"Agent sees {len(agent_leads)} own leads",
+                            f"Own consistency: {own_consistency}, Agent ID: {agent_id}"
+                        )
+                    else:
+                        self.log_result("Permission Engine - Agent Lead Listing", False, "Could not get agent info")
+                else:
+                    self.log_result("Permission Engine - Agent Lead Listing", False, f"Failed to get agent leads: {response.status_code}")
+            except Exception as e:
+                self.log_result("Permission Engine - Agent Lead Listing", False, f"Error: {str(e)}")
+    
+    def test_lead_detail_access(self, tokens):
+        """Test lead detail access permissions"""
+        print("\n--- Testing Lead Detail Access ---")
+        
+        # First get some lead IDs as admin
+        admin_headers = {"Authorization": f"Bearer {tokens['admin']}"}
+        admin_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=admin_headers)
+        
+        if admin_response.status_code != 200 or not admin_response.json():
+            self.log_result("Permission Engine - Lead Detail Setup", False, "No leads available for testing")
+            return
+        
+        all_leads = admin_response.json()
+        
+        # Get supervisor's team leads
+        supervisor_headers = {"Authorization": f"Bearer {tokens['supervisor']}"}
+        supervisor_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=supervisor_headers)
+        supervisor_leads = supervisor_response.json() if supervisor_response.status_code == 200 else []
+        
+        # Get agent's own leads
+        agent_headers = {"Authorization": f"Bearer {tokens['agent']}"}
+        agent_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=agent_headers)
+        agent_leads = agent_response.json() if agent_response.status_code == 200 else []
+        
+        # Test Admin access to any lead
+        if all_leads:
+            test_lead_id = all_leads[0]["id"]
+            try:
+                response = self.session.get(f"{CRM_BASE_URL}/leads/{test_lead_id}", headers=admin_headers)
+                self.log_result(
+                    "Permission Engine - Admin Lead Detail",
+                    response.status_code == 200,
+                    "Admin can access any lead detail",
+                    f"Status: {response.status_code}"
+                )
+            except Exception as e:
+                self.log_result("Permission Engine - Admin Lead Detail", False, f"Error: {str(e)}")
+        
+        # Test Supervisor access to team lead
+        if supervisor_leads:
+            team_lead_id = supervisor_leads[0]["id"]
+            try:
+                response = self.session.get(f"{CRM_BASE_URL}/leads/{team_lead_id}", headers=supervisor_headers)
+                self.log_result(
+                    "Permission Engine - Supervisor Team Lead Access",
+                    response.status_code == 200,
+                    "Supervisor can access team lead detail",
+                    f"Status: {response.status_code}"
+                )
+            except Exception as e:
+                self.log_result("Permission Engine - Supervisor Team Lead Access", False, f"Error: {str(e)}")
+        
+        # Test Supervisor access to non-team lead (should fail)
+        supervisor_lead_ids = {lead["id"] for lead in supervisor_leads}
+        other_team_lead = None
+        for lead in all_leads:
+            if lead["id"] not in supervisor_lead_ids:
+                other_team_lead = lead
+                break
+        
+        if other_team_lead:
+            try:
+                response = self.session.get(f"{CRM_BASE_URL}/leads/{other_team_lead['id']}", headers=supervisor_headers)
+                self.log_result(
+                    "Permission Engine - Supervisor Other Team Lead Access",
+                    response.status_code == 403,
+                    "Supervisor correctly denied access to other team lead",
+                    f"Status: {response.status_code}"
+                )
+            except Exception as e:
+                self.log_result("Permission Engine - Supervisor Other Team Lead Access", False, f"Error: {str(e)}")
+        
+        # Test Agent access to own lead
+        if agent_leads:
+            own_lead_id = agent_leads[0]["id"]
+            try:
+                response = self.session.get(f"{CRM_BASE_URL}/leads/{own_lead_id}", headers=agent_headers)
+                self.log_result(
+                    "Permission Engine - Agent Own Lead Access",
+                    response.status_code == 200,
+                    "Agent can access own lead detail",
+                    f"Status: {response.status_code}"
+                )
+            except Exception as e:
+                self.log_result("Permission Engine - Agent Own Lead Access", False, f"Error: {str(e)}")
+        
+        # Test Agent access to other lead (should fail)
+        agent_lead_ids = {lead["id"] for lead in agent_leads}
+        other_lead = None
+        for lead in all_leads:
+            if lead["id"] not in agent_lead_ids:
+                other_lead = lead
+                break
+        
+        if other_lead:
+            try:
+                response = self.session.get(f"{CRM_BASE_URL}/leads/{other_lead['id']}", headers=agent_headers)
+                self.log_result(
+                    "Permission Engine - Agent Other Lead Access",
+                    response.status_code == 403,
+                    "Agent correctly denied access to other lead",
+                    f"Status: {response.status_code}"
+                )
+            except Exception as e:
+                self.log_result("Permission Engine - Agent Other Lead Access", False, f"Error: {str(e)}")
+    
+    def test_lead_update_permissions(self, tokens):
+        """Test lead update permissions"""
+        print("\n--- Testing Lead Update Permissions ---")
+        
+        # Get supervisor's team leads
+        supervisor_headers = {"Authorization": f"Bearer {tokens['supervisor']}"}
+        supervisor_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=supervisor_headers)
+        supervisor_leads = supervisor_response.json() if supervisor_response.status_code == 200 else []
+        
+        # Test Supervisor can update team lead
+        if supervisor_leads:
+            team_lead_id = supervisor_leads[0]["id"]
+            update_data = {"status": "contacted"}
+            
+            try:
+                response = self.session.put(
+                    f"{CRM_BASE_URL}/leads/{team_lead_id}",
+                    json=update_data,
+                    headers={**supervisor_headers, "Content-Type": "application/json"}
+                )
+                self.log_result(
+                    "Permission Engine - Supervisor Lead Update",
+                    response.status_code == 200,
+                    "Supervisor can update team lead",
+                    f"Status: {response.status_code}"
+                )
+            except Exception as e:
+                self.log_result("Permission Engine - Supervisor Lead Update", False, f"Error: {str(e)}")
+        
+        # Test Supervisor cannot update other team lead
+        admin_headers = {"Authorization": f"Bearer {tokens['admin']}"}
+        admin_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=admin_headers)
+        all_leads = admin_response.json() if admin_response.status_code == 200 else []
+        
+        supervisor_lead_ids = {lead["id"] for lead in supervisor_leads}
+        other_team_lead = None
+        for lead in all_leads:
+            if lead["id"] not in supervisor_lead_ids:
+                other_team_lead = lead
+                break
+        
+        if other_team_lead:
+            update_data = {"status": "contacted"}
+            try:
+                response = self.session.put(
+                    f"{CRM_BASE_URL}/leads/{other_team_lead['id']}",
+                    json=update_data,
+                    headers={**supervisor_headers, "Content-Type": "application/json"}
+                )
+                self.log_result(
+                    "Permission Engine - Supervisor Other Team Update",
+                    response.status_code == 403,
+                    "Supervisor correctly denied update to other team lead",
+                    f"Status: {response.status_code}"
+                )
+            except Exception as e:
+                self.log_result("Permission Engine - Supervisor Other Team Update", False, f"Error: {str(e)}")
+    
+    def test_lead_assignment_permissions(self, tokens):
+        """Test lead assignment permissions"""
+        print("\n--- Testing Lead Assignment Permissions ---")
+        
+        # Get supervisor's team leads
+        supervisor_headers = {"Authorization": f"Bearer {tokens['supervisor']}"}
+        supervisor_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=supervisor_headers)
+        supervisor_leads = supervisor_response.json() if supervisor_response.status_code == 200 else []
+        
+        # Get supervisor info
+        me_response = self.session.get(f"{CRM_BASE_URL}/auth/me", headers=supervisor_headers)
+        supervisor_info = me_response.json() if me_response.status_code == 200 else {}
+        supervisor_id = supervisor_info.get("id")
+        
+        # Test Supervisor can assign team lead
+        if supervisor_leads and supervisor_id:
+            team_lead_id = supervisor_leads[0]["id"]
+            assignment_data = {
+                "lead_id": team_lead_id,
+                "assigned_to": supervisor_id,
+                "assigned_by": supervisor_id
+            }
+            
+            try:
+                response = self.session.post(
+                    f"{CRM_BASE_URL}/leads/{team_lead_id}/assign",
+                    json=assignment_data,
+                    headers={**supervisor_headers, "Content-Type": "application/json"}
+                )
+                self.log_result(
+                    "Permission Engine - Supervisor Lead Assignment",
+                    response.status_code == 200,
+                    "Supervisor can assign team lead",
+                    f"Status: {response.status_code}"
+                )
+            except Exception as e:
+                self.log_result("Permission Engine - Supervisor Lead Assignment", False, f"Error: {str(e)}")
+    
+    def test_dashboard_stats_scoping(self, tokens):
+        """Test dashboard stats data scoping"""
+        print("\n--- Testing Dashboard Stats Scoping ---")
+        
+        for role, token in tokens.items():
+            try:
+                headers = {"Authorization": f"Bearer {token}"}
+                response = self.session.get(f"{CRM_BASE_URL}/dashboard/stats", headers=headers)
+                
+                if response.status_code == 200:
+                    stats = response.json()
+                    total_leads = stats.get("total_leads", 0)
+                    
+                    # Get leads count for comparison
+                    leads_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
+                    if leads_response.status_code == 200:
+                        leads_count = len(leads_response.json())
+                        
+                        consistency = total_leads == leads_count
+                        
+                        self.log_result(
+                            f"Permission Engine - {role.title()} Dashboard Stats",
+                            consistency,
+                            f"{role.title()} dashboard stats consistent with lead access",
+                            f"Stats total: {total_leads}, Leads visible: {leads_count}"
+                        )
+                    else:
+                        self.log_result(f"Permission Engine - {role.title()} Dashboard Stats", False, "Could not get leads for comparison")
+                else:
+                    self.log_result(f"Permission Engine - {role.title()} Dashboard Stats", False, f"Failed to get stats: {response.status_code}")
+            except Exception as e:
+                self.log_result(f"Permission Engine - {role.title()} Dashboard Stats", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all CRM backend tests including deletion functionality"""
         print("🚀 Starting CRM Backend Tests")
