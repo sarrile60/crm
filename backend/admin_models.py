@@ -71,7 +71,7 @@ class Permission(BaseModel):
     role_id: str
     entity: str  # e.g., "leads", "contacts", "deposits"
     action: PermissionAction
-    scope: PermissionScope  # or "yes"/"no" for create/assign/export
+    scope: str  # "none", "own", "team", "all" for read/edit/delete OR "yes"/"no" for create/assign/export
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
