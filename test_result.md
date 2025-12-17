@@ -695,3 +695,29 @@ test_plan:
       - Entity configuration inline editing could be smoother
       
       🚀 ADMIN PANEL IS 90% FUNCTIONAL - Backend is production-ready, frontend needs route protection fix!
+
+  - agent: "testing"
+    message: |
+      🗑️ USER AND LEAD DELETION TESTING COMPLETED - 100% SUCCESS RATE
+      
+      📊 DELETION TEST RESULTS (8/8 TESTS PASSED):
+      
+      ✅ USER DELETION (ADMIN ONLY - SOFT DELETE):
+      - Admin can delete users: Successfully creates test user, deletes it, verifies soft-delete ✓
+      - Admin cannot delete own account: Correctly returns 400 "Cannot delete your own account" ✓
+      - Supervisor forbidden: Properly denied with 403 Forbidden when attempting user deletion ✓
+      - Soft delete verification: Users removed from API responses but preserved in database ✓
+      
+      ✅ LEAD DELETION (PERMISSION ENGINE BASED):
+      - Admin can delete any lead: Successfully deletes leads with proper logging ✓
+      - Supervisor can delete team leads: Permission engine allows team-scoped deletion ✓
+      - Supervisor cannot delete other team leads: Correctly denied with 403 "Permission denied" ✓
+      - Permission engine working: Team-based access control functioning perfectly ✓
+      
+      🔧 TECHNICAL VERIFICATION:
+      - Soft delete implementation: deleted_at timestamp set, is_active=false ✓
+      - Database integrity: Records preserved but excluded from API responses ✓
+      - Activity logging: All deletion operations properly logged ✓
+      - Security controls: Role-based permissions enforced correctly ✓
+      
+      🚀 DELETION FEATURES ARE PRODUCTION READY - All security and functionality requirements met!
