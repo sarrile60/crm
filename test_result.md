@@ -1097,11 +1097,14 @@ backend:
     file: "audit_utils.py, admin_routes.py, crm_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Implemented audit logs with CRUD read-only APIs and export"
+      - working: true
+        agent: "testing"
+        comment: "✅ AUDIT LOGS API FULLY TESTED (12/12 tests passed): GET /api/admin/audit-logs returns proper structure with logs array, total count, pagination info, and all required fields including action_label and entity_type_label ✓. GET /api/admin/audit-logs/stats returns total_logs, today_count, by_action, by_entity_type arrays ✓. GET /api/admin/audit-logs/filters returns actions (25), entity_types (7), users (3) for filter dropdowns ✓. GET /api/admin/audit-logs/export returns proper CSV with Italian headers (Data/Ora, Utente, Azione, etc.) and Content-Type: text/csv ✓. Filtering by action (login_success) and entity_type working correctly ✓. Pagination working with limit/offset parameters ✓. Immutability verified - no PUT/DELETE endpoints available (404 responses) ✓. Audit log creation verified - user creation and login events properly logged ✓. All API endpoints working perfectly with proper authentication and data structure."
 
 frontend:
   - task: "Audit Logs UI"
