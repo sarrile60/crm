@@ -73,17 +73,39 @@ const PermissionMatrix = () => {
       setSaving(true);
       const token = localStorage.getItem('crmToken');
       
-      // Build permissions array for bulk update
+      // Build permissions array for bulk update with validation
       const permissionsToSave = [];
+      const scopeActions = ['read', 'edit', 'delete'];
+      const yesNoActions = ['create', 'assign', 'export'];
+      
       permissions.forEach(entityPerm => {
-        ['read', 'create', 'edit', 'delete', 'assign', 'export'].forEach(action => {
+        // Validate and add scope-based permissions (read, edit, delete)
+        scopeActions.forEach(action => {
+          const value = entityPerm[action];
+          // Ensure valid scope value, default to 'none' if invalid
+          const validScopes = ['none', 'own', 'team', 'all'];
+          const scope = validScopes.includes(value) ? value : 'none';
           permissionsToSave.push({
             entity: entityPerm.entity,
             action: action,
-            scope: entityPerm[action]
+            scope: scope
+          });
+        });
+        
+        // Validate and add yes/no permissions (create, assign, export)
+        yesNoActions.forEach(action => {
+          const value = entityPerm[action];
+          // Ensure valid yes/no value, default to 'no' if invalid
+          const scope = (value === 'yes' || value === 'no') ? value : 'no';
+          permissionsToSave.push({
+            entity: entityPerm.entity,
+            action: action,
+            scope: scope
           });
         });
       });
+
+      console.log('Saving permissions:', permissionsToSave); // Debug log
 
       await axios.put(
         `${API}/roles/${selectedRole}/permissions`,
