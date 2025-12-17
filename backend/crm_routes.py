@@ -321,27 +321,28 @@ async def get_crm_leads(
     search: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
-    """Get leads with filters"""
-    query = {}
-    
-    # Apply filters based on user role
-    if current_user["role"] == "agent":
-        # Agents ONLY see leads assigned to them
-        query["assigned_to"] = current_user["id"]
-    elif current_user["role"] == "supervisor":
-        # Supervisors ONLY see leads from their team (if no team, see nothing)
-        if current_user.get("team_id"):
-            query["team_id"] = current_user.get("team_id")
-        else:
-            # Supervisor without team sees NO leads
-            query["team_id"] = "___NO_TEAM_MATCH___"
+    """Get leads with filters - uses permission engine for data scoping"""
+    # Get data scope filter from permission engine (GUI-configured)
+    scope_filter = await permission_engine.get_data_scope_filter(
+        user_id=current_user["id"],
+        entity="leads"
+    )
+    query = {**scope_filter}
     
     # Apply additional filters
     if status:
         query["status"] = status
-    if assigned_to and current_user["role"] in ["admin", "supervisor"]:
+    
+    # Check if user has permission to filter by assigned_to (team or all scope)
+    read_perm = await permission_engine.check_permission(
+        user_id=current_user["id"],
+        entity="leads",
+        action=PermissionAction.READ
+    )
+    
+    if assigned_to and read_perm.scope in [PermissionScope.TEAM, PermissionScope.ALL]:
         query["assigned_to"] = assigned_to
-    if team_id and current_user["role"] == "admin":
+    if team_id and read_perm.scope == PermissionScope.ALL:
         query["team_id"] = team_id
     if priority:
         query["priority"] = priority
