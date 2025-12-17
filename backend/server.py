@@ -22,6 +22,7 @@ db = client[os.environ['DB_NAME']]
 
 # Initialize CRM database
 init_crm_db(db)
+init_admin_db(db)
 
 # JWT Secret (MUST be set in .env - no default allowed)
 JWT_SECRET = os.environ.get('JWT_SECRET')
