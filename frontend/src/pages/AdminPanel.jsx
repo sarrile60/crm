@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Settings, Shield, Database, Users, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Settings, Shield, Database, Users, ArrowLeft, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import RoleManagement from '../components/admin/RoleManagement';
@@ -9,6 +9,65 @@ import EntityConfiguration from '../components/admin/EntityConfiguration';
 const AdminPanel = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('roles');
+  const [isAuthorized, setIsAuthorized] = useState(null); // null = checking, true = admin, false = not admin
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // Route protection - check if user is admin
+  useEffect(() => {
+    const token = localStorage.getItem('crmToken');
+    const user = localStorage.getItem('crmUser');
+    
+    if (!token || !user) {
+      // Not logged in, redirect to login
+      navigate('/crm/login');
+      return;
+    }
+    
+    try {
+      const userData = JSON.parse(user);
+      setCurrentUser(userData);
+      
+      if (userData.role === 'admin') {
+        setIsAuthorized(true);
+      } else {
+        setIsAuthorized(false);
+      }
+    } catch (e) {
+      // Invalid user data
+      navigate('/crm/login');
+    }
+  }, [navigate]);
+
+  // Show loading while checking authorization
+  if (isAuthorized === null) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Verifica autorizzazione...</div>
+      </div>
+    );
+  }
+
+  // Show access denied if not admin
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white border-2 border-red-400 p-8 max-w-md text-center">
+          <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-red-600 mb-2">Accesso Negato</h1>
+          <p className="text-gray-600 mb-6">
+            Non hai i permessi per accedere al pannello di amministrazione.
+            Solo gli utenti con ruolo "admin" possono accedere a questa sezione.
+          </p>
+          <Button
+            onClick={() => navigate('/crm/dashboard')}
+            className="bg-black hover:bg-gray-800 text-white rounded-none"
+          >
+            Torna al CRM
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const tabs = [
     { id: 'roles', label: 'Roles', icon: Shield, component: RoleManagement },
