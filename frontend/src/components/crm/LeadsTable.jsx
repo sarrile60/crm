@@ -219,6 +219,28 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
     }
   };
 
+  const handleDeleteClick = (lead) => {
+    setLeadToDelete(lead);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!leadToDelete) return;
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.delete(`${API}/crm/leads/${leadToDelete.id}`, { headers });
+      toast.success('Lead eliminato con successo');
+      setShowDeleteModal(false);
+      setLeadToDelete(null);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Errore nell\'eliminazione del lead');
+    }
+  };
+
   const handleExportCSV = () => {
     if (leads.length === 0) {
       toast.error('Nessun lead da esportare');
