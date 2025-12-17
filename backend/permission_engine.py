@@ -151,14 +151,14 @@ class PermissionEngine:
             return {"assigned_to": user_id}
         
         if result.scope == PermissionScope.TEAM:
-            # Team records
-            user_teams = await self.db.user_teams.find({"user_id": user_id}).to_list(100)
-            team_ids = [ut["team_id"] for ut in user_teams]
+            # Team records - get user's team from crm_users
+            user = await self.db.crm_users.find_one({"id": user_id})
+            user_team_id = user.get("team_id") if user else None
             
-            if team_ids:
-                return {"team_id": {"$in": team_ids}}
+            if user_team_id:
+                return {"team_id": user_team_id}
             else:
-                # User has no teams - return nothing
+                # User has no team - return nothing
                 return {"_id": {"$exists": False}}
         
         # Default: no access
