@@ -17,8 +17,14 @@ from admin_models import (
     PermissionAction, PermissionScope,
     UserRole, UserTeam
 )
-from crm_routes import get_current_user
-from server import db  # Import db from server
+
+# Will be set from server.py to avoid circular import
+db = None
+
+def init_admin_db(database):
+    """Initialize database connection"""
+    global db
+    db = database
 
 logger = logging.getLogger(__name__)
 
