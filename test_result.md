@@ -962,6 +962,18 @@ backend:
         agent: "testing"
         comment: "✅ DATA VISIBILITY RULES API FULLY TESTED (4/4 tests passed): GET /api/admin/visibility-rules returns matrix with 8 rows (roles + teams), fields [phone, email, address], visibility options [full, masked, hidden] ✓. POST /api/admin/visibility-rules/single creates/updates single rules successfully ✓. PUT /api/admin/visibility-rules bulk updates multiple rules (tested with 2 rules) ✓. DELETE /api/admin/visibility-rules/{scope_type}/{scope_id}/{field_name} deletes rules and reverts to default ✓. All CRUD operations working perfectly with proper authentication and data structure."
 
+  - task: "Data Visibility Rules Enforcement"
+    implemented: true
+    working: true
+    file: "crm_routes.py, db_utils.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ VISIBILITY RULE ENFORCEMENT FULLY TESTED (3/3 tests passed): Admin Override - Admin always sees full data (phone_display: +393451234567, phone_real: +393451234567) regardless of rules ✓. Rule Creation & Enforcement - Created rule to hide supervisor phone, supervisor correctly sees empty phone_display and phone_real fields ✓. Backend Masking Logic - Visibility rules properly applied in GET /api/crm/leads endpoint with phone_display/phone_real fields working correctly ✓. Admin override working, rule enforcement working, backend masking utilities (mask_phone, mask_email, mask_address) integrated correctly."
+
 frontend:
   - task: "Data Visibility Rules UI"
     implemented: true
