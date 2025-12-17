@@ -358,7 +358,7 @@ const AuditLogs = () => {
             <div>
               <label className="text-sm text-gray-500 block mb-1">Tipo Entità</label>
               <Select
-                value={filters.entity_type}
+                value={filters.entity_type || 'all'}
                 onValueChange={(value) => handleFilterChange('entity_type', value)}
               >
                 <SelectTrigger className="rounded-none">
