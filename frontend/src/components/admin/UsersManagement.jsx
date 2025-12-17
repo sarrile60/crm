@@ -140,6 +140,11 @@ const UsersManagement = () => {
       toast.error('La password deve essere di almeno 4 caratteri');
       return;
     }
+    
+    if (newPassword !== confirmPassword) {
+      toast.error('Le password non corrispondono');
+      return;
+    }
 
     try {
       const token = localStorage.getItem('crmToken');
@@ -153,6 +158,8 @@ const UsersManagement = () => {
       setShowResetPasswordModal(false);
       setSelectedUser(null);
       setNewPassword('');
+      setConfirmPassword('');
+      setShowPassword(false);
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Errore nella reimpostazione della password');
     }
