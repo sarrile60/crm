@@ -689,6 +689,7 @@ const UsersManagement = () => {
       <Dialog open={showResetPasswordModal} onOpenChange={(open) => {
         setShowResetPasswordModal(open);
         if (!open) {
+          setAdminPassword('');
           setNewPassword('');
           setConfirmPassword('');
           setShowPassword(false);
@@ -705,8 +706,29 @@ const UsersManagement = () => {
             <p className="text-gray-600">
               Stai reimpostando la password per <strong>{selectedUser?.full_name}</strong> (@{selectedUser?.username})
             </p>
+            
+            {/* Admin's current password for verification */}
+            <div className="bg-gray-50 border border-gray-200 p-4 rounded">
+              <label className="block text-sm font-semibold text-black mb-2">
+                🔐 La Tua Password Attuale *
+              </label>
+              <Input
+                type="password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                placeholder="Inserisci la TUA password per confermare"
+                className="bg-white border-gray-300 rounded-none"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Per sicurezza, conferma la tua identità inserendo la tua password
+              </p>
+            </div>
+
+            <hr className="border-gray-200" />
+
+            {/* New password for the user */}
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Nuova Password *</label>
+              <label className="block text-sm font-semibold text-black mb-2">Nuova Password per l'Utente *</label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -725,7 +747,7 @@ const UsersManagement = () => {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Conferma Password *</label>
+              <label className="block text-sm font-semibold text-black mb-2">Conferma Nuova Password *</label>
               <Input
                 type={showPassword ? "text" : "password"}
                 value={confirmPassword}
@@ -754,7 +776,7 @@ const UsersManagement = () => {
               </Button>
               <Button 
                 onClick={handleResetPassword}
-                disabled={!newPassword || newPassword.length < 4 || newPassword !== confirmPassword}
+                disabled={!adminPassword || !newPassword || newPassword.length < 4 || newPassword !== confirmPassword}
                 className="flex-1 bg-blue-600 text-white hover:bg-blue-700 rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Reimposta Password
