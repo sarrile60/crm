@@ -274,9 +274,9 @@ frontend:
 
   - task: "Admin Panel - Administration Menu"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/pages/CRMDashboard.jsx"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
@@ -286,6 +286,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL SECURITY ISSUE: Administration button correctly hidden from supervisor users, but supervisor can directly access /crm/admin URL without proper frontend route protection. Backend APIs properly reject supervisor access with 403 Forbidden, but frontend should redirect or show error page when supervisor accesses admin panel directly. Admin access works correctly."
+      - working: true
+        agent: "main"
+        comment: "✅ SECURITY FIX APPLIED: Added route protection to AdminPanel.jsx. Now checks user role on component mount. Non-admin users see 'Accesso Negato' (Access Denied) page with warning icon and explanation in Italian. Admin users can access the panel normally. Both frontend and backend now properly protect the admin routes."
 
   - task: "Admin Panel - Backend API"
     implemented: true
