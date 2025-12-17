@@ -953,11 +953,14 @@ backend:
     file: "admin_routes.py, db_utils.py, crm_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Implemented visibility rules API with CRUD operations and lead masking"
+      - working: true
+        agent: "testing"
+        comment: "✅ DATA VISIBILITY RULES API FULLY TESTED (4/4 tests passed): GET /api/admin/visibility-rules returns matrix with 8 rows (roles + teams), fields [phone, email, address], visibility options [full, masked, hidden] ✓. POST /api/admin/visibility-rules/single creates/updates single rules successfully ✓. PUT /api/admin/visibility-rules bulk updates multiple rules (tested with 2 rules) ✓. DELETE /api/admin/visibility-rules/{scope_type}/{scope_id}/{field_name} deletes rules and reverts to default ✓. All CRUD operations working perfectly with proper authentication and data structure."
 
 frontend:
   - task: "Data Visibility Rules UI"
