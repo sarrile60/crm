@@ -601,11 +601,22 @@ async def complete_reminder(reminder_id: str, current_user: dict = Depends(get_c
 
 # ==================== MASS UPDATE ROUTES ====================
 
-@crm_router.post("/leads/mass-update", dependencies=[Depends(require_role(["admin", "supervisor"]))])
+@crm_router.post("/leads/mass-update")
 async def mass_update_leads(update_data: MassUpdateData, current_user: dict = Depends(get_current_user)):
-    """Mass update multiple leads"""
+    """Mass update multiple leads - uses permission engine for access control"""
     if not update_data.lead_ids:
         raise HTTPException(status_code=400, detail="No leads selected")
+    
+    # Check edit permission for leads entity
+    permission_result = await permission_engine.check_permission(
+        user_id=current_user["id"],
+        entity="leads",
+        action=PermissionAction.EDIT
+    )
+    
+    # Only users with team or all scope can do mass updates
+    if permission_result.scope not in [PermissionScope.TEAM, PermissionScope.ALL]:
+        raise HTTPException(status_code=403, detail="Permission denied: Mass updates require team or full access")
     
     # Build update dict
     update_dict = {}
