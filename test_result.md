@@ -103,7 +103,12 @@
 #====================================================================================================
 
 user_problem_statement: |
-  User requested complete removal of chat functionality and improvement of notification system.
+  Build comprehensive Admin Panel (Phase 1) for GUI-driven configuration of roles, permissions, and entities.
+  - Role Management: Full CRUD for roles with system role warnings
+  - Permission Matrix: EspoCRM-style grid with scope dropdowns (none, own, team, all) for each action
+  - Entity Configuration: Enable/disable entities, editable display names and icons
+  - Administration menu visible only to admin users
+  - Backend API routes under /api/admin prefix
   
   Previous features implemented:
   1. Created Date Column - Rename "Data" to "Created Date" with Italian format (1 nov 13:51)
