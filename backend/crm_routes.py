@@ -14,16 +14,20 @@ from crm_models import (
     MassUpdateData
 )
 from auth_utils import hash_password, verify_password, create_access_token, get_user_from_token
+from permission_engine import get_permission_engine, PermissionEngine
+from admin_models import PermissionAction, PermissionScope
 
 # Create router
 crm_router = APIRouter(prefix="/api/crm")
 
 # Database will be injected
 db = None
+permission_engine: PermissionEngine = None
 
 def init_crm_db(database):
-    global db
+    global db, permission_engine
     db = database
+    permission_engine = get_permission_engine(database)
 
 # Dependency to get current user from token
 async def get_current_user(authorization: Optional[str] = Header(None)):
