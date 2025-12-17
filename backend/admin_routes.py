@@ -489,6 +489,16 @@ async def delete_user_admin(user_id: str, current_user: dict = Depends(get_curre
     )
     
     logger.info(f"User {user_id} deleted by admin {current_user['username']}")
+    
+    # Log audit event
+    await log_user_action(
+        action=AuditAction.USER_DELETED,
+        actor_id=current_user["id"],
+        actor_name=current_user["username"],
+        target_user_id=user_id,
+        target_user_name=user.get("username", user_id)
+    )
+    
     return {"success": True}
 
 
