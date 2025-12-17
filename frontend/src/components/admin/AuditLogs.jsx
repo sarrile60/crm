@@ -187,7 +187,7 @@ const AuditLogs = () => {
       
       toast.success('Export completato');
     } catch (error) {
-      toast.error('Errore durante l\'export');
+      toast.error('Errore durante export');
       console.error('Error:', error);
     } finally {
       setExporting(false);
