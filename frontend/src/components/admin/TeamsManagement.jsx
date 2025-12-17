@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Archive, Users, UserCheck, Eye, AlertTriangle, Building2 } from 'lucide-react';
+import { Plus, Edit, Archive, Users, UserCheck, Eye, AlertTriangle, Building2, UserPlus, UserMinus, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Checkbox } from '../ui/checkbox';
 import { toast } from 'sonner';
 import axios from 'axios';
 
