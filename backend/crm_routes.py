@@ -403,10 +403,20 @@ async def get_lead_detail(lead_id: str, current_user: dict = Depends(get_current
     if not permission_result.allowed:
         raise HTTPException(status_code=403, detail=f"Access denied: {permission_result.reason}")
     
-    # Add masked phone for display and keep real phone for calling
-    if "phone" in lead:
-        lead["phone_real"] = lead["phone"]  # Real number for tel: link
-        lead["phone_display"] = mask_phone_for_display(lead["phone"], current_user["role"])  # Masked for display based on role
+    # Get visibility rules for current user (GUI-configured, backend-enforced)
+    user_team_ids = current_user.get("team_ids", []) or []
+    if current_user.get("team_id") and current_user["team_id"] not in user_team_ids:
+        user_team_ids.append(current_user["team_id"])
+    
+    visibility_rules = await get_user_visibility_rules(
+        db, 
+        current_user["id"],
+        current_user.get("role", "agent"),
+        user_team_ids
+    )
+    
+    # Apply visibility rules (backend-only masking)
+    lead = apply_visibility_to_lead(lead, visibility_rules)
     
     return lead
 
