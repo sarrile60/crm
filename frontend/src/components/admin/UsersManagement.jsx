@@ -669,7 +669,14 @@ const UsersManagement = () => {
       </Dialog>
 
       {/* Reset Password Modal */}
-      <Dialog open={showResetPasswordModal} onOpenChange={setShowResetPasswordModal}>
+      <Dialog open={showResetPasswordModal} onOpenChange={(open) => {
+        setShowResetPasswordModal(open);
+        if (!open) {
+          setNewPassword('');
+          setConfirmPassword('');
+          setShowPassword(false);
+        }
+      }}>
         <DialogContent className="max-w-md bg-white">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-black flex items-center gap-2">
@@ -682,14 +689,44 @@ const UsersManagement = () => {
               Stai reimpostando la password per <strong>{selectedUser?.full_name}</strong> (@{selectedUser?.username})
             </p>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Nuova Password</label>
+              <label className="block text-sm font-semibold text-black mb-2">Nuova Password *</label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Inserisci nuova password (min. 4 caratteri)"
+                  className="bg-white border-gray-300 rounded-none pr-20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-blue-600 hover:text-blue-800"
+                >
+                  {showPassword ? 'Nascondi' : 'Mostra'}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-black mb-2">Conferma Password *</label>
               <Input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Inserisci nuova password"
-                className="bg-white border-gray-300 rounded-none"
+                type={showPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Conferma nuova password"
+                className={`bg-white border-gray-300 rounded-none ${
+                  confirmPassword && newPassword !== confirmPassword ? 'border-red-500' : ''
+                }`}
               />
+              {confirmPassword && newPassword !== confirmPassword && (
+                <p className="text-red-500 text-xs mt-1">Le password non corrispondono</p>
+              )}
+            </div>
+            <div className="bg-yellow-50 border border-yellow-200 p-3 rounded">
+              <p className="text-sm text-yellow-800">
+                <strong>⚠️ Sicurezza:</strong> Assicurati di comunicare la nuova password all'utente in modo sicuro.
+                L'utente dovrà usare questa password per il prossimo accesso.
+              </p>
             </div>
             <div className="flex gap-3 pt-4">
               <Button 
@@ -700,7 +737,8 @@ const UsersManagement = () => {
               </Button>
               <Button 
                 onClick={handleResetPassword}
-                className="flex-1 bg-blue-600 text-white hover:bg-blue-700 rounded-none"
+                disabled={!newPassword || newPassword.length < 4 || newPassword !== confirmPassword}
+                className="flex-1 bg-blue-600 text-white hover:bg-blue-700 rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Reimposta Password
               </Button>
