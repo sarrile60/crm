@@ -170,7 +170,11 @@ async def create_user(user_data: UserCreate, current_user: dict = Depends(get_cu
 @crm_router.get("/users")
 async def get_users(current_user: dict = Depends(get_current_user)):
     """Get all users - accessible by all roles (agents need to see names in leads)"""
-    users = await db.crm_users.find({}, {"password": 0, "_id": 0}).to_list(1000)
+    # Exclude soft-deleted users (deleted_at is not null)
+    users = await db.crm_users.find(
+        {"deleted_at": None}, 
+        {"password": 0, "_id": 0}
+    ).to_list(1000)
     return users
 
 @crm_router.get("/users/{user_id}")
