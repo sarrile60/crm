@@ -701,3 +701,85 @@ async def archive_team_admin(team_id: str, request_data: dict = None, current_us
     
     logger.info(f"Team {team_id} archived by admin {current_user['username']}")
     return {"success": True, "members_reassigned": len(members)}
+
+
+@admin_router.post("/teams/{team_id}/members", dependencies=[Depends(require_admin)])
+async def add_members_to_team(team_id: str, member_data: dict, current_user: dict = Depends(get_current_user)):
+    """Add members to team via Admin GUI"""
+    from datetime import datetime, timezone
+    
+    team = await db.teams.find_one({"id": team_id})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    if team.get("archived_at"):
+        raise HTTPException(status_code=400, detail="Cannot add members to an archived team")
+    
+    user_ids = member_data.get("user_ids", [])
+    set_as_default = member_data.get("set_as_default", True)
+    
+    if not user_ids:
+        raise HTTPException(status_code=400, detail="No users specified")
+    
+    added_count = 0
+    for user_id in user_ids:
+        user = await db.crm_users.find_one({"id": user_id, "deleted_at": None})
+        if not user:
+            continue
+        
+        update_data = {}
+        
+        # Add to team_ids if not already present
+        current_team_ids = user.get("team_ids", []) or []
+        if team_id not in current_team_ids:
+            current_team_ids.append(team_id)
+            update_data["team_ids"] = current_team_ids
+        
+        # Set as default team if requested or if user has no team
+        if set_as_default or not user.get("team_id"):
+            update_data["team_id"] = team_id
+            update_data["default_team_id"] = team_id
+        
+        if update_data:
+            update_data["updated_at"] = datetime.now(timezone.utc)
+            await db.crm_users.update_one({"id": user_id}, {"$set": update_data})
+            added_count += 1
+    
+    logger.info(f"Added {added_count} members to team {team_id} by admin {current_user['username']}")
+    return {"success": True, "added_count": added_count}
+
+
+@admin_router.delete("/teams/{team_id}/members/{user_id}", dependencies=[Depends(require_admin)])
+async def remove_member_from_team(team_id: str, user_id: str, current_user: dict = Depends(get_current_user)):
+    """Remove member from team via Admin GUI"""
+    from datetime import datetime, timezone
+    
+    team = await db.teams.find_one({"id": team_id})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    user = await db.crm_users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    update_data = {}
+    
+    # Remove from team_ids
+    current_team_ids = user.get("team_ids", []) or []
+    if team_id in current_team_ids:
+        current_team_ids.remove(team_id)
+        update_data["team_ids"] = current_team_ids
+    
+    # If this was the default/primary team, set to first remaining team or None
+    if user.get("team_id") == team_id:
+        update_data["team_id"] = current_team_ids[0] if current_team_ids else None
+    
+    if user.get("default_team_id") == team_id:
+        update_data["default_team_id"] = current_team_ids[0] if current_team_ids else None
+    
+    if update_data:
+        update_data["updated_at"] = datetime.now(timezone.utc)
+        await db.crm_users.update_one({"id": user_id}, {"$set": update_data})
+    
+    logger.info(f"Removed user {user_id} from team {team_id} by admin {current_user['username']}")
+    return {"success": True}
