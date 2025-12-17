@@ -49,8 +49,10 @@ class PermissionEngine:
             user_role_name = user.get("role")
             user_team_id = user.get("team_id")
             
-            # Find the role document
-            role = await self.db.roles.find_one({"name": user_role_name})
+            # Find the role document (case-insensitive match)
+            role = await self.db.roles.find_one({
+                "name": {"$regex": f"^{user_role_name}$", "$options": "i"}
+            })
             if not role:
                 return PermissionResult(allowed=False, scope=PermissionScope.NONE, reason="Role not found in system")
             
