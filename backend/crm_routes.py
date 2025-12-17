@@ -211,13 +211,36 @@ async def update_user(user_id: str, update_data: UserUpdate, current_user: dict 
 
 @crm_router.delete("/users/{user_id}", dependencies=[Depends(require_role(["admin"]))])
 async def delete_user(user_id: str, current_user: dict = Depends(get_current_user)):
-    """Delete user (Admin only)"""
-    result = await db.crm_users.delete_one({"id": user_id})
+    """Soft-delete user (Admin only) - marks user as deleted but keeps record"""
+    # Cannot delete yourself
+    if user_id == current_user["id"]:
+        raise HTTPException(status_code=400, detail="Cannot delete your own account")
     
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="User not found")
+    # Check if user exists and is not already deleted
+    user = await db.crm_users.find_one({"id": user_id, "deleted_at": None})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found or already deleted")
     
-    return {"success": True}
+    # Soft-delete: set deleted_at timestamp and deactivate
+    result = await db.crm_users.update_one(
+        {"id": user_id},
+        {"$set": {
+            "deleted_at": datetime.now(timezone.utc),
+            "is_active": False
+        }}
+    )
+    
+    # Log activity
+    activity = ActivityLog(
+        lead_id="system",
+        user_id=current_user["id"],
+        user_name=current_user["full_name"],
+        action="user_deleted",
+        details=f"Deleted user {user.get('full_name')} ({user.get('username')})"
+    )
+    await db.activity_logs.insert_one(activity.dict())
+    
+    return {"success": True, "message": "User deleted successfully"}
 
 # ==================== TEAM MANAGEMENT ROUTES ====================
 
