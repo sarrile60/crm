@@ -127,6 +127,72 @@ class PermissionEngine:
             logger.error(f"Permission check error: {e}")
             return PermissionResult(allowed=False, scope=PermissionScope.NONE, reason=f"Error: {str(e)}")
     
+    async def get_user_scope_for_entity(
+        self,
+        user_id: str,
+        entity: str,
+        action: PermissionAction = PermissionAction.READ
+    ) -> PermissionScope:
+        """
+        Get the effective scope a user has for an entity/action without checking against a specific resource.
+        This is used for listing/filtering operations.
+        """
+        try:
+            # Get user to find their role
+            user = await self.db.crm_users.find_one({"id": user_id})
+            if not user:
+                return PermissionScope.NONE
+            
+            user_role_name = user.get("role")
+            
+            # Find the role document (case-insensitive match)
+            role = await self.db.roles.find_one({
+                "name": re.compile(f"^{user_role_name}$", re.IGNORECASE)
+            })
+            if not role:
+                return PermissionScope.NONE
+            
+            # Get permissions for this role and entity/action
+            permissions = await self.db.permissions.find({
+                "role_id": role["id"],
+                "entity": entity,
+                "action": action.value
+            }).to_list(100)
+            
+            if not permissions:
+                return PermissionScope.NONE
+            
+            # Find the most permissive scope
+            scope_priority = {
+                PermissionScope.ALL: 4,
+                PermissionScope.TEAM: 3,
+                PermissionScope.OWN: 2,
+                PermissionScope.NONE: 1,
+            }
+            
+            best_scope = PermissionScope.NONE
+            for perm in permissions:
+                scope_value = perm.get("scope", "none")
+                if scope_value in ["yes", "all"]:
+                    scope = PermissionScope.ALL
+                elif scope_value == "team":
+                    scope = PermissionScope.TEAM
+                elif scope_value == "own":
+                    scope = PermissionScope.OWN
+                elif scope_value in ["no", "none"]:
+                    scope = PermissionScope.NONE
+                else:
+                    scope = PermissionScope.NONE
+                    
+                if scope_priority.get(scope, 0) > scope_priority.get(best_scope, 0):
+                    best_scope = scope
+            
+            return best_scope
+            
+        except Exception as e:
+            logger.error(f"Error getting user scope: {e}")
+            return PermissionScope.NONE
+    
     async def get_data_scope_filter(
         self,
         user_id: str,
@@ -138,22 +204,22 @@ class PermissionEngine:
         
         This is used when listing records to enforce data visibility
         """
-        # Check read permission
-        result = await self.check_permission(user_id, entity, PermissionAction.READ)
+        # Get user's scope for this entity
+        scope = await self.get_user_scope_for_entity(user_id, entity, PermissionAction.READ)
         
-        if not result.allowed:
+        if scope == PermissionScope.NONE:
             # No read access - return filter that matches nothing
             return {"_id": {"$exists": False}}
         
-        if result.scope == PermissionScope.ALL:
+        if scope == PermissionScope.ALL:
             # Full access - no filter needed
             return {}
         
-        if result.scope == PermissionScope.OWN:
+        if scope == PermissionScope.OWN:
             # Only own records
             return {"assigned_to": user_id}
         
-        if result.scope == PermissionScope.TEAM:
+        if scope == PermissionScope.TEAM:
             # Team records - get user's team from crm_users
             user = await self.db.crm_users.find_one({"id": user_id})
             user_team_id = user.get("team_id") if user else None
