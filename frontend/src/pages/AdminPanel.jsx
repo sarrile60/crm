@@ -77,6 +77,7 @@ const AdminPanel = () => {
     { id: 'teams', label: 'Teams', icon: Building2, component: TeamsManagement },
     { id: 'roles', label: 'Roles', icon: Shield, component: RoleManagement },
     { id: 'permissions', label: 'Permission Matrix', icon: Database, component: PermissionMatrix },
+    { id: 'visibility', label: 'Data Visibility', icon: Eye, component: DataVisibilityRules },
     { id: 'entities', label: 'Entity Configuration', icon: Settings, component: EntityConfiguration }
   ];
 
