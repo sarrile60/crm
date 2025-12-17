@@ -28,7 +28,7 @@ def init_admin_db(database):
 
 logger = logging.getLogger(__name__)
 
-admin_router = APIRouter(prefix="/admin", tags=["admin"])
+admin_router = APIRouter(prefix="/api/admin", tags=["admin"])
 
 
 # ============================================
