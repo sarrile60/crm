@@ -12,6 +12,18 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api/admin`;
 
 const SessionSettings = () => {
+  const { t } = useTranslation();
+  
+  const DAY_NAMES = {
+    0: t('session.monday'),
+    1: t('session.tuesday'),
+    2: t('session.wednesday'),
+    3: t('session.thursday'),
+    4: t('session.friday'),
+    5: t('session.saturday'),
+    6: t('session.sunday')
+  };
+
   const [settings, setSettings] = useState({
     session_start_hour: 8,
     session_start_minute: 0,
