@@ -50,7 +50,7 @@ const AdminPanel = () => {
   if (isAuthorized === null) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">Verifica autorizzazione...</div>
+        <div className="text-gray-600">{t('admin.verifyingAuth')}</div>
       </div>
     );
   }
@@ -61,16 +61,15 @@ const AdminPanel = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white border-2 border-red-400 p-8 max-w-md text-center">
           <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-red-600 mb-2">Accesso Negato</h1>
+          <h1 className="text-2xl font-bold text-red-600 mb-2">{t('admin.accessDenied')}</h1>
           <p className="text-gray-600 mb-6">
-            Non hai i permessi per accedere al pannello di amministrazione.
-            Solo gli utenti con ruolo "admin" possono accedere a questa sezione.
+            {t('admin.accessDeniedMessage')}
           </p>
           <Button
             onClick={() => navigate('/crm/dashboard')}
             className="bg-black hover:bg-gray-800 text-white rounded-none"
           >
-            Torna al CRM
+            {t('admin.backToCRM')}
           </Button>
         </div>
       </div>
