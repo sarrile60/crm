@@ -19,6 +19,7 @@ const CRMDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [callbackLead, setCallbackLead] = useState(null);
+  const [sessionInfo, setSessionInfo] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('crmToken');
