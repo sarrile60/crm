@@ -136,6 +136,15 @@ const CRMDashboard = () => {
           </div>
           
           <div className="flex items-center gap-4">
+            {/* Session Timer */}
+            {sessionInfo && (
+              <div className="text-right text-xs">
+                <div className="text-gray-400">Sessione scade alle 18:30</div>
+                <div className={`font-mono ${sessionInfo.minutes_remaining < 30 ? 'text-red-400' : 'text-[#D4AF37]'}`}>
+                  {Math.floor(sessionInfo.minutes_remaining / 60)}h {sessionInfo.minutes_remaining % 60}m rimanenti
+                </div>
+              </div>
+            )}
             <CallbackNotifications onCallbackAlert={handleCallbackAlert} currentUser={currentUser} />
             <Button onClick={handleLogout} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
               <LogOut className="w-4 h-4 mr-2" />
