@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Shield, Database, Users, ArrowLeft, AlertTriangle, UserCog, Building2, Eye, FileText } from 'lucide-react';
+import { Settings, Shield, Database, Users, ArrowLeft, AlertTriangle, UserCog, Building2, Eye, FileText, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import RoleManagement from '../components/admin/RoleManagement';
@@ -9,6 +9,7 @@ import UsersManagement from '../components/admin/UsersManagement';
 import TeamsManagement from '../components/admin/TeamsManagement';
 import DataVisibilityRules from '../components/admin/DataVisibilityRules';
 import AuditLogs from '../components/admin/AuditLogs';
+import SessionSettings from '../components/admin/SessionSettings';
 
 const AdminPanel = () => {
   const navigate = useNavigate();
