@@ -44,7 +44,19 @@ const AdminDashboard = () => {
       
       if (!response.data.valid) {
         // Session expired - auto logout
-        toast.error(response.data.reason || t('session.sessionExpired'));
+        let reason = response.data.reason || t('session.sessionExpired');
+        // Parse reason codes from backend
+        if (reason.startsWith('not_work_day:')) {
+          const day = reason.split(':')[1];
+          reason = t('session.notWorkDay', { day });
+        } else if (reason.startsWith('before_work_hours:')) {
+          const time = reason.split(':')[1];
+          reason = t('session.beforeWorkHours', { time });
+        } else if (reason.startsWith('after_work_hours:')) {
+          const time = reason.split(':')[1];
+          reason = t('session.afterWorkHours', { time });
+        }
+        toast.error(reason);
         localStorage.removeItem('adminToken');
         navigate('/admin-portal-login');
       }
