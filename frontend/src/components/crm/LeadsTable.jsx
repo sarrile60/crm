@@ -961,11 +961,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-black mb-2">Note (Opzionale)</label>
+                        <label className="block text-sm font-semibold text-black mb-2">{t('crm.notesOptional')}</label>
                         <Textarea
                           value={editData.callback_notes || ''}
                           onChange={(e) => setEditData({ ...editData, callback_notes: e.target.value })}
-                          placeholder="Aggiungi note..."
+                          placeholder={t('crm.addNotes')}
                           className="bg-white border-gray-300 rounded-none"
                           rows={2}
                         />
@@ -974,7 +974,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   )}
                   
                   <Button onClick={handleSaveEdit} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
-                    Salva Modifiche
+                    {t('common.saveChanges')}
                   </Button>
                 </div>
               </div>
@@ -983,16 +983,16 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               <div>
                 <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2 flex items-center gap-2">
                   <MessageSquare className="w-5 h-5" />
-                  Commenti e Note
+                  {t('crm.commentsAndNotes')}
                 </h3>
                 
                 {/* Add New Comment */}
                 <div className="bg-gray-50 border-2 border-gray-200 p-4 mb-4">
-                  <label className="block text-sm font-semibold text-black mb-2">Aggiungi Nota</label>
+                  <label className="block text-sm font-semibold text-black mb-2">{t('crm.addNote')}</label>
                   <Textarea
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
-                    placeholder="Scrivi una nota o commento su questo lead..."
+                    placeholder={t('crm.writeNoteOrComment')}
                     rows={3}
                     className="bg-white border-gray-300 rounded-none mb-3"
                   />
