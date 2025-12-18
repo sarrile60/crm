@@ -214,34 +214,34 @@ const Home = () => {
 
             {/* Trust Indicators Section */}
             <div className="bg-gray-50 border-2 border-[#D4AF37] p-6 rounded-lg">
-              <h3 className="text-lg font-bold text-black mb-4">Perché Scegliere 1 LAW SOLICITORS?</h3>
+              <h3 className="text-lg font-bold text-black mb-4">{t('home.whyChooseUs')}</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-6 h-6 text-[#D4AF37] mt-1 flex-shrink-0" />
                   <div>
-                    <p className="font-semibold text-black text-sm">Risposta Rapida</p>
-                    <p className="text-xs text-gray-600">Valutazione entro 24 ore</p>
+                    <p className="font-semibold text-black text-sm">{t('home.fastResponse')}</p>
+                    <p className="text-xs text-gray-600">{t('home.fastResponseDesc')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Shield className="w-6 h-6 text-[#D4AF37] mt-1 flex-shrink-0" />
                   <div>
-                    <p className="font-semibold text-black text-sm">100% Confidenziale</p>
-                    <p className="text-xs text-gray-600">Massima riservatezza</p>
+                    <p className="font-semibold text-black text-sm">{t('home.confidential')}</p>
+                    <p className="text-xs text-gray-600">{t('home.confidentialDesc')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Scale className="w-6 h-6 text-[#D4AF37] mt-1 flex-shrink-0" />
                   <div>
-                    <p className="font-semibold text-black text-sm">Esperti Legali</p>
-                    <p className="text-xs text-gray-600">Team specializzato</p>
+                    <p className="font-semibold text-black text-sm">{t('home.legalExperts')}</p>
+                    <p className="text-xs text-gray-600">{t('home.legalExpertsDesc')}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Globe className="w-6 h-6 text-[#D4AF37] mt-1 flex-shrink-0" />
                   <div>
-                    <p className="font-semibold text-black text-sm">Network Globale</p>
-                    <p className="text-xs text-gray-600">Collaborazioni internazionali</p>
+                    <p className="font-semibold text-black text-sm">{t('home.globalNetwork')}</p>
+                    <p className="text-xs text-gray-600">{t('home.globalNetworkDesc')}</p>
                   </div>
                 </div>
               </div>
@@ -250,15 +250,15 @@ const Home = () => {
                 <div className="flex items-center justify-between text-sm">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-[#D4AF37]">€50M+</div>
-                    <div className="text-xs text-gray-600">Recuperati</div>
+                    <div className="text-xs text-gray-600">{t('common.recovered')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-[#D4AF37]">500+</div>
-                    <div className="text-xs text-gray-600">Casi Risolti</div>
+                    <div className="text-xs text-gray-600">{t('common.resolved')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-[#D4AF37]">35+</div>
-                    <div className="text-xs text-gray-600">Paesi</div>
+                    <div className="text-xs text-gray-600">{t('common.countries')}</div>
                   </div>
                 </div>
               </div>
