@@ -115,10 +115,9 @@ const DataVisibilityRules = () => {
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Visibilità Dati</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('visibility.title')}</h2>
           <p className="text-gray-500 mt-1">
-            Configura la visibilità dei campi sensibili per ruolo e team.
-            Le regole sono applicate dal backend - il frontend non gestisce mai la logica di mascheramento.
+            {t('visibility.subtitle')}
           </p>
         </div>
         <div className="flex gap-2">
@@ -129,7 +128,7 @@ const DataVisibilityRules = () => {
               className="rounded-none"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
-              Annulla
+              {t('common.cancel')}
             </Button>
           )}
           <Button
@@ -138,14 +137,14 @@ const DataVisibilityRules = () => {
             className="bg-[#D4AF37] hover:bg-[#B8941F] text-black rounded-none"
           >
             <Save className="w-4 h-4 mr-2" />
-            {saving ? 'Salvataggio...' : 'Salva Modifiche'}
+            {saving ? t('common.loading') : t('common.saveChanges')}
           </Button>
         </div>
       </div>
 
       {/* Legend */}
       <div className="bg-white border border-gray-200 p-4">
-        <h3 className="font-semibold text-gray-700 mb-3">Legenda Visibilità</h3>
+        <h3 className="font-semibold text-gray-700 mb-3">{t('visibility.legend')}</h3>
         <div className="grid grid-cols-3 gap-4">
           {VISIBILITY_OPTIONS.map(option => {
             const Icon = option.icon;
