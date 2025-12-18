@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Scale } from 'lucide-react';
@@ -11,6 +12,7 @@ const API = `${BACKEND_URL}/api`;
 
 const CRMLogin = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [credentials, setCredentials] = useState({
     username: '',
     password: ''
@@ -27,11 +29,11 @@ const CRMLogin = () => {
       if (response.data.token) {
         localStorage.setItem('crmToken', response.data.token);
         localStorage.setItem('crmUser', JSON.stringify(response.data.user));
-        toast.success('Login effettuato con successo!');
+        toast.success(t('auth.loginSuccess'));
         navigate('/crm/dashboard');
       }
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Credenziali non valide');
+      toast.error(error.response?.data?.detail || t('auth.loginError'));
     } finally {
       setLoading(false);
     }
@@ -45,14 +47,14 @@ const CRMLogin = () => {
             <Scale className="w-10 h-10 text-[#D4AF37]" />
             <span className="text-black text-2xl font-semibold">1 LAW SOLICITORS</span>
           </div>
-          <h1 className="text-3xl font-bold text-black mb-2">CRM Portal</h1>
-          <p className="text-gray-700">Accedi al sistema di gestione clienti</p>
+          <h1 className="text-3xl font-bold text-black mb-2">{t('auth.crmPortal')}</h1>
+          <p className="text-gray-700">{t('auth.accessClientManagement')}</p>
         </div>
 
         <div className="bg-gray-50 border-2 border-[#D4AF37] p-8 shadow-xl">
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label className="block text-black mb-2 text-sm font-semibold">Username</label>
+              <label className="block text-black mb-2 text-sm font-semibold">{t('auth.username')}</label>
               <Input
                 type="text"
                 value={credentials.username}
@@ -63,7 +65,7 @@ const CRMLogin = () => {
               />
             </div>
             <div>
-              <label className="block text-black mb-2 text-sm font-semibold">Password</label>
+              <label className="block text-black mb-2 text-sm font-semibold">{t('auth.password')}</label>
               <Input
                 type="password"
                 value={credentials.password}
@@ -78,12 +80,12 @@ const CRMLogin = () => {
               disabled={loading}
               className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg py-6 font-semibold"
             >
-              {loading ? 'Accesso in corso...' : 'Accedi al CRM'}
+              {loading ? t('common.loggingIn') : t('auth.loginToCRM')}
             </Button>
           </form>
           
           <div className="mt-6 text-center text-sm text-gray-600">
-            <p>Usa il tuo username e password per accedere</p>
+            <p>{t('common.useCredentials')}</p>
           </div>
         </div>
 
@@ -92,7 +94,7 @@ const CRMLogin = () => {
             onClick={() => navigate('/')}
             className="text-gray-700 hover:text-black underline"
           >
-            Torna al sito
+            {t('common.backToSite')}
           </button>
         </div>
       </div>
