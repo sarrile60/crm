@@ -451,16 +451,16 @@ const TeamsManagement = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Supervisor</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('teams.supervisor')}</label>
               <Select 
                 value={formData.supervisor_id || 'none'} 
                 onValueChange={(value) => setFormData({ ...formData, supervisor_id: value === 'none' ? '' : value })}
               >
                 <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                  <SelectValue placeholder="Seleziona supervisor" />
+                  <SelectValue placeholder={t('teams.selectSupervisor')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">Nessun supervisor</SelectItem>
+                  <SelectItem value="none">{t('common.none')}</SelectItem>
                   {getSupervisorEligibleUsers().map(user => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.full_name} ({user.role})
@@ -468,22 +468,19 @@ const TeamsManagement = () => {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-gray-500 mt-1">
-                Solo utenti con ruolo Admin o Supervisor possono essere assegnati
-              </p>
             </div>
             <div className="flex gap-3 pt-4">
               <Button 
                 onClick={() => setShowCreateModal(false)}
                 className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
               >
-                Annulla
+                {t('common.cancel')}
               </Button>
               <Button 
                 onClick={handleCreateTeam}
                 className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
               >
-                Crea Team
+                {t('teams.createTeam')}
               </Button>
             </div>
           </div>
@@ -494,11 +491,11 @@ const TeamsManagement = () => {
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
         <DialogContent className="max-w-lg bg-white">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-black">Modifica Team</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-black">{t('teams.editTeam')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Nome Team *</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('teams.teamName')} *</label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -506,7 +503,7 @@ const TeamsManagement = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Descrizione</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('common.description')}</label>
               <Input
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -514,16 +511,16 @@ const TeamsManagement = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Supervisor</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('teams.supervisor')}</label>
               <Select 
                 value={formData.supervisor_id || 'none'} 
                 onValueChange={(value) => setFormData({ ...formData, supervisor_id: value === 'none' ? '' : value })}
               >
                 <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                  <SelectValue placeholder="Seleziona supervisor" />
+                  <SelectValue placeholder={t('teams.selectSupervisor')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">Nessun supervisor</SelectItem>
+                  <SelectItem value="none">{t('common.none')}</SelectItem>
                   {getSupervisorEligibleUsers().map(user => (
                     <SelectItem key={user.id} value={user.id}>
                       {user.full_name} ({user.role})
@@ -537,13 +534,13 @@ const TeamsManagement = () => {
                 onClick={() => setShowEditModal(false)}
                 className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
               >
-                Annulla
+                {t('common.cancel')}
               </Button>
               <Button 
                 onClick={handleEditTeam}
                 className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
               >
-                Salva Modifiche
+                {t('common.saveChanges')}
               </Button>
             </div>
           </div>
