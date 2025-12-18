@@ -465,13 +465,13 @@ const AuditLogs = () => {
                     </td>
                     <td className="p-4">
                       <span className={`px-2 py-1 text-xs font-semibold ${ACTION_COLORS[log.action] || 'bg-gray-100 text-gray-700'}`}>
-                        {log.action_label}
+                        {getActionLabel(log.action_label)}
                       </span>
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-2 text-gray-600">
                         {getEntityIcon(log.entity_type)}
-                        <span>{log.entity_type_label}</span>
+                        <span>{getEntityLabel(log.entity_type_label)}</span>
                       </div>
                     </td>
                     <td className="p-4 text-gray-700 font-medium">
