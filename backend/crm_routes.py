@@ -787,6 +787,9 @@ async def create_crm_lead(lead_data: dict, current_user: dict = Depends(get_curr
         
         return {"success": True, "lead_id": lead_id, "message": "Lead created successfully"}
         
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is (e.g., duplicate email error)
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
