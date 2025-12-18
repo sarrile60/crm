@@ -151,12 +151,17 @@ const CRMDashboard = () => {
           
           <div className="flex items-center gap-4">
             {/* Session Timer */}
-            {sessionInfo && (
+            {sessionInfo && !sessionInfo.is_admin && (
               <div className="text-right text-xs">
-                <div className="text-gray-400">{t('auth.sessionExpires')} 18:30</div>
+                <div className="text-gray-400">{t('auth.sessionExpires')} {sessionInfo.session_end_time}</div>
                 <div className={`font-mono ${sessionInfo.minutes_remaining < 30 ? 'text-red-400' : 'text-[#D4AF37]'}`}>
                   {Math.floor(sessionInfo.minutes_remaining / 60)}h {sessionInfo.minutes_remaining % 60}m {t('auth.timeRemaining')}
                 </div>
+              </div>
+            )}
+            {sessionInfo && sessionInfo.is_admin && (
+              <div className="text-right text-xs">
+                <div className="text-[#D4AF37]">{t('auth.adminNoExpiry')}</div>
               </div>
             )}
             <CallbackNotifications onCallbackAlert={handleCallbackAlert} currentUser={currentUser} />
