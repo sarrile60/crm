@@ -717,6 +717,19 @@ async def mass_update_leads(update_data: MassUpdateData, current_user: dict = De
 async def create_crm_lead(lead_data: dict, current_user: dict = Depends(get_current_user)):
     """Create a new lead with auto-assignment to creator's team and user"""
     try:
+        # Check for duplicate email
+        email = lead_data.get("email", "").strip().lower()
+        if email:
+            existing_lead = await db.leads.find_one(
+                {"email": {"$regex": f"^{email}$", "$options": "i"}},
+                {"_id": 0, "id": 1, "fullName": 1, "email": 1}
+            )
+            if existing_lead:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Esiste già un lead con questa email: {existing_lead.get('fullName', 'Sconosciuto')}"
+                )
+        
         # Create lead with auto-assignment
         lead_id = str(uuid.uuid4())
         
