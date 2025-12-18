@@ -307,10 +307,10 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.put(`${API}/crm/reminders/${reminderId}/complete`, {}, { headers });
-      toast.success('Reminder completato');
+      toast.success(t('crm.reminderCompleted'));
       fetchReminders();
     } catch (error) {
-      toast.error('Errore nel completamento del reminder');
+      toast.error(t('crm.errorCompletingReminder'));
     }
   };
 
@@ -338,7 +338,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
           <DialogHeader>
             <DialogTitle className={`text-3xl font-bold flex items-center gap-3 ${urgentCallback?.status?.startsWith('Deposit') ? 'text-blue-600' : 'text-red-600'}`}>
               <Phone className="w-8 h-8 animate-bounce" />
-              {urgentCallback?.status?.startsWith('Deposit') ? 'DEPOSIT URGENTE!' : 'CALLBACK URGENTE!'}
+              {urgentCallback?.status?.startsWith('Deposit') ? t('crm.urgentDeposit') : t('crm.urgentCallback')}
             </DialogTitle>
           </DialogHeader>
           {urgentCallback && (
@@ -346,19 +346,19 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
               <div className={`bg-white border-2 p-6 ${urgentCallback?.status?.startsWith('Deposit') ? 'border-blue-600' : 'border-red-600'}`}>
                 <div className={`flex items-center gap-2 font-bold mb-4 ${urgentCallback?.status?.startsWith('Deposit') ? 'text-blue-600' : 'text-red-600'}`}>
                   <Clock className="w-6 h-6" />
-                  <span className="text-xl">Tra meno di 1 minuto!</span>
+                  <span className="text-xl">{t('crm.lessThanOneMinute')}</span>
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Cliente:</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('crm.client')}:</label>
                     <p className="text-xl font-bold text-black">{urgentCallback.fullName}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Telefono:</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('common.phone')}:</label>
                     <p className="text-2xl font-bold text-[#D4AF37]">+39 {urgentCallback.phone}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Importo:</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('crm.amountLost')}:</label>
                     <p className="text-lg font-semibold text-black">{urgentCallback.amountLost}</p>
                   </div>
                   {urgentCallback.callback_notes && (
