@@ -51,6 +51,7 @@ const ACTION_COLORS = {
 };
 
 const AuditLogs = () => {
+  const { t } = useTranslation();
   const [logs, setLogs] = useState([]);
   const [filters, setFilters] = useState({
     user_id: '',
