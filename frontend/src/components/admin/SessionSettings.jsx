@@ -388,10 +388,7 @@ const SessionSettings = () => {
             </label>
             <Select
               value={settings.timezone || 'Europe/Berlin'}
-              onValueChange={(value) => {
-                updateSetting('timezone', value);
-                setPreviewTimezone(null); // Clear preview when value is selected
-              }}
+              onValueChange={(value) => updateSetting('timezone', value)}
             >
               <SelectTrigger className="rounded-none">
                 <SelectValue placeholder="Seleziona fuso orario">
