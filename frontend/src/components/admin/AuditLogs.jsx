@@ -296,7 +296,7 @@ const AuditLogs = () => {
             <div className="text-sm mt-1">
               {stats.by_action.slice(0, 3).map(a => (
                 <span key={a.action} className="inline-block mr-2 text-gray-600">
-                  {a.label}: {a.count}
+                  {getActionLabel(a.label)}: {a.count}
                 </span>
               ))}
             </div>
