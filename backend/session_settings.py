@@ -130,6 +130,15 @@ async def get_session_settings() -> dict:
     return settings
 
 
+def get_current_time_in_timezone(tz_name: str) -> datetime:
+    """Get current time in specified timezone"""
+    try:
+        tz = ZoneInfo(tz_name)
+    except Exception:
+        tz = ZoneInfo("Europe/Berlin")
+    return datetime.now(tz)
+
+
 async def update_session_settings(
     session_start_hour: int,
     session_start_minute: int,
@@ -137,9 +146,13 @@ async def update_session_settings(
     session_end_minute: int,
     work_days: list,
     require_approval_after_hours: bool,
-    approval_duration_minutes: int = 30
+    approval_duration_minutes: int = 30,
+    timezone: str = "Europe/Berlin"
 ) -> dict:
     """Update session settings in database"""
+    # Validate timezone
+    valid_tz = timezone if any(tz["value"] == timezone for tz in ALL_TIMEZONES) else "Europe/Berlin"
+    
     settings = {
         "type": "session_config",
         "session_start_hour": session_start_hour,
@@ -147,10 +160,10 @@ async def update_session_settings(
         "session_end_hour": session_end_hour,
         "session_end_minute": session_end_minute,
         "work_days": work_days,
-        "timezone": "Europe/Berlin",
+        "timezone": valid_tz,
         "require_approval_after_hours": require_approval_after_hours,
         "approval_duration_minutes": approval_duration_minutes,
-        "updated_at": datetime.now(BERLIN_TZ)
+        "updated_at": datetime.now(ZoneInfo("UTC"))
     }
     
     await db.system_settings.update_one(
