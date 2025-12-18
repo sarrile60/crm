@@ -169,14 +169,14 @@ const Home = () => {
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-200 py-4">
             <nav className="flex flex-col gap-4 px-[7.6923%]">
-              <button onClick={() => scrollToSection('home')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">Home</button>
-              <button onClick={() => scrollToSection('about')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">Chi Siamo</button>
-              <button onClick={() => scrollToSection('services')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">Servizi</button>
-              <button onClick={() => scrollToSection('how-it-works')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">Come Funziona</button>
-              <button onClick={() => scrollToSection('success-stories')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">Casi di Successo</button>
-              <button onClick={() => scrollToSection('faq')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">FAQ</button>
+              <button onClick={() => scrollToSection('home')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">{t('nav.home')}</button>
+              <button onClick={() => scrollToSection('about')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">{t('nav.about')}</button>
+              <button onClick={() => scrollToSection('services')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">{t('nav.services')}</button>
+              <button onClick={() => scrollToSection('how-it-works')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">{t('nav.howItWorks')}</button>
+              <button onClick={() => scrollToSection('success-stories')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">{t('nav.successCases')}</button>
+              <button onClick={() => scrollToSection('faq')} className="text-gray-600 hover:text-black transition-colors text-lg text-left">{t('nav.faq')}</button>
               <Button onClick={() => handleCTAClick('mobile-menu')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg w-full py-6 font-semibold">
-                Consulenza Gratuita
+                {t('nav.freeConsultation')}
               </Button>
             </nav>
           </div>
