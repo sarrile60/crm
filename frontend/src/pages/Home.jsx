@@ -397,7 +397,7 @@ const Home = () => {
       <section className="bg-white py-12 border-y-2 border-[#D4AF37] overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-[7.6923%]">
           <h3 className="text-center text-2xl font-bold text-black mb-8">
-            Approvati e Regolamentati dalle Principali Autorità Europee
+            {t('home.regulatoryApprovals')}
           </h3>
         </div>
         
