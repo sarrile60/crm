@@ -4,11 +4,13 @@ import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
+  const { t } = useTranslation();
   const [reminders, setReminders] = useState([]);
   const [pendingCallbacks, setPendingCallbacks] = useState([]);
   const [showModal, setShowModal] = useState(false);
