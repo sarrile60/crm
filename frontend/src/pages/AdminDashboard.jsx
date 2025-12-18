@@ -21,7 +21,39 @@ const AdminDashboard = () => {
       return;
     }
     fetchData();
+    
+    // Start session check interval (every 60 seconds)
+    const sessionCheckInterval = setInterval(checkSession, 60000);
+    
+    // Check session immediately on load
+    checkSession();
+    
+    return () => clearInterval(sessionCheckInterval);
   }, []);
+  
+  const checkSession = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) return;
+      
+      const response = await axios.get(`${API}/crm/auth/session-check`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (!response.data.valid) {
+        // Session expired - auto logout
+        toast.error(response.data.reason || 'Sessione scaduta');
+        localStorage.removeItem('adminToken');
+        navigate('/admin-portal-login');
+      }
+    } catch (error) {
+      // If session check fails with 401, logout
+      if (error.response?.status === 401) {
+        localStorage.removeItem('adminToken');
+        navigate('/admin-portal-login');
+      }
+    }
+  };
 
   const fetchData = async () => {
     try {
