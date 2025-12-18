@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Database, Edit, Check, X, Users, Phone, FileText, Briefcase, Calendar, Mail, Settings, Tag, Building2, DollarSign, Target, MessageSquare, Clipboard, Clock, UserCheck, Award, HelpCircle } from 'lucide-react';
+import { Database, Edit, Check, X, Users, User, Phone, FileText, Briefcase, Calendar, Mail, Settings, Tag, Building2, DollarSign, Target, MessageSquare, Clipboard, Clock, UserCheck, Award, HelpCircle, Contact } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { toast } from 'sonner';
@@ -12,6 +12,8 @@ const API = `${BACKEND_URL}/api/admin`;
 // Icon map for dynamic icon rendering
 const ICON_MAP = {
   'users': Users,
+  'user': User,
+  'contact': Contact,
   'phone': Phone,
   'file-text': FileText,
   'filetext': FileText,
