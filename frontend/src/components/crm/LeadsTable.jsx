@@ -618,20 +618,20 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
             <label className="block text-sm font-semibold text-black mb-2">{t('leads.priority')}</label>
             <Select value={filters.priority || "all"} onValueChange={(value) => setFilters({ ...filters, priority: value === "all" ? "" : value })}>
               <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                <SelectValue placeholder="Tutte" />
+                <SelectValue placeholder={t('common.all')} />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="all">Tutte</SelectItem>
-                <SelectItem value="low">Bassa</SelectItem>
-                <SelectItem value="medium">Media</SelectItem>
-                <SelectItem value="high">Alta</SelectItem>
-                <SelectItem value="urgent">Urgente</SelectItem>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
+                <SelectItem value="low">{t('leads.low')}</SelectItem>
+                <SelectItem value="medium">{t('leads.medium')}</SelectItem>
+                <SelectItem value="high">{t('leads.high')}</SelectItem>
+                <SelectItem value="urgent">{t('leads.urgent')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="flex items-end">
             <Button onClick={() => setFilters({ status: '', priority: '', search: '' })} className="bg-gray-800 text-white hover:bg-black rounded-none w-full">
-              Reset Filtri
+              {t('common.clearFilters')}
             </Button>
           </div>
         </div>
@@ -653,23 +653,23 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   </button>
                 </th>
               )}
-              <th className="text-left text-white p-4 font-semibold">Created Date</th>
-              <th className="text-left text-white p-4 font-semibold">Nome</th>
-              <th className="text-left text-white p-4 font-semibold">Telefono</th>
-              <th className="text-left text-white p-4 font-semibold">Email</th>
-              <th className="text-left text-white p-4 font-semibold">Importo</th>
-              <th className="text-left text-white p-4 font-semibold">Stato</th>
-              <th className="text-left text-white p-4 font-semibold">Priorità</th>
-              <th className="text-left text-white p-4 font-semibold">Team</th>
-              <th className="text-left text-white p-4 font-semibold">Assegnato</th>
-              <th className="text-left text-white p-4 font-semibold">Azioni</th>
+              <th className="text-left text-white p-4 font-semibold">{t('common.date')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('common.name')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('common.phone')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('common.email')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('common.amount')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('common.status')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('leads.priority')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('users.team')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('leads.assignedTo')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {filteredLeads.length === 0 ? (
               <tr>
                 <td colSpan={canMassUpdate ? "10" : "9"} className="text-center p-8 text-gray-600">
-                  Nessun lead trovato
+                  {t('leads.noLeadsFound')}
                 </td>
               </tr>
             ) : (
