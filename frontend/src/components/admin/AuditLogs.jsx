@@ -306,7 +306,7 @@ const AuditLogs = () => {
             <div className="text-sm mt-1">
               {stats.by_entity_type.slice(0, 3).map(e => (
                 <span key={e.entity_type} className="inline-block mr-2 text-gray-600">
-                  {e.label}: {e.count}
+                  {getEntityLabel(e.label)}: {e.count}
                 </span>
               ))}
             </div>
