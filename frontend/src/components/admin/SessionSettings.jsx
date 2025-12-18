@@ -319,18 +319,54 @@ const SessionSettings = () => {
           <h3 className="font-bold text-gray-900">Sicurezza Fuori Orario</h3>
         </div>
         
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="font-medium">Richiedi Approvazione Admin</div>
-            <div className="text-sm text-gray-500">
-              Se attivo, gli utenti non-admin devono richiedere l'approvazione per accedere fuori orario di lavoro.
-              L'approvazione è valida per 30 minuti.
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium">Richiedi Approvazione Admin</div>
+              <div className="text-sm text-gray-500">
+                Se attivo, gli utenti non-admin devono richiedere l'approvazione per accedere fuori orario di lavoro.
+              </div>
             </div>
+            <Switch
+              checked={settings.require_approval_after_hours}
+              onCheckedChange={(checked) => updateSetting('require_approval_after_hours', checked)}
+            />
           </div>
-          <Switch
-            checked={settings.require_approval_after_hours}
-            onCheckedChange={(checked) => updateSetting('require_approval_after_hours', checked)}
-          />
+          
+          {settings.require_approval_after_hours && (
+            <div className="pt-4 border-t border-gray-200">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Durata Approvazione (minuti)
+              </label>
+              <div className="flex items-center gap-3">
+                <Input
+                  type="number"
+                  min="5"
+                  max="480"
+                  value={settings.approval_duration_minutes}
+                  onChange={(e) => updateSetting('approval_duration_minutes', parseInt(e.target.value) || 30)}
+                  className="w-24 rounded-none"
+                />
+                <span className="text-gray-500">minuti</span>
+                <div className="text-sm text-gray-400 ml-4">
+                  (Tempo durante il quale l'utente può accedere dopo l'approvazione)
+                </div>
+              </div>
+              <div className="mt-2 flex gap-2">
+                {[15, 30, 60, 120].map(mins => (
+                  <Button
+                    key={mins}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => updateSetting('approval_duration_minutes', mins)}
+                    className={`rounded-none ${settings.approval_duration_minutes === mins ? 'bg-[#D4AF37] text-black' : ''}`}
+                  >
+                    {mins} min
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
