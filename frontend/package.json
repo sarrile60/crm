@@ -60,8 +60,8 @@
     "zod": "^3.24.4"
   },
   "scripts": {
-    "start": "serve -s build -l 3000",
-    "build": "GENERATE_SOURCEMAP=false craco build",
+    "start": "serve -s build -l 3000 --config serve.json",
+    "build": "GENERATE_SOURCEMAP=false craco build && cp serve.json build/",
     "test": "craco test",
     "dev": "craco start"
   },
