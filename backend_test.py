@@ -2837,13 +2837,20 @@ class CRMTester:
             print("❌ Cannot proceed without admin login")
             return False
         
-        # Step 2: Create test users
+        # Step 2: Test Session Settings Timezone Selector (PRIORITY - as per review request)
+        print("\n⏰" * 50)
+        print("⏰ SESSION SETTINGS TIMEZONE SELECTOR TESTING")
+        print("⏰" * 50)
+        
+        self.test_session_settings_timezone_selector()
+        
+        # Step 3: Create test users
         self.create_test_users()
         
-        # Step 3: Create test lead
+        # Step 4: Create test lead
         self.create_test_lead()
         
-        # Step 4: Run CRM tests
+        # Step 5: Run CRM tests
         self.test_phone_masking()
         self.test_mass_update_permissions()
         self.test_mass_update_functionality()
