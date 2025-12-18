@@ -257,11 +257,11 @@ const UserManagement = ({ currentUser }) => {
         <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
           <DialogContent className="max-w-md bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">Crea Nuovo Utente</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">{t('users.createUser')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Nome Completo</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('leads.fullName')}</label>
                 <Input
                   value={newUser.full_name}
                   onChange={(e) => setNewUser({ ...newUser, full_name: e.target.value })}
@@ -270,7 +270,7 @@ const UserManagement = ({ currentUser }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Username</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('users.usernameLabel')}</label>
                 <Input
                   type="text"
                   value={newUser.username}
@@ -280,7 +280,7 @@ const UserManagement = ({ currentUser }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Password</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('users.passwordLabel')}</label>
                 <Input
                   type="password"
                   value={newUser.password}
@@ -304,13 +304,13 @@ const UserManagement = ({ currentUser }) => {
                 </Select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Team (Opzionale)</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('crm.teamOptional')}</label>
                 <Select value={newUser.team_id || "none"} onValueChange={(value) => setNewUser({ ...newUser, team_id: value === "none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Nessun team" />
+                    <SelectValue placeholder={t('common.noTeam')} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="none">Nessun team</SelectItem>
+                    <SelectItem value="none">{t('common.noTeam')}</SelectItem>
                     {teams.map(team => (
                       <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
                     ))}
@@ -318,7 +318,7 @@ const UserManagement = ({ currentUser }) => {
                 </Select>
               </div>
               <Button onClick={handleCreateUser} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
-                Crea Utente
+                {t('users.createUser')}
               </Button>
             </div>
           </DialogContent>
@@ -330,11 +330,11 @@ const UserManagement = ({ currentUser }) => {
         <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
           <DialogContent className="max-w-md bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">Modifica Utente</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">{t('users.editUser')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Nome Completo</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('leads.fullName')}</label>
                 <Input
                   value={editUser.full_name}
                   onChange={(e) => setEditUser({ ...editUser, full_name: e.target.value })}
