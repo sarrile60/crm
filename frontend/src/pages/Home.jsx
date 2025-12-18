@@ -654,28 +654,28 @@ const Home = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { icon: <TrendingUp />, title: 'Truffe Crypto', description: 'Recupero fondi da exchange fraudolenti, ICO false e wallet compromessi' },
-              { icon: <Globe />, title: 'Frodi Forex', description: 'Azione legale contro broker non regolamentati e piattaforme di trading false' },
-              { icon: <Shield />, title: 'Broker Illegali', description: 'Dispute contro broker che operano senza licenza e manipolano i mercati' },
-              { icon: <FileText />, title: 'Piattaforme Fake', description: 'Casi contro siti di investimento fraudolenti e schemi Ponzi' },
-              { icon: <Scale />, title: 'Protezione Truffe', description: 'Difesa contro truffatori che promettono recupero fondi fasullo' },
-              { icon: <CheckCircle />, title: 'Dispute Bancarie', description: 'Assistenza con chargeback e richieste di rimborso presso banche' },
-              { icon: <Globe />, title: 'Dispute Internazionali', description: 'Gestione di casi legali cross-border con partnership INTERPOL e Pharos' },
-              { icon: <Users />, title: 'Analisi Prove', description: 'Valutazione dettagliata di prove, transazioni e costruzione del caso legale' }
+              { icon: <TrendingUp />, titleKey: 'cryptoScams', descKey: 'cryptoScamsDesc' },
+              { icon: <Globe />, titleKey: 'forexFraud', descKey: 'forexFraudDesc' },
+              { icon: <Shield />, titleKey: 'illegalBrokers', descKey: 'illegalBrokersDesc' },
+              { icon: <FileText />, titleKey: 'fakePlatforms', descKey: 'fakePlatformsDesc' },
+              { icon: <Scale />, titleKey: 'scamProtection', descKey: 'scamProtectionDesc' },
+              { icon: <CheckCircle />, titleKey: 'bankDisputes', descKey: 'bankDisputesDesc' },
+              { icon: <Globe />, titleKey: 'internationalDisputes', descKey: 'internationalDisputesDesc' },
+              { icon: <Users />, titleKey: 'evidenceAnalysis', descKey: 'evidenceAnalysisDesc' }
             ].map((service, index) => (
               <div key={index} className="bg-white border-2 border-gray-200 p-6 hover:border-[#D4AF37] transition-all group shadow-md">
                 <div className="w-12 h-12 bg-[#D4AF37] text-black flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   {service.icon}
                 </div>
-                <h3 className="text-xl font-bold text-black mb-3">{service.title}</h3>
-                <p className="text-gray-700">{service.description}</p>
+                <h3 className="text-xl font-bold text-black mb-3">{t(`home.${service.titleKey}`)}</h3>
+                <p className="text-gray-700">{t(`home.${service.descKey}`)}</p>
               </div>
             ))}
           </div>
 
           <div className="text-center mt-12">
             <Button onClick={() => handleCTAClick('services')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-8 py-7 font-semibold">
-              Ottieni Consulenza Gratuita <ArrowRight className="ml-2" />
+              {t('home.getConsultation')} <ArrowRight className="ml-2" />
             </Button>
           </div>
         </div>
@@ -687,48 +687,48 @@ const Home = () => {
           <div>
             <img
               src="https://images.unsplash.com/photo-1758518731462-d091b0b4ed0d"
-              alt="Team legale professionale"
+              alt="Professional legal team"
               className="w-full h-[500px] object-cover shadow-xl"
             />
           </div>
           <div>
-            <h2 className="text-5xl font-bold text-black mb-6">Chi Siamo</h2>
+            <h2 className="text-5xl font-bold text-black mb-6">{t('home.aboutTitle')}</h2>
             <p className="text-xl text-gray-700 mb-6 leading-relaxed">
-              <strong>1 LAW SOLICITORS LIMITED</strong> è uno studio legale riconosciuto e regolamentato dalla Solicitors Regulation Authority (SRA ID: 8003758), specializzato in dispute legali per truffe finanziarie online e casi transfrontalieri.
+              {t('home.aboutDesc1')}
             </p>
             <p className="text-xl text-gray-700 mb-6 leading-relaxed">
-              Il nostro team di avvocati esperti ha gestito con successo centinaia di casi di frodi crypto, forex, broker illegali e piattaforme di investimento false. Lavoriamo con partnership internazionali tra cui <strong>INTERPOL</strong> e <strong>Pharos (Ministero Francese)</strong> per garantire risultati ottimali.
+              {t('home.aboutDesc2')}
             </p>
             <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-              Attraverso metodi online e in persona, garantiamo il recupero dei fondi per i nostri clienti utilizzando strategie legali avanzate, analisi delle prove e negoziazioni con le entità coinvolte.
+              {t('home.aboutDesc3')}
             </p>
             
             <div className="space-y-4 mb-8">
               <div className="flex items-start gap-3">
                 <Shield className="w-6 h-6 text-[#D4AF37] mt-1" />
                 <div>
-                  <h4 className="text-black font-semibold mb-1">Regolamentazione SRA</h4>
+                  <h4 className="text-black font-semibold mb-1">{t('home.sraRegulation')}</h4>
                   <p className="text-gray-700">Recognised Body Law Practice - SRA ID: 8003758</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <MapPin className="w-6 h-6 text-[#D4AF37] mt-1" />
                 <div>
-                  <h4 className="text-black font-semibold mb-1">Sede Legale</h4>
+                  <h4 className="text-black font-semibold mb-1">{t('home.legalAddress')}</h4>
                   <p className="text-gray-700">12 Caroline Street, Birmingham, England B3 1TR</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <Globe className="w-6 h-6 text-[#D4AF37] mt-1" />
                 <div>
-                  <h4 className="text-black font-semibold mb-1">Partnership Internazionali</h4>
-                  <p className="text-gray-700">Collaborazione con INTERPOL e Pharos per casi transfrontalieri</p>
+                  <h4 className="text-black font-semibold mb-1">{t('home.internationalPartnerships')}</h4>
+                  <p className="text-gray-700">{t('home.partnershipsDesc')}</p>
                 </div>
               </div>
             </div>
 
             <Button onClick={() => handleCTAClick('about')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-8 py-7 font-semibold">
-              Parla con il Team Legale
+              {t('home.talkToTeam')}
             </Button>
           </div>
         </div>
@@ -738,9 +738,9 @@ const Home = () => {
       <section id="how-it-works" className="bg-white py-20 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-black mb-6">Come Funziona il Processo</h2>
+            <h2 className="text-5xl font-bold text-black mb-6">{t('home.processTitle')}</h2>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Un processo in 6 fasi per recuperare i tuoi fondi attraverso azione legale strutturata
+              {t('home.processSubtitle')}
             </p>
           </div>
 
