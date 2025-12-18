@@ -324,7 +324,12 @@
     "errorDeleting": "Error deleting role",
     "createSuccess": "Role created successfully",
     "updateSuccess": "Role updated successfully",
-    "deleteSuccess": "Role deleted successfully"
+    "deleteSuccess": "Role deleted successfully",
+    "descriptions": {
+      "role_desc_admin": "Full system access - can manage everything",
+      "role_desc_supervisor": "Team management and team-level access",
+      "role_desc_agent": "Individual contributor - own records only"
+    }
   },
   "users": {
     "title": "Users Management",

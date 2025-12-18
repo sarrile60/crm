@@ -217,7 +217,12 @@
     "errorDeleting": "Erreur lors de la suppression du rôle",
     "createSuccess": "Rôle créé avec succès",
     "updateSuccess": "Rôle mis à jour avec succès",
-    "deleteSuccess": "Rôle supprimé avec succès"
+    "deleteSuccess": "Rôle supprimé avec succès",
+    "descriptions": {
+      "role_desc_admin": "Accès complet au système - peut tout gérer",
+      "role_desc_supervisor": "Gestion d'équipe et accès au niveau de l'équipe",
+      "role_desc_agent": "Contributeur individuel - uniquement ses propres enregistrements"
+    }
   },
   "users": {
     "title": "Gestion des utilisateurs",

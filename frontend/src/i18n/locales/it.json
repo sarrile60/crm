@@ -197,7 +197,12 @@
     "errorDeleting": "Errore nell'eliminazione del ruolo",
     "createSuccess": "Ruolo creato con successo",
     "updateSuccess": "Ruolo aggiornato con successo",
-    "deleteSuccess": "Ruolo eliminato con successo"
+    "deleteSuccess": "Ruolo eliminato con successo",
+    "descriptions": {
+      "role_desc_admin": "Accesso completo al sistema - può gestire tutto",
+      "role_desc_supervisor": "Gestione team e accesso a livello di team",
+      "role_desc_agent": "Collaboratore individuale - solo i propri record"
+    }
   },
   "users": {
     "title": "Gestione Utenti",

@@ -217,7 +217,12 @@
     "errorDeleting": "Fehler beim Löschen der Rolle",
     "createSuccess": "Rolle erfolgreich erstellt",
     "updateSuccess": "Rolle erfolgreich aktualisiert",
-    "deleteSuccess": "Rolle erfolgreich gelöscht"
+    "deleteSuccess": "Rolle erfolgreich gelöscht",
+    "descriptions": {
+      "role_desc_admin": "Vollständiger Systemzugriff - kann alles verwalten",
+      "role_desc_supervisor": "Teamverwaltung und Zugriff auf Teamebene",
+      "role_desc_agent": "Einzelner Mitarbeiter - nur eigene Datensätze"
+    }
   },
   "users": {
     "title": "Benutzerverwaltung",
