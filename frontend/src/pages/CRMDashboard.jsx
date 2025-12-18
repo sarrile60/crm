@@ -57,6 +57,9 @@ const CRMDashboard = () => {
         localStorage.removeItem('crmToken');
         localStorage.removeItem('crmUser');
         navigate('/crm/login');
+      } else {
+        // Update session info for display
+        setSessionInfo(response.data.session_info);
       }
     } catch (error) {
       // If session check fails with 401, logout
