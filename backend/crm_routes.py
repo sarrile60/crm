@@ -193,6 +193,39 @@ async def logout(current_user: dict = Depends(get_current_user)):
     return {"success": True, "message": "Logout successful"}
 
 
+@crm_router.get("/auth/session-check")
+async def check_session(current_user: dict = Depends(get_current_user)):
+    """
+    Check if the current session is still valid.
+    Sessions expire at 6:30 PM Berlin time (Monday-Friday).
+    Frontend should call this periodically and logout if expired.
+    """
+    session_info = get_session_info()
+    
+    # Check if we're within work hours
+    if not session_info["is_work_hours"]:
+        # Log automatic session expiry
+        await log_auth_event(
+            action=AuditAction.LOGOUT,
+            username=current_user["username"],
+            user_id=current_user["id"],
+            success=True,
+            details={"reason": "Session expired at 6:30 PM Berlin time", "auto_logout": True}
+        )
+        
+        return {
+            "valid": False,
+            "reason": "Sessione scaduta alle 18:30 (ora di Berlino)",
+            "session_info": session_info
+        }
+    
+    return {
+        "valid": True,
+        "session_info": session_info,
+        "message": f"Sessione valida. Scade tra {session_info['minutes_remaining']} minuti."
+    }
+
+
 # ==================== USER MANAGEMENT ROUTES ====================
 
 @crm_router.post("/users", dependencies=[Depends(require_role(["admin"]))])
