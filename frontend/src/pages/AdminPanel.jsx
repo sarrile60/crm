@@ -104,8 +104,8 @@ const AdminPanel = () => {
               {t('admin.backToCRM')}
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">Administration Panel</h1>
-              <p className="text-sm text-gray-400">Manage roles, permissions, and system configuration</p>
+              <h1 className="text-2xl font-bold">{t('admin.title')}</h1>
+              <p className="text-sm text-gray-400">{t('admin.subtitle')}</p>
             </div>
           </div>
           <Users className="w-8 h-8 text-[#D4AF37]" />
