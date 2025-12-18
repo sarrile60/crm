@@ -282,3 +282,22 @@ Verify that User Management page shows translated role names in all languages.
 2. **Some UI component library strings** (sr-only text) - These are accessibility labels in shadcn/ui components.
 3. **Organization names in Home.jsx** - These are proper nouns (FCA, BaFin, SRA, INTERPOL, etc.) and should remain in their original form.
 
+
+## Settings Page Translation Fix - December 18, 2025
+
+### Issue Found
+The `settings` section in DE, FR, ES language files was still in English (only IT was properly translated).
+
+### Fix Applied
+Added complete translations for the `settings` section in:
+- **German (de.json)**: "CRM-Einstellungen", "Benutzerdefinierte Status", "Neuer Status", etc.
+- **French (fr.json)**: "Paramètres CRM", "Statuts personnalisés", "Nouveau statut", etc.  
+- **Spanish (es.json)**: "Configuración CRM", "Estados personalizados", "Nuevo estado", etc.
+
+### Verification
+✅ Screenshot shows German Settings page with:
+- "CRM-Einstellungen" title
+- "Benutzerdefinierte Status" section
+- "+ Neuer Status" button
+- All UI elements properly translated
+
