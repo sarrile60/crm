@@ -150,14 +150,14 @@ const Home = () => {
           </div>
           
           <nav className="hidden md:flex items-center gap-8">
-            <button onClick={() => scrollToSection('home')} className="text-gray-600 hover:text-black transition-colors text-lg">Home</button>
-            <button onClick={() => scrollToSection('about')} className="text-gray-600 hover:text-black transition-colors text-lg">Chi Siamo</button>
-            <button onClick={() => scrollToSection('services')} className="text-gray-600 hover:text-black transition-colors text-lg">Servizi</button>
-            <button onClick={() => scrollToSection('how-it-works')} className="text-gray-600 hover:text-black transition-colors text-lg">Come Funziona</button>
-            <button onClick={() => scrollToSection('success-stories')} className="text-gray-600 hover:text-black transition-colors text-lg">Casi di Successo</button>
-            <button onClick={() => scrollToSection('faq')} className="text-gray-600 hover:text-black transition-colors text-lg">FAQ</button>
+            <button onClick={() => scrollToSection('home')} className="text-gray-600 hover:text-black transition-colors text-lg">{t('nav.home')}</button>
+            <button onClick={() => scrollToSection('about')} className="text-gray-600 hover:text-black transition-colors text-lg">{t('nav.about')}</button>
+            <button onClick={() => scrollToSection('services')} className="text-gray-600 hover:text-black transition-colors text-lg">{t('nav.services')}</button>
+            <button onClick={() => scrollToSection('how-it-works')} className="text-gray-600 hover:text-black transition-colors text-lg">{t('nav.howItWorks')}</button>
+            <button onClick={() => scrollToSection('success-stories')} className="text-gray-600 hover:text-black transition-colors text-lg">{t('nav.successCases')}</button>
+            <button onClick={() => scrollToSection('faq')} className="text-gray-600 hover:text-black transition-colors text-lg">{t('nav.faq')}</button>
             <Button onClick={() => handleCTAClick('header')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-6 py-6 font-semibold">
-              Consulenza Gratuita
+              {t('nav.freeConsultation')}
             </Button>
           </nav>
 
