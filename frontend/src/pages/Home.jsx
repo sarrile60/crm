@@ -989,11 +989,11 @@ const Home = () => {
             </div>
 
             <div>
-              <h4 className="text-white font-semibold mb-4 text-lg">Informazioni Legali</h4>
+              <h4 className="text-white font-semibold mb-4 text-lg">{t('home.legalInfo')}</h4>
               <p className="text-gray-300 text-sm mb-2">
-                Tipo: Private Limited Company<br />
-                Costituita: 9 Settembre 2021<br />
-                SIC Code: 69102 – Solicitors
+                {t('footer.companyType')}<br />
+                {t('footer.established')}<br />
+                {t('footer.sicCode')}
               </p>
             </div>
           </div>
