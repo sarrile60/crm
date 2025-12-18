@@ -433,7 +433,7 @@ const SessionSettings = () => {
             
             {/* Current timezone info */}
             <div className="mt-3 p-2 bg-gray-50 border border-gray-200 rounded-none text-xs text-gray-600">
-              <span className="font-semibold">Fuso attuale:</span> {settings.timezone}
+              <span className="font-semibold">{t('session.currentTimezone')}:</span> {settings.timezone}
               <span className="ml-2 font-mono text-[#D4AF37]">{settings.timezone_offset || localTime?.offset}</span>
             </div>
           </div>
