@@ -34,6 +34,7 @@ def init_admin_db(database):
     """Initialize database connection"""
     global db
     db = database
+    init_session_settings_db(database)
 
 logger = logging.getLogger(__name__)
 
