@@ -378,7 +378,7 @@ const Home = () => {
             <div className="mt-6 pt-6 border-t border-gray-300 space-y-2">
               <div className="flex items-center gap-2 text-gray-700 text-sm">
                 <Shield className="w-4 h-4 text-[#D4AF37]" />
-                <span>SRA Regolamentato – ID 8003758</span>
+                <span>{t('home.sraRegulation')} – ID 8003758</span>
               </div>
               <div className="flex items-center gap-2 text-gray-700 text-sm">
                 <CheckCircle className="w-4 h-4 text-[#D4AF37]" />
