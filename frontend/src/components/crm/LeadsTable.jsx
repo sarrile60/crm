@@ -1130,8 +1130,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               {(editData.status === 'Callback' || editData.status === 'Potential Callback' || editData.status === 'Pharos in progress') && (
                 <>
                   <div className="bg-yellow-50 border-2 border-yellow-400 p-4 mb-4">
-                    <p className="text-sm font-semibold text-black mb-2">⚠️ Callback richiesto</p>
-                    <p className="text-xs text-gray-700">Devi impostare data e ora per il callback. Riceverai una notifica 1 minuto prima.</p>
+                    <p className="text-sm font-semibold text-black mb-2">⚠️ {t('crm.callbackRequired')}</p>
+                    <p className="text-xs text-gray-700">{t('crm.setDateTimeNotificationRequired')}</p>
                   </div>
                   <div>
                     <SmartDateTimePicker
@@ -1142,11 +1142,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-black mb-2">Note Callback (Opzionale)</label>
+                    <label className="block text-sm font-semibold text-black mb-2">{t('crm.callbackNotesOptional')}</label>
                     <Textarea
                       value={editData.callback_notes}
                       onChange={(e) => setEditData({ ...editData, callback_notes: e.target.value })}
-                      placeholder="Aggiungi note sul callback..."
+                      placeholder={t('crm.addCallbackNotes')}
                       className="bg-white border-gray-300 rounded-none"
                       rows={3}
                     />
@@ -1156,8 +1156,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               {(editData.status?.startsWith('Deposit')) && (
                 <>
                   <div className="bg-blue-50 border-2 border-blue-400 p-4 mb-4">
-                    <p className="text-sm font-semibold text-black mb-2">💰 Deposit - Impostare Data</p>
-                    <p className="text-xs text-gray-700">Imposta la data per questo deposito. Riceverai una notifica 1 minuto prima.</p>
+                    <p className="text-sm font-semibold text-black mb-2">💰 {t('crm.depositSetDate')}</p>
+                    <p className="text-xs text-gray-700">{t('crm.setDateForDeposit')}</p>
                   </div>
                   <div>
                     <SmartDateTimePicker
@@ -1168,11 +1168,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-black mb-2">Note Deposit (Opzionale)</label>
+                    <label className="block text-sm font-semibold text-black mb-2">{t('crm.depositNotesOptional')}</label>
                     <Textarea
                       value={editData.callback_notes}
                       onChange={(e) => setEditData({ ...editData, callback_notes: e.target.value })}
-                      placeholder="Aggiungi note sul deposito..."
+                      placeholder={t('crm.addDepositNotes')}
                       className="bg-white border-gray-300 rounded-none"
                       rows={3}
                     />
