@@ -287,12 +287,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
     link.click();
     document.body.removeChild(link);
     
-    toast.success('Lead esportati con successo');
+    toast.success(t('crm.leadsExportedSuccess'));
   };
 
   const handleImportCSV = async () => {
     if (!csvFile) {
-      toast.error('Seleziona un file CSV');
+      toast.error(t('crm.selectCSVFile'));
       return;
     }
 
@@ -326,12 +326,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
           }
         }
         
-        toast.success(`${imported} lead importati con successo`);
+        toast.success(t('crm.leadsImportedSuccess', { count: imported }));
         setShowImportModal(false);
         setCsvFile(null);
         fetchData();
       } catch (error) {
-        toast.error('Errore nell\'importazione del CSV');
+        toast.error(t('crm.errorImportingCSV'));
       }
     };
     
@@ -370,10 +370,10 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         const token = localStorage.getItem('crmToken');
         const headers = { Authorization: `Bearer ${token}` };
         await axios.put(`${API}/crm/leads/${leadId}`, { status: newStatus }, { headers });
-        toast.success('Stato aggiornato');
+        toast.success(t('crm.statusUpdated'));
         fetchData();
       } catch (error) {
-        toast.error('Errore aggiornamento stato');
+        toast.error(t('crm.errorUpdatingStatus'));
       }
     }
   };
