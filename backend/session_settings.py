@@ -216,12 +216,13 @@ async def is_within_work_hours(settings: Optional[dict] = None) -> tuple:
 async def get_session_expiry_from_settings() -> datetime:
     """Calculate session expiry based on database settings"""
     settings = await get_session_settings()
-    berlin_now = datetime.now(BERLIN_TZ)
+    tz_name = settings.get("timezone", "Europe/Berlin")
+    current_time = get_current_time_in_timezone(tz_name)
     
     end_hour = settings.get("session_end_hour", 18)
     end_minute = settings.get("session_end_minute", 30)
     
-    today_end = berlin_now.replace(
+    today_end = current_time.replace(
         hour=end_hour,
         minute=end_minute,
         second=0,
@@ -235,6 +236,6 @@ async def get_session_expiry_from_settings() -> datetime:
     else:
         # Session expires in 1 minute (grace period)
         from datetime import timedelta
-        expiry = berlin_now + timedelta(minutes=1)
+        expiry = current_time + timedelta(minutes=1)
     
     return expiry.astimezone(ZoneInfo("UTC"))
