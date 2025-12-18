@@ -183,11 +183,13 @@ async def is_within_work_hours(settings: Optional[dict] = None) -> tuple:
     if settings is None:
         settings = await get_session_settings()
     
-    berlin_now = datetime.now(BERLIN_TZ)
+    # Get current time in configured timezone
+    tz_name = settings.get("timezone", "Europe/Berlin")
+    current_datetime = get_current_time_in_timezone(tz_name)
     
     # Check if it's a work day
-    if berlin_now.weekday() not in settings.get("work_days", [0, 1, 2, 3, 4]):
-        day_name = berlin_now.strftime("%A")
+    if current_datetime.weekday() not in settings.get("work_days", [0, 1, 2, 3, 4]):
+        day_name = current_datetime.strftime("%A")
         return False, f"Non è un giorno lavorativo ({day_name})"
     
     # Check if within work hours
@@ -200,7 +202,7 @@ async def is_within_work_hours(settings: Optional[dict] = None) -> tuple:
         settings.get("session_end_minute", 30)
     )
     
-    current_time = berlin_now.time()
+    current_time = current_datetime.time()
     
     if current_time < start_time:
         return False, f"Prima dell'orario di lavoro (inizio: {start_time.strftime('%H:%M')})"
