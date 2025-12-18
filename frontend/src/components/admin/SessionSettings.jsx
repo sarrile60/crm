@@ -12,7 +12,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api/admin`;
 
 const SessionSettings = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   const DAY_NAMES = {
     0: t('session.monday'),
@@ -96,13 +96,19 @@ const SessionSettings = () => {
           // Calculate current time in the selected timezone
           try {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString('it-IT', { 
+            // Use current i18n language for locale formatting
+            const locale = i18n.language === 'en' ? 'en-GB' : 
+                          i18n.language === 'it' ? 'it-IT' :
+                          i18n.language === 'de' ? 'de-DE' :
+                          i18n.language === 'fr' ? 'fr-FR' :
+                          i18n.language === 'es' ? 'es-ES' : 'en-GB';
+            const timeStr = now.toLocaleTimeString(locale, { 
               timeZone: displayTimezone,
               hour: '2-digit',
               minute: '2-digit',
               second: '2-digit'
             });
-            const dateStr = now.toLocaleDateString('it-IT', {
+            const dateStr = now.toLocaleDateString(locale, {
               timeZone: displayTimezone,
               weekday: 'long',
               year: 'numeric',
