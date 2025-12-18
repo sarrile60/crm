@@ -403,7 +403,10 @@
     "accessApprovedFor": "Access approved for {{username}}",
     "accessDeniedFor": "Access denied for {{username}}",
     "errorApproving": "Error approving",
-    "errorDenying": "Error denying"
+    "errorDenying": "Error denying",
+    "notWorkDay": "Pas un jour de travail ({{day}})",
+    "beforeWorkHours": "Avant les heures de travail (début: {{time}})",
+    "afterWorkHours": "Après les heures de travail (fin: {{time}})"
   },
   "audit": {
     "title": "Journal d'audit",

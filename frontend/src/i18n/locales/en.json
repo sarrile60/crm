@@ -510,7 +510,10 @@
     "accessApprovedFor": "Access approved for {{username}}",
     "accessDeniedFor": "Access denied for {{username}}",
     "errorApproving": "Error approving",
-    "errorDenying": "Error denying"
+    "errorDenying": "Error denying",
+    "notWorkDay": "Not a work day ({{day}})",
+    "beforeWorkHours": "Before work hours (start: {{time}})",
+    "afterWorkHours": "After work hours (end: {{time}})"
   },
   "audit": {
     "title": "Audit Log",

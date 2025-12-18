@@ -403,7 +403,10 @@
     "accessApprovedFor": "Access approved for {{username}}",
     "accessDeniedFor": "Access denied for {{username}}",
     "errorApproving": "Error approving",
-    "errorDenying": "Error denying"
+    "errorDenying": "Error denying",
+    "notWorkDay": "Kein Arbeitstag ({{day}})",
+    "beforeWorkHours": "Vor der Arbeitszeit (Beginn: {{time}})",
+    "afterWorkHours": "Nach der Arbeitszeit (Ende: {{time}})"
   },
   "audit": {
     "title": "Audit-Protokoll",

@@ -380,7 +380,10 @@
     "accessApprovedFor": "Accesso approvato per {{username}}",
     "accessDeniedFor": "Accesso negato per {{username}}",
     "errorApproving": "Errore nell'approvazione",
-    "errorDenying": "Errore nel rifiuto"
+    "errorDenying": "Errore nel rifiuto",
+    "notWorkDay": "Non è un giorno lavorativo ({{day}})",
+    "beforeWorkHours": "Prima dell'orario di lavoro (inizio: {{time}})",
+    "afterWorkHours": "Dopo l'orario di lavoro (fine: {{time}})"
   },
   "audit": {
     "title": "Log di Audit",
