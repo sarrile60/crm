@@ -429,7 +429,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
               Notifiche ({totalNotifications})
             </DialogTitle>
             <p className="text-sm text-gray-500 mt-2">
-              💡 Mostra solo callback scaduti. Scompaiono quando cambi lo stato o riprogrammi l'ora
+              💡 {t('crm.showOnlyExpiredCallbacks')}
             </p>
           </DialogHeader>
           <div className="space-y-6 max-h-[600px] overflow-y-auto">

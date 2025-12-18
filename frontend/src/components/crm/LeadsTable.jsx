@@ -704,7 +704,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                         <a 
                           href={formatPhoneForCall(lead.phone_real || lead.phone)} 
                           className="text-blue-600 hover:text-blue-800 font-mono underline"
-                          title="Click to call"
+                          title={t('crm.clickToCall')}
                         >
                           {lead.phone_display}
                         </a>
@@ -854,7 +854,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                         <a 
                           href={formatPhoneForCall(selectedLead.phone_real || selectedLead.phone)} 
                           className="text-blue-600 hover:text-blue-800 underline font-semibold block"
-                          title="Click to call"
+                          title={t('crm.clickToCall')}
                         >
                           {selectedLead.phone_display}
                         </a>

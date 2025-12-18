@@ -190,7 +190,7 @@ const AdminDashboard = () => {
         <div className="bg-[#121212] border border-white/25">
           <div className="p-6 border-b border-white/25">
             <h3 className="text-white text-2xl font-semibold">Lead Ricevuti</h3>
-            <p className="text-white/85">Elenco completo di tutte le richieste di consulenza</p>
+            <p className="text-white/85">{t('dashboard.completeListConsultations')}</p>
           </div>
           
           <div className="overflow-x-auto">
