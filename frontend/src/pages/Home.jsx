@@ -968,14 +968,14 @@ const Home = () => {
                 <span className="text-white text-xl font-semibold">1 LAW SOLICITORS</span>
               </div>
               <p className="text-gray-300 mb-4">
-                Recognised Body Law Practice<br />
-                SRA Regolamentato<br />
+                {t('footer.recognisedBody')}<br />
+                {t('home.sraRegulation')}<br />
                 SRA ID: 8003758
               </p>
             </div>
             
             <div>
-              <h4 className="text-white font-semibold mb-4 text-lg">Contatti</h4>
+              <h4 className="text-white font-semibold mb-4 text-lg">{t('home.contacts')}</h4>
               <div className="space-y-3">
                 <div className="flex items-start gap-2 text-gray-300">
                   <MapPin className="w-5 h-5 text-[#D4AF37] mt-1" />
