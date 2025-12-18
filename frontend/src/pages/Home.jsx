@@ -84,8 +84,8 @@ const Home = () => {
     
     if (!formData.fullName || !formData.email || !formData.phone) {
       toast({
-        title: "Campi mancanti",
-        description: "Per favore compila tutti i campi richiesti.",
+        title: t('common.missingFields'),
+        description: t('common.fillAllFields'),
         variant: "destructive"
       });
       return;
