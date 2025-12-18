@@ -131,14 +131,64 @@ async def login(credentials: UserLogin):
         )
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
+    # Check if non-admin user is trying to login after work hours
+    user_role = user.get("role", "").lower()
+    if user_role != "admin":
+        settings = await get_session_settings()
+        is_work_hours, reason = await is_within_work_hours(settings)
+        
+        if not is_work_hours and settings.get("require_approval_after_hours", True):
+            # Check if user has an approved login request
+            approved_request = await db.login_requests.find_one({
+                "user_id": user["id"],
+                "status": "approved",
+                "expires_at": {"$gt": datetime.now(timezone.utc)}
+            })
+            
+            if not approved_request:
+                # Create a pending login request
+                from uuid import uuid4
+                request_id = str(uuid4())
+                await db.login_requests.insert_one({
+                    "id": request_id,
+                    "user_id": user["id"],
+                    "username": user["username"],
+                    "full_name": user["full_name"],
+                    "role": user["role"],
+                    "status": "pending",
+                    "reason": reason,
+                    "requested_at": datetime.now(timezone.utc),
+                    "expires_at": None
+                })
+                
+                # Log the attempt
+                await log_auth_event(
+                    action=AuditAction.LOGIN_FAILED,
+                    username=credentials.username,
+                    user_id=user["id"],
+                    success=False,
+                    details={"reason": "After hours - pending admin approval", "request_id": request_id}
+                )
+                
+                raise HTTPException(
+                    status_code=403, 
+                    detail=f"Accesso fuori orario di lavoro. {reason}. Richiesta inviata all'amministratore per approvazione."
+                )
+    
     # Update last login
     await db.crm_users.update_one(
         {"id": user["id"]},
         {"$set": {"last_login": datetime.now(timezone.utc)}}
     )
     
-    # Calculate session expiry (6:30 PM Berlin time on weekdays)
-    session_expiry = get_session_expiry()
+    # Clear any used login request
+    await db.login_requests.delete_many({
+        "user_id": user["id"],
+        "status": "approved"
+    })
+    
+    # Calculate session expiry from settings
+    session_expiry = await get_session_expiry_from_settings()
     
     # Log successful login
     await log_auth_event(
