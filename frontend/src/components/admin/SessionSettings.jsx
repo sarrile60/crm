@@ -298,7 +298,7 @@ const SessionSettings = () => {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Fine Sessione (Auto-Logout)
+                {t('session.sessionEnd')}
               </label>
               <div className="flex gap-2 items-center">
                 <Input
