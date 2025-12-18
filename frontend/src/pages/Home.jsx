@@ -746,24 +746,24 @@ const Home = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { step: '01', title: 'Invia il Tuo Caso', description: 'Compila il form con i dettagli della truffa, importo perso e prove disponibili' },
-              { step: '02', title: 'Revisione Legale', description: 'Un avvocato esamina le tue prove, transazioni e identifica opzioni legali disponibili' },
-              { step: '03', title: 'Strategia Legale', description: 'Sviluppiamo una strategia su misura basata sulle circostanze del tuo caso' },
-              { step: '04', title: 'Azione Formale', description: 'Inviamo notifiche legali formali e avviamo procedure appropriate' },
-              { step: '05', title: 'Negoziazione', description: 'Negoziamo con le entità coinvolte utilizzando partnership internazionali quando necessario' },
-              { step: '06', title: 'Risultato Finale', description: 'Recupero fondi o risultato legale a seconda del caso e delle prove disponibili' }
+              { step: '01', titleKey: 'step1Title', descKey: 'step1Desc' },
+              { step: '02', titleKey: 'step2Title', descKey: 'step2Desc' },
+              { step: '03', titleKey: 'step3Title', descKey: 'step3Desc' },
+              { step: '04', titleKey: 'step4Title', descKey: 'step4Desc' },
+              { step: '05', titleKey: 'step5Title', descKey: 'step5Desc' },
+              { step: '06', titleKey: 'step6Title', descKey: 'step6Desc' }
             ].map((item, index) => (
               <div key={index} className="bg-white border-2 border-gray-200 p-6 relative hover:border-[#D4AF37] transition-all shadow-md">
                 <div className="text-6xl font-bold text-[#D4AF37]/20 absolute top-4 right-4">{item.step}</div>
-                <h3 className="text-2xl font-bold text-black mb-4 relative z-10">{item.title}</h3>
-                <p className="text-gray-700 relative z-10">{item.description}</p>
+                <h3 className="text-2xl font-bold text-black mb-4 relative z-10">{t(`home.${item.titleKey}`)}</h3>
+                <p className="text-gray-700 relative z-10">{t(`home.${item.descKey}`)}</p>
               </div>
             ))}
           </div>
 
           <div className="text-center mt-12">
             <Button onClick={() => handleCTAClick('how-it-works')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-8 py-7 font-semibold">
-              Inizia la Tua Revisione Gratuita <ArrowRight className="ml-2" />
+              {t('home.startReview')} <ArrowRight className="ml-2" />
             </Button>
           </div>
         </div>
