@@ -191,7 +191,7 @@ const AdminDashboard = () => {
         {/* Leads Table */}
         <div className="bg-[#121212] border border-white/25">
           <div className="p-6 border-b border-white/25">
-            <h3 className="text-white text-2xl font-semibold">Lead Ricevuti</h3>
+            <h3 className="text-white text-2xl font-semibold">{t('dashboard.receivedLeads')}</h3>
             <p className="text-white/85">{t('dashboard.completeListConsultations')}</p>
           </div>
           
@@ -199,19 +199,19 @@ const AdminDashboard = () => {
             <table className="w-full">
               <thead className="bg-black">
                 <tr>
-                  <th className="text-left text-white/85 p-4 font-semibold">Data</th>
-                  <th className="text-left text-white/85 p-4 font-semibold">Nome</th>
-                  <th className="text-left text-white/85 p-4 font-semibold">Email</th>
-                  <th className="text-left text-white/85 p-4 font-semibold">Telefono</th>
-                  <th className="text-left text-white/85 p-4 font-semibold">Azienda Truffatrice</th>
-                  <th className="text-left text-white/85 p-4 font-semibold">Importo</th>
+                  <th className="text-left text-white/85 p-4 font-semibold">{t('common.date')}</th>
+                  <th className="text-left text-white/85 p-4 font-semibold">{t('common.name')}</th>
+                  <th className="text-left text-white/85 p-4 font-semibold">{t('common.email')}</th>
+                  <th className="text-left text-white/85 p-4 font-semibold">{t('common.phone')}</th>
+                  <th className="text-left text-white/85 p-4 font-semibold">{t('crm.scammerCompany')}</th>
+                  <th className="text-left text-white/85 p-4 font-semibold">{t('common.amount')}</th>
                 </tr>
               </thead>
               <tbody>
                 {leads.length === 0 ? (
                   <tr>
                     <td colSpan="6" className="text-center text-white/85 p-8">
-                      Nessun lead ricevuto ancora
+                      {t('dashboard.noLeadsReceived')}
                     </td>
                   </tr>
                 ) : (
