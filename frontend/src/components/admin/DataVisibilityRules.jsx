@@ -3,26 +3,28 @@ import { Save, RefreshCw, Eye, EyeOff, Shield, Building2, Phone, Mail, MapPin } 
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api/admin`;
 
-// Visibility options with icons and labels
-const VISIBILITY_OPTIONS = [
-  { value: 'full', label: 'Visibile', icon: Eye, color: 'text-green-600 bg-green-50' },
-  { value: 'masked', label: 'Mascherato', icon: EyeOff, color: 'text-yellow-600 bg-yellow-50' },
-  { value: 'hidden', label: 'Nascosto', icon: EyeOff, color: 'text-red-600 bg-red-50' }
-];
-
-// Field definitions with icons
-const FIELDS = [
-  { key: 'phone', label: 'Telefono', icon: Phone, example: { full: '+39 335 123 4567', masked: '*** *** *567', hidden: '—' } },
-  { key: 'email', label: 'Email', icon: Mail, example: { full: 'mario@example.com', masked: 'ma***@example.com', hidden: '—' } },
-  { key: 'address', label: 'Indirizzo', icon: MapPin, example: { full: 'Via Roma 123, Milano', masked: '*****, Milano', hidden: '—' } }
-];
-
 const DataVisibilityRules = () => {
+  const { t } = useTranslation();
+
+  // Visibility options with icons and labels
+  const VISIBILITY_OPTIONS = [
+    { value: 'full', label: t('visibility.visible'), icon: Eye, color: 'text-green-600 bg-green-50' },
+    { value: 'masked', label: t('visibility.masked'), icon: EyeOff, color: 'text-yellow-600 bg-yellow-50' },
+    { value: 'hidden', label: t('visibility.hidden'), icon: EyeOff, color: 'text-red-600 bg-red-50' }
+  ];
+
+  // Field definitions with icons
+  const FIELDS = [
+    { key: 'phone', label: t('common.phone'), icon: Phone, example: { full: '+39 335 123 4567', masked: '*** *** *567', hidden: '—' } },
+    { key: 'email', label: t('common.email'), icon: Mail, example: { full: 'mario@example.com', masked: 'ma***@example.com', hidden: '—' } },
+    { key: 'address', label: t('common.address'), icon: MapPin, example: { full: 'Via Roma 123, Milano', masked: '*****, Milano', hidden: '—' } }
+  ];
   const [matrix, setMatrix] = useState([]);
   const [originalMatrix, setOriginalMatrix] = useState([]);
   const [loading, setLoading] = useState(false);
