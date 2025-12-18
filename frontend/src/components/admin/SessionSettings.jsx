@@ -187,9 +187,9 @@ const SessionSettings = () => {
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Impostazioni Sessione</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('session.title')}</h2>
           <p className="text-gray-500 mt-1">
-            Configura gli orari di lavoro e le regole di accesso al sistema.
+            {t('session.subtitle')}
           </p>
         </div>
         <div className="flex gap-2">
@@ -207,7 +207,7 @@ const SessionSettings = () => {
             className="bg-[#D4AF37] hover:bg-[#B8941F] text-black rounded-none"
           >
             <Save className="w-4 h-4 mr-2" />
-            {saving ? 'Salvataggio...' : 'Salva'}
+            {saving ? t('common.loading') : t('common.save')}
           </Button>
         </div>
       </div>
@@ -217,7 +217,7 @@ const SessionSettings = () => {
         <div className="bg-red-50 border-2 border-red-300 p-4">
           <div className="flex items-center gap-2 mb-3">
             <Bell className="w-5 h-5 text-red-600" />
-            <h3 className="font-bold text-red-800">Richieste di Accesso in Attesa ({loginRequests.length})</h3>
+            <h3 className="font-bold text-red-800">{t('session.pendingRequests')} ({loginRequests.length})</h3>
           </div>
           <div className="space-y-2">
             {loginRequests.map(req => (
@@ -227,7 +227,7 @@ const SessionSettings = () => {
                   <div>
                     <div className="font-semibold">{req.full_name} ({req.username})</div>
                     <div className="text-sm text-gray-500">
-                      Ruolo: {req.role} • {req.reason}
+                      {t('users.role')}: {req.role} • {req.reason}
                     </div>
                     <div className="text-xs text-gray-400">
                       Richiesto: {new Date(req.requested_at).toLocaleString('it-IT')}
