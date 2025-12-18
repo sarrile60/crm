@@ -283,7 +283,13 @@
     "errorLoadingUsers": "Errore nel caricamento degli utenti",
     "confirmDeleteMessage": "Sei sicuro di voler eliminare l'utente {{name}} ({{username}})?",
     "newPasswordOptional": "Nuova Password (opzionale)",
-    "leaveBlankNoChange": "Lascia vuoto per non modificare"
+    "leaveBlankNoChange": "Lascia vuoto per non modificare",
+    "roles": {
+      "admin": "Amministratore",
+      "supervisor": "Supervisore",
+      "manager": "Manager",
+      "agent": "Agente"
+    }
   },
   "teams": {
     "title": "Gestione Team",

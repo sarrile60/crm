@@ -303,7 +303,13 @@
     "errorLoadingUsers": "Error loading users",
     "confirmDeleteMessage": "Are you sure you want to delete user {{name}} ({{username}})?",
     "newPasswordOptional": "New Password (optional)",
-    "leaveBlankNoChange": "Leave blank to keep current password"
+    "leaveBlankNoChange": "Leave blank to keep current password",
+    "roles": {
+      "admin": "Administrator",
+      "supervisor": "Supervisor",
+      "manager": "Manager",
+      "agent": "Agent"
+    }
   },
   "teams": {
     "title": "Teamverwaltung",
