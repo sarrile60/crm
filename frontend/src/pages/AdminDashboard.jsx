@@ -244,7 +244,7 @@ const AdminDashboard = () => {
         {/* Lead Details */}
         {leads.length > 0 && (
           <div className="mt-8 space-y-6">
-            <h3 className="text-white text-2xl font-semibold mb-4">Dettagli Lead</h3>
+            <h3 className="text-white text-2xl font-semibold mb-4">{t('crm.leadDetails')}</h3>
             {leads.map((lead) => (
               <div key={lead._id} className="bg-[#121212] border border-white/25 p-6">
                 <div className="flex items-center justify-between mb-4">
