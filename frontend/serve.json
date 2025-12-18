@@ -37,7 +37,7 @@
     }
   ],
   "rewrites": [
-    { "source": "!(static/**|*.json)", "destination": "/index.html" }
+    { "source": "!(static/**|*.json|api/**)", "destination": "/index.html" }
   ],
   "cleanUrls": true,
   "trailingSlash": false
