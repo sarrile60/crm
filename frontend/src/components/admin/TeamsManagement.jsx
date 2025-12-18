@@ -351,7 +351,7 @@ const TeamsManagement = () => {
                             {getSupervisorName(team.supervisor_id)}
                           </span>
                         ) : (
-                          <span className="text-gray-400">Non assegnato</span>
+                          <span className="text-gray-400">{t('common.none')}</span>
                         )}
                       </td>
                       <td className="p-4">
@@ -360,17 +360,17 @@ const TeamsManagement = () => {
                           className="flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
                         >
                           <Users className="w-4 h-4" />
-                          {memberCount} {memberCount === 1 ? 'membro' : 'membri'}
+                          {memberCount} {t('teams.members')}
                         </button>
                       </td>
                       <td className="p-4">
                         {team.archived_at ? (
                           <span className="px-2 py-1 bg-gray-200 text-gray-600 text-xs font-semibold rounded">
-                            Archiviato
+                            {t('teams.archived')}
                           </span>
                         ) : (
                           <span className="px-2 py-1 bg-green-100 text-green-600 text-xs font-semibold rounded">
-                            Attivo
+                            {t('common.active')}
                           </span>
                         )}
                       </td>
@@ -383,7 +383,7 @@ const TeamsManagement = () => {
                             onClick={() => openMembersModal(team)}
                             size="sm"
                             className="bg-blue-600 text-white hover:bg-blue-700 rounded-none"
-                            title="Visualizza Membri"
+                            title={t('teams.viewMembers')}
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
@@ -393,7 +393,7 @@ const TeamsManagement = () => {
                                 onClick={() => openEditModal(team)}
                                 size="sm"
                                 className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
-                                title="Modifica"
+                                title={t('common.edit')}
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
@@ -401,7 +401,7 @@ const TeamsManagement = () => {
                                 onClick={() => openArchiveModal(team)}
                                 size="sm"
                                 className="bg-red-600 text-white hover:bg-red-700 rounded-none"
-                                title="Archivia"
+                                title={t('teams.archiveTeam')}
                               >
                                 <Archive className="w-4 h-4" />
                               </Button>
@@ -420,33 +420,33 @@ const TeamsManagement = () => {
 
       {/* Stats */}
       <div className="mt-4 text-sm text-gray-600">
-        Totale: {teams.length} team | 
-        Attivi: {teams.filter(t => !t.archived_at).length} | 
-        Archiviati: {teams.filter(t => t.archived_at).length}
+        {t('common.total')}: {teams.length} | 
+        {t('common.active')}: {teams.filter(t => !t.archived_at).length} | 
+        {t('teams.archived')}: {teams.filter(t => t.archived_at).length}
       </div>
 
       {/* Create Team Modal */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
         <DialogContent className="max-w-lg bg-white">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-black">Crea Nuovo Team</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-black">{t('teams.createTeam')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Nome Team *</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('teams.teamName')} *</label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="es. Team Vendite Nord"
+                placeholder="e.g. Sales Team North"
                 className="bg-white border-gray-300 rounded-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Descrizione</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('common.description')}</label>
               <Input
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Descrizione opzionale del team"
+                placeholder=""
                 className="bg-white border-gray-300 rounded-none"
               />
             </div>
