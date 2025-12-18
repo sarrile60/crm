@@ -47,7 +47,7 @@ const DataVisibilityRules = () => {
       setOriginalMatrix(JSON.parse(JSON.stringify(response.data.matrix)));
       setHasChanges(false);
     } catch (error) {
-      toast.error('Errore nel caricamento delle regole di visibilità');
+      toast.error(t('visibility.errorLoadingRules'));
       console.error('Error:', error);
     } finally {
       setLoading(false);
