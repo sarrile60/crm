@@ -709,7 +709,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                           {lead.phone_display}
                         </a>
                       ) : (
-                        <span className="text-gray-400 italic">Nascosto</span>
+                        <span className="text-gray-400 italic">{t('visibility.hidden')}</span>
                       )
                     ) : (
                       <a 
@@ -732,7 +732,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   <td className="p-4">
                     <Select value={lead.status || undefined} onValueChange={(value) => handleInlineStatusChange(lead.id, value)}>
                       <SelectTrigger className="w-[180px] bg-white border-gray-300 rounded-none h-8">
-                        <SelectValue placeholder="Seleziona stato">
+                        <SelectValue placeholder={t('leads.selectStatus')}>
                           {lead.status && (
                             <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(lead.status)}`}>
                               {lead.status}
@@ -757,10 +757,10 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                     </span>
                   </td>
                   <td className="p-4 text-gray-700">
-                    {lead.team_id ? teams.find(t => t.id === lead.team_id)?.name || 'N/A' : 'Nessun team'}
+                    {lead.team_id ? teams.find(t => t.id === lead.team_id)?.name || 'N/A' : t('common.noTeam')}
                   </td>
                   <td className="p-4 text-gray-700">
-                    {lead.assigned_to ? users.find(u => u.id === lead.assigned_to)?.full_name || 'N/A' : 'Non assegnato'}
+                    {lead.assigned_to ? users.find(u => u.id === lead.assigned_to)?.full_name || 'N/A' : t('crm.notAssigned')}
                   </td>
                   <td className="p-4">
                     <div className="flex gap-2">
@@ -791,7 +791,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                             onClick={() => handleDeleteClick(lead)}
                             size="sm"
                             className="bg-red-600 text-white hover:bg-red-700 rounded-none"
-                            title="Elimina Lead"
+                            title={t('leads.deleteLead')}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -812,7 +812,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
           <DialogContent className="max-w-4xl bg-white max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <div className="flex items-center justify-between">
-                <DialogTitle className="text-2xl font-bold text-black">Dettagli Lead</DialogTitle>
+                <DialogTitle className="text-2xl font-bold text-black">{t('crm.leadDetails')}</DialogTitle>
                 <div className="flex gap-2">
                   <Button
                     onClick={() => navigateLead(-1)}
