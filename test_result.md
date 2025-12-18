@@ -1174,6 +1174,44 @@ test_plan:
 
   - agent: "testing"
     message: |
+      ⏰ SESSION SETTINGS TIMEZONE SELECTOR UI TESTING COMPLETED - 100% SUCCESS RATE
+      
+      📊 COMPREHENSIVE UI TEST RESULTS (ALL TEST SPECIFICATION REQUIREMENTS MET):
+      
+      ✅ NAVIGATION & ACCESS CONTROL:
+      - Admin login successful with provided credentials (admin_f87450ce5d66) ✓
+      - CRM Dashboard loaded correctly ✓
+      - Administration Panel accessible via "Administration" button ✓
+      - Session Settings tab found and functional ✓
+      - "Impostazioni Sessione" page loaded with proper Italian title ✓
+      
+      ✅ TIMEZONE DROPDOWN FUNCTIONALITY:
+      - Found "Fuso Orario" section with "Seleziona Fuso Orario" label ✓
+      - Timezone dropdown opened successfully ✓
+      - Found 75 timezone options with proper structure ✓
+      - Timezone options properly formatted with city names, GMT offsets, and current times ✓
+      - Example format verified: "Berlin GMT+1 • 10:58" style display ✓
+      
+      ✅ TIMEZONE SELECTION & UNSAVED CHANGES VERIFICATION:
+      - Successfully selected different timezone (changed from UTC to Berlin GMT+1) ✓
+      - Unsaved changes warning "⚠️ Modifiche non salvate" appeared correctly ✓
+      - "Salva Ora" button became available as expected ✓
+      - Right panel showed "👁️ Anteprima (Non Salvato)" label ✓
+      - "Clicca Salva" animated badge displayed correctly ✓
+      - Live clock updated to show time in newly selected timezone ✓
+      - GMT offset display updated correctly (GMT+1 Europe/Berlin) ✓
+      
+      ✅ SAVE FUNCTIONALITY:
+      - "Salva Ora" button clicked successfully ✓
+      - Success toast "Impostazioni salvate con successo" appeared ✓
+      - Unsaved changes warning disappeared after save ✓
+      - Panel returned to normal state (no preview labels) ✓
+      - Timezone change persisted correctly ✓
+      
+      🚀 SESSION SETTINGS TIMEZONE SELECTOR IS PRODUCTION READY - All test specification requirements met perfectly!
+
+  - agent: "testing"
+    message: |
       ⏰ SESSION SETTINGS TIMEZONE SELECTOR TESTING COMPLETED - 100% SUCCESS RATE
       
       📊 COMPREHENSIVE SESSION SETTINGS TEST RESULTS (13/13 TESTS PASSED):
