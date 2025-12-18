@@ -1081,6 +1081,57 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - agent: "testing"
+    message: |
+      🌐 COMPREHENSIVE LANGUAGE TRANSLATION TESTING COMPLETED - 93.5% SUCCESS RATE
+      
+      📊 DETAILED TEST RESULTS BY SECTION:
+      
+      ✅ ENGLISH TRANSLATION VERIFICATION (29/31 elements found):
+      
+      🎯 ADMIN PANEL TABS (8/8 - PERFECT):
+      - User Management ✓
+      - Team Management ✓  
+      - Role Management ✓
+      - Permission Matrix ✓
+      - Data Visibility ✓
+      - Session Settings ✓
+      - Language ✓
+      - Audit Logs ✓
+      
+      🎯 CRM DASHBOARD (5/5 - PERFECT):
+      - Total Leads ✓
+      - New Leads ✓
+      - In Progress ✓
+      - Pending Callbacks ✓
+      - Quick Actions ✓
+      
+      🎯 PUBLIC HOMEPAGE (11/11 - PERFECT):
+      - Hero title: "Recover Your Funds from Online and Crypto Scams" ✓
+      - Navigation: Home, About Us, Services, How It Works, Success Cases, FAQ ✓
+      - "Free Consultation" button ✓
+      - Form fields: Full Name, Email, Phone Number ✓
+      
+      🎯 SESSION SETTINGS (5/7 - PARTIAL):
+      - Day names working: Monday, Tuesday, Wednesday, Thursday, Friday ✓
+      - Missing: "Work Hours" and "Timezone" labels ❌
+      
+      ⚠️ MULTI-LANGUAGE SWITCHING ISSUES IDENTIFIED:
+      - German language selection registered but translations not applied to homepage
+      - Italian reset failed due to interface navigation timeout
+      - Language persistence works for English but needs improvement for other languages
+      
+      🔧 TECHNICAL FINDINGS:
+      - i18n system properly configured with 5 languages (Italian, English, German, French, Spanish)
+      - Translation files complete and properly structured
+      - Language selection UI working correctly
+      - Save functionality operational
+      - System-wide language changes apply to admin panel and CRM dashboard
+      - Homepage translation working for English
+      
+      🎯 OVERALL ASSESSMENT:
+      English translation system working correctly (93.5% success rate). Core functionality operational but multi-language switching needs attention for complete language persistence across all application sections.
+
   - agent: "main"
     message: |
       🔧 AUDIT LOGS IMPLEMENTATION COMPLETE
