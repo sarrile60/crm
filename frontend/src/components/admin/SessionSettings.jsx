@@ -158,10 +158,10 @@ const SessionSettings = () => {
       await axios.post(`${API}/login-requests/${requestId}/approve`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success(`Accesso approvato per ${username}`);
+      toast.success(t('session.accessApprovedFor', { username }));
       fetchLoginRequests();
     } catch (error) {
-      toast.error('Errore nell\'approvazione');
+      toast.error(t('session.errorApproving'));
     }
   };
 
@@ -171,10 +171,10 @@ const SessionSettings = () => {
       await axios.post(`${API}/login-requests/${requestId}/deny`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success(`Accesso negato per ${username}`);
+      toast.success(t('session.accessDeniedFor', { username }));
       fetchLoginRequests();
     } catch (error) {
-      toast.error('Errore nel rifiuto');
+      toast.error(t('session.errorDenying'));
     }
   };
 
