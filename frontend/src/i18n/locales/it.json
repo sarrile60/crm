@@ -393,7 +393,12 @@
     "currentLanguage": "Lingua Corrente",
     "selectLanguage": "Seleziona Lingua",
     "languageUpdated": "Lingua aggiornata con successo",
-    "errorUpdatingLanguage": "Errore nell'aggiornamento della lingua"
+    "errorUpdatingLanguage": "Errore nell'aggiornamento della lingua",
+    "saveSuccess": "Lingua salvata con successo",
+    "systemWide": "Impostazione lingua di sistema",
+    "infoTitle": "Informazioni Lingua",
+    "infoDesc1": "La lingua selezionata viene applicata a tutto il sistema",
+    "infoDesc2": "Influenza CRM Dashboard, Pannello Admin e Homepage"
   },
   "home": {
     "heroTitle": "Recupera i Tuoi Fondi da Truffe Online e Crypto",
