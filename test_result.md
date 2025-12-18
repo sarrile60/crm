@@ -4,6 +4,24 @@ Last updated: 2025-12-18
 ## Test Credentials
 - Admin: admin_f87450ce5d66 / zTFjPAcs*-(NL-qbj@AP0TcWt*8)nV4f6K(ZcVP_
 
+## Current Testing Task
+Test the Permission Matrix page (`/crm/admin` -> "Berechtigungsmatrix" tab) translation in all 5 languages (EN, IT, DE, FR, ES).
+
+### Expected Translations to Verify
+- Title: "Permission Matrix" / "Matrice Permessi" / "Berechtigungsmatrix" / "Matrice des Permissions" / "Matriz de Permisos"
+- Subtitle: Should describe configuring permissions for each role
+- Table headers: Entity, Read, Create, Edit, Delete, Assign, Export
+- Scope values: None, Own, Team, All (with translations)
+- Yes/No values for Create, Assign, Export columns
+
+### Test Steps
+1. Login with admin credentials
+2. Navigate to /crm/admin
+3. Click on Permission Matrix tab
+4. Verify all text is translated in current language
+5. Go to Language Settings tab
+6. Change language and verify Permission Matrix updates
+
 ## Issues Found and Fixed
 
 ### 1. LeadsTable Component - FIXED
