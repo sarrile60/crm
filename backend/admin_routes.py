@@ -1324,8 +1324,9 @@ async def approve_login_request(request_id: str, current_user: dict = Depends(ge
     logger.info(f"Login request for {request['username']} approved by {current_user['username']}")
     return {
         "success": True, 
-        "message": f"Accesso approvato per {request['username']}. Valido per 30 minuti.",
-        "expires_at": expires_at.isoformat()
+        "message": f"Accesso approvato per {request['username']}. Valido per {approval_minutes} minuti.",
+        "expires_at": expires_at.isoformat(),
+        "duration_minutes": approval_minutes
     }
 
 
