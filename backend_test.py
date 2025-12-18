@@ -2547,6 +2547,286 @@ class CRMTester:
         except Exception as e:
             self.log_result("Visibility Enforcement - Hidden phone rule", False, f"Error: {str(e)}")
 
+    def test_session_settings_timezone_selector(self):
+        """Test Session Settings timezone selector functionality"""
+        print("\n=== Testing Session Settings Timezone Selector ===")
+        
+        if not self.admin_token:
+            self.log_result("Session Settings Setup", False, "Missing admin token")
+            return
+        
+        admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+        
+        # Test 1: Get session settings and verify timezone data
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/session-settings", headers=admin_headers)
+            
+            if response.status_code == 200:
+                settings = response.json()
+                
+                # Verify required fields are present
+                required_fields = ["timezone", "timezone_offset", "all_timezones"]
+                missing_fields = [field for field in required_fields if field not in settings]
+                
+                if not missing_fields:
+                    self.log_result(
+                        "Session Settings - API Response Structure",
+                        True,
+                        "Session settings API returns all required timezone fields",
+                        f"Current timezone: {settings.get('timezone')}, Offset: {settings.get('timezone_offset')}"
+                    )
+                    
+                    # Test timezone list structure
+                    all_timezones = settings.get("all_timezones", [])
+                    if all_timezones and len(all_timezones) > 0:
+                        sample_tz = all_timezones[0]
+                        tz_required_fields = ["value", "label", "city", "region", "offset", "current_time"]
+                        tz_missing_fields = [field for field in tz_required_fields if field not in sample_tz]
+                        
+                        if not tz_missing_fields:
+                            self.log_result(
+                                "Session Settings - Timezone List Structure",
+                                True,
+                                f"Timezone list contains {len(all_timezones)} timezones with proper structure",
+                                f"Sample timezone: {sample_tz.get('city')} ({sample_tz.get('offset')}) - {sample_tz.get('current_time')}"
+                            )
+                            
+                            # Test timezone regions
+                            regions = set(tz.get("region") for tz in all_timezones)
+                            expected_regions = {"Europe", "Americas", "Asia", "Africa", "Oceania", "UTC"}
+                            
+                            if expected_regions.issubset(regions):
+                                self.log_result(
+                                    "Session Settings - Timezone Regions",
+                                    True,
+                                    "All expected timezone regions are present",
+                                    f"Regions: {sorted(regions)}"
+                                )
+                            else:
+                                missing_regions = expected_regions - regions
+                                self.log_result(
+                                    "Session Settings - Timezone Regions",
+                                    False,
+                                    f"Missing timezone regions: {missing_regions}"
+                                )
+                        else:
+                            self.log_result(
+                                "Session Settings - Timezone List Structure",
+                                False,
+                                f"Timezone objects missing required fields: {tz_missing_fields}"
+                            )
+                    else:
+                        self.log_result(
+                            "Session Settings - Timezone List Structure",
+                            False,
+                            "No timezones found in response"
+                        )
+                else:
+                    self.log_result(
+                        "Session Settings - API Response Structure",
+                        False,
+                        f"Session settings missing required fields: {missing_fields}"
+                    )
+            else:
+                self.log_result(
+                    "Session Settings - API Response Structure",
+                    False,
+                    f"Failed to get session settings: {response.status_code}",
+                    response.text
+                )
+                
+        except Exception as e:
+            self.log_result("Session Settings - API Response Structure", False, f"Error: {str(e)}")
+        
+        # Test 2: Update timezone and verify GMT offset calculation
+        try:
+            # Test different timezones
+            test_timezones = [
+                {"tz": "America/New_York", "expected_pattern": "GMT-"},
+                {"tz": "Europe/Berlin", "expected_pattern": "GMT+"},
+                {"tz": "Asia/Tokyo", "expected_pattern": "GMT+"},
+                {"tz": "UTC", "expected_pattern": "GMT"}
+            ]
+            
+            for test_case in test_timezones:
+                tz_name = test_case["tz"]
+                expected_pattern = test_case["expected_pattern"]
+                
+                # Update timezone
+                update_data = {
+                    "timezone": tz_name,
+                    "session_start_hour": 8,
+                    "session_start_minute": 0,
+                    "session_end_hour": 18,
+                    "session_end_minute": 30,
+                    "work_days": [0, 1, 2, 3, 4],
+                    "require_approval_after_hours": True,
+                    "approval_duration_minutes": 30
+                }
+                
+                update_response = self.session.put(
+                    f"{BASE_URL}/admin/session-settings",
+                    json=update_data,
+                    headers={**admin_headers, "Content-Type": "application/json"}
+                )
+                
+                if update_response.status_code == 200:
+                    # Verify the update by getting settings again
+                    verify_response = self.session.get(f"{BASE_URL}/admin/session-settings", headers=admin_headers)
+                    
+                    if verify_response.status_code == 200:
+                        updated_settings = verify_response.json()
+                        actual_timezone = updated_settings.get("timezone")
+                        actual_offset = updated_settings.get("timezone_offset", "")
+                        
+                        timezone_correct = actual_timezone == tz_name
+                        offset_correct = expected_pattern in actual_offset or actual_offset == "GMT"
+                        
+                        if timezone_correct and offset_correct:
+                            self.log_result(
+                                f"Session Settings - Timezone Update ({tz_name})",
+                                True,
+                                f"Successfully updated timezone and calculated GMT offset",
+                                f"Timezone: {actual_timezone}, Offset: {actual_offset}"
+                            )
+                        else:
+                            self.log_result(
+                                f"Session Settings - Timezone Update ({tz_name})",
+                                False,
+                                f"Timezone or offset incorrect",
+                                f"Expected: {tz_name} with {expected_pattern}, Got: {actual_timezone} with {actual_offset}"
+                            )
+                    else:
+                        self.log_result(
+                            f"Session Settings - Timezone Update ({tz_name})",
+                            False,
+                            f"Could not verify timezone update: {verify_response.status_code}"
+                        )
+                else:
+                    self.log_result(
+                        f"Session Settings - Timezone Update ({tz_name})",
+                        False,
+                        f"Failed to update timezone: {update_response.status_code}",
+                        update_response.text
+                    )
+                    
+        except Exception as e:
+            self.log_result("Session Settings - Timezone Updates", False, f"Error: {str(e)}")
+        
+        # Test 3: Verify current time calculation for different timezones
+        try:
+            # Get fresh settings to test current time calculation
+            response = self.session.get(f"{BASE_URL}/admin/session-settings", headers=admin_headers)
+            
+            if response.status_code == 200:
+                settings = response.json()
+                all_timezones = settings.get("all_timezones", [])
+                
+                if all_timezones:
+                    # Test a few specific timezones for current time format
+                    test_cities = ["Berlin", "New York", "Tokyo", "London"]
+                    found_cities = 0
+                    
+                    for tz in all_timezones:
+                        if tz.get("city") in test_cities:
+                            current_time = tz.get("current_time", "")
+                            # Verify time format (HH:MM)
+                            import re
+                            time_pattern = r'^\d{2}:\d{2}$'
+                            
+                            if re.match(time_pattern, current_time):
+                                found_cities += 1
+                                self.log_result(
+                                    f"Session Settings - Current Time Format ({tz.get('city')})",
+                                    True,
+                                    f"Current time format is correct",
+                                    f"{tz.get('city')}: {current_time} ({tz.get('offset')})"
+                                )
+                            else:
+                                self.log_result(
+                                    f"Session Settings - Current Time Format ({tz.get('city')})",
+                                    False,
+                                    f"Invalid time format: {current_time}"
+                                )
+                    
+                    if found_cities >= 3:
+                        self.log_result(
+                            "Session Settings - Current Time Calculation",
+                            True,
+                            f"Current time calculation working for {found_cities} test cities"
+                        )
+                    else:
+                        self.log_result(
+                            "Session Settings - Current Time Calculation",
+                            False,
+                            f"Only found {found_cities} test cities with valid time format"
+                        )
+                else:
+                    self.log_result(
+                        "Session Settings - Current Time Calculation",
+                        False,
+                        "No timezone data available for testing"
+                    )
+            else:
+                self.log_result(
+                    "Session Settings - Current Time Calculation",
+                    False,
+                    f"Could not get session settings: {response.status_code}"
+                )
+                
+        except Exception as e:
+            self.log_result("Session Settings - Current Time Calculation", False, f"Error: {str(e)}")
+        
+        # Test 4: Test timezone selector with European cities (as mentioned in review request)
+        try:
+            response = self.session.get(f"{BASE_URL}/admin/session-settings", headers=admin_headers)
+            
+            if response.status_code == 200:
+                settings = response.json()
+                all_timezones = settings.get("all_timezones", [])
+                
+                # Look for Berlin specifically (mentioned in review request)
+                berlin_tz = None
+                for tz in all_timezones:
+                    if tz.get("city") == "Berlin" and tz.get("value") == "Europe/Berlin":
+                        berlin_tz = tz
+                        break
+                
+                if berlin_tz:
+                    # Verify Berlin timezone has GMT+1 offset (or GMT+2 during DST)
+                    offset = berlin_tz.get("offset", "")
+                    label = berlin_tz.get("label", "")
+                    
+                    if "GMT+" in offset and ("Berlin" in label and "GMT+" in label):
+                        self.log_result(
+                            "Session Settings - Berlin Timezone",
+                            True,
+                            "Berlin timezone correctly configured with GMT offset",
+                            f"Label: {label}, Offset: {offset}, Current time: {berlin_tz.get('current_time')}"
+                        )
+                    else:
+                        self.log_result(
+                            "Session Settings - Berlin Timezone",
+                            False,
+                            f"Berlin timezone configuration incorrect",
+                            f"Label: {label}, Offset: {offset}"
+                        )
+                else:
+                    self.log_result(
+                        "Session Settings - Berlin Timezone",
+                        False,
+                        "Berlin timezone not found in timezone list"
+                    )
+            else:
+                self.log_result(
+                    "Session Settings - Berlin Timezone",
+                    False,
+                    f"Could not get session settings: {response.status_code}"
+                )
+                
+        except Exception as e:
+            self.log_result("Session Settings - Berlin Timezone", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all CRM backend tests including deletion functionality"""
         print("🚀 Starting CRM Backend Tests")
