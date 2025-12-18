@@ -290,7 +290,7 @@ const UserManagement = ({ currentUser }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Ruolo</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('users.role')}</label>
                 <Select value={newUser.role} onValueChange={(value) => setNewUser({ ...newUser, role: value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
                     <SelectValue />

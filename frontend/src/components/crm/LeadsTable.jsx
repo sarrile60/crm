@@ -1101,7 +1101,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Stato</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('common.status')}</label>
                 <Select value={editData.status} onValueChange={(value) => setEditData({ ...editData, status: value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
                     <SelectValue />
