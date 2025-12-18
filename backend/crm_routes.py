@@ -38,6 +38,7 @@ permission_engine: PermissionEngine = None
 
 def init_crm_db(database):
     global db, permission_engine
+    init_session_settings_db(database)  # Initialize session settings
     db = database
     permission_engine = get_permission_engine(database)
 
