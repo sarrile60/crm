@@ -1242,7 +1242,8 @@ async def update_session_settings_endpoint(settings_data: dict, current_user: di
         session_end_hour=settings_data.get("session_end_hour", 18),
         session_end_minute=settings_data.get("session_end_minute", 30),
         work_days=settings_data.get("work_days", [0, 1, 2, 3, 4]),
-        require_approval_after_hours=settings_data.get("require_approval_after_hours", True)
+        require_approval_after_hours=settings_data.get("require_approval_after_hours", True),
+        approval_duration_minutes=settings_data.get("approval_duration_minutes", 30)
     )
     
     # Log the change
