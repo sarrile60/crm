@@ -140,8 +140,7 @@ const SmartDateTimePicker = ({ value, onChange, currentUser, currentLeadId }) =>
       {bookedSlots.length > 0 && conflicts.length === 0 && (
         <div className="bg-blue-50 border border-blue-200 p-2 rounded">
           <p className="text-xs text-blue-800">
-            <strong>Info:</strong> Hai {bookedSlots.length} callback già programmati oggi. 
-            Il sistema ti avviserà di conflitti automaticamente.
+            <strong>{t('common.info')}:</strong> {t('crm.callbacksScheduledInfo', { count: bookedSlots.length })}
           </p>
         </div>
       )}
