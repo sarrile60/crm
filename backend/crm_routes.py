@@ -168,6 +168,21 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
         "team_id": current_user.get("team_id")
     }
 
+
+@crm_router.post("/auth/logout")
+async def logout(current_user: dict = Depends(get_current_user)):
+    """Logout user and log the event to audit trail"""
+    # Log logout event to audit trail
+    await log_auth_event(
+        action=AuditAction.LOGOUT,
+        username=current_user["username"],
+        user_id=current_user["id"],
+        success=True
+    )
+    
+    return {"success": True, "message": "Logout successful"}
+
+
 # ==================== USER MANAGEMENT ROUTES ====================
 
 @crm_router.post("/users", dependencies=[Depends(require_role(["admin"]))])
