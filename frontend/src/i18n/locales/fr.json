@@ -181,9 +181,11 @@
     "sessionSettings": "Paramètres de session",
     "language": "Langue",
     "entityConfig": "Config. entités",
-    "accessDenied": "Accès refusé",
+    "accessDenied": "Accès Refusé",
     "accessDeniedDesc": "Vous n'avez pas la permission d'accéder au panneau d'administration. Cette zone est réservée aux administrateurs système uniquement.",
-    "backToCRM": "Retour au CRM"
+    "backToCRM": "Retour au CRM",
+    "verifyingAuth": "Vérification de l'autorisation...",
+    "accessDeniedMessage": "Vous n'avez pas la permission d'accéder au panneau d'administration. Seuls les utilisateurs ayant le rôle \"admin\" peuvent accéder à cette section."
   },
   "roles": {
     "title": "Gestion des rôles",

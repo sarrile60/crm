@@ -162,7 +162,9 @@
     "entityConfig": "Config. Entità",
     "accessDenied": "Accesso Negato",
     "accessDeniedDesc": "Non hai i permessi per accedere al Pannello Amministrazione. Quest'area è riservata solo agli amministratori di sistema.",
-    "backToCRM": "Torna al CRM"
+    "backToCRM": "Torna al CRM",
+    "verifyingAuth": "Verifica autorizzazione...",
+    "accessDeniedMessage": "Non hai i permessi per accedere al pannello di amministrazione. Solo gli utenti con ruolo \"admin\" possono accedere a questa sezione."
   },
   "roles": {
     "title": "Gestione Ruoli",

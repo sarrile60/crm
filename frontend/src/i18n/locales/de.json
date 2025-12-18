@@ -181,9 +181,11 @@
     "sessionSettings": "Sitzungseinstellungen",
     "language": "Sprache",
     "entityConfig": "Entitätskonfiguration",
-    "accessDenied": "Zugriff verweigert",
+    "accessDenied": "Zugriff Verweigert",
     "accessDeniedDesc": "Sie haben keine Berechtigung, auf das Administrationspanel zuzugreifen. Dieser Bereich ist nur für Systemadministratoren reserviert.",
-    "backToCRM": "Zurück zum CRM"
+    "backToCRM": "Zurück zum CRM",
+    "verifyingAuth": "Autorisierung überprüfen...",
+    "accessDeniedMessage": "Sie haben keine Berechtigung, auf das Administrationsfeld zuzugreifen. Nur Benutzer mit der Rolle \"admin\" können auf diesen Bereich zugreifen."
   },
   "roles": {
     "title": "Rollenverwaltung",

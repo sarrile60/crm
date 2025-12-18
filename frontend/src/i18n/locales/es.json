@@ -181,9 +181,11 @@
     "sessionSettings": "Configuración de sesión",
     "language": "Idioma",
     "entityConfig": "Config. de entidades",
-    "accessDenied": "Acceso denegado",
+    "accessDenied": "Acceso Denegado",
     "accessDeniedDesc": "No tiene permiso para acceder al panel de administración. Esta área está reservada solo para administradores del sistema.",
-    "backToCRM": "Volver al CRM"
+    "backToCRM": "Volver al CRM",
+    "verifyingAuth": "Verificando autorización...",
+    "accessDeniedMessage": "No tiene permiso para acceder al panel de administración. Solo los usuarios con el rol \"admin\" pueden acceder a esta sección."
   },
   "roles": {
     "title": "Gestión de roles",
