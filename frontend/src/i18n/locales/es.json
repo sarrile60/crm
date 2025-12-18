@@ -36,7 +36,34 @@
     "active": "Activo",
     "inactive": "Inactivo",
     "enabled": "Habilitado",
-    "disabled": "Deshabilitado"
+    "disabled": "Deshabilitado",
+    "total": "Total",
+    "new": "Nuevo",
+    "inProgress": "En progreso",
+    "urgent": "Urgente",
+    "amount": "Importe",
+    "duration": "Duración",
+    "countries": "Países",
+    "recovered": "Recuperado",
+    "cases": "Casos",
+    "resolved": "Resuelto",
+    "responseTime": "Tiempo de respuesta",
+    "missingFields": "Campos faltantes",
+    "fillAllFields": "Por favor, complete todos los campos obligatorios.",
+    "alreadyRegistered": "Ya registrado",
+    "alreadySubmitted": "Ya ha enviado una solicitud. Nuestro equipo se pondrá en contacto pronto.",
+    "tryAgainLater": "Se produjo un error. Por favor, inténtelo más tarde.",
+    "submitting": "Enviando...",
+    "submit": "Enviar",
+    "goBack": "Volver",
+    "backToSite": "Volver al sitio",
+    "useCredentials": "Use su nombre de usuario y contraseña para iniciar sesión",
+    "loggingIn": "Iniciando sesión...",
+    "logoutSuccess": "Cierre de sesión exitoso",
+    "sessionExpired": "Sesión expirada",
+    "sraRegulated": "Regulado por SRA",
+    "internationalCases": "Casos internacionales",
+    "secureSubmission": "Envío seguro y confidencial"
   },
   "auth": {
     "login": "Iniciar sesión",
@@ -47,7 +74,9 @@
     "loginSuccess": "¡Inicio de sesión exitoso!",
     "loginError": "Credenciales inválidas",
     "sessionExpires": "Sesión expira a las",
-    "timeRemaining": "restante"
+    "timeRemaining": "restante",
+    "crmPortal": "Portal CRM",
+    "accessClientManagement": "Acceder al sistema de gestión de clientes"
   },
   "nav": {
     "home": "Inicio",
@@ -60,7 +89,8 @@
     "howItWorks": "Cómo funciona",
     "successCases": "Casos de éxito",
     "faq": "FAQ",
-    "contact": "Contacto"
+    "contact": "Contacto",
+    "freeConsultation": "Consulta gratuita"
   },
   "dashboard": {
     "title": "Panel",
@@ -216,20 +246,29 @@
     "globalNetwork": "Red global",
     "globalNetworkDesc": "Colaboraciones internacionales",
     "readyToRecover": "¿Listo para recuperar tus fondos?",
+    "readyToRecoverDesc": "No esperes. Cada día cuenta. Obtén una evaluación legal gratuita.",
     "ctaNow": "Obtener consulta gratuita ahora",
     "formTitle": "Solicitar consulta gratuita",
     "formSubtitle": "Evaluación legal confidencial sin compromiso",
     "fullName": "Nombre completo",
     "phoneNumber": "Número de teléfono",
-    "continue": "Continuar",
-    "caseDetails": "Detalles del caso"
+    "continue": "Continuar → Detalles del caso",
+    "caseDetails": "Detalles del caso",
+    "scammerCompany": "Nombre de la empresa estafadora",
+    "amountLost": "Importe perdido",
+    "selectAmount": "Seleccionar importe",
+    "tellUsWhatHappened": "Cuéntanos qué pasó",
+    "describeFraud": "Describe los detalles del fraude, cuándo ocurrió, qué pruebas tienes, etc.",
+    "submitRequest": "Enviar solicitud de consulta",
+    "allRightsReserved": "Todos los derechos reservados."
   },
   "footer": {
     "contacts": "Contactos",
     "legalInfo": "Información legal",
     "companyType": "Tipo: Private Limited Company",
-    "established": "Establecida",
-    "sicCode": "Código SIC"
+    "established": "Establecida: 9 de septiembre de 2021",
+    "sicCode": "Código SIC: 69102 – Solicitors",
+    "recognisedBody": "Recognised Body Law Practice"
   },
   "messages": {
     "savedSuccess": "Guardado con éxito",
@@ -239,5 +278,11 @@
     "confirmDelete": "¿Estás seguro de que quieres eliminar?",
     "noData": "No hay datos disponibles",
     "loadingData": "Cargando datos..."
+  },
+  "successCases": {
+    "cryptoExchange": "Estafa de Exchange Crypto",
+    "cryptoExchangeOutcome": "Recuperación completa mediante acción legal",
+    "week": "semana",
+    "months": "meses"
   }
 }
