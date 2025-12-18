@@ -37,6 +37,13 @@ ALL_TIMEZONES = [
     "UTC"
 ]
 
+# Berlin timezone (CET/CEST - automatically handles daylight saving)
+BERLIN_TZ = ZoneInfo("Europe/Berlin")
+
+# Session end time: 6:30 PM (18:30)
+SESSION_END_HOUR = 18
+SESSION_END_MINUTE = 30
+
 
 def get_berlin_time() -> datetime:
     """Get current time in Berlin timezone"""
