@@ -78,18 +78,48 @@ const SessionSettings = () => {
     // Poll for new login requests every 30 seconds
     const requestInterval = setInterval(fetchLoginRequests, 30000);
     
-    // Update current time every second
-    const timeInterval = setInterval(() => {
-      if (settings.timezone) {
-        fetchSettings(); // This will refresh the current time from the server
-      }
-    }, 60000); // Update every minute to avoid too many API calls
-    
     return () => {
       clearInterval(requestInterval);
-      clearInterval(timeInterval);
     };
-  }, [fetchSettings, fetchLoginRequests, settings.timezone]);
+  }, [fetchSettings, fetchLoginRequests]);
+
+  // Live clock update every second
+  useEffect(() => {
+    const updateLocalTime = () => {
+      // Get the timezone to display (preview or current selected)
+      const displayTimezone = previewTimezone || settings.timezone;
+      if (displayTimezone && settings.all_timezones?.length > 0) {
+        const tzInfo = settings.all_timezones.find(tz => tz.value === displayTimezone);
+        if (tzInfo) {
+          // Calculate current time in the selected timezone
+          try {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('it-IT', { 
+              timeZone: displayTimezone,
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
+            });
+            const dateStr = now.toLocaleDateString('it-IT', {
+              timeZone: displayTimezone,
+              weekday: 'long',
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit'
+            });
+            setLocalTime({ time: timeStr, date: dateStr, offset: tzInfo.offset });
+          } catch (e) {
+            console.error('Timezone error:', e);
+          }
+        }
+      }
+    };
+    
+    updateLocalTime();
+    const timeInterval = setInterval(updateLocalTime, 1000);
+    
+    return () => clearInterval(timeInterval);
+  }, [settings.timezone, settings.all_timezones, previewTimezone]);
 
   const handleSave = async () => {
     try {
