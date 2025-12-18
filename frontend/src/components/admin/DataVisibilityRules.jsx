@@ -83,11 +83,11 @@ const DataVisibilityRules = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      toast.success('Regole di visibilità salvate con successo');
+      toast.success(t('visibility.rulesUpdatedSuccess'));
       setOriginalMatrix(JSON.parse(JSON.stringify(matrix)));
       setHasChanges(false);
     } catch (error) {
-      toast.error('Errore nel salvataggio delle regole');
+      toast.error(t('visibility.errorSavingRules'));
       console.error('Error:', error);
     } finally {
       setSaving(false);
