@@ -21,7 +21,8 @@ DEFAULT_SETTINGS = {
     "session_end_minute": 30,
     "work_days": [0, 1, 2, 3, 4],  # Monday=0 to Friday=4
     "timezone": "Europe/Berlin",
-    "require_approval_after_hours": True
+    "require_approval_after_hours": True,
+    "approval_duration_minutes": 30  # How long an approved login is valid
 }
 
 
