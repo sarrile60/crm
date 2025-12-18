@@ -1211,11 +1211,15 @@ async def get_audit_log_stats():
 @admin_router.get("/session-settings", dependencies=[Depends(require_admin)])
 async def get_session_settings_endpoint():
     """Get current session settings for GUI configuration"""
-    from session_settings import ALL_TIMEZONES, get_current_time_in_timezone
+    from session_settings import get_all_timezones_with_offset, get_current_time_in_timezone, get_gmt_offset
     
     settings = await get_session_settings()
     tz_name = settings.get("timezone", "Europe/Berlin")
     current_time = get_current_time_in_timezone(tz_name)
+    current_offset = get_gmt_offset(tz_name)
+    
+    # Get fresh timezone data with current offsets
+    all_timezones = get_all_timezones_with_offset()
     
     return {
         "session_start_hour": settings.get("session_start_hour", 8),
@@ -1224,11 +1228,12 @@ async def get_session_settings_endpoint():
         "session_end_minute": settings.get("session_end_minute", 30),
         "work_days": settings.get("work_days", [0, 1, 2, 3, 4]),
         "timezone": tz_name,
+        "timezone_offset": current_offset,
         "require_approval_after_hours": settings.get("require_approval_after_hours", True),
         "approval_duration_minutes": settings.get("approval_duration_minutes", 30),
         "current_time": current_time.strftime("%Y-%m-%d %H:%M:%S"),
         "current_day": current_time.strftime("%A"),
-        "all_timezones": ALL_TIMEZONES,
+        "all_timezones": all_timezones,
         "day_names": {
             0: "Lunedì",
             1: "Martedì", 
