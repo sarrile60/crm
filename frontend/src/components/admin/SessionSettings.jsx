@@ -394,7 +394,7 @@ const SessionSettings = () => {
               onValueChange={(value) => updateSetting('timezone', value)}
             >
               <SelectTrigger className="rounded-none">
-                <SelectValue placeholder="Seleziona fuso orario">
+                <SelectValue placeholder={t('session.selectTimezone')}>
                   {settings.all_timezones?.find(tz => tz.value === settings.timezone)?.label || settings.timezone}
                 </SelectValue>
               </SelectTrigger>
