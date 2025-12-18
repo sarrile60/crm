@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import SmartDateTimePicker from './SmartDateTimePicker';
+import i18n from '../../i18n/i18n';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
