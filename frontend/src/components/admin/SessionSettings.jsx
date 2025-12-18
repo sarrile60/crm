@@ -73,9 +73,20 @@ const SessionSettings = () => {
     fetchLoginRequests();
     
     // Poll for new login requests every 30 seconds
-    const interval = setInterval(fetchLoginRequests, 30000);
-    return () => clearInterval(interval);
-  }, [fetchSettings, fetchLoginRequests]);
+    const requestInterval = setInterval(fetchLoginRequests, 30000);
+    
+    // Update current time every second
+    const timeInterval = setInterval(() => {
+      if (settings.timezone) {
+        fetchSettings(); // This will refresh the current time from the server
+      }
+    }, 60000); // Update every minute to avoid too many API calls
+    
+    return () => {
+      clearInterval(requestInterval);
+      clearInterval(timeInterval);
+    };
+  }, [fetchSettings, fetchLoginRequests, settings.timezone]);
 
   const handleSave = async () => {
     try {
