@@ -646,9 +646,9 @@ const Home = () => {
       <section id="services" className="bg-white py-20 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-black mb-6">I Nostri Servizi Legali</h2>
+            <h2 className="text-5xl font-bold text-black mb-6">{t('home.servicesTitle')}</h2>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Offriamo assistenza legale specializzata per vittime di truffe finanziarie online e transfrontaliere
+              {t('home.servicesSubtitle')}
             </p>
           </div>
 
