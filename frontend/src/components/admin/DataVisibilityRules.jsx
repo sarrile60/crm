@@ -308,14 +308,15 @@ const DataVisibilityRules = () => {
 
       {/* Info Box */}
       <div className="bg-blue-50 border border-blue-200 p-4">
-        <h4 className="font-semibold text-blue-800 mb-2">Come Funziona</h4>
+        <h4 className="font-semibold text-blue-800 mb-2">{t('visibility.howItWorks')}</h4>
         <ul className="text-sm text-blue-700 space-y-1">
-          <li>• <strong>Visibile:</strong> Il campo viene mostrato completamente</li>
-          <li>• <strong>Mascherato:</strong> Il campo viene parzialmente oscurato (es. telefono: *** *** *567)</li>
-          <li>• <strong>Nascosto:</strong> Il campo non viene mostrato affatto</li>
-          <li>• Le regole dei <strong>ruoli</strong> hanno priorità sulle regole dei <strong>team</strong></li>
-          <li>• Gli <strong>amministratori</strong> vedono sempre tutti i dati in chiaro</li>
-          <li>• Il mascheramento avviene <strong>esclusivamente lato server</strong></li>
+          <li>• {t('visibility.howItWorksDesc1')}</li>
+          <li>• {t('visibility.howItWorksDesc2')}</li>
+          <li>• {t('visibility.howItWorksDesc3')}</li>
+          <li>• {t('visibility.howItWorksDesc4')}</li>
+          <li>• {t('visibility.howItWorksDesc5')}</li>
+          <li>• {t('visibility.howItWorksDesc6')}</li>
+          <li>• {t('visibility.howItWorksDesc7')}</li>
         </ul>
       </div>
     </div>
