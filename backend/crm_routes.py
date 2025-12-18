@@ -132,19 +132,24 @@ async def login(credentials: UserLogin):
         {"$set": {"last_login": datetime.now(timezone.utc)}}
     )
     
+    # Calculate session expiry (6:30 PM Berlin time on weekdays)
+    session_expiry = get_session_expiry()
+    
     # Log successful login
     await log_auth_event(
         action=AuditAction.LOGIN_SUCCESS,
         username=user["username"],
         user_id=user["id"],
-        success=True
+        success=True,
+        details={"session_expiry": session_expiry.isoformat()}
     )
     
-    # Create token
+    # Create token with session expiry
     token = create_access_token({
         "user_id": user["id"],
         "username": user["username"],
-        "role": user["role"]
+        "role": user["role"],
+        "session_expiry": session_expiry.isoformat()
     })
     
     return {
@@ -155,6 +160,10 @@ async def login(credentials: UserLogin):
             "full_name": user["full_name"],
             "role": user["role"],
             "team_id": user.get("team_id")
+        },
+        "session": {
+            "expiry": session_expiry.isoformat(),
+            "info": get_session_info()
         }
     }
 
