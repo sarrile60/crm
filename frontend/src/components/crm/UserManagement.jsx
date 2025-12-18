@@ -105,12 +105,12 @@ const UserManagement = ({ currentUser }) => {
       }
 
       await axios.put(`${API}/crm/users/${selectedUser.id}`, updateData, { headers });
-      toast.success('Utente aggiornato con successo');
+      toast.success(t('users.userUpdated'));
       setShowEditModal(false);
       setSelectedUser(null);
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nell\'aggiornamento dell\'utente');
+      toast.error(error.response?.data?.detail || t('users.errorUpdatingUser'));
     }
   };
 
@@ -120,10 +120,10 @@ const UserManagement = ({ currentUser }) => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.put(`${API}/crm/users/${userId}`, { is_active: !isActive }, { headers });
-      toast.success(isActive ? 'Utente disattivato' : 'Utente attivato');
+      toast.success(isActive ? t('users.userDeactivated') : t('users.userActivated'));
       fetchData();
     } catch (error) {
-      toast.error('Errore nell\'aggiornamento dell\'utente');
+      toast.error(t('users.errorUpdatingUser'));
     }
   };
 
@@ -140,12 +140,12 @@ const UserManagement = ({ currentUser }) => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.delete(`${API}/crm/users/${userToDelete.id}`, { headers });
-      toast.success('Utente eliminato con successo');
+      toast.success(t('users.userDeleted'));
       setShowDeleteModal(false);
       setUserToDelete(null);
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nell\'eliminazione dell\'utente');
+      toast.error(error.response?.data?.detail || t('users.errorDeletingUser'));
     }
   };
 
