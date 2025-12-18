@@ -63,7 +63,7 @@ const TeamsManagement = () => {
       setTeams(teamsRes.data);
       setUsers(usersRes.data.filter(u => !u.deleted_at && u.is_active));
     } catch (error) {
-      toast.error('Errore nel caricamento dei dati');
+      toast.error(t('teams.errorLoadingTeams'));
       console.error('Error:', error);
     } finally {
       setLoading(false);
@@ -89,12 +89,12 @@ const TeamsManagement = () => {
   // Get supervisor name
   const getSupervisorName = (supervisorId) => {
     const supervisor = users.find(u => u.id === supervisorId);
-    return supervisor ? supervisor.full_name : 'Non assegnato';
+    return supervisor ? supervisor.full_name : t('common.none');
   };
 
   const handleCreateTeam = async () => {
     if (!formData.name) {
-      toast.error('Il nome del team è obbligatorio');
+      toast.error(t('teams.teamNameRequired'));
       return;
     }
 
