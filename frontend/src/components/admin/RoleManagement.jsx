@@ -157,7 +157,9 @@ const RoleManagement = () => {
             </div>
             
             <p className="text-gray-600 text-sm mb-4 min-h-[40px]">
-              {role.description || t('roles.noDescription')}
+              {role.description?.startsWith('role_desc_') 
+                ? t(`roles.descriptions.${role.description}`)
+                : (role.description || t('roles.noDescription'))}
             </p>
 
             <div className="flex gap-2">
