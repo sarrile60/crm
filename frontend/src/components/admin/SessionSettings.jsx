@@ -127,7 +127,7 @@ const SessionSettings = () => {
     const timeInterval = setInterval(updateLocalTime, 1000);
     
     return () => clearInterval(timeInterval);
-  }, [settings.timezone, settings.all_timezones]);
+  }, [settings.timezone, settings.all_timezones, i18n.language]);
 
   const handleSave = async () => {
     try {
