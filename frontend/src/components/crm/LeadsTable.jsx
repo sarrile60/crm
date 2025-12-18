@@ -1355,7 +1355,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Seleziona File CSV</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('crm.selectCSVFileLabel')}</label>
                 <Input
                   type="file"
                   accept=".csv"
@@ -1367,10 +1367,10 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               <div className="flex gap-3">
                 <Button onClick={handleImportCSV} disabled={!csvFile} className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
                   <Upload className="w-4 h-4 mr-2" />
-                  Importa Lead
+                  {t('crm.importLeads')}
                 </Button>
                 <Button onClick={() => setShowImportModal(false)} className="flex-1 bg-gray-300 text-black hover:bg-gray-400 rounded-none">
-                  Annulla
+                  {t('common.cancel')}
                 </Button>
               </div>
             </div>
@@ -1385,7 +1385,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
                 <AlertTriangle className="w-6 h-6" />
-                Conferma Eliminazione
+                {t('leads.confirmDelete')}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
