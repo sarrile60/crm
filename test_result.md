@@ -1048,6 +1048,18 @@ frontend:
         agent: "testing"
         comment: "✅ DATA VISIBILITY RULES UI FULLY TESTED (8/8 test requirements passed): Navigation ✓ (Admin login successful, Administration Panel accessible, Data Visibility tab functional), UI Elements ✓ (Page header 'Visibilità Dati', Legend section with 3 visibility boxes: Visibile/Mascherato/Nascosto, Filter buttons: Tutti/Solo Ruoli/Solo Team, Matrix table with columns: Tipo/Nome/Telefono/Email/Indirizzo, Role rows: Admin/Supervisor/Agent, Team rows: ITALY/ITALY 1/Test Team/Archive Test Team, 24 visibility dropdown selects), Dropdown Functionality ✓ (Visibility options working, 'Salva Modifiche' button activates on change), Save Functionality ✓ (Success toast 'Regole di visibilità salvate con successo' appears, changes persist), Info Box ✓ ('Come Funziona' heading with 7 bullet points explaining visibility levels). Minor: Filter functionality has some display issues but core filtering logic works. All major UI components and functionality working correctly as per test specification."
 
+  - task: "Session Settings Timezone Selector"
+    implemented: true
+    working: true
+    file: "SessionSettings.jsx, AdminPanel.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "⏰ SESSION SETTINGS TIMEZONE SELECTOR TESTING COMPLETED - 100% SUCCESS RATE. 📊 COMPREHENSIVE TEST RESULTS (13/13 TESTS PASSED): ✅ NAVIGATION & ACCESS CONTROL: Admin login successful with provided credentials (admin_f87450ce5d66), Administration Panel accessible via 'Administration' button, Session Settings tab found and functional, 'Impostazioni Sessione' page loaded correctly. ✅ TIMEZONE DROPDOWN FUNCTIONALITY: Found 'Fuso Orario' section with 'Seleziona Fuso Orario' label, timezone dropdown opened successfully showing 75 timezone options, timezone options properly formatted with city names, GMT offsets, and current times (e.g., 'Berlin GMT+1 • 10:58'). ✅ TIMEZONE SELECTION & UNSAVED CHANGES: Successfully selected different timezone (changed from UTC to Berlin GMT+1), unsaved changes warning '⚠️ Modifiche non salvate' appeared correctly, 'Salva Ora' button became available, right panel showed '👁️ Anteprima (Non Salvato)' label, 'Clicca Salva' animated badge displayed correctly, live clock updated to show time in newly selected timezone with proper GMT offset display. ✅ SAVE FUNCTIONALITY: 'Salva Ora' button clicked successfully, success toast 'Impostazioni salvate con successo' appeared, unsaved changes warning disappeared after save, panel returned to normal state (no preview labels), timezone change persisted correctly. All test specification requirements met perfectly - timezone selector working flawlessly with proper UI feedback and save functionality."
+
 test_plan:
   current_focus:
     - "Session Settings Timezone Selector Testing - COMPLETED"
