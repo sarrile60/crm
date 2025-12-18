@@ -1050,7 +1050,7 @@ frontend:
 
 test_plan:
   current_focus:
-    - "Data Visibility Rules UI Testing - COMPLETED"
+    - "Session Settings Timezone Selector Testing - COMPLETED"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
