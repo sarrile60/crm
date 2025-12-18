@@ -26,7 +26,8 @@ const SessionSettings = () => {
     session_end_hour: 18,
     session_end_minute: 30,
     work_days: [0, 1, 2, 3, 4],
-    require_approval_after_hours: true
+    require_approval_after_hours: true,
+    approval_duration_minutes: 30
   });
   const [loginRequests, setLoginRequests] = useState([]);
   const [loading, setLoading] = useState(false);
