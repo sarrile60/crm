@@ -30,6 +30,7 @@ const SessionSettings = () => {
     require_approval_after_hours: true,
     approval_duration_minutes: 30,
     timezone: 'Europe/Berlin',
+    timezone_offset: 'GMT+1',
     current_time: '',
     current_day: '',
     all_timezones: []
@@ -38,6 +39,8 @@ const SessionSettings = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [previewTimezone, setPreviewTimezone] = useState(null); // For hover preview
+  const [localTime, setLocalTime] = useState(''); // Live updating time
 
   const fetchSettings = useCallback(async () => {
     try {
