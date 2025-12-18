@@ -1,5 +1,9 @@
 import './App.css';
+import './i18n/i18n'; // Initialize i18n
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import axios from 'axios';
+import i18n from './i18n/i18n';
 import Home from './pages/Home';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
@@ -8,6 +12,8 @@ import CRMDashboard from './pages/CRMDashboard';
 import ThankYou from './pages/ThankYou';
 import AdminPanel from './pages/AdminPanel';
 import { Toaster } from './components/ui/sonner';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 function App() {
   return (
