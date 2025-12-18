@@ -475,7 +475,7 @@ const AuditLogs = () => {
         {/* Pagination */}
         <div className="flex justify-between items-center px-4 py-3 border-t border-gray-200 bg-gray-50">
           <div className="text-sm text-gray-500">
-            Mostrando {pagination.offset + 1} - {Math.min(pagination.offset + logs.length, pagination.total)} di {pagination.total} risultati
+            {t('common.showing')} {pagination.offset + 1} - {Math.min(pagination.offset + logs.length, pagination.total)} {t('common.of')} {pagination.total} {t('common.results')}
           </div>
           <div className="flex gap-2">
             <Button
@@ -486,7 +486,7 @@ const AuditLogs = () => {
               className="rounded-none"
             >
               <ChevronLeft className="w-4 h-4" />
-              Precedente
+              {t('common.previous')}
             </Button>
             <Button
               variant="outline"
@@ -495,7 +495,7 @@ const AuditLogs = () => {
               disabled={!pagination.has_more}
               className="rounded-none"
             >
-              Successivo
+              {t('common.next')}
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
@@ -504,12 +504,12 @@ const AuditLogs = () => {
 
       {/* Info Box */}
       <div className="bg-blue-50 border border-blue-200 p-4">
-        <h4 className="font-semibold text-blue-800 mb-2">Informazioni sui Log</h4>
+        <h4 className="font-semibold text-blue-800 mb-2">{t('audit.infoTitle')}</h4>
         <ul className="text-sm text-blue-700 space-y-1">
-          <li>• I log sono <strong>immutabili</strong> e non possono essere modificati o eliminati</li>
-          <li>• Vengono registrate tutte le azioni: login, modifiche utenti, team, ruoli, permessi</li>
-          <li>• L'export CSV include tutti i log filtrati (massimo 10.000 record)</li>
-          <li>• Solo gli amministratori possono visualizzare i log di audit</li>
+          <li>• {t('audit.infoDesc1')}</li>
+          <li>• {t('audit.infoDesc2')}</li>
+          <li>• {t('audit.infoDesc3')}</li>
+          <li>• {t('audit.infoDesc4')}</li>
         </ul>
       </div>
     </div>
