@@ -371,7 +371,7 @@ const AuditLogs = () => {
                   <SelectItem value="all">{t('audit.allActions')}</SelectItem>
                   {filterOptions.actions.map(a => (
                     <SelectItem key={a.value} value={a.value}>
-                      {a.label}
+                      {getActionLabel(a.label)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -391,7 +391,7 @@ const AuditLogs = () => {
                   <SelectItem value="all">{t('audit.allTypes')}</SelectItem>
                   {filterOptions.entity_types.map(e => (
                     <SelectItem key={e.value} value={e.value}>
-                      {e.label}
+                      {getEntityLabel(e.label)}
                     </SelectItem>
                   ))}
                 </SelectContent>
