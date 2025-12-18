@@ -1241,7 +1241,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-black mb-2">Telefono *</label>
+                  <label className="block text-sm font-semibold text-black mb-2">{t('common.phone')} *</label>
                   <Input
                     value={newLead.phone}
                     onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
@@ -1250,7 +1250,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-black mb-2">Azienda Truffatrice *</label>
+                  <label className="block text-sm font-semibold text-black mb-2">{t('crm.scammerCompany')} *</label>
                   <Input
                     value={newLead.scammerCompany}
                     onChange={(e) => setNewLead({ ...newLead, scammerCompany: e.target.value })}
@@ -1260,13 +1260,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Importo Perso *</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('crm.amountLost')} *</label>
                 <Select 
                   value={newLead.amountLost || undefined} 
                   onValueChange={(value) => setNewLead({ ...newLead, amountLost: value })}
                 >
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Seleziona importo" />
+                    <SelectValue placeholder={t('crm.selectAmount')} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="500-5000">€500 - €5.000</SelectItem>
@@ -1277,11 +1277,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                 </Select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Dettagli Caso *</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('crm.caseDetails')} *</label>
                 <Textarea
                   value={newLead.caseDetails}
                   onChange={(e) => setNewLead({ ...newLead, caseDetails: e.target.value })}
-                  placeholder="Descrivi i dettagli della truffa..."
+                  placeholder={t('crm.describeFraud')}
                   rows={5}
                   className="bg-white border-gray-300 rounded-none"
                 />
