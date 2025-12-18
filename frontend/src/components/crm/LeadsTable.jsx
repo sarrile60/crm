@@ -1046,7 +1046,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                     <SelectValue placeholder={t('crm.noChange')} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="_none">Nessun cambio</SelectItem>
+                    <SelectItem value="_none">{t('crm.noChange')}</SelectItem>
                     {statuses.map(status => (
                       <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
                     ))}
@@ -1055,13 +1055,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Team (opzionale)</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('crm.teamOptional')}</label>
                 <Select value={massUpdateData.team_id || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, team_id: value === "_none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
                     <SelectValue placeholder={t('crm.noChange')} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="_none">Nessun cambio</SelectItem>
+                    <SelectItem value="_none">{t('crm.noChange')}</SelectItem>
                     {teams.map(team => (
                       <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
                     ))}
@@ -1070,13 +1070,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Assegna a Utente (opzionale)</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('crm.assignToUserOptional')}</label>
                 <Select value={massUpdateData.assigned_to || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, assigned_to: value === "_none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
                     <SelectValue placeholder={t('crm.noChange')} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="_none">Nessun cambio</SelectItem>
+                    <SelectItem value="_none">{t('crm.noChange')}</SelectItem>
                     {users.filter(u => u.is_active).map(user => (
                       <SelectItem key={user.id} value={user.id}>{user.full_name} ({user.role})</SelectItem>
                     ))}
@@ -1085,7 +1085,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               </div>
 
               <Button onClick={handleMassUpdate} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
-                Aggiorna Lead
+                {t('crm.updateLeads')}
               </Button>
             </div>
           </DialogContent>
@@ -1097,7 +1097,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
           <DialogContent className="max-w-lg bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">Modifica Lead</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">{t('leads.editLead')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
@@ -1114,16 +1114,16 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                 </Select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Priorità</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('leads.priority')}</label>
                 <Select value={editData.priority} onValueChange={(value) => setEditData({ ...editData, priority: value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="low">Bassa</SelectItem>
-                    <SelectItem value="medium">Media</SelectItem>
-                    <SelectItem value="high">Alta</SelectItem>
-                    <SelectItem value="urgent">Urgente</SelectItem>
+                    <SelectItem value="low">{t('leads.low')}</SelectItem>
+                    <SelectItem value="medium">{t('leads.medium')}</SelectItem>
+                    <SelectItem value="high">{t('leads.high')}</SelectItem>
+                    <SelectItem value="urgent">{t('leads.urgent')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
