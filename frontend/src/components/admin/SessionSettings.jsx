@@ -364,12 +364,12 @@ const SessionSettings = () => {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Globe className="w-5 h-5 text-[#D4AF37]" />
-            <h3 className="font-bold text-gray-900">Fuso Orario</h3>
+            <h3 className="font-bold text-gray-900">{t('session.timezone')}</h3>
           </div>
           {hasChanges && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-amber-600 font-medium animate-pulse">
-                ⚠️ Modifiche non salvate
+                ⚠️ {t('session.unsavedChanges')}
               </span>
               <Button
                 onClick={handleSave}
@@ -378,7 +378,7 @@ const SessionSettings = () => {
                 size="sm"
               >
                 <Save className="w-4 h-4 mr-1" />
-                {saving ? 'Salvataggio...' : 'Salva Ora'}
+                {saving ? t('common.loading') : t('session.saveNow')}
               </Button>
             </div>
           )}
@@ -387,7 +387,7 @@ const SessionSettings = () => {
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Seleziona Fuso Orario
+              {t('session.selectTimezone')}
             </label>
             <Select
               value={settings.timezone || 'Europe/Berlin'}
