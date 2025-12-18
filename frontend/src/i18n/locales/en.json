@@ -386,7 +386,12 @@
     "currentLanguage": "Current Language",
     "selectLanguage": "Select Language",
     "languageUpdated": "Language updated successfully",
-    "errorUpdatingLanguage": "Error updating language"
+    "errorUpdatingLanguage": "Error updating language",
+    "saveSuccess": "Language saved successfully",
+    "systemWide": "System-wide language setting",
+    "infoTitle": "Language Information",
+    "infoDesc1": "The selected language applies to the entire system",
+    "infoDesc2": "Affects CRM Dashboard, Admin Panel, and Homepage"
   },
   "home": {
     "heroTitle": "Recover Your Funds from Online and Crypto Scams",
