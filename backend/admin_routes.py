@@ -1202,3 +1202,165 @@ async def get_audit_log_stats():
         ]
     }
 
+
+
+# ============================================
+# SESSION SETTINGS (Admin-Only Configuration)
+# ============================================
+
+@admin_router.get("/session-settings", dependencies=[Depends(require_admin)])
+async def get_session_settings_endpoint():
+    """Get current session settings for GUI configuration"""
+    settings = await get_session_settings()
+    return {
+        "session_start_hour": settings.get("session_start_hour", 8),
+        "session_start_minute": settings.get("session_start_minute", 0),
+        "session_end_hour": settings.get("session_end_hour", 18),
+        "session_end_minute": settings.get("session_end_minute", 30),
+        "work_days": settings.get("work_days", [0, 1, 2, 3, 4]),
+        "timezone": settings.get("timezone", "Europe/Berlin"),
+        "require_approval_after_hours": settings.get("require_approval_after_hours", True),
+        "day_names": {
+            0: "Lunedì",
+            1: "Martedì", 
+            2: "Mercoledì",
+            3: "Giovedì",
+            4: "Venerdì",
+            5: "Sabato",
+            6: "Domenica"
+        }
+    }
+
+
+@admin_router.put("/session-settings", dependencies=[Depends(require_admin)])
+async def update_session_settings_endpoint(settings_data: dict, current_user: dict = Depends(get_current_user)):
+    """Update session settings via Admin GUI"""
+    updated = await update_session_settings(
+        session_start_hour=settings_data.get("session_start_hour", 8),
+        session_start_minute=settings_data.get("session_start_minute", 0),
+        session_end_hour=settings_data.get("session_end_hour", 18),
+        session_end_minute=settings_data.get("session_end_minute", 30),
+        work_days=settings_data.get("work_days", [0, 1, 2, 3, 4]),
+        require_approval_after_hours=settings_data.get("require_approval_after_hours", True)
+    )
+    
+    # Log the change
+    await create_audit_log(
+        action="session_settings_updated",
+        entity_type="settings",
+        user_id=current_user["id"],
+        user_name=current_user["username"],
+        entity_name="Session Settings",
+        details={
+            "start": f"{updated['session_start_hour']:02d}:{updated['session_start_minute']:02d}",
+            "end": f"{updated['session_end_hour']:02d}:{updated['session_end_minute']:02d}",
+            "work_days": updated["work_days"],
+            "require_approval": updated["require_approval_after_hours"]
+        }
+    )
+    
+    logger.info(f"Session settings updated by {current_user['username']}")
+    return {"success": True, "settings": updated}
+
+
+# ============================================
+# LOGIN APPROVAL REQUESTS (After Hours)
+# ============================================
+
+@admin_router.get("/login-requests", dependencies=[Depends(require_admin)])
+async def get_login_requests():
+    """Get pending login requests for admin approval"""
+    requests = await db.login_requests.find(
+        {"status": "pending"},
+        {"_id": 0}
+    ).sort("requested_at", -1).to_list(100)
+    
+    # Convert datetime to ISO string
+    for req in requests:
+        if isinstance(req.get("requested_at"), datetime):
+            req["requested_at"] = req["requested_at"].isoformat()
+    
+    return {"requests": requests, "count": len(requests)}
+
+
+@admin_router.post("/login-requests/{request_id}/approve", dependencies=[Depends(require_admin)])
+async def approve_login_request(request_id: str, current_user: dict = Depends(get_current_user)):
+    """Approve a login request - allows user to login for the next 30 minutes"""
+    from datetime import timedelta
+    
+    request = await db.login_requests.find_one({"id": request_id, "status": "pending"})
+    if not request:
+        raise HTTPException(status_code=404, detail="Request not found or already processed")
+    
+    # Update request to approved with 30 minute expiry
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=30)
+    await db.login_requests.update_one(
+        {"id": request_id},
+        {"$set": {
+            "status": "approved",
+            "approved_by": current_user["id"],
+            "approved_at": datetime.now(timezone.utc),
+            "expires_at": expires_at
+        }}
+    )
+    
+    # Log the approval
+    await create_audit_log(
+        action="login_request_approved",
+        entity_type="auth",
+        user_id=current_user["id"],
+        user_name=current_user["username"],
+        entity_id=request["user_id"],
+        entity_name=request["username"],
+        details={"expires_at": expires_at.isoformat()}
+    )
+    
+    logger.info(f"Login request for {request['username']} approved by {current_user['username']}")
+    return {
+        "success": True, 
+        "message": f"Accesso approvato per {request['username']}. Valido per 30 minuti.",
+        "expires_at": expires_at.isoformat()
+    }
+
+
+@admin_router.post("/login-requests/{request_id}/deny", dependencies=[Depends(require_admin)])
+async def deny_login_request(request_id: str, current_user: dict = Depends(get_current_user)):
+    """Deny a login request"""
+    request = await db.login_requests.find_one({"id": request_id, "status": "pending"})
+    if not request:
+        raise HTTPException(status_code=404, detail="Request not found or already processed")
+    
+    await db.login_requests.update_one(
+        {"id": request_id},
+        {"$set": {
+            "status": "denied",
+            "denied_by": current_user["id"],
+            "denied_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    # Log the denial
+    await create_audit_log(
+        action="login_request_denied",
+        entity_type="auth",
+        user_id=current_user["id"],
+        user_name=current_user["username"],
+        entity_id=request["user_id"],
+        entity_name=request["username"]
+    )
+    
+    logger.info(f"Login request for {request['username']} denied by {current_user['username']}")
+    return {"success": True, "message": f"Accesso negato per {request['username']}."}
+
+
+@admin_router.delete("/login-requests/clear-expired", dependencies=[Depends(require_admin)])
+async def clear_expired_requests():
+    """Clear expired and old requests"""
+    result = await db.login_requests.delete_many({
+        "$or": [
+            {"status": {"$in": ["approved", "denied"]}},
+            {"requested_at": {"$lt": datetime.now(timezone.utc) - timedelta(hours=24)}}
+        ]
+    })
+    return {"success": True, "deleted": result.deleted_count}
+
