@@ -439,29 +439,29 @@ const SessionSettings = () => {
             </div>
           </div>
           
-          <div className={`p-4 border-2 transition-all ${previewTimezone ? 'bg-amber-50 border-amber-300' : 'bg-gray-50 border-gray-200'}`}>
+          <div className={`p-4 border-2 transition-all ${hasChanges ? 'bg-amber-50 border-amber-300' : 'bg-gray-50 border-gray-200'}`}>
             <div className="flex items-center justify-between mb-1">
               <div className="text-sm text-gray-500">
-                {previewTimezone ? '👁️ Anteprima' : 'Ora Corrente nel Fuso Selezionato'}
+                {hasChanges ? '👁️ Anteprima (Non Salvato)' : 'Ora Corrente nel Fuso Selezionato'}
               </div>
-              {previewTimezone && (
-                <span className="text-xs bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full">
-                  Non salvato
+              {hasChanges && (
+                <span className="text-xs bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full animate-pulse">
+                  Clicca Salva
                 </span>
               )}
             </div>
-            <div className={`text-4xl font-mono font-bold ${previewTimezone ? 'text-amber-600' : 'text-[#D4AF37]'}`}>
+            <div className={`text-4xl font-mono font-bold ${hasChanges ? 'text-amber-600' : 'text-[#D4AF37]'}`}>
               {localTime?.time || '--:--:--'}
             </div>
             <div className="text-sm text-gray-600 mt-1 capitalize">
               {localTime?.date || ''}
             </div>
             <div className="flex items-center gap-2 mt-2">
-              <div className={`text-sm font-mono font-bold ${previewTimezone ? 'text-amber-700' : 'text-[#D4AF37]'}`}>
+              <div className={`text-sm font-mono font-bold ${hasChanges ? 'text-amber-700' : 'text-[#D4AF37]'}`}>
                 {localTime?.offset || settings.timezone_offset}
               </div>
               <div className="text-xs text-gray-400">
-                {previewTimezone || settings.timezone}
+                {settings.timezone}
               </div>
             </div>
           </div>
