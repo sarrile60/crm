@@ -267,7 +267,14 @@
     "archived": "Archived",
     "viewMembers": "View Members",
     "defaultTeam": "Default Team",
-    "noMembersInTeam": "No members in this team"
+    "noMembersInTeam": "No members in this team",
+    "addMembers": "Add Members",
+    "addMembersToTeam": "Add Members to Team",
+    "setAsDefaultTeam": "Set as default team for new members",
+    "allUsersAlreadyMembers": "All active users are already members of this team",
+    "currentTeam": "Current Team",
+    "usersSelected": "users selected",
+    "removeFromTeam": "Remove from team"
   },
   "visibility": {
     "title": "Data Visibility",
