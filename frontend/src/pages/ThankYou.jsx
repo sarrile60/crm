@@ -2,9 +2,11 @@ import React, { useEffect } from 'react';
 import { CheckCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const ThankYou = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Scroll to top
@@ -37,34 +39,34 @@ const ThankYou = () => {
 
           {/* Main Message */}
           <h1 className="text-4xl md:text-5xl font-bold text-black mb-6">
-            Grazie per la Tua Richiesta!
+            {t('thankYou.title')}
           </h1>
           
           <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-            Abbiamo ricevuto i dettagli del tuo caso. Il nostro team di avvocati esperti esaminerà attentamente la tua richiesta e ti contatterà entro <strong className="text-black">24 ore</strong>.
+            {t('thankYou.message')}
           </p>
 
           {/* Info Box */}
           <div className="bg-[#D4AF37]/10 border-2 border-[#D4AF37] p-8 rounded mb-8 text-left">
-            <h2 className="text-2xl font-bold text-black mb-4">Cosa Succede Ora?</h2>
+            <h2 className="text-2xl font-bold text-black mb-4">{t('thankYou.whatHappensNow')}</h2>
             <ul className="space-y-3 text-gray-700">
               <li className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-[#D4AF37] text-black flex items-center justify-center rounded-full flex-shrink-0 mt-0.5">
                   <span className="text-sm font-bold">1</span>
                 </div>
-                <span>Un avvocato del nostro team esaminerà il tuo caso e valuterà le prove disponibili</span>
+                <span>{t('thankYou.step1')}</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-[#D4AF37] text-black flex items-center justify-center rounded-full flex-shrink-0 mt-0.5">
                   <span className="text-sm font-bold">2</span>
                 </div>
-                <span>Ti contatteremo via telefono o email per discutere le opzioni legali disponibili</span>
+                <span>{t('thankYou.step2')}</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-6 h-6 bg-[#D4AF37] text-black flex items-center justify-center rounded-full flex-shrink-0 mt-0.5">
                   <span className="text-sm font-bold">3</span>
                 </div>
-                <span>La consulenza iniziale è <strong>completamente gratuita</strong> e senza impegno</span>
+                <span>{t('thankYou.step3')}</span>
               </li>
             </ul>
           </div>
@@ -75,7 +77,7 @@ const ThankYou = () => {
             className="bg-black text-white hover:bg-gray-800 rounded-none px-8 py-6 text-lg"
           >
             <ArrowLeft className="mr-2" />
-            Torna alla Home
+            {t('thankYou.backToHome')}
           </Button>
         </div>
       </div>
@@ -90,10 +92,10 @@ const ThankYou = () => {
             <span className="text-xl font-bold">LAW SOLICITORS</span>
           </div>
           <p className="text-gray-400 text-sm mb-2">
-            Studio legale specializzato nel recupero fondi da truffe finanziarie
+            {t('thankYou.footerTagline')}
           </p>
           <p className="text-gray-500 text-xs">
-            © 2024 1 Law Solicitors. Tutti i diritti riservati.
+            {t('thankYou.copyright')}
           </p>
         </div>
       </footer>
