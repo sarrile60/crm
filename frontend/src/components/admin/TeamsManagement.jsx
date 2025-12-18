@@ -651,18 +651,18 @@ const TeamsManagement = () => {
             
             {selectedTeam && getTeamMembers(selectedTeam.id).length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                Nessun membro in questo team
+                {t('teams.noMembersInTeam')}
               </div>
             ) : (
               <div className="max-h-96 overflow-y-auto">
                 <table className="w-full">
                   <thead className="bg-gray-100 sticky top-0">
                     <tr>
-                      <th className="text-left p-3 font-semibold">Nome</th>
-                      <th className="text-left p-3 font-semibold">Username</th>
-                      <th className="text-left p-3 font-semibold">Ruolo</th>
-                      <th className="text-left p-3 font-semibold">Team Predefinito</th>
-                      <th className="text-left p-3 font-semibold">Azioni</th>
+                      <th className="text-left p-3 font-semibold">{t('common.name')}</th>
+                      <th className="text-left p-3 font-semibold">{t('users.usernameLabel')}</th>
+                      <th className="text-left p-3 font-semibold">{t('users.role')}</th>
+                      <th className="text-left p-3 font-semibold">{t('teams.defaultTeam')}</th>
+                      <th className="text-left p-3 font-semibold">{t('common.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -672,7 +672,7 @@ const TeamsManagement = () => {
                           <span className="font-medium">{member.full_name}</span>
                           {member.id === selectedTeam.supervisor_id && (
                             <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">
-                              Supervisor
+                              {t('teams.supervisor')}
                             </span>
                           )}
                         </td>
@@ -688,9 +688,9 @@ const TeamsManagement = () => {
                         </td>
                         <td className="p-3">
                           {member.default_team_id === selectedTeam.id || member.team_id === selectedTeam.id ? (
-                            <span className="text-green-600">✓ Sì</span>
+                            <span className="text-green-600">✓ {t('common.yes')}</span>
                           ) : (
-                            <span className="text-gray-400">No</span>
+                            <span className="text-gray-400">{t('common.no')}</span>
                           )}
                         </td>
                         <td className="p-3">
@@ -699,7 +699,7 @@ const TeamsManagement = () => {
                               onClick={() => handleRemoveMemberFromTeam(member.id)}
                               size="sm"
                               className="bg-red-600 text-white hover:bg-red-700 rounded-none"
-                              title="Rimuovi dal team"
+                              title={t('teams.removeFromTeam')}
                             >
                               <UserMinus className="w-4 h-4" />
                             </Button>
@@ -716,7 +716,7 @@ const TeamsManagement = () => {
                 onClick={() => setShowMembersModal(false)}
                 className="bg-gray-200 text-black hover:bg-gray-300 rounded-none"
               >
-                Chiudi
+                {t('common.close')}
               </Button>
             </div>
           </div>
