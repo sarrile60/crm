@@ -80,6 +80,7 @@ const AdminPanel = () => {
     { id: 'roles', label: 'Roles', icon: Shield, component: RoleManagement },
     { id: 'permissions', label: 'Permission Matrix', icon: Database, component: PermissionMatrix },
     { id: 'visibility', label: 'Data Visibility', icon: Eye, component: DataVisibilityRules },
+    { id: 'session', label: 'Session Settings', icon: Clock, component: SessionSettings },
     { id: 'audit', label: 'Audit Logs', icon: FileText, component: AuditLogs },
     { id: 'entities', label: 'Entity Configuration', icon: Settings, component: EntityConfiguration }
   ];
