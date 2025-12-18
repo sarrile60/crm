@@ -276,6 +276,8 @@
     "permissions": "Permission Matrix",
     "users": "User Management",
     "teams": "Team Management",
+    "verifyingAuth": "Verifying authorization...",
+    "accessDeniedMessage": "You do not have permission to access the administration panel. Only users with the \"admin\" role can access this section.",
     "visibility": "Data Visibility",
     "auditLogs": "Audit Logs",
     "sessionSettings": "Session Settings",
