@@ -118,7 +118,10 @@
     "pendingCallbacks": "Pending Callbacks",
     "quickActions": "Quick Actions",
     "viewAllLeads": "View All Leads",
-    "adminPanel": "Administration Panel"
+    "adminPanel": "Administration Panel",
+    "receivedLeads": "Received Leads",
+    "completeListConsultations": "Complete list of all consultation requests",
+    "noLeadsReceived": "No leads received yet"
   },
   "leads": {
     "title": "Lead Management",
@@ -577,7 +580,24 @@
     "lightMode": "Light Mode",
     "autoMode": "Auto",
     "saveSettings": "Save Settings",
-    "settingsSaved": "Settings saved successfully"
+    "settingsSaved": "Settings saved successfully",
+    "crmSettings": "CRM Settings",
+    "customStatuses": "Custom Statuses",
+    "newStatus": "New Status",
+    "statusCreated": "Status created successfully",
+    "errorCreatingStatus": "Error creating status",
+    "confirmDeleteStatus": "Are you sure you want to delete this status?",
+    "statusDeleted": "Status deleted",
+    "errorDeletingStatus": "Error deleting status",
+    "systemInfo": "System Information",
+    "crmVersion": "CRM Version",
+    "activeStatuses": "Active Statuses",
+    "activeTeams": "Active Teams",
+    "createNewStatus": "Create New Status",
+    "statusName": "Status Name",
+    "color": "Color",
+    "order": "Order",
+    "createStatus": "Create Status"
   },
   "successCases": {
     "cryptoExchange": "Crypto Exchange Scam",
