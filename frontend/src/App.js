@@ -16,6 +16,27 @@ import { Toaster } from './components/ui/sonner';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 function App() {
+  // Load system language on app start
+  useEffect(() => {
+    const loadSystemLanguage = async () => {
+      try {
+        // Try to get the system language setting (no auth required for public pages)
+        const response = await axios.get(`${BACKEND_URL}/api/system/language`);
+        if (response.data?.language) {
+          i18n.changeLanguage(response.data.language);
+          localStorage.setItem('i18nextLng', response.data.language);
+        }
+      } catch (error) {
+        // If API fails, check localStorage or use default
+        const savedLang = localStorage.getItem('i18nextLng');
+        if (savedLang) {
+          i18n.changeLanguage(savedLang);
+        }
+      }
+    };
+    loadSystemLanguage();
+  }, []);
+
   return (
     <div className="App">
       <BrowserRouter>
