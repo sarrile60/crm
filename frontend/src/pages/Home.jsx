@@ -325,7 +325,7 @@ const Home = () => {
             ) : (
               <form onSubmit={handleFinalSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-black mb-2 text-sm font-semibold">Nome Azienda Truffatrice *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">{t('home.scammerCompany')} *</label>
                   <Input
                     type="text"
                     name="scammerCompany"
@@ -337,10 +337,10 @@ const Home = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-black mb-2 text-sm font-semibold">Importo Perso *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">{t('home.amountLost')} *</label>
                   <Select onValueChange={handleSelectChange} value={formData.amountLost}>
                     <SelectTrigger className="bg-white border-gray-300 text-black rounded-none">
-                      <SelectValue placeholder="Seleziona importo" />
+                      <SelectValue placeholder={t('home.selectAmount')} />
                     </SelectTrigger>
                     <SelectContent className="bg-white border-gray-300 text-black">
                       <SelectItem value="500-5000">€500 - €5.000</SelectItem>
@@ -351,26 +351,26 @@ const Home = () => {
                   </Select>
                 </div>
                 <div>
-                  <label className="block text-black mb-2 text-sm font-semibold">Raccontaci cosa è successo *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">{t('home.tellUsWhatHappened')} *</label>
                   <Textarea
                     name="caseDetails"
                     value={formData.caseDetails}
                     onChange={handleInputChange}
-                    placeholder="Descrivi i dettagli della truffa, quando è avvenuta, quali prove hai, ecc."
+                    placeholder={t('home.describeFraud')}
                     rows={5}
                     className="bg-white border-gray-300 text-black rounded-none"
                     required
                   />
                 </div>
                 <Button type="submit" disabled={loading} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg py-6 font-semibold">
-                  {loading ? 'Invio in corso...' : 'Invia Richiesta di Consulenza'}
+                  {loading ? t('common.submitting') : t('home.submitRequest')}
                 </Button>
                 <button
                   type="button"
                   onClick={() => setFormStep(1)}
                   className="text-gray-700 hover:text-black underline text-sm"
                 >
-                  ← Torna Indietro
+                  {t('common.back')}
                 </button>
               </form>
             )}
