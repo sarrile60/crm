@@ -358,10 +358,28 @@ const SessionSettings = () => {
       </div>
 
       {/* Timezone Settings */}
-      <div className="bg-white border border-gray-200 p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Globe className="w-5 h-5 text-[#D4AF37]" />
-          <h3 className="font-bold text-gray-900">Fuso Orario</h3>
+      <div className={`bg-white border-2 p-6 transition-all ${hasChanges ? 'border-[#D4AF37] shadow-lg' : 'border-gray-200'}`}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Globe className="w-5 h-5 text-[#D4AF37]" />
+            <h3 className="font-bold text-gray-900">Fuso Orario</h3>
+          </div>
+          {hasChanges && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-amber-600 font-medium animate-pulse">
+                ⚠️ Modifiche non salvate
+              </span>
+              <Button
+                onClick={handleSave}
+                disabled={saving}
+                className="bg-[#D4AF37] hover:bg-[#B8941F] text-black rounded-none"
+                size="sm"
+              >
+                <Save className="w-4 h-4 mr-1" />
+                {saving ? 'Salvataggio...' : 'Salva Ora'}
+              </Button>
+            </div>
+          )}
         </div>
         
         <div className="grid grid-cols-2 gap-6">
@@ -371,46 +389,80 @@ const SessionSettings = () => {
             </label>
             <Select
               value={settings.timezone || 'Europe/Berlin'}
-              onValueChange={(value) => updateSetting('timezone', value)}
+              onValueChange={(value) => {
+                updateSetting('timezone', value);
+                setPreviewTimezone(null); // Clear preview when value is selected
+              }}
             >
               <SelectTrigger className="rounded-none">
-                <SelectValue placeholder="Seleziona fuso orario" />
+                <SelectValue placeholder="Seleziona fuso orario">
+                  {settings.all_timezones?.find(tz => tz.value === settings.timezone)?.label || settings.timezone}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent className="max-h-80">
                 {settings.all_timezones && settings.all_timezones.length > 0 ? (
                   <>
                     {['Europe', 'Americas', 'Asia', 'Africa', 'Oceania', 'UTC'].map(region => (
                       <React.Fragment key={region}>
-                        <div className="px-2 py-1 text-xs font-bold text-gray-500 bg-gray-100 sticky top-0">
+                        <div className="px-2 py-1 text-xs font-bold text-gray-500 bg-gray-100 sticky top-0 z-10">
                           {region}
                         </div>
                         {settings.all_timezones
                           .filter(tz => tz.region === region)
                           .map(tz => (
-                            <SelectItem key={tz.value} value={tz.value}>
-                              {tz.label}
+                            <SelectItem 
+                              key={tz.value} 
+                              value={tz.value}
+                              onMouseEnter={() => setPreviewTimezone(tz.value)}
+                              onMouseLeave={() => setPreviewTimezone(null)}
+                              className="flex justify-between"
+                            >
+                              <span>{tz.city}</span>
+                              <span className="ml-2 text-gray-500 font-mono text-xs">
+                                {tz.offset} • {tz.current_time}
+                              </span>
                             </SelectItem>
                           ))}
                       </React.Fragment>
                     ))}
                   </>
                 ) : (
-                  <SelectItem value="Europe/Berlin">Berlin (CET/CEST)</SelectItem>
+                  <SelectItem value="Europe/Berlin">Berlin (GMT+1)</SelectItem>
                 )}
               </SelectContent>
             </Select>
+            
+            {/* Current timezone info */}
+            <div className="mt-3 p-2 bg-gray-50 border border-gray-200 rounded-none text-xs text-gray-600">
+              <span className="font-semibold">Fuso attuale:</span> {settings.timezone}
+              <span className="ml-2 font-mono text-[#D4AF37]">{settings.timezone_offset || localTime?.offset}</span>
+            </div>
           </div>
           
-          <div className="bg-gray-50 p-4 border border-gray-200">
-            <div className="text-sm text-gray-500 mb-1">Ora Corrente nel Fuso Selezionato</div>
-            <div className="text-3xl font-mono font-bold text-[#D4AF37]">
-              {settings.current_time ? settings.current_time.split(' ')[1] : '--:--:--'}
+          <div className={`p-4 border-2 transition-all ${previewTimezone ? 'bg-amber-50 border-amber-300' : 'bg-gray-50 border-gray-200'}`}>
+            <div className="flex items-center justify-between mb-1">
+              <div className="text-sm text-gray-500">
+                {previewTimezone ? '👁️ Anteprima' : 'Ora Corrente nel Fuso Selezionato'}
+              </div>
+              {previewTimezone && (
+                <span className="text-xs bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full">
+                  Non salvato
+                </span>
+              )}
             </div>
-            <div className="text-sm text-gray-600 mt-1">
-              {settings.current_day} • {settings.current_time ? settings.current_time.split(' ')[0] : ''}
+            <div className={`text-4xl font-mono font-bold ${previewTimezone ? 'text-amber-600' : 'text-[#D4AF37]'}`}>
+              {localTime?.time || '--:--:--'}
             </div>
-            <div className="text-xs text-gray-400 mt-2">
-              {settings.timezone}
+            <div className="text-sm text-gray-600 mt-1 capitalize">
+              {localTime?.date || ''}
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+              <div className={`text-sm font-mono font-bold ${previewTimezone ? 'text-amber-700' : 'text-[#D4AF37]'}`}>
+                {localTime?.offset || settings.timezone_offset}
+              </div>
+              <div className="text-xs text-gray-400">
+                {previewTimezone || settings.timezone}
+              </div>
             </div>
           </div>
         </div>
