@@ -149,11 +149,10 @@ const LanguageSettings = () => {
 
       {/* Info Box */}
       <div className="bg-blue-50 border border-blue-200 p-4">
-        <h4 className="font-semibold text-blue-800 mb-2">ℹ️ {t('language.systemWide')}</h4>
+        <h4 className="font-semibold text-blue-800 mb-2">ℹ️ {t('language.infoTitle')}</h4>
         <ul className="text-sm text-blue-700 space-y-1">
-          <li>• {t('language.systemWide')}</li>
-          <li>• CRM Dashboard, Admin Panel, {t('nav.home')}</li>
-          <li>• 🇮🇹 Italiano • 🇬🇧 English • 🇩🇪 Deutsch • 🇫🇷 Français • 🇪🇸 Español</li>
+          <li>• {t('language.infoDesc1')}</li>
+          <li>• {t('language.infoDesc2')}</li>
         </ul>
       </div>
     </div>
