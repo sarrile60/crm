@@ -757,6 +757,21 @@ async def create_crm_lead(lead_data: dict, current_user: dict = Depends(get_curr
         )
         await insert_and_return_clean(db.activity_logs, activity.dict())
         
+        # Log to audit trail
+        await log_lead_action(
+            action=AuditAction.LEAD_CREATED,
+            actor_id=current_user["id"],
+            actor_name=current_user.get("username", current_user["full_name"]),
+            lead_id=lead_id,
+            lead_name=lead["fullName"],
+            details={
+                "email": lead.get("email"),
+                "phone": lead.get("phone"),
+                "amount_lost": lead.get("amountLost"),
+                "assigned_to": current_user["full_name"]
+            }
+        )
+        
         return {"success": True, "lead_id": lead_id, "message": "Lead created successfully"}
         
     except Exception as e:
