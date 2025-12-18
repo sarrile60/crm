@@ -269,43 +269,43 @@ async def log_lead_action(
     )
 
 
-# Action labels for UI display (Italian)
+# Action labels - using keys for frontend translation
 ACTION_LABELS = {
-    AuditAction.LOGIN_SUCCESS: "Login riuscito",
-    AuditAction.LOGIN_FAILED: "Login fallito",
-    AuditAction.LOGOUT: "Logout",
-    AuditAction.USER_CREATED: "Utente creato",
-    AuditAction.USER_UPDATED: "Utente modificato",
-    AuditAction.USER_DELETED: "Utente eliminato",
-    AuditAction.USER_STATUS_CHANGED: "Stato utente modificato",
-    AuditAction.PASSWORD_RESET: "Password reimpostata",
-    AuditAction.TEAM_CREATED: "Team creato",
-    AuditAction.TEAM_UPDATED: "Team modificato",
-    AuditAction.TEAM_ARCHIVED: "Team archiviato",
-    AuditAction.MEMBER_ADDED: "Membro aggiunto",
-    AuditAction.MEMBER_REMOVED: "Membro rimosso",
-    AuditAction.ROLE_CREATED: "Ruolo creato",
-    AuditAction.ROLE_UPDATED: "Ruolo modificato",
-    AuditAction.ROLE_DELETED: "Ruolo eliminato",
-    AuditAction.PERMISSIONS_UPDATED: "Permessi aggiornati",
-    AuditAction.ROLE_ASSIGNED: "Ruolo assegnato",
-    AuditAction.ROLE_UNASSIGNED: "Ruolo rimosso",
-    AuditAction.VISIBILITY_RULES_UPDATED: "Regole visibilità aggiornate",
-    AuditAction.LEAD_CREATED: "Lead creato",
-    AuditAction.LEAD_UPDATED: "Lead modificato",
-    AuditAction.LEAD_DELETED: "Lead eliminato",
-    AuditAction.LEAD_ASSIGNED: "Lead assegnato",
-    AuditAction.LEAD_EXPORTED: "Lead esportati"
+    AuditAction.LOGIN_SUCCESS: "login_success",
+    AuditAction.LOGIN_FAILED: "login_failed",
+    AuditAction.LOGOUT: "logout",
+    AuditAction.USER_CREATED: "user_created",
+    AuditAction.USER_UPDATED: "user_updated",
+    AuditAction.USER_DELETED: "user_deleted",
+    AuditAction.USER_STATUS_CHANGED: "user_status_changed",
+    AuditAction.PASSWORD_RESET: "password_reset",
+    AuditAction.TEAM_CREATED: "team_created",
+    AuditAction.TEAM_UPDATED: "team_updated",
+    AuditAction.TEAM_ARCHIVED: "team_archived",
+    AuditAction.MEMBER_ADDED: "member_added",
+    AuditAction.MEMBER_REMOVED: "member_removed",
+    AuditAction.ROLE_CREATED: "role_created",
+    AuditAction.ROLE_UPDATED: "role_updated",
+    AuditAction.ROLE_DELETED: "role_deleted",
+    AuditAction.PERMISSIONS_UPDATED: "permissions_updated",
+    AuditAction.ROLE_ASSIGNED: "role_assigned",
+    AuditAction.ROLE_UNASSIGNED: "role_unassigned",
+    AuditAction.VISIBILITY_RULES_UPDATED: "visibility_rules_updated",
+    AuditAction.LEAD_CREATED: "lead_created",
+    AuditAction.LEAD_UPDATED: "lead_updated",
+    AuditAction.LEAD_DELETED: "lead_deleted",
+    AuditAction.LEAD_ASSIGNED: "lead_assigned",
+    AuditAction.LEAD_EXPORTED: "lead_exported"
 }
 
 
-# Entity type labels for UI display (Italian)
+# Entity type labels - using keys for frontend translation
 ENTITY_TYPE_LABELS = {
-    EntityType.USER: "Utente",
-    EntityType.TEAM: "Team",
-    EntityType.ROLE: "Ruolo",
-    EntityType.PERMISSION: "Permessi",
-    EntityType.VISIBILITY_RULE: "Visibilità",
-    EntityType.LEAD: "Lead",
-    EntityType.AUTH: "Autenticazione"
+    EntityType.USER: "user",
+    EntityType.TEAM: "team",
+    EntityType.ROLE: "role",
+    EntityType.PERMISSION: "permission",
+    EntityType.VISIBILITY_RULE: "visibility_rule",
+    EntityType.LEAD: "lead",
+    EntityType.AUTH: "auth"
 }
