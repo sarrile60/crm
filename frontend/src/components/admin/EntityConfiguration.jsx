@@ -1,14 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { Database, Edit, Check, X } from 'lucide-react';
+import { Database, Edit, Check, X, Users, Phone, FileText, Briefcase, Calendar, Mail, Settings, Tag, Building2, DollarSign, Target, MessageSquare, Clipboard, Clock, UserCheck, Award, HelpCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api/admin`;
 
+// Icon map for dynamic icon rendering
+const ICON_MAP = {
+  'users': Users,
+  'phone': Phone,
+  'file-text': FileText,
+  'filetext': FileText,
+  'briefcase': Briefcase,
+  'calendar': Calendar,
+  'mail': Mail,
+  'settings': Settings,
+  'tag': Tag,
+  'building': Building2,
+  'building2': Building2,
+  'dollar-sign': DollarSign,
+  'dollarsign': DollarSign,
+  'target': Target,
+  'message-square': MessageSquare,
+  'messagesquare': MessageSquare,
+  'clipboard': Clipboard,
+  'clock': Clock,
+  'user-check': UserCheck,
+  'usercheck': UserCheck,
+  'award': Award,
+  'database': Database,
+  'help-circle': HelpCircle,
+  'helpcircle': HelpCircle
+};
+
+// Helper function to get icon component
+const getIconComponent = (iconName) => {
+  if (!iconName) return null;
+  const normalizedName = iconName.toLowerCase().replace(/[-_\s]/g, '');
+  return ICON_MAP[normalizedName] || ICON_MAP[iconName.toLowerCase()];
+};
+
 const EntityConfiguration = () => {
+  const { t } = useTranslation();
   const [entities, setEntities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingEntity, setEditingEntity] = useState(null);
@@ -27,7 +64,7 @@ const EntityConfiguration = () => {
       });
       setEntities(response.data);
     } catch (error) {
-      toast.error('Error loading entities');
+      toast.error(t('entity.errorLoadingEntities'));
       console.error('Error:', error);
     } finally {
       setLoading(false);
@@ -43,10 +80,10 @@ const EntityConfiguration = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      toast.success(`Entity ${!currentStatus ? 'enabled' : 'disabled'}`);
+      toast.success(t('entity.entityUpdated'));
       fetchEntities();
     } catch (error) {
-      toast.error('Error updating entity');
+      toast.error(t('entity.errorUpdatingEntity'));
       console.error('Error:', error);
     }
   };
@@ -68,11 +105,11 @@ const EntityConfiguration = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      toast.success('Entity updated successfully');
+      toast.success(t('entity.entityUpdated'));
       setEditingEntity(null);
       fetchEntities();
     } catch (error) {
-      toast.error('Error updating entity');
+      toast.error(t('entity.errorUpdatingEntity'));
       console.error('Error:', error);
     }
   };
@@ -82,16 +119,25 @@ const EntityConfiguration = () => {
     setEditForm({ display_name: '', icon: '' });
   };
 
+  // Render icon component
+  const renderIcon = (iconName) => {
+    const IconComponent = getIconComponent(iconName);
+    if (IconComponent) {
+      return <IconComponent className="w-5 h-5 text-blue-600" />;
+    }
+    return <HelpCircle className="w-5 h-5 text-gray-400" />;
+  };
+
   if (loading) {
-    return <div className="text-center py-8">Loading entities...</div>;
+    return <div className="text-center py-8">{t('entity.loadingEntities')}</div>;
   }
 
   return (
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-black">Entity Configuration</h2>
-        <p className="text-gray-600 mt-1">Enable/disable entities and customize their display properties</p>
+        <h2 className="text-2xl font-bold text-black">{t('entity.title')}</h2>
+        <p className="text-gray-600 mt-1">{t('entity.subtitle')}</p>
       </div>
 
       {/* Entities List */}
@@ -99,12 +145,12 @@ const EntityConfiguration = () => {
         <table className="w-full">
           <thead className="bg-black text-white">
             <tr>
-              <th className="text-left p-4 font-semibold">Entity Name</th>
-              <th className="text-left p-4 font-semibold">Display Name</th>
-              <th className="text-left p-4 font-semibold">Icon</th>
-              <th className="text-center p-4 font-semibold">Order</th>
-              <th className="text-center p-4 font-semibold">Enabled</th>
-              <th className="text-center p-4 font-semibold">Actions</th>
+              <th className="text-left p-4 font-semibold">{t('entity.entityName')}</th>
+              <th className="text-left p-4 font-semibold">{t('entity.displayName')}</th>
+              <th className="text-left p-4 font-semibold">{t('entity.icon')}</th>
+              <th className="text-center p-4 font-semibold">{t('entity.order')}</th>
+              <th className="text-center p-4 font-semibold">{t('common.enabled')}</th>
+              <th className="text-center p-4 font-semibold">{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -126,7 +172,7 @@ const EntityConfiguration = () => {
                         value={editForm.display_name}
                         onChange={(e) => setEditForm({ ...editForm, display_name: e.target.value })}
                         className="bg-white border-gray-300 rounded-none"
-                        placeholder="Display Name"
+                        placeholder={t('entity.displayName')}
                       />
                     ) : (
                       <span className="font-semibold text-black">{entity.display_name}</span>
@@ -139,10 +185,13 @@ const EntityConfiguration = () => {
                         value={editForm.icon}
                         onChange={(e) => setEditForm({ ...editForm, icon: e.target.value })}
                         className="bg-white border-gray-300 rounded-none"
-                        placeholder="Icon name (lucide-react)"
+                        placeholder="users, phone, briefcase..."
                       />
                     ) : (
-                      <span className="text-gray-600 text-sm">{entity.icon || 'None'}</span>
+                      <div className="flex items-center gap-2">
+                        {renderIcon(entity.icon)}
+                        <span className="text-gray-500 text-xs">({entity.icon || 'none'})</span>
+                      </div>
                     )}
                   </td>
                   
@@ -160,7 +209,7 @@ const EntityConfiguration = () => {
                           : 'bg-red-100 text-red-700 hover:bg-red-200'
                       }`}
                     >
-                      {entity.enabled ? 'Enabled' : 'Disabled'}
+                      {entity.enabled ? t('common.enabled') : t('common.disabled')}
                     </button>
                   </td>
                   
@@ -187,7 +236,7 @@ const EntityConfiguration = () => {
                           className="bg-black hover:bg-gray-800 text-white rounded-none px-3 py-1"
                         >
                           <Edit className="w-4 h-4 mr-2" />
-                          Edit
+                          {t('common.edit')}
                         </Button>
                       )}
                     </div>
@@ -201,12 +250,12 @@ const EntityConfiguration = () => {
 
       {/* Info Box */}
       <div className="mt-6 bg-blue-50 border border-blue-200 p-4">
-        <h3 className="font-semibold text-black mb-2">💡 Configuration Tips:</h3>
+        <h3 className="font-semibold text-black mb-2">💡 {t('entity.configTips')}</h3>
         <ul className="text-sm text-gray-700 space-y-1">
-          <li>• <strong>Display Name:</strong> Shown in UI (e.g., "Leads", "Contacts")</li>
-          <li>• <strong>Icon:</strong> Use lucide-react icon names (e.g., "users", "phone")</li>
-          <li>• <strong>Enabled:</strong> Disabled entities won't appear in permission matrix</li>
-          <li>• <strong>Order:</strong> Controls display order in lists (lower = first)</li>
+          <li>• {t('entity.tipDisplayName')}</li>
+          <li>• {t('entity.tipIcon')}</li>
+          <li>• {t('entity.tipEnabled')}</li>
+          <li>• {t('entity.tipOrder')}</li>
         </ul>
       </div>
     </div>
