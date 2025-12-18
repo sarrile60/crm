@@ -264,15 +264,15 @@ const AuditLogs = () => {
       {stats && (
         <div className="grid grid-cols-4 gap-4">
           <div className="bg-white border border-gray-200 p-4">
-            <div className="text-sm text-gray-500">Log Totali</div>
+            <div className="text-sm text-gray-500">{t('audit.totalLogs')}</div>
             <div className="text-2xl font-bold text-gray-900">{stats.total_logs}</div>
           </div>
           <div className="bg-white border border-gray-200 p-4">
-            <div className="text-sm text-gray-500">Oggi</div>
+            <div className="text-sm text-gray-500">{t('audit.today')}</div>
             <div className="text-2xl font-bold text-[#D4AF37]">{stats.today_count}</div>
           </div>
           <div className="bg-white border border-gray-200 p-4">
-            <div className="text-sm text-gray-500">Azioni Principali (7gg)</div>
+            <div className="text-sm text-gray-500">{t('audit.mainActions')}</div>
             <div className="text-sm mt-1">
               {stats.by_action.slice(0, 3).map(a => (
                 <span key={a.action} className="inline-block mr-2 text-gray-600">
@@ -282,7 +282,7 @@ const AuditLogs = () => {
             </div>
           </div>
           <div className="bg-white border border-gray-200 p-4">
-            <div className="text-sm text-gray-500">Per Entità (7gg)</div>
+            <div className="text-sm text-gray-500">{t('audit.byEntity')}</div>
             <div className="text-sm mt-1">
               {stats.by_entity_type.slice(0, 3).map(e => (
                 <span key={e.entity_type} className="inline-block mr-2 text-gray-600">
