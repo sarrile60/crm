@@ -188,27 +188,27 @@ const Home = () => {
         <div className="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-12 items-start">
           <div>
             <h1 className="text-6xl font-bold text-black mb-6 leading-tight">
-              Recupera i Tuoi Fondi da Truffe Online e Crypto
+              {t('home.heroTitle')}
             </h1>
             <p className="text-xl text-gray-700 mb-8 leading-relaxed">
-              Studio legale specializzato nel recupero di fondi da truffe crypto, forex, broker fraudolenti e piattaforme di investimento false. In molti casi, l'azione legale può aiutare i clienti a recuperare i fondi, a seconda delle prove, dei dettagli della transazione e delle circostanze della truffa.
+              {t('home.heroSubtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <Button onClick={() => handleCTAClick('hero')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-8 py-7 font-semibold">
-                Ottieni Consulenza Gratuita <ArrowRight className="ml-2" />
+                {t('home.ctaButton')} <ArrowRight className="ml-2" />
               </Button>
               <Button onClick={() => scrollToSection('how-it-works')} className="bg-black text-white hover:bg-gray-800 rounded-none text-lg px-8 py-7 transition-all">
-                Come Funziona
+                {t('home.howItWorks')}
               </Button>
             </div>
             <div className="flex flex-wrap gap-6 mb-12">
               <div className="flex items-center gap-2 text-gray-700">
                 <Shield className="w-5 h-5 text-[#D4AF37]" />
-                <span>SRA Regolamentato</span>
+                <span>{t('common.sraRegulated')}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-700">
                 <CheckCircle className="w-5 h-5 text-[#D4AF37]" />
-                <span>Casi Internazionali</span>
+                <span>{t('common.internationalCases')}</span>
               </div>
             </div>
 
