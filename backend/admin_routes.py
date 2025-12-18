@@ -1385,3 +1385,56 @@ async def clear_expired_requests():
     })
     return {"success": True, "deleted": result.deleted_count}
 
+
+
+# ============================================
+# LANGUAGE SETTINGS (System-Wide)
+# ============================================
+
+SUPPORTED_LANGUAGES = ['it', 'en', 'de', 'fr', 'es']
+
+@admin_router.get("/language-settings", dependencies=[Depends(require_admin)])
+async def get_language_settings():
+    """Get system-wide language setting"""
+    settings = await db.system_settings.find_one({"type": "language_config"}, {"_id": 0})
+    
+    if not settings:
+        # Default to Italian
+        return {"language": "it"}
+    
+    return {"language": settings.get("language", "it")}
+
+
+@admin_router.put("/language-settings", dependencies=[Depends(require_admin)])
+async def update_language_settings(settings_data: dict, current_user: dict = Depends(get_current_user)):
+    """Update system-wide language setting"""
+    language = settings_data.get("language", "it")
+    
+    # Validate language
+    if language not in SUPPORTED_LANGUAGES:
+        raise HTTPException(status_code=400, detail=f"Unsupported language: {language}")
+    
+    await db.system_settings.update_one(
+        {"type": "language_config"},
+        {"$set": {
+            "type": "language_config",
+            "language": language,
+            "updated_at": datetime.now(timezone.utc),
+            "updated_by": current_user["id"]
+        }},
+        upsert=True
+    )
+    
+    # Log the change
+    await create_audit_log(
+        action="language_settings_updated",
+        entity_type="settings",
+        user_id=current_user["id"],
+        user_name=current_user["username"],
+        entity_name="Language Settings",
+        details={"language": language}
+    )
+    
+    logger.info(f"Language settings updated to {language} by {current_user['username']}")
+    return {"success": True, "language": language}
+
