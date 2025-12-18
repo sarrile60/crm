@@ -152,6 +152,7 @@
   },
   "admin": {
     "title": "Pannello Amministrazione",
+    "subtitle": "Gestisci ruoli, permessi e configurazione del sistema",
     "roles": "Gestione Ruoli",
     "permissions": "Matrice Permessi",
     "users": "Gestione Utenti",
