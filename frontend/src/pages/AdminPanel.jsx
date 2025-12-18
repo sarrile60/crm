@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Shield, Database, Users, ArrowLeft, AlertTriangle, UserCog, Building2, Eye, FileText, Clock } from 'lucide-react';
+import { Settings, Shield, Database, Users, ArrowLeft, AlertTriangle, UserCog, Building2, Eye, FileText, Clock, Languages } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import RoleManagement from '../components/admin/RoleManagement';
 import PermissionMatrix from '../components/admin/PermissionMatrix';
@@ -10,6 +11,7 @@ import TeamsManagement from '../components/admin/TeamsManagement';
 import DataVisibilityRules from '../components/admin/DataVisibilityRules';
 import AuditLogs from '../components/admin/AuditLogs';
 import SessionSettings from '../components/admin/SessionSettings';
+import LanguageSettings from '../components/admin/LanguageSettings';
 
 const AdminPanel = () => {
   const navigate = useNavigate();
