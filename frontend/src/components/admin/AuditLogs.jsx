@@ -227,9 +227,9 @@ const AuditLogs = () => {
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Audit Log</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('audit.title')}</h2>
           <p className="text-gray-500 mt-1">
-            Registro immutabile delle attività di sistema. I log non possono essere modificati o eliminati.
+            {t('audit.subtitle')}
           </p>
         </div>
         <div className="flex gap-2">
@@ -239,7 +239,7 @@ const AuditLogs = () => {
             className="rounded-none"
           >
             <Filter className="w-4 h-4 mr-2" />
-            Filtri
+            {t('common.filters')}
           </Button>
           <Button
             variant="outline"
@@ -255,7 +255,7 @@ const AuditLogs = () => {
             className="bg-[#D4AF37] hover:bg-[#B8941F] text-black rounded-none"
           >
             <Download className="w-4 h-4 mr-2" />
-            {exporting ? 'Esportazione...' : 'Esporta CSV'}
+            {exporting ? t('common.exporting') : t('common.exportCSV')}
           </Button>
         </div>
       </div>
