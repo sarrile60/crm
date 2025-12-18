@@ -22,7 +22,7 @@ from db_utils import (
     get_user_visibility_rules,
     apply_visibility_to_lead
 )
-from audit_utils import log_auth_event, AuditAction
+from audit_utils import log_auth_event, log_lead_action, AuditAction
 
 # Create router
 crm_router = APIRouter(prefix="/api/crm")
