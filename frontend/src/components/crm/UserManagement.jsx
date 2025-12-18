@@ -6,11 +6,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const UserManagement = ({ currentUser }) => {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +53,7 @@ const UserManagement = ({ currentUser }) => {
       setUsers(usersRes.data);
       setTeams(teamsRes.data);
     } catch (error) {
-      toast.error('Errore nel caricamento degli utenti');
+      toast.error(t('users.errorLoadingUsers'));
     } finally {
       setLoading(false);
     }
@@ -63,12 +65,12 @@ const UserManagement = ({ currentUser }) => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.post(`${API}/crm/users`, newUser, { headers });
-      toast.success('Utente creato con successo');
+      toast.success(t('users.userCreated'));
       setShowCreateModal(false);
       setNewUser({ username: '', full_name: '', password: '', role: 'agent', team_id: '' });
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nella creazione dell\'utente');
+      toast.error(error.response?.data?.detail || t('users.errorCreatingUser'));
     }
   };
 
