@@ -637,7 +637,7 @@ const Home = () => {
           </div>
           <div>
             <div className="text-4xl font-bold text-[#D4AF37] mb-2">24h</div>
-            <div className="text-white">Tempo di Risposta</div>
+            <div className="text-white">{t('home.avgResponseTime')}</div>
           </div>
         </div>
       </section>
