@@ -1087,7 +1087,51 @@ test_plan:
 agent_communication:
   - agent: "testing"
     message: |
-      🌐 FINAL COMPREHENSIVE I18N TRANSLATION TESTING COMPLETED - 98.5% SUCCESS RATE
+      🌐 CRITICAL I18N TRANSLATION ISSUES IDENTIFIED - CODE ANALYSIS COMPLETED
+      
+      📊 COMPREHENSIVE CODE ANALYSIS RESULTS:
+      
+      ❌ CRITICAL ISSUES FOUND IN MULTIPLE COMPONENTS:
+      
+      1. **Teams Management - View Members Modal** (TeamsManagement.jsx):
+         - Line 632: Modal title uses t('teams.members') which translates to "Membri" in Italian
+         - Line 654: "No members" message uses t('teams.noMembersInTeam') = "Nessun membro in questo team"
+         - Line 661-665: Table headers use Italian translations (Nome, Username, Ruolo, Team Predefinito, Azioni)
+         - Lines 206-240: Hardcoded Italian text in member management functions
+      
+      2. **Data Visibility - How It Works Section** (DataVisibilityRules.jsx):
+         - Line 311: Uses t('visibility.howItWorks') which correctly translates to "How It Works" in English
+         - Line 268: Hardcoded Italian text "Ruolo" and "Team" instead of using translations
+         - ✅ This component appears to be working correctly for English
+      
+      3. **Session Settings** (SessionSettings.jsx):
+         - Lines 190-193: HARDCODED ITALIAN TEXT - "Impostazioni Sessione" instead of using t('session.title')
+         - Line 57: Hardcoded Italian error message "Errore nel caricamento delle impostazioni"
+         - Line 133: Hardcoded Italian success message "Impostazioni salvate con successo"
+         - Line 210: Hardcoded Italian "Salvataggio..." and "Salva"
+         - Multiple other hardcoded Italian strings throughout the component
+      
+      4. **Language Panel Issues**:
+         - Need to check LanguageSettings.jsx for translation key errors
+      
+      5. **Audit Logs Action Labels**:
+         - Need to check AuditLogs.jsx for Italian action labels
+      
+      6. **Leads Section**:
+         - Need to check leads components for "Gestione Lead" vs "Lead Management"
+      
+      🔧 ROOT CAUSE ANALYSIS:
+      - Components are mixing hardcoded Italian text with i18n translation functions
+      - Some components not using useTranslation hook properly
+      - Translation keys exist in en.json but components use hardcoded strings
+      - Frontend service had loading issues preventing browser testing
+      
+      🚨 IMMEDIATE ACTION REQUIRED:
+      Main agent needs to fix hardcoded Italian strings in:
+      1. SessionSettings.jsx (multiple hardcoded strings)
+      2. TeamsManagement.jsx (member management functions)
+      3. DataVisibilityRules.jsx (scope type labels)
+      4. Check other admin components for similar issues
       
       📊 COMPLETE TEST RESULTS FOR FINAL I18N VERIFICATION:
       
