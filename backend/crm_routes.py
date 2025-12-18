@@ -265,7 +265,7 @@ async def check_session(current_user: dict = Depends(get_current_user)):
                 "session_end_time": f"{settings['session_end_hour']:02d}:{settings['session_end_minute']:02d}",
                 "minutes_remaining": 999
             },
-            "message": "Admin - sessione sempre valida"
+            "message": "admin_always_valid"
         }
     
     # Check if within work hours using database settings
