@@ -6,12 +6,36 @@ Handles automatic session expiry at 6:30 PM Berlin time (Monday-Friday)
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
-# Berlin timezone (CET/CEST - automatically handles daylight saving)
-BERLIN_TZ = ZoneInfo("Europe/Berlin")
+# Default timezone
+DEFAULT_TIMEZONE = "Europe/Berlin"
 
-# Session end time: 6:30 PM (18:30)
-SESSION_END_HOUR = 18
-SESSION_END_MINUTE = 30
+# All available timezones grouped by region
+ALL_TIMEZONES = [
+    # Europe
+    "Europe/London", "Europe/Berlin", "Europe/Paris", "Europe/Rome", "Europe/Madrid",
+    "Europe/Amsterdam", "Europe/Brussels", "Europe/Vienna", "Europe/Warsaw", "Europe/Prague",
+    "Europe/Budapest", "Europe/Stockholm", "Europe/Oslo", "Europe/Copenhagen", "Europe/Helsinki",
+    "Europe/Athens", "Europe/Bucharest", "Europe/Sofia", "Europe/Istanbul", "Europe/Moscow",
+    "Europe/Kiev", "Europe/Minsk", "Europe/Dublin", "Europe/Lisbon", "Europe/Zurich",
+    # Americas
+    "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
+    "America/Phoenix", "America/Anchorage", "America/Honolulu", "America/Toronto",
+    "America/Vancouver", "America/Mexico_City", "America/Bogota", "America/Lima",
+    "America/Santiago", "America/Buenos_Aires", "America/Sao_Paulo", "America/Caracas",
+    # Asia
+    "Asia/Tokyo", "Asia/Seoul", "Asia/Shanghai", "Asia/Hong_Kong", "Asia/Singapore",
+    "Asia/Bangkok", "Asia/Jakarta", "Asia/Manila", "Asia/Kuala_Lumpur", "Asia/Ho_Chi_Minh",
+    "Asia/Kolkata", "Asia/Mumbai", "Asia/Delhi", "Asia/Karachi", "Asia/Dubai",
+    "Asia/Riyadh", "Asia/Tehran", "Asia/Jerusalem", "Asia/Beirut", "Asia/Baghdad",
+    # Africa
+    "Africa/Cairo", "Africa/Johannesburg", "Africa/Lagos", "Africa/Nairobi", "Africa/Casablanca",
+    "Africa/Algiers", "Africa/Tunis", "Africa/Accra", "Africa/Addis_Ababa",
+    # Oceania
+    "Australia/Sydney", "Australia/Melbourne", "Australia/Brisbane", "Australia/Perth",
+    "Australia/Adelaide", "Pacific/Auckland", "Pacific/Fiji", "Pacific/Guam",
+    # UTC
+    "UTC"
+]
 
 
 def get_berlin_time() -> datetime:
