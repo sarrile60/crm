@@ -278,7 +278,7 @@ const TeamsManagement = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-12 text-gray-600">Caricamento team...</div>;
+    return <div className="text-center py-12 text-gray-600">{t('teams.loadingTeams')}</div>;
   }
 
   return (
@@ -286,8 +286,8 @@ const TeamsManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-black">Teams Management</h2>
-          <p className="text-gray-600 mt-1">Create, edit, and manage teams for data visibility</p>
+          <h2 className="text-2xl font-bold text-black">{t('teams.title')}</h2>
+          <p className="text-gray-600 mt-1">{t('teams.subtitle')}</p>
         </div>
         <div className="flex gap-3">
           <Button
@@ -296,14 +296,14 @@ const TeamsManagement = () => {
             className={`rounded-none border-2 ${showArchived ? 'border-orange-500 text-orange-600' : 'border-gray-300'}`}
           >
             <Archive className="w-4 h-4 mr-2" />
-            {showArchived ? 'Mostra Attivi' : 'Mostra Archiviati'}
+            {showArchived ? t('teams.hideArchived') : t('teams.showArchived')}
           </Button>
           <Button 
             onClick={() => { resetForm(); setShowCreateModal(true); }}
             className="bg-[#D4AF37] hover:bg-[#B8941F] text-black rounded-none"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Create Team
+            {t('teams.createTeam')}
           </Button>
         </div>
       </div>
@@ -314,20 +314,20 @@ const TeamsManagement = () => {
           <table className="w-full">
             <thead className="bg-black text-white">
               <tr>
-                <th className="text-left p-4 font-semibold">Team</th>
-                <th className="text-left p-4 font-semibold">Descrizione</th>
-                <th className="text-left p-4 font-semibold">Supervisor</th>
-                <th className="text-left p-4 font-semibold">Membri</th>
-                <th className="text-left p-4 font-semibold">Stato</th>
-                <th className="text-left p-4 font-semibold">Creato</th>
-                <th className="text-left p-4 font-semibold">Azioni</th>
+                <th className="text-left p-4 font-semibold">{t('users.team')}</th>
+                <th className="text-left p-4 font-semibold">{t('common.description')}</th>
+                <th className="text-left p-4 font-semibold">{t('teams.supervisor')}</th>
+                <th className="text-left p-4 font-semibold">{t('teams.members')}</th>
+                <th className="text-left p-4 font-semibold">{t('common.status')}</th>
+                <th className="text-left p-4 font-semibold">{t('teams.createdAt')}</th>
+                <th className="text-left p-4 font-semibold">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {filteredTeams.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="p-8 text-center text-gray-500">
-                    {showArchived ? 'Nessun team archiviato' : 'Nessun team attivo'}
+                    {t('teams.noTeamsFound')}
                   </td>
                 </tr>
               ) : (
@@ -342,7 +342,7 @@ const TeamsManagement = () => {
                         </div>
                       </td>
                       <td className="p-4 text-gray-600 max-w-xs truncate">
-                        {team.description || <span className="text-gray-400 italic">Nessuna descrizione</span>}
+                        {team.description || <span className="text-gray-400 italic">{t('common.none')}</span>}
                       </td>
                       <td className="p-4">
                         {team.supervisor_id ? (
