@@ -836,18 +836,18 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
             <div className="space-y-6">
               {/* Lead Info */}
               <div>
-                <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2">Informazioni Lead</h3>
+                <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2">{t('crm.leadInfo')}</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Nome Completo</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('leads.fullName')}</label>
                     <p className="text-black font-semibold">{selectedLead.fullName}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Email</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('common.email')}</label>
                     <p className="text-black">{selectedLead.email}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Telefono</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('common.phone')}</label>
                     {/* Phone visibility controlled by backend - respect empty string as "hidden" */}
                     {selectedLead.phone_display !== undefined && selectedLead.phone_display !== null ? (
                       selectedLead.phone_display ? (
@@ -871,11 +871,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                     )}
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Importo Perso</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('crm.amountLost')}</label>
                     <p className="text-black font-semibold">{selectedLead.amountLost}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Azienda Truffatrice</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('crm.scammerCompany')}</label>
                     <p className="text-black">{selectedLead.scammerCompany}</p>
                   </div>
                   <div>
