@@ -296,10 +296,10 @@ const UserManagement = ({ currentUser }) => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="agent">Agent</SelectItem>
-                    <SelectItem value="supervisor">Supervisor</SelectItem>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="agent">{t('users.roles.agent')}</SelectItem>
+                    <SelectItem value="supervisor">{t('users.roles.supervisor')}</SelectItem>
+                    <SelectItem value="manager">{t('users.roles.manager')}</SelectItem>
+                    <SelectItem value="admin">{t('users.roles.admin')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -369,9 +369,9 @@ const UserManagement = ({ currentUser }) => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="supervisor">Supervisor</SelectItem>
-                    <SelectItem value="agent">Agent</SelectItem>
+                    <SelectItem value="admin">{t('users.roles.admin')}</SelectItem>
+                    <SelectItem value="supervisor">{t('users.roles.supervisor')}</SelectItem>
+                    <SelectItem value="agent">{t('users.roles.agent')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

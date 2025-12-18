@@ -1035,7 +1035,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         <Dialog open={showMassUpdateModal} onOpenChange={setShowMassUpdateModal}>
           <DialogContent className="max-w-lg bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">Mass Update</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">{t('crm.massUpdate')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <p className="text-gray-700">{t('crm.updateSelectedLeads', { count: selectedLeadIds.length })}</p>
