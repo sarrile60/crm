@@ -1160,6 +1160,18 @@ test_plan:
       
       🚀 AUDIT LOGS UI IS PRODUCTION READY - All test specification requirements met perfectly!
 
+  - task: "Session Settings Timezone Selector API"
+    implemented: true
+    working: true
+    file: "session_settings.py, admin_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ SESSION SETTINGS TIMEZONE SELECTOR FULLY TESTED (13/13 tests passed): API Response Structure ✓ (returns timezone, timezone_offset, all_timezones fields), Timezone List Structure ✓ (75 timezones with value, label, city, region, offset, current_time fields), Timezone Regions ✓ (Europe, Americas, Asia, Africa, Oceania, UTC all present), Timezone Updates ✓ (America/New_York GMT-5, Europe/Berlin GMT+1, Asia/Tokyo GMT+9, UTC GMT all working), Current Time Calculation ✓ (Berlin 10:58 GMT+1, London 09:58 GMT, New York 04:58 GMT-5, Tokyo 18:58 GMT+9 all correct HH:MM format), Berlin Timezone ✓ (Label: Berlin (GMT+1), Offset: GMT+1, Current time: 10:58). All timezone selector functionality working perfectly with proper GMT offset calculation and current time display."
+
 backend:
   - task: "Audit Logs API"
     implemented: true
