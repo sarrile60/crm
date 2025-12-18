@@ -361,7 +361,10 @@
     "thursday": "Thursday",
     "friday": "Friday",
     "saturday": "Saturday",
-    "sunday": "Sunday"
+    "sunday": "Sunday",
+    "pendingRequests": "Pending Access Requests",
+    "approve": "Approve",
+    "reject": "Reject"
   },
   "audit": {
     "title": "Audit Log",
