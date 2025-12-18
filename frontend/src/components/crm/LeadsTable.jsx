@@ -110,12 +110,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
 
   const formatCreatedDate = (dateString) => {
     const date = new Date(dateString);
-    const months = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
-    const day = date.getDate();
-    const month = months[date.getMonth()];
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${day} ${month} ${hours}:${minutes}`;
+    return new Intl.DateTimeFormat(i18n.language, {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
   };
 
   const handleViewDetails = async (lead) => {
