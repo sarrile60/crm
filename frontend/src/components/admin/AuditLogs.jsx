@@ -190,9 +190,9 @@ const AuditLogs = () => {
       link.click();
       link.remove();
       
-      toast.success('Export completato');
+      toast.success(t('audit.exportComplete'));
     } catch (error) {
-      toast.error('Errore durante export');
+      toast.error(t('audit.exportError'));
       console.error('Error:', error);
     } finally {
       setExporting(false);
