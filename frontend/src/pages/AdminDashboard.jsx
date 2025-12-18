@@ -45,7 +45,20 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // Call logout API to log the event in audit trail
+      const token = localStorage.getItem('adminToken');
+      if (token) {
+        await axios.post(`${API}/crm/auth/logout`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+    } catch (error) {
+      // Continue with logout even if API call fails
+      console.error('Logout API error:', error);
+    }
+    
     localStorage.removeItem('adminToken');
     toast.success('Logout effettuato');
     navigate('/admin-portal-login');
