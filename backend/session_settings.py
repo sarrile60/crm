@@ -236,7 +236,7 @@ async def is_within_work_hours(settings: Optional[dict] = None) -> tuple:
     # Check if it's a work day
     if current_datetime.weekday() not in settings.get("work_days", [0, 1, 2, 3, 4]):
         day_name = current_datetime.strftime("%A")
-        return False, f"Non è un giorno lavorativo ({day_name})"
+        return False, f"not_work_day:{day_name}"
     
     # Check if within work hours
     start_time = time(
@@ -251,12 +251,12 @@ async def is_within_work_hours(settings: Optional[dict] = None) -> tuple:
     current_time = current_datetime.time()
     
     if current_time < start_time:
-        return False, f"Prima dell'orario di lavoro (inizio: {start_time.strftime('%H:%M')})"
+        return False, f"before_work_hours:{start_time.strftime('%H:%M')}"
     
     if current_time >= end_time:
-        return False, f"Dopo l'orario di lavoro (fine: {end_time.strftime('%H:%M')})"
+        return False, f"after_work_hours:{end_time.strftime('%H:%M')}"
     
-    return True, "Entro l'orario di lavoro"
+    return True, "within_work_hours"
 
 
 async def get_session_expiry_from_settings() -> datetime:
