@@ -215,6 +215,22 @@ async def init_analytics():
         await db.analytics.insert_one(analytics.dict())
         logger.info("Analytics collection initialized")
 
+
+# ============================================
+# PUBLIC ENDPOINTS (No Auth Required)
+# ============================================
+
+@api_router.get("/system/language")
+async def get_system_language():
+    """Get system-wide language setting (public endpoint for frontend)"""
+    settings = await db.system_settings.find_one({"type": "language_config"}, {"_id": 0})
+    
+    if not settings:
+        return {"language": "it"}  # Default to Italian
+    
+    return {"language": settings.get("language", "it")}
+
+
 # Lead submission endpoint
 @api_router.post("/leads/submit")
 async def submit_lead(lead_data: LeadCreate):
