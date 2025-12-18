@@ -145,10 +145,10 @@ const SettingsPanel = () => {
       {/* Teams Section */}
       <div className="bg-white border-2 border-gray-200 p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-black">Gestione Team</h3>
+          <h3 className="text-xl font-bold text-black">{t('teams.title')}</h3>
           <Button onClick={() => setShowCreateTeamModal(true)} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
             <Plus className="w-4 h-4 mr-2" />
-            Nuovo Team
+            {t('teams.newTeam')}
           </Button>
         </div>
         
@@ -156,10 +156,10 @@ const SettingsPanel = () => {
           <table className="w-full">
             <thead className="bg-gray-100">
               <tr>
-                <th className="text-left p-3 font-semibold text-black">Nome Team</th>
-                <th className="text-left p-3 font-semibold text-black">Descrizione</th>
-                <th className="text-left p-3 font-semibold text-black">Supervisor</th>
-                <th className="text-left p-3 font-semibold text-black">Membri</th>
+                <th className="text-left p-3 font-semibold text-black">{t('teams.teamName')}</th>
+                <th className="text-left p-3 font-semibold text-black">{t('common.description')}</th>
+                <th className="text-left p-3 font-semibold text-black">{t('teams.supervisor')}</th>
+                <th className="text-left p-3 font-semibold text-black">{t('teams.members')}</th>
               </tr>
             </thead>
             <tbody>
@@ -170,14 +170,14 @@ const SettingsPanel = () => {
                   <tr key={team.id} className="border-t border-gray-200">
                     <td className="p-3 font-semibold text-black">{team.name}</td>
                     <td className="p-3 text-gray-700">{team.description || 'N/A'}</td>
-                    <td className="p-3 text-gray-700">{supervisor?.full_name || 'Nessuno'}</td>
-                    <td className="p-3 text-gray-700">{teamMembers.length} utenti</td>
+                    <td className="p-3 text-gray-700">{supervisor?.full_name || t('common.none')}</td>
+                    <td className="p-3 text-gray-700">{teamMembers.length} {t('users.users')}</td>
                   </tr>
                 );
               })}
               {teams.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="p-4 text-center text-gray-600">Nessun team creato</td>
+                  <td colSpan="4" className="p-4 text-center text-gray-600">{t('teams.noTeamsCreated')}</td>
                 </tr>
               )}
             </tbody>
@@ -187,11 +187,11 @@ const SettingsPanel = () => {
 
       {/* Info Section */}
       <div className="bg-gray-50 border-2 border-gray-200 p-6">
-        <h3 className="text-xl font-bold text-black mb-4">Informazioni Sistema</h3>
+        <h3 className="text-xl font-bold text-black mb-4">{t('settings.systemInfo')}</h3>
         <div className="space-y-2 text-gray-700">
-          <p><strong>Versione CRM:</strong> 1.0.0</p>
-          <p><strong>Stati Attivi:</strong> {statuses.length}</p>
-          <p><strong>Team Attivi:</strong> {teams.length}</p>
+          <p><strong>{t('settings.crmVersion')}:</strong> 1.0.0</p>
+          <p><strong>{t('settings.activeStatuses')}:</strong> {statuses.length}</p>
+          <p><strong>{t('settings.activeTeams')}:</strong> {teams.length}</p>
         </div>
       </div>
 
@@ -200,11 +200,11 @@ const SettingsPanel = () => {
         <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
           <DialogContent className="max-w-md bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">Crea Nuovo Stato</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">{t('settings.createNewStatus')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Nome Stato</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('settings.statusName')}</label>
                 <Input
                   value={newStatus.name}
                   onChange={(e) => setNewStatus({ ...newStatus, name: e.target.value })}
