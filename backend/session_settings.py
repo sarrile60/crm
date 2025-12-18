@@ -54,7 +54,8 @@ async def update_session_settings(
     session_end_hour: int,
     session_end_minute: int,
     work_days: list,
-    require_approval_after_hours: bool
+    require_approval_after_hours: bool,
+    approval_duration_minutes: int = 30
 ) -> dict:
     """Update session settings in database"""
     settings = {
@@ -66,6 +67,7 @@ async def update_session_settings(
         "work_days": work_days,
         "timezone": "Europe/Berlin",
         "require_approval_after_hours": require_approval_after_hours,
+        "approval_duration_minutes": approval_duration_minutes,
         "updated_at": datetime.now(BERLIN_TZ)
     }
     
