@@ -1180,7 +1180,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                 </>
               )}
               <Button onClick={handleSaveEdit} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
-                Salva Modifiche
+                {t('common.saveChanges')}
               </Button>
             </div>
           </DialogContent>
@@ -1192,10 +1192,10 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
           <DialogContent className="max-w-md bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">Assegna Lead</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">{t('crm.assignLead')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <p className="text-gray-700">Assegna questo lead a un agente:</p>
+              <p className="text-gray-700">{t('crm.assignLeadToAgent')}</p>
               <div className="space-y-2">
                 {users.filter(u => u.is_active).map(user => (
                   <Button
@@ -1217,12 +1217,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
           <DialogContent className="max-w-2xl bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">Crea Nuovo Lead</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">{t('leads.createLead')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-black mb-2">Nome Completo *</label>
+                  <label className="block text-sm font-semibold text-black mb-2">{t('leads.fullName')} *</label>
                   <Input
                     value={newLead.fullName}
                     onChange={(e) => setNewLead({ ...newLead, fullName: e.target.value })}
@@ -1231,7 +1231,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-black mb-2">Email *</label>
+                  <label className="block text-sm font-semibold text-black mb-2">{t('common.email')} *</label>
                   <Input
                     type="email"
                     value={newLead.email}
