@@ -377,7 +377,7 @@ const SessionSettings = () => {
           <li>• Gli utenti vengono <strong>automaticamente disconnessi</strong> all'orario di fine sessione</li>
           <li>• Gli <strong>amministratori</strong> possono sempre accedere senza restrizioni</li>
           <li>• Fuori orario, gli utenti non-admin vedono un messaggio e la richiesta viene inviata qui</li>
-          <li>• L'approvazione è <strong>valida per 30 minuti</strong>, dopo i quali l'utente deve richiedere nuovamente</li>
+          <li>• L'approvazione è <strong>valida per {settings.approval_duration_minutes} minuti</strong>, dopo i quali l'utente deve richiedere nuovamente</li>
           <li>• Tutte le approvazioni e i rifiuti sono registrati nel <strong>log di audit</strong></li>
         </ul>
       </div>
