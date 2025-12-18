@@ -563,7 +563,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
           {canMassUpdate && selectedLeadIds.length > 0 && (
             <Button onClick={() => setShowMassUpdateModal(true)} className="bg-purple-600 text-white hover:bg-purple-700 rounded-none">
               <Edit className="w-4 h-4 mr-2" />
-              Mass Update ({selectedLeadIds.length})
+              {t('crm.massUpdate')} ({selectedLeadIds.length})
             </Button>
           )}
           <Button onClick={() => setShowCreateModal(true)} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
