@@ -54,7 +54,7 @@ const SessionSettings = () => {
       setSettings(response.data);
       setHasChanges(false);
     } catch (error) {
-      toast.error('Errore nel caricamento delle impostazioni');
+      toast.error(t('session.errorLoadingSettings'));
       console.error('Error:', error);
     } finally {
       setLoading(false);
