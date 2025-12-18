@@ -339,6 +339,7 @@
     "workDays": "Work Days",
     "timezone": "Timezone",
     "selectTimezone": "Select Timezone",
+    "currentTimezone": "Current Timezone",
     "currentTime": "Current Time in Selected Timezone",
     "afterHoursSecurity": "After-Hours Security",
     "requireApproval": "Require approval for after-hours login",
@@ -367,7 +368,12 @@
     "sunday": "Sunday",
     "pendingRequests": "Pending Access Requests",
     "approve": "Approve",
-    "reject": "Reject"
+    "reject": "Reject",
+    "sessionExpired": "Session expired",
+    "accessApprovedFor": "Access approved for {{username}}",
+    "accessDeniedFor": "Access denied for {{username}}",
+    "errorApproving": "Error approving",
+    "errorDenying": "Error denying"
   },
   "audit": {
     "title": "Audit Log",
