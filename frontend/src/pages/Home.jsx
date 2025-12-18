@@ -773,68 +773,68 @@ const Home = () => {
       <section id="success-stories" className="bg-gray-50 py-20 px-[7.6923%]">
         <div className="max-w-[1400px] mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-black mb-6">Casi di Successo</h2>
+            <h2 className="text-5xl font-bold text-black mb-6">{t('home.successTitle')}</h2>
             <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Risultati reali per clienti reali - casi anonimizzati per protezione privacy
+              {t('home.successSubtitle')}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                type: 'Truffa Crypto Exchange',
+                typeKey: 'cryptoExchange',
                 amount: '€127.000',
-                outcome: 'Recupero completo tramite azione legale contro exchange non regolamentato con sede a Malta',
-                duration: '8 mesi'
+                outcomeKey: 'cryptoExchangeOutcome',
+                duration: `8 ${t('successCases.months')}`
               },
               {
-                type: 'Broker Forex Falso',
+                typeKey: 'fakeBroker',
                 amount: '€45.000',
-                outcome: 'Recupero del 85% tramite chargeback e procedura legale con partnership bancaria',
-                duration: '5 mesi'
+                outcomeKey: 'fakeBrokerOutcome',
+                duration: `5 ${t('successCases.months')}`
               },
               {
-                type: 'ICO Fraudolenta',
+                typeKey: 'fraudulentICO',
                 amount: '€220.000',
-                outcome: 'Recupero del 70% tramite azione legale cross-border con supporto INTERPOL',
-                duration: '12 mesi'
+                outcomeKey: 'fraudulentICOOutcome',
+                duration: `12 ${t('successCases.months')}`
               },
               {
-                type: 'Piattaforma Trading Fake',
+                typeKey: 'fakeTradingPlatform',
                 amount: '€68.000',
-                outcome: 'Recupero completo tramite identificazione proprietari e azione legale UK',
-                duration: '1 settimana'
+                outcomeKey: 'fakeTradingPlatformOutcome',
+                duration: `1 ${t('successCases.week')}`
               },
               {
-                type: 'Truffa Investimenti',
+                typeKey: 'investmentScam',
                 amount: '€95.000',
-                outcome: 'Recupero del 90% tramite negoziazione legale e supporto Pharos',
-                duration: '7 mesi'
+                outcomeKey: 'investmentScamOutcome',
+                duration: `7 ${t('successCases.months')}`
               },
               {
-                type: 'Schema Ponzi Crypto',
+                typeKey: 'ponziScheme',
                 amount: '€380.000',
-                outcome: 'Recupero del 65% tramite procedura legale internazionale complessa',
-                duration: '14 mesi'
+                outcomeKey: 'ponziSchemeOutcome',
+                duration: `14 ${t('successCases.months')}`
               }
             ].map((story, index) => (
               <div key={index} className="bg-white border-2 border-gray-200 p-6 hover:border-[#D4AF37] transition-all shadow-md">
                 <div className="flex items-center gap-2 mb-4">
                   <CheckCircle className="w-5 h-5 text-[#D4AF37]" />
-                  <span className="text-[#D4AF37] font-semibold">Caso Risolto</span>
+                  <span className="text-[#D4AF37] font-semibold">{t('home.caseResolved')}</span>
                 </div>
-                <h3 className="text-xl font-bold text-black mb-3">{story.type}</h3>
+                <h3 className="text-xl font-bold text-black mb-3">{t(`successCases.${story.typeKey}`)}</h3>
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between">
-                    <span className="text-gray-700">Importo:</span>
+                    <span className="text-gray-700">{t('home.caseAmount')}:</span>
                     <span className="text-black font-semibold">{story.amount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-700">Durata:</span>
+                    <span className="text-gray-700">{t('home.caseDuration')}:</span>
                     <span className="text-black font-semibold">{story.duration}</span>
                   </div>
                 </div>
-                <p className="text-gray-700 text-sm">{story.outcome}</p>
+                <p className="text-gray-700 text-sm">{t(`successCases.${story.outcomeKey}`)}</p>
               </div>
             ))}
           </div>
@@ -842,21 +842,21 @@ const Home = () => {
           <div className="grid md:grid-cols-3 gap-8 mt-16 text-center">
             <div className="bg-white border-2 border-[#D4AF37] p-8 shadow-md">
               <div className="text-5xl font-bold text-[#D4AF37] mb-3">500+</div>
-              <div className="text-black text-lg font-semibold">Casi Totali Gestiti</div>
+              <div className="text-black text-lg font-semibold">{t('home.totalCases')}</div>
             </div>
             <div className="bg-white border-2 border-[#D4AF37] p-8 shadow-md">
               <div className="text-5xl font-bold text-[#D4AF37] mb-3">35+</div>
-              <div className="text-black text-lg font-semibold">Clienti Internazionali</div>
+              <div className="text-black text-lg font-semibold">{t('home.internationalClients')}</div>
             </div>
             <div className="bg-white border-2 border-[#D4AF37] p-8 shadow-md">
               <div className="text-5xl font-bold text-[#D4AF37] mb-3">24h</div>
-              <div className="text-black text-lg font-semibold">Tempo Medio di Risposta</div>
+              <div className="text-black text-lg font-semibold">{t('home.avgResponseTime')}</div>
             </div>
           </div>
 
           <div className="text-center mt-12">
             <Button onClick={() => handleCTAClick('success-stories')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg px-8 py-7 font-semibold">
-              Richiedi la Tua Consulenza <ArrowRight className="ml-2" />
+              {t('home.requestConsultation')} <ArrowRight className="ml-2" />
             </Button>
           </div>
         </div>
