@@ -101,7 +101,7 @@ const AdminPanel = () => {
               className="bg-[#D4AF37] hover:bg-[#B8941F] text-black rounded-none"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to CRM
+              {t('admin.backToCRM')}
             </Button>
             <div>
               <h1 className="text-2xl font-bold">Administration Panel</h1>
