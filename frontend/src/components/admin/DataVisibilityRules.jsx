@@ -265,7 +265,7 @@ const DataVisibilityRules = () => {
                               ? 'bg-blue-100 text-blue-700' 
                               : 'bg-purple-100 text-purple-700'
                           }`}>
-                            {row.scope_type === 'role' ? 'Ruolo' : 'Team'}
+                            {row.scope_type === 'role' ? t('users.role') : t('users.team')}
                           </span>
                         </div>
                       </td>

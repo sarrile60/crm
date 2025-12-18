@@ -202,7 +202,7 @@ const TeamsManagement = () => {
 
   const handleAddMembersToTeam = async () => {
     if (!selectedTeam || selectedUsersToAdd.length === 0) {
-      toast.error('Seleziona almeno un utente da aggiungere');
+      toast.error(t('teams.selectAtLeastOneUser'));
       return;
     }
 
@@ -215,12 +215,12 @@ const TeamsManagement = () => {
         set_as_default: setAsDefault
       }, { headers });
 
-      toast.success(`${selectedUsersToAdd.length} membri aggiunti al team`);
+      toast.success(t('teams.membersAddedSuccess', { count: selectedUsersToAdd.length }));
       setSelectedUsersToAdd([]);
       setShowManageMembersModal(false);
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nell\'aggiunta dei membri');
+      toast.error(error.response?.data?.detail || t('teams.errorAddingMembers'));
     }
   };
 
@@ -233,10 +233,10 @@ const TeamsManagement = () => {
 
       await axios.delete(`${API}/admin/teams/${selectedTeam.id}/members/${userId}`, { headers });
 
-      toast.success('Membro rimosso dal team');
+      toast.success(t('teams.memberRemovedSuccess'));
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nella rimozione del membro');
+      toast.error(error.response?.data?.detail || t('teams.errorRemovingMember'));
     }
   };
 
