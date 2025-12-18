@@ -1287,15 +1287,19 @@ async def get_login_requests():
 
 @admin_router.post("/login-requests/{request_id}/approve", dependencies=[Depends(require_admin)])
 async def approve_login_request(request_id: str, current_user: dict = Depends(get_current_user)):
-    """Approve a login request - allows user to login for the next 30 minutes"""
+    """Approve a login request - allows user to login for the configured duration"""
     from datetime import timedelta
     
     request = await db.login_requests.find_one({"id": request_id, "status": "pending"})
     if not request:
         raise HTTPException(status_code=404, detail="Request not found or already processed")
     
-    # Update request to approved with 30 minute expiry
-    expires_at = datetime.now(timezone.utc) + timedelta(minutes=30)
+    # Get approval duration from settings
+    settings = await get_session_settings()
+    approval_minutes = settings.get("approval_duration_minutes", 30)
+    
+    # Update request to approved with configured expiry
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=approval_minutes)
     await db.login_requests.update_one(
         {"id": request_id},
         {"$set": {
