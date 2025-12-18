@@ -5,20 +5,11 @@ import { Input } from '../ui/input';
 import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api/admin`;
-
-const DAY_NAMES = {
-  0: 'Lunedì',
-  1: 'Martedì',
-  2: 'Mercoledì',
-  3: 'Giovedì',
-  4: 'Venerdì',
-  5: 'Sabato',
-  6: 'Domenica'
-};
 
 const SessionSettings = () => {
   const [settings, setSettings] = useState({
