@@ -539,9 +539,9 @@
     "errorUpdatingLanguage": "Error al actualizar el idioma",
     "saveSuccess": "Language saved successfully",
     "systemWide": "System-wide language setting",
-    "infoTitle": "Language Information",
-    "infoDesc1": "The selected language applies to the entire system",
-    "infoDesc2": "Affects CRM Dashboard, Admin Panel, and Homepage"
+    "infoTitle": "Información del idioma",
+    "infoDesc1": "El idioma seleccionado se aplica a todo el sistema",
+    "infoDesc2": "Afecta al panel de CRM, panel de administración y página de inicio"
   },
   "home": {
     "heroTitle": "Recupere sus fondos de estafas online y cripto",

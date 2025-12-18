@@ -539,9 +539,9 @@
     "errorUpdatingLanguage": "Erreur lors de la mise à jour de la langue",
     "saveSuccess": "Language saved successfully",
     "systemWide": "System-wide language setting",
-    "infoTitle": "Language Information",
-    "infoDesc1": "The selected language applies to the entire system",
-    "infoDesc2": "Affects CRM Dashboard, Admin Panel, and Homepage"
+    "infoTitle": "Informations sur la langue",
+    "infoDesc1": "La langue sélectionnée s'applique à l'ensemble du système",
+    "infoDesc2": "Affecte le tableau de bord CRM, le panneau d'administration et la page d'accueil"
   },
   "home": {
     "heroTitle": "Récupérez vos fonds des arnaques en ligne et crypto",

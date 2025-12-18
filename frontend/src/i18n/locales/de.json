@@ -539,9 +539,9 @@
     "errorUpdatingLanguage": "Fehler beim Aktualisieren der Sprache",
     "saveSuccess": "Language saved successfully",
     "systemWide": "System-wide language setting",
-    "infoTitle": "Language Information",
-    "infoDesc1": "The selected language applies to the entire system",
-    "infoDesc2": "Affects CRM Dashboard, Admin Panel, and Homepage"
+    "infoTitle": "Sprachinformationen",
+    "infoDesc1": "Die ausgewählte Sprache gilt für das gesamte System",
+    "infoDesc2": "Betrifft CRM-Dashboard, Admin-Panel und Homepage"
   },
   "home": {
     "heroTitle": "Holen Sie Ihre Gelder von Online- und Krypto-Betrug zurück",
