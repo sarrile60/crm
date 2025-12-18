@@ -1244,7 +1244,10 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-black mb-2">Importo Perso *</label>
-                <Select value={newLead.amountLost} onValueChange={(value) => setNewLead({ ...newLead, amountLost: value })}>
+                <Select 
+                  value={newLead.amountLost || undefined} 
+                  onValueChange={(value) => setNewLead({ ...newLead, amountLost: value })}
+                >
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
                     <SelectValue placeholder="Seleziona importo" />
                   </SelectTrigger>
