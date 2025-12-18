@@ -879,30 +879,30 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                     <p className="text-black">{selectedLead.scammerCompany}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Data Creazione</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('crm.createdDate')}</label>
                     <p className="text-black">{formatCreatedDate(selectedLead.created_at)}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Stato</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('common.status')}</label>
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(selectedLead.status)}`}>
                       {selectedLead.status}
                     </span>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Priorità</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('leads.priority')}</label>
                     <p className={`font-semibold ${getPriorityColor(selectedLead.priority)}`}>{selectedLead.priority}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Team</label>
-                    <p className="text-black">{selectedLead.team_id ? teams.find(t => t.id === selectedLead.team_id)?.name || 'N/A' : 'Nessun team'}</p>
+                    <label className="text-sm font-semibold text-gray-600">{t('users.team')}</label>
+                    <p className="text-black">{selectedLead.team_id ? teams.find(t => t.id === selectedLead.team_id)?.name || 'N/A' : t('common.noTeam')}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Assegnato a</label>
-                    <p className="text-black">{selectedLead.assigned_to ? users.find(u => u.id === selectedLead.assigned_to)?.full_name || 'N/A' : 'Non assegnato'}</p>
+                    <label className="text-sm font-semibold text-gray-600">{t('leads.assignedTo')}</label>
+                    <p className="text-black">{selectedLead.assigned_to ? users.find(u => u.id === selectedLead.assigned_to)?.full_name || 'N/A' : t('crm.notAssigned')}</p>
                   </div>
                 </div>
                 <div className="mt-4">
-                  <label className="text-sm font-semibold text-gray-600">Dettagli Caso</label>
+                  <label className="text-sm font-semibold text-gray-600">{t('crm.caseDetails')}</label>
                   <p className="text-black mt-2 p-4 bg-gray-50 border border-gray-200 whitespace-pre-wrap">{selectedLead.caseDetails}</p>
                 </div>
               </div>
