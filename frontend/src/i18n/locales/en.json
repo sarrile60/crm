@@ -261,7 +261,19 @@
     "show": "Show",
     "hide": "Hide",
     "activate": "Activate",
-    "deactivate": "Deactivate"
+    "deactivate": "Deactivate",
+    "newUser": "New User",
+    "lastLogin": "Last Login",
+    "active": "Active",
+    "inactive": "Inactive",
+    "users": "users",
+    "userCreated": "User created successfully",
+    "userUpdated": "User updated successfully",
+    "userDeleted": "User deleted successfully",
+    "errorLoadingUsers": "Error loading users",
+    "confirmDeleteMessage": "Are you sure you want to delete user {{name}} ({{username}})?",
+    "newPasswordOptional": "New Password (optional)",
+    "leaveBlankNoChange": "Leave blank to keep current password"
   },
   "teams": {
     "title": "Teams Management",
