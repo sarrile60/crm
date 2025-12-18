@@ -81,7 +81,8 @@
     "of": "of",
     "results": "results",
     "clearFilters": "Clear Filters",
-    "filters": "Filters"
+    "filters": "Filters",
+    "complete": "Complete"
   },
   "auth": {
     "login": "Login",
@@ -414,7 +415,20 @@
     "allUsersAlreadyMembers": "All active users are already members of this team",
     "currentTeam": "Current Team",
     "usersSelected": "users selected",
-    "removeFromTeam": "Remove from team"
+    "removeFromTeam": "Remove from team",
+    "selectAtLeastOneUser": "Select at least one user to add",
+    "membersAddedSuccess": "{{count}} members added to team",
+    "errorAddingMembers": "Error adding members",
+    "memberRemovedSuccess": "Member removed from team",
+    "errorRemovingMember": "Error removing member",
+    "newTeam": "New Team",
+    "teamCreated": "Team created successfully",
+    "errorCreatingTeam": "Error creating team",
+    "noTeamsCreated": "No teams created",
+    "createNewTeam": "Create New Team",
+    "teamNamePlaceholder": "Ex. Team North",
+    "descriptionOptional": "Description (optional)",
+    "noSupervisor": "No supervisor"
   },
   "visibility": {
     "title": "Data Visibility",
