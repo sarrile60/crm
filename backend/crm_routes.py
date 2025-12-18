@@ -300,24 +300,25 @@ async def check_session(current_user: dict = Depends(get_current_user)):
     # Check if we're within work hours
     if not is_work_hours:
         # Log automatic session expiry
+        end_time_str = f"{settings['session_end_hour']:02d}:{settings['session_end_minute']:02d}"
         await log_auth_event(
             action=AuditAction.LOGOUT,
             username=current_user["username"],
             user_id=current_user["id"],
             success=True,
-            details={"reason": "Session expired at 6:30 PM Berlin time", "auto_logout": True}
+            details={"reason": f"Session expired at {end_time_str}", "auto_logout": True}
         )
         
         return {
             "valid": False,
-            "reason": "Sessione scaduta alle 18:30 (ora di Berlino)",
+            "reason": reason,
             "session_info": session_info
         }
     
     return {
         "valid": True,
         "session_info": session_info,
-        "message": f"Sessione valida. Scade tra {session_info['minutes_remaining']} minuti."
+        "message": f"Session valid. Expires in {session_info['minutes_remaining']} minutes."
     }
 
 
