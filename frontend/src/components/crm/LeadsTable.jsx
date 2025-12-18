@@ -859,7 +859,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                           {selectedLead.phone_display}
                         </a>
                       ) : (
-                        <span className="text-gray-400 italic block">Nascosto</span>
+                        <span className="text-gray-400 italic block">{t('visibility.hidden')}</span>
                       )
                     ) : (
                       <a 
