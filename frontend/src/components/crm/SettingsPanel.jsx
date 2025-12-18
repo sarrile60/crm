@@ -6,11 +6,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const SettingsPanel = () => {
+  const { t } = useTranslation();
   const [statuses, setStatuses] = useState([]);
   const [teams, setTeams] = useState([]);
   const [users, setUsers] = useState([]);
@@ -47,7 +49,7 @@ const SettingsPanel = () => {
       setTeams(teamsRes.data);
       setUsers(usersRes.data);
     } catch (error) {
-      toast.error('Errore nel caricamento dei dati');
+      toast.error(t('users.errorLoadingData'));
     } finally {
       setLoading(false);
     }
@@ -59,12 +61,12 @@ const SettingsPanel = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.post(`${API}/crm/statuses`, newStatus, { headers });
-      toast.success('Stato creato con successo');
+      toast.success(t('settings.statusCreated'));
       setShowCreateModal(false);
       setNewStatus({ name: '', color: '#3B82F6', order: 0 });
       fetchData();
     } catch (error) {
-      toast.error('Errore nella creazione dello stato');
+      toast.error(t('settings.errorCreatingStatus'));
     }
   };
 
@@ -74,47 +76,47 @@ const SettingsPanel = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.post(`${API}/crm/teams`, newTeam, { headers });
-      toast.success('Team creato con successo');
+      toast.success(t('teams.teamCreated'));
       setShowCreateTeamModal(false);
       setNewTeam({ name: '', description: '', supervisor_id: '' });
       fetchData();
     } catch (error) {
-      toast.error('Errore nella creazione del team');
+      toast.error(t('teams.errorCreatingTeam'));
     }
   };
 
   const handleDeleteStatus = async (statusId) => {
-    if (!window.confirm('Sei sicuro di voler eliminare questo stato?')) return;
+    if (!window.confirm(t('settings.confirmDeleteStatus'))) return;
 
     try {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.delete(`${API}/crm/statuses/${statusId}`, { headers });
-      toast.success('Stato eliminato');
+      toast.success(t('settings.statusDeleted'));
       fetchData();
     } catch (error) {
-      toast.error('Errore nell\'eliminazione dello stato');
+      toast.error(t('settings.errorDeletingStatus'));
     }
   };
 
   if (loading) {
-    return <div className="text-center py-12">Caricamento impostazioni...</div>;
+    return <div className="text-center py-12">{t('common.loading')}...</div>;
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-black">Impostazioni CRM</h2>
+        <h2 className="text-3xl font-bold text-black">{t('settings.crmSettings')}</h2>
       </div>
 
       {/* Custom Statuses Section */}
       <div className="bg-white border-2 border-gray-200 p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold text-black">Stati Personalizzati</h3>
+          <h3 className="text-xl font-bold text-black">{t('settings.customStatuses')}</h3>
           <Button onClick={() => setShowCreateModal(true)} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
             <Plus className="w-4 h-4 mr-2" />
-            Nuovo Stato
+            {t('settings.newStatus')}
           </Button>
         </div>
         
