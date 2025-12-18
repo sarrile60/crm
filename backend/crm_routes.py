@@ -252,13 +252,53 @@ async def logout(current_user: dict = Depends(get_current_user)):
 async def check_session(current_user: dict = Depends(get_current_user)):
     """
     Check if the current session is still valid.
-    Sessions expire at 6:30 PM Berlin time (Monday-Friday).
+    Sessions expire based on admin-configured settings.
     Frontend should call this periodically and logout if expired.
     """
-    session_info = get_session_info()
+    # Admin users are never auto-logged out
+    if current_user.get("role", "").lower() == "admin":
+        settings = await get_session_settings()
+        return {
+            "valid": True,
+            "session_info": {
+                "is_admin": True,
+                "session_end_time": f"{settings['session_end_hour']:02d}:{settings['session_end_minute']:02d}",
+                "minutes_remaining": 999
+            },
+            "message": "Admin - sessione sempre valida"
+        }
+    
+    # Check if within work hours using database settings
+    settings = await get_session_settings()
+    is_work_hours, reason = await is_within_work_hours(settings)
+    
+    # Build session info for display
+    from session_utils import get_berlin_time
+    berlin_now = get_berlin_time()
+    from datetime import time as dt_time
+    end_time = dt_time(settings["session_end_hour"], settings["session_end_minute"])
+    
+    if is_work_hours:
+        end_datetime = berlin_now.replace(
+            hour=settings["session_end_hour"],
+            minute=settings["session_end_minute"],
+            second=0
+        )
+        minutes_remaining = int((end_datetime - berlin_now).total_seconds() / 60)
+    else:
+        minutes_remaining = 0
+    
+    session_info = {
+        "berlin_time": berlin_now.strftime("%Y-%m-%d %H:%M:%S"),
+        "day_of_week": berlin_now.strftime("%A"),
+        "is_weekday": berlin_now.weekday() in settings.get("work_days", [0,1,2,3,4]),
+        "is_work_hours": is_work_hours,
+        "session_end_time": f"{settings['session_end_hour']:02d}:{settings['session_end_minute']:02d}",
+        "minutes_remaining": max(0, minutes_remaining)
+    }
     
     # Check if we're within work hours
-    if not session_info["is_work_hours"]:
+    if not is_work_hours:
         # Log automatic session expiry
         await log_auth_event(
             action=AuditAction.LOGOUT,
