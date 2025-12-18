@@ -723,7 +723,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   <td className="p-4 text-gray-700">
                     {/* Email visibility controlled by backend */}
                     {lead.email_display !== undefined && lead.email_display !== null ? (
-                      lead.email_display || <span className="text-gray-400 italic">Nascosto</span>
+                      lead.email_display || <span className="text-gray-400 italic">{t('visibility.hidden')}</span>
                     ) : (
                       lead.email
                     )}
