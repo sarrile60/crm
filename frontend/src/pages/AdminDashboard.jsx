@@ -4,11 +4,13 @@ import { Scale, Users, TrendingUp, MousePointerClick, LogOut, Eye, Calendar, Eur
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const AdminDashboard = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [analytics, setAnalytics] = useState(null);
   const [leads, setLeads] = useState([]);
@@ -42,7 +44,7 @@ const AdminDashboard = () => {
       
       if (!response.data.valid) {
         // Session expired - auto logout
-        toast.error(response.data.reason || 'Sessione scaduta');
+        toast.error(response.data.reason || t('session.sessionExpired'));
         localStorage.removeItem('adminToken');
         navigate('/admin-portal-login');
       }
@@ -68,7 +70,7 @@ const AdminDashboard = () => {
       setAnalytics(analyticsRes.data);
       setLeads(leadsRes.data);
     } catch (error) {
-      toast.error('Errore nel caricamento dei dati');
+      toast.error(t('users.errorLoadingData'));
       if (error.response?.status === 401) {
         navigate('/admin-portal-login');
       }
