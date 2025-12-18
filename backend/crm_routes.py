@@ -24,6 +24,10 @@ from db_utils import (
 )
 from audit_utils import log_auth_event, log_lead_action, AuditAction
 from session_utils import get_session_expiry, get_session_info, is_session_valid, get_berlin_time
+from session_settings import (
+    get_session_settings, is_within_work_hours, 
+    get_session_expiry_from_settings, init_session_settings_db
+)
 
 # Create router
 crm_router = APIRouter(prefix="/api/crm")
