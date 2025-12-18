@@ -102,7 +102,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       setTeams(teamsRes.data);
     } catch (error) {
       console.error('Error fetching data:', error);
-      toast.error('Errore nel caricamento dei dati');
+      toast.error(t('users.errorLoadingData'));
     } finally {
       setLoading(false);
     }
@@ -162,7 +162,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
 
   const handleAddNote = async () => {
     if (!newNote.trim()) {
-      toast.error('La nota non può essere vuota');
+      toast.error(t('crm.noteCannotBeEmpty'));
       return;
     }
 
@@ -176,33 +176,33 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         is_internal: true
       }, { headers });
       
-      toast.success('Nota aggiunta con successo');
+      toast.success(t('crm.noteAddedSuccess'));
       setNewNote('');
       
       // Refresh notes
       const notesRes = await axios.get(`${API}/crm/leads/${selectedLead.id}/notes`, { headers });
       setLeadNotes(notesRes.data);
     } catch (error) {
-      toast.error('Errore nell\'aggiunta della nota');
+      toast.error(t('crm.errorAddingNote'));
     }
   };
 
   const handleCreateLead = async () => {
     if (!newLead.fullName || !newLead.email || !newLead.phone || !newLead.scammerCompany || !newLead.amountLost || !newLead.caseDetails) {
-      toast.error('Compila tutti i campi obbligatori');
+      toast.error(t('common.fillAllFields'));
       return;
     }
 
     // Validate email format - must contain @
     if (!newLead.email.includes('@')) {
-      toast.error('Email non valida: deve contenere @');
+      toast.error(t('crm.invalidEmailFormat'));
       return;
     }
 
     // Validate phone - only digits, spaces, + and - allowed (no letters)
     const phoneDigitsOnly = newLead.phone.replace(/[\s\-\+\(\)]/g, '');
     if (!/^\d+$/.test(phoneDigitsOnly)) {
-      toast.error('Telefono non valido: inserire solo numeri');
+      toast.error(t('crm.invalidPhoneFormat'));
       return;
     }
 
