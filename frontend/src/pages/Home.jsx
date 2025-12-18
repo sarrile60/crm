@@ -275,7 +275,7 @@ const Home = () => {
             {formStep === 1 ? (
               <form onSubmit={handleStep1Submit} className="space-y-4">
                 <div>
-                  <label className="block text-black mb-2 text-sm font-semibold">Nome Completo *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">{t('home.fullName')} *</label>
                   <Input
                     type="text"
                     name="fullName"
@@ -287,7 +287,7 @@ const Home = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-black mb-2 text-sm font-semibold">Email *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">{t('common.email')} *</label>
                   <Input
                     type="email"
                     name="email"
@@ -299,7 +299,7 @@ const Home = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-black mb-2 text-sm font-semibold">Numero di Telefono *</label>
+                  <label className="block text-black mb-2 text-sm font-semibold">{t('home.phoneNumber')} *</label>
                   <div className="flex gap-2">
                     <Input
                       type="text"
@@ -319,7 +319,7 @@ const Home = () => {
                   </div>
                 </div>
                 <Button type="submit" className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none text-lg py-6 font-semibold">
-                  Continua → Dettagli Caso
+                  {t('home.continue')}
                 </Button>
               </form>
             ) : (
