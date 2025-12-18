@@ -178,7 +178,7 @@ const DataVisibilityRules = () => {
             onClick={() => setFilterType('all')}
             className={filterType === 'all' ? 'bg-black text-white rounded-none' : 'rounded-none'}
           >
-            Tutti
+            {t('visibility.filterAll')}
           </Button>
           <Button
             variant={filterType === 'role' ? 'default' : 'outline'}
@@ -187,7 +187,7 @@ const DataVisibilityRules = () => {
             className={filterType === 'role' ? 'bg-black text-white rounded-none' : 'rounded-none'}
           >
             <Shield className="w-4 h-4 mr-1" />
-            Solo Ruoli
+            {t('visibility.filterRolesOnly')}
           </Button>
           <Button
             variant={filterType === 'team' ? 'default' : 'outline'}
@@ -196,7 +196,7 @@ const DataVisibilityRules = () => {
             className={filterType === 'team' ? 'bg-black text-white rounded-none' : 'rounded-none'}
           >
             <Building2 className="w-4 h-4 mr-1" />
-            Solo Team
+            {t('visibility.filterTeamsOnly')}
           </Button>
         </div>
         <Button
