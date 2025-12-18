@@ -96,7 +96,8 @@
     "sessionExpires": "Sitzung läuft ab um",
     "timeRemaining": "verbleibend",
     "crmPortal": "CRM-Portal",
-    "accessClientManagement": "Zugang zum Kundenverwaltungssystem"
+    "accessClientManagement": "Zugang zum Kundenverwaltungssystem",
+    "adminNoExpiry": "Admin - Keine Sitzungsablauf"
   },
   "nav": {
     "home": "Startseite",

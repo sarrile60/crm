@@ -96,7 +96,8 @@
     "sessionExpires": "La session expire à",
     "timeRemaining": "restant",
     "crmPortal": "Portail CRM",
-    "accessClientManagement": "Accéder au système de gestion clients"
+    "accessClientManagement": "Accéder au système de gestion clients",
+    "adminNoExpiry": "Admin - Pas d'expiration de session"
   },
   "nav": {
     "home": "Accueil",
