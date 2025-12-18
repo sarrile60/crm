@@ -51,7 +51,27 @@ const ACTION_COLORS = {
 };
 
 const AuditLogs = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // Helper to get locale for date formatting
+  const getLocale = () => {
+    const lang = i18n.language;
+    return lang === 'en' ? 'en-GB' : 
+           lang === 'it' ? 'it-IT' :
+           lang === 'de' ? 'de-DE' :
+           lang === 'fr' ? 'fr-FR' :
+           lang === 'es' ? 'es-ES' : 'en-GB';
+  };
+  
+  // Translate action labels
+  const getActionLabel = (action) => {
+    return t(`audit.actions.${action}`, action);
+  };
+  
+  // Translate entity type labels
+  const getEntityLabel = (entityType) => {
+    return t(`audit.entities.${entityType}`, entityType);
+  };
   const [logs, setLogs] = useState([]);
   const [filters, setFilters] = useState({
     user_id: '',
@@ -202,7 +222,7 @@ const AuditLogs = () => {
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return '';
     const date = new Date(timestamp);
-    return date.toLocaleString('it-IT', {
+    return date.toLocaleString(getLocale(), {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
