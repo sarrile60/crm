@@ -99,8 +99,8 @@ const Home = () => {
     
     if (!formData.scammerCompany || !formData.amountLost || !formData.caseDetails) {
       toast({
-        title: "Campi mancanti",
-        description: "Per favore compila tutti i campi richiesti.",
+        title: t('common.missingFields'),
+        description: t('common.fillAllFields'),
         variant: "destructive"
       });
       return;
