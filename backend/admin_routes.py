@@ -1220,6 +1220,7 @@ async def get_session_settings_endpoint():
         "work_days": settings.get("work_days", [0, 1, 2, 3, 4]),
         "timezone": settings.get("timezone", "Europe/Berlin"),
         "require_approval_after_hours": settings.get("require_approval_after_hours", True),
+        "approval_duration_minutes": settings.get("approval_duration_minutes", 30),
         "day_names": {
             0: "Lunedì",
             1: "Martedì", 
