@@ -553,44 +553,44 @@ const TeamsManagement = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
               <AlertTriangle className="w-6 h-6" />
-              Archivia Team
+              {t('teams.archiveTeam')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <p className="text-gray-700">
-              Stai per archiviare il team <strong>{selectedTeam?.name}</strong>.
+              {t('teams.archiveWarning')} <strong>{selectedTeam?.name}</strong>?
             </p>
             
             {selectedTeam && getTeamMembers(selectedTeam.id).length > 0 ? (
               <div className="bg-yellow-50 border border-yellow-200 p-4 rounded">
                 <p className="text-yellow-800 font-semibold mb-3">
-                  ⚠️ Questo team ha {getTeamMembers(selectedTeam.id).length} membri attivi.
+                  ⚠️ {getTeamMembers(selectedTeam.id).length} {t('teams.membersWillBeReassigned')}
                 </p>
                 <p className="text-sm text-yellow-700 mb-3">
-                  Prima di archiviare, devi riassegnare tutti i membri a un altro team:
+                  {t('teams.selectNewTeam')}:
                 </p>
                 <Select 
                   value={reassignTeamId || 'select'} 
                   onValueChange={(value) => setReassignTeamId(value === 'select' ? '' : value)}
                 >
                   <SelectTrigger className="bg-white border-yellow-300 rounded-none">
-                    <SelectValue placeholder="Seleziona team di destinazione" />
+                    <SelectValue placeholder={t('teams.selectNewTeam')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="select">-- Seleziona team --</SelectItem>
+                    <SelectItem value="select">-- {t('users.selectTeam')} --</SelectItem>
                     {getReassignmentTeams().map(team => (
                       <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 <div className="mt-3 text-xs text-yellow-700">
-                  <strong>Membri da riassegnare:</strong>
+                  <strong>{t('teams.members')}:</strong>
                   <ul className="mt-1 ml-4 list-disc">
                     {getTeamMembers(selectedTeam.id).slice(0, 5).map(member => (
                       <li key={member.id}>{member.full_name}</li>
                     ))}
                     {getTeamMembers(selectedTeam.id).length > 5 && (
-                      <li>... e altri {getTeamMembers(selectedTeam.id).length - 5}</li>
+                      <li>... + {getTeamMembers(selectedTeam.id).length - 5}</li>
                     )}
                   </ul>
                 </div>
@@ -598,7 +598,7 @@ const TeamsManagement = () => {
             ) : (
               <div className="bg-gray-50 border border-gray-200 p-3 rounded">
                 <p className="text-sm text-gray-600">
-                  Questo team non ha membri. Può essere archiviato direttamente.
+                  {t('teams.noMembersInTeam')}
                 </p>
               </div>
             )}
@@ -608,7 +608,7 @@ const TeamsManagement = () => {
                 onClick={() => setShowArchiveModal(false)}
                 className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
               >
-                Annulla
+                {t('common.cancel')}
               </Button>
               <Button 
                 onClick={handleArchiveTeam}
@@ -616,7 +616,7 @@ const TeamsManagement = () => {
                 className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none disabled:opacity-50"
               >
                 <Archive className="w-4 h-4 mr-2" />
-                Archivia Team
+                {t('teams.archiveTeam')}
               </Button>
             </div>
           </div>
@@ -629,7 +629,7 @@ const TeamsManagement = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-black flex items-center gap-2">
               <Users className="w-6 h-6 text-blue-600" />
-              Membri del Team: {selectedTeam?.name}
+              {t('teams.members')}: {selectedTeam?.name}
             </DialogTitle>
           </DialogHeader>
           <div className="mt-4">
@@ -644,7 +644,7 @@ const TeamsManagement = () => {
                   className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
                 >
                   <UserPlus className="w-4 h-4 mr-2" />
-                  Aggiungi Membri
+                  {t('common.add')} {t('teams.members')}
                 </Button>
               </div>
             )}
