@@ -158,3 +158,24 @@ All hardcoded Italian text has been successfully removed and replaced with prope
 - Post-language-change interface verification
 
 **Final Assessment: The Permission Matrix page translation system is fully functional and properly implemented with comprehensive i18n support.**
+## Additional Fixes Applied - December 18, 2025
+
+### Fixed Hardcoded Strings
+1. **LeadsTable.jsx** (Line 1038)
+   - Changed: "Mass Update" → `{t('crm.massUpdate')}`
+   
+2. **UserManagement.jsx** (Lines 299-302, 372-374)
+   - Changed: Hardcoded role names (Agent, Supervisor, Manager, Admin) → Translation keys
+   - Added translations: `users.roles.admin`, `users.roles.supervisor`, `users.roles.manager`, `users.roles.agent`
+
+### Translation Keys Added
+Added role translations to all 5 language files:
+- English: Admin, Supervisor, Manager, Agent
+- Italian: Amministratore, Supervisore, Manager, Agente
+- German: Administrator, Supervisor, Manager, Agent
+- French: Administrateur, Superviseur, Gestionnaire, Agent
+- Spanish: Administrador, Supervisor, Gerente, Agente
+
+### Current Testing Focus
+Verify that User Management page shows translated role names in all languages.
+
