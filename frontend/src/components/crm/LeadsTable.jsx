@@ -998,14 +998,14 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   />
                   <Button onClick={handleAddNote} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
                     <Plus className="w-4 h-4 mr-2" />
-                    Aggiungi Nota
+                    {t('crm.addNote')}
                   </Button>
                 </div>
 
                 {/* Notes List */}
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {leadNotes.length === 0 ? (
-                    <p className="text-center text-gray-600 py-4">Nessuna nota ancora</p>
+                    <p className="text-center text-gray-600 py-4">{t('crm.noNotesYet')}</p>
                   ) : (
                     leadNotes.map((note) => (
                       <div key={note.id} className="bg-white border border-gray-200 p-4">
@@ -1015,7 +1015,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                             <p className="text-xs text-gray-600">{new Date(note.created_at).toLocaleString('it-IT')}</p>
                           </div>
                           {note.is_internal && (
-                            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Interno</span>
+                            <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">{t('crm.internal')}</span>
                           )}
                         </div>
                         <p className="text-gray-700 whitespace-pre-wrap">{note.note}</p>
@@ -1037,13 +1037,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               <DialogTitle className="text-2xl font-bold text-black">Mass Update</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <p className="text-gray-700">Aggiorna {selectedLeadIds.length} lead selezionati:</p>
+              <p className="text-gray-700">{t('crm.updateSelectedLeads', { count: selectedLeadIds.length })}</p>
               
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Stato (opzionale)</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('crm.statusOptional')}</label>
                 <Select value={massUpdateData.status || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, status: value === "_none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Nessun cambio" />
+                    <SelectValue placeholder={t('crm.noChange')} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="_none">Nessun cambio</SelectItem>
@@ -1058,7 +1058,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                 <label className="block text-sm font-semibold text-black mb-2">Team (opzionale)</label>
                 <Select value={massUpdateData.team_id || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, team_id: value === "_none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Nessun cambio" />
+                    <SelectValue placeholder={t('crm.noChange')} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="_none">Nessun cambio</SelectItem>
@@ -1073,7 +1073,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                 <label className="block text-sm font-semibold text-black mb-2">Assegna a Utente (opzionale)</label>
                 <Select value={massUpdateData.assigned_to || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, assigned_to: value === "_none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Nessun cambio" />
+                    <SelectValue placeholder={t('crm.noChange')} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="_none">Nessun cambio</SelectItem>
