@@ -1126,12 +1126,52 @@ agent_communication:
       - Translation keys exist in en.json but components use hardcoded strings
       - Frontend service had loading issues preventing browser testing
       
-      🚨 IMMEDIATE ACTION REQUIRED:
-      Main agent needs to fix hardcoded Italian strings in:
-      1. SessionSettings.jsx (multiple hardcoded strings)
-      2. TeamsManagement.jsx (member management functions)
-      3. DataVisibilityRules.jsx (scope type labels)
-      4. Check other admin components for similar issues
+      🚨 COMPREHENSIVE ANALYSIS COMPLETED - ALL REPORTED ISSUES CONFIRMED:
+      
+      **DETAILED FINDINGS BY COMPONENT:**
+      
+      1. **Teams Management - View Members Modal** (TeamsManagement.jsx):
+         ❌ Line 632: Modal title "Members: {selectedTeam?.name}" uses t('teams.members') = "Membri"
+         ❌ Line 654: "No members" message uses t('teams.noMembersInTeam') = "Nessun membro in questo team"
+         ❌ Lines 661-665: Table headers use Italian translations (Nome, Username, Ruolo, Team Predefinito, Azioni)
+         ❌ Lines 206-240: Hardcoded Italian text in member management functions
+      
+      2. **Data Visibility - How It Works Section** (DataVisibilityRules.jsx):
+         ✅ Line 311: Uses t('visibility.howItWorks') which correctly translates to "How It Works" in English
+         ❌ Line 268: Hardcoded Italian text "Ruolo" and "Team" instead of using translations
+      
+      3. **Session Settings** (SessionSettings.jsx):
+         ❌ Lines 190-193: HARDCODED ITALIAN TEXT - "Impostazioni Sessione" instead of using t('session.title')
+         ❌ Line 57: Hardcoded Italian error message "Errore nel caricamento delle impostazioni"
+         ❌ Line 133: Hardcoded Italian success message "Impostazioni salvate con successo"
+         ❌ Line 210: Hardcoded Italian "Salvataggio..." and "Salva"
+         ❌ Multiple other hardcoded Italian strings throughout the component
+      
+      4. **Language Panel** (LanguageSettings.jsx):
+         ✅ NO translation key errors found - component uses proper t() functions
+         ✅ Component appears to be correctly implemented
+      
+      5. **Audit Logs Action Labels** (AuditLogs.jsx):
+         ✅ Component uses proper t() functions for action labels
+         ✅ Action labels come from backend API response (log.action_label)
+         ✅ Component correctly implemented for i18n
+      
+      6. **Leads Section** (LeadsTable.jsx):
+         ✅ Line 561: Uses t('leads.title') which correctly translates to "Lead Management" in English
+         ✅ Line 571: Uses t('leads.createLead') which correctly translates to "Create Lead" in English
+         ❌ Lines 329, 334, 374, 376, 384, 392, 397, 504: Multiple hardcoded Italian strings in functions
+      
+      **ROOT CAUSE ANALYSIS:**
+      - Components are mixing hardcoded Italian text with i18n translation functions
+      - Some components not using useTranslation hook properly for all text
+      - Translation keys exist in en.json but components use hardcoded strings in functions
+      - Main issue is in SessionSettings.jsx which has extensive hardcoded Italian text
+      
+      **PRIORITY FIXES NEEDED:**
+      1. **HIGH PRIORITY**: SessionSettings.jsx - Replace all hardcoded Italian strings with t() functions
+      2. **MEDIUM PRIORITY**: TeamsManagement.jsx - Fix member management function strings
+      3. **MEDIUM PRIORITY**: DataVisibilityRules.jsx - Fix scope type labels
+      4. **LOW PRIORITY**: LeadsTable.jsx - Fix function-level hardcoded strings
       
       📊 COMPLETE TEST RESULTS FOR FINAL I18N VERIFICATION:
       
