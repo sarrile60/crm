@@ -2,180 +2,173 @@
 The user's initial goal was to build a full-stack CRM for their law firm, 1 LAW SOLICITORS. The primary, non-negotiable requirement was to create a comprehensive, GUI-driven administration panel, similar to EspoCRM, to make the entire system configurable without needing future code edits.
 
 **PRODUCT REQUIREMENTS:**
--   **GUI-First Design:** All configuration (roles, permissions, users, teams, data visibility, session rules) MUST be managed through a user-friendly admin GUI.
+-   **GUI-First Design:** All configuration (roles, permissions, users, teams, data visibility, session rules, language) MUST be managed through a user-friendly admin GUI.
 -   **Phased Rollout:**
-    -   Phase 1 (Completed): Role Management, Permission Matrix, and a dynamic backend Permission Engine.
-    -   Phase 2 (Completed): User Management, Team Management, Data Visibility Rules, and Audit Logs.
--   **User Management:** Full CRUD for users within the Admin Panel.
--   **Team Management:** Full CRUD for teams.
--   **Data Visibility:** GUI to configure field visibility per role/team.
--   **Audit Logs:** Immutable, filterable, and exportable logs for all key actions.
--   **Session & Security Management:**
-    -   GUI for admins to configure work hours, work days, and the system's timezone.
-    -   Automatic session timeout for all users at the configured end-of-day.
-    -   An after-hours login approval system, where non-admins must be approved by an admin to log in.
-    -   GUI for admins to set the duration of a temporary login approval.
+    -   Phase 1 & 2 (Completed): Role Management, Permission Matrix, User Management, Team Management, Data Visibility Rules, Audit Logs, and advanced Session/Security Management.
+    -   Phase 3 (In Progress): Full internationalization (i18n) of the application.
+-   **Session & Security Management:** GUI for admins to configure work hours, work days, system timezone, and an after-hours login approval system.
 -   **Input Validation:** The system must prevent the creation of leads with invalid phone numbers, invalid emails, or duplicate emails.
+-   **Internationalization (i18n):** The entire application must be translatable via the Admin Panel into English, Italian, German, French, and Spanish. All UI text must be covered.
+-   **Infrastructure Stability:** Fix recurring preview environment 404 errors and browser caching issues that cause inconsistent behavior after deployments.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack CRM with a React frontend, FastAPI backend, and MongoDB database. It features a complete, GUI-driven Administration Panel accessible only to admins, which now controls nearly all aspects of the system's behavior.
+The application is a full-stack CRM with a React frontend, FastAPI backend, and MongoDB. It features a comprehensive, GUI-driven Administration Panel for system configuration.
 
--   **Admin Panel:** A comprehensive UI for system management, including:
-    -   Role Management, Permission Matrix, User Management, and Team Management.
-    -   **Data Visibility Rules:** A GUI to set field visibility (Full, Masked, Hidden) per role/team for leads' sensitive data.
-    -   **Audit Logs:** A complete, read-only audit trail with filtering and CSV export for auth events, user actions, and config changes.
-    -   **Session Settings:** A new UI for the admin to configure system-wide work hours, work days, timezone, and the rules for after-hours login approvals (including the duration of a temporary login pass).
--   **Dynamic Engines:**
-    -   A **Permission Engine** that enforces data access rules on every API call.
-    -   A **Session Engine** that enforces login times and auto-logout based on the settings configured in the Admin Panel.
--   **Security Features:**
-    -   After-hours login approval workflow.
-    -   Automatic session expiration.
-    -   A session timer in the UI to inform users of their remaining session time.
--   **Lead Management:** Enhanced with robust frontend validation for phone numbers, email format, and prevention of duplicate lead creation by email.
+-   **Admin Panel:** Includes modules for Role, User, Team, and Permission Management; Data Visibility Rules; Audit Logs; and Session/Security Settings (work hours, timezones, after-hours approval).
+-   **Internationalization (i18n):** An i18n system using  has been implemented. It includes a Language Settings tab in the Admin Panel to switch the system's language. Backend endpoints support storing and retrieving the current language setting. The translation JSON files for English, Italian, German, French, and Spanish have been created, but the translation coverage across components is incomplete.
+-   **Infrastructure Fixes:** Initial fixes have been implemented to address browser caching (via  headers in ) and preview environment stability (via a post-build script in ). The effectiveness of these fixes is pending verification.
 
 **Last working item**:
--   Last item agent was working: Implemented a feature allowing the administrator to select the system's timezone from a comprehensive list of world timezones within the Session Settings tab. This included updating the backend to use the dynamic timezone for all time-related logic and adding a live-updating clock to the UI to show the current time in the selected zone.
--   Status: USER VERIFICATION PENDING
--   Agent Testing Done: Y
--   Which testing method agent to use? Frontend testing agent
--   User Testing Done: N
+-   Last item agent was working: The agent was performing a large-scale translation of the entire application after the user reported that switching languages left large parts of the UI untranslated. The agent had identified numerous components with hardcoded Italian text (, , , etc.) and was beginning the systematic process of replacing the text with translation keys.
+-   Status: IN PROGRESS
+-   Agent Testing Done: Y (partially, but user found significant gaps)
+-   Which testing method agent to use? Frontend testing agent. The agent MUST create a detailed test plan that specifically verifies every single piece of text on each page mentioned by the user to ensure 100% translation coverage. Manual verification against the user's checklist is also required.
+-   User Testing Done: Y (User found many failures)
 
 **All Pending/In progress Issue list**:
--   Issue 1: Preview environment stability (P1)
--   Issue 2: User login failures after deployment or caching (P2)
+-   Issue 1: Incomplete Translation Coverage (P0)
+-   Issue 2: Corrupted Icon in Entity Config (P1)
+-   Issue 3: Homepage translation is not 100% complete (P1)
+-   Issue 4: Preview environment stability (404 error) (P2)
+-   Issue 5: Browser caching issues after deployment (P2)
 
 Issues Detail:
--   **Issue 1: Preview environment stability**
-    -   **Description:** The preview environment frequently returns a 404 error after a frontend build, requiring a manual restart of the frontend service (frontend: ERROR (not running)
-frontend: ERROR (abnormal termination)). This occurred during this session and was fixed manually.
-    -   **Attempted fixes:** The agent has been manually restarting the service as a temporary workaround.
+-   **Issue 1: Incomplete Translation Coverage**
+    -   **Description:** The user has reported that despite implementing the language-switching feature, many components in the Admin Panel remain in Italian when English is selected. This includes , , , , and .
+    -   **Attempted fixes:** The agent created comprehensive translation files and started converting components (, , parts of  and ). This was insufficient.
     -   **Next debug checklist:**
-        -   Investigate the  process and its interaction with 's build output.
-        -   Check if there's a configuration issue that prevents  from detecting the new build files automatically.
-    -   **Why fix this issue and what will be achieved with the fix?** This will eliminate development friction and the need for manual intervention after every frontend change.
-    -   **Status:** NOT STARTED
+        -   Systematically open every  file in  and .
+        -   Replace every hardcoded string with a  function call from the  hook.
+        -   Ensure every key exists in all five translation files: , , , , .
+        -   Pay special attention to table headers, button texts, search placeholders, modal dialogs, and informational text.
+    -   **Why fix this issue and what will be achieved with the fix?** To meet the user's explicit requirement for a fully multilingual application and provide a consistent user experience.
+    -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Frontend
--   **Issue 2: User login failures after deployment or caching**
-    -   **Description:** Users may be served an old version of the frontend from their browser cache, causing login failures or unexpected behavior after a new deployment.
+-   **Issue 2: Corrupted Icon in Entity Config**
+    -   **Description:** In the Entity Config section of the Admin Panel, an icon is rendering as text instead of a graphical icon.
+    -   **Attempted fixes:** None.
     -   **Next debug checklist:**
-        -   Verify that the web server is configured to send appropriate  headers for the  and static assets.
-        -   Explore implementing a more robust cache-busting strategy if the default CRA build hashing is insufficient.
-    -   **Why fix this issue and what will be achieved with the fix?** This will ensure all users seamlessly receive the latest version of the application without needing to perform a hard refresh.
+        -   Inspect  (or the relevant component).
+        -   Identify the library used for icons (e.g., Lucide React, FontAwesome).
+        -   Verify the component name and import statement for the icon are correct.
+        -   Fix the JSX to render the icon component correctly.
+    -   **Why fix this issue and what will be achieved with the fix?** To fix a visual bug and restore the intended UI design.
     -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend (Screenshot tool)
+-   **Issue 3: Homepage translation is not 100% complete**
+    -   **Description:** The automated tests showed that the Homepage translation coverage is only 72.7%. The user wants this to be 100%.
+    -   **Attempted fixes:** Agent translated the header, navigation, and hero section.
+    -   **Next debug checklist:**
+        -   Review  again.
+        -   Identify all remaining hardcoded strings, especially in the multi-step form, feature sections, and footer.
+        -   Replace them with  calls.
+    -   **Why fix this issue and what will be achieved with the fix?** To complete the translation requirement for the main landing page.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Frontend
+-   **Issue 4: Preview environment stability (404 error)**
+    -   **Description:** The preview environment can return 404 errors after a frontend build because the  process serves a cached .
+    -   **Attempted fixes:** The agent added a  with cache-control headers and a post-build script to copy it.
+    -   **Next debug checklist:** This fix needs to be verified. The next agent should perform several frontend builds and check if the issue is resolved without needing a manual frontend: ERROR (not running)
+frontend: started.
+    -   **Why fix this issue and what will be achieved with the fix?** Eliminates development friction and ensures the preview environment is reliable.
+    -   **Status:** USER VERIFICATION PENDING
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** Frontend
+-   **Issue 5: Browser caching issues after deployment**
+    -   **Description:** Users might be served an old version of the application due to aggressive browser caching.
+    -   **Attempted fixes:** Added ,  headers for  and  for hashed assets via .
+    -   **Next debug checklist:** This fix needs to be verified. The agent can use browser developer tools to inspect the headers on the deployed  and a static asset like .
+    -   **Why fix this issue and what will be achieved with the fix?** Ensures users always get the latest version of the app without needing to hard-refresh.
+    -   **Status:** USER VERIFICATION PENDING
     -   **Is recurring issue?** Y
     -   **Should Test frontend/backend/both after fix?** Frontend
 
 **In progress Task List**:
--   Task 1: Finalize Admin Panel & Security Features (P0)
+-   Task 1: Complete Application-Wide Translation (P0)
 
 Task Detail:
--   **Task 1: Finalize Admin Panel & Security Features**
-    -   **Where to resume:** All planned development for Phase 2 and subsequent user requests is complete. The next step is to get the user's final verification and approval for the last set of features implemented.
-    -   **What will be achieved with this?** This will mark the completion of the entire core feature set for the CRM's administrative and security controls as per the user's specifications.
+-   **Task 1: Complete Application-Wide Translation**
+    -   **Where to resume:** The agent has inspected the admin components and confirmed they contain hardcoded text. The next step is to methodically edit each file identified in **Issue 1**, replacing all user-facing strings with  keys and populating the JSON translation files.
+    -   **What will be achieved with this?** The application will be fully multilingual, fulfilling a core user requirement.
     -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Both
-    -   **Blocked on something:** User verification of the Session Settings (including the new timezone feature) and the after-hours login approval system.
+    -   **Should Test frontend/backend/both after fix?** Frontend
+    -   **Blocked on something:** None. This is a large, detail-oriented implementation task.
 
 **Upcoming and Future Tasks**
--   **Upcoming Tasks (P0):**
-    -   **User Verification:** Await user confirmation for all newly implemented features: Audit Logs, Data Visibility, and the complete Session/Security management suite (work hours, timezones, after-hours approval).
--   **Future Tasks (P1):**
-    -   Address the recurring preview environment stability (404 issue).
-    -   Implement a cache-busting strategy to fix login/deployment issues.
--   **Future Tasks (P2):**
-    -   Add a client video testimonials section to the landing page ().
+-   **Upcoming Tasks:**
+    -   (P1) Fix the corrupted icon in the Entity Config admin section.
+    -   (P2) Verify that the infrastructure fixes for preview stability and browser caching have permanently solved the problems.
+-   **Future Tasks:**
+    -   (P3) Add a client video testimonials section to the landing page (). The user has explicitly stated **not** to work on this until the other tasks are complete.
 
 **Completed work in this session**
--   **Systemic Bug Fix:**
-    -   Permanently fixed the recurring  serialization bug by creating a  utility module and refactoring all database create operations to use it.
--   **Admin Panel - Phase 2 (Completed):**
-    -   **Data Visibility Rules:** Implemented UI and backend for role/team-based field visibility.
-    -   **Audit Logs:** Implemented a comprehensive, immutable audit logging system with UI, filtering, and export.
--   **Session & Security Features (New):**
-    -   Implemented a fully GUI-configurable session management system, including work hours, work days, and system timezone.
-    -   Created an after-hours login approval workflow for non-admins, with a customizable approval duration set by the admin.
-    -   Added a session timer to the UI header.
--   **Lead Management Enhancements:**
-    -   Added robust frontend validation to the lead creation form for phone numbers (digits only), email format (must include @), and duplicate email prevention.
-    -   Integrated lead creation events into the new audit log.
--   **Authentication Flow:**
-    -   Created a formal backend logout endpoint to ensure logout events are captured in the audit log for all users, including admin.
--   **Bug Fixes:**
-    -   Fixed a critical UI crash in the lead creation modal caused by a Radix UI  component bug.
-    -   Resolved an issue where hidden fields were still being displayed in the UI due to a JavaScript falsy check.
-    -   Addressed a 404 error by restarting the frontend service.
-    -   Fixed a  backend crash related to the new timezone implementation.
+-   **Internationalization (i18n) Framework:**
+    -   Successfully integrated  into the application.
+    -   Created a Language Settings component in the Admin Panel.
+    -   Implemented backend APIs to get/set the system-wide language.
+    -   Populated initial, comprehensive translation files (, , etc.).
+    -   Partially translated several pages and components, including , , and parts of  and .
+-   **Infrastructure & Caching Fixes (Attempted):**
+    -   Added  meta tags and a  file to manage browser and server caching behavior, aiming to fix deployment inconsistencies.
+    -   Modified the  build script to automate copying the  file.
+-   **Timezone Feature Enhancements:**
+    -   Fixed bugs in the timezone selector UI, including adding a live preview of the selected time and displaying the GMT offset for each timezone. Backend was updated to provide this data.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Preview environment stability (404 issue)**
-    -   **Debug checklist:** Investigate  process configuration and its interaction with  build outputs.
-    -   **Why to solve this issue and what will be achieved with this?** To create a seamless development and preview experience without manual server restarts.
-    -   **Should Test frontend/backend/both after fix:** Frontend
-    -   **Is recurring issue?** Y
--   **Issue 2: User login failures after deployment or caching**
-    -   **Debug checklist:** Review and implement a proper cache-busting strategy and server cache-control headers.
-    -   **Why to solve this issue and what will be achieved with this?** To ensure users always have the latest version of the app without manual intervention.
-    -   **Should Test frontend/backend/both after fix:** Frontend
-    -   **Is recurring issue?** Y
+-   All known issues are captured in the **All Pending/In progress Issue list**. The primary one is the incomplete translation, which the user has escalated to the highest priority.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Preview environment stability (404 issue).
--   **Recurrence count:** At least 2 (once in the previous session, once in this session).
--   **Status:** NOT STARTED
+-   **Recurrence count:** 3+
+-   **Status:** USER VERIFICATION PENDING (A fix has been implemented but not confirmed effective).
 
 **Code Architecture**
-
+serve.jsonserve
 
 **Key Technical Concepts**
--   **GUI-Driven Configuration:** Extended to Session Management, where system behavior (login times, session duration, timezones) is controlled by data in MongoDB, configured via the Admin Panel.
--   **Timezone-Aware Backend:** The backend now operates based on a dynamically configured timezone, ensuring all session logic is accurate regardless of server location.
--   **After-Hours Security Workflow:** An approval-based login system for non-admins attempting to access the system outside of configured work hours.
--   **Centralized Utility Modules:** Use of , , and  to create robust, reusable, and maintainable backend code.
+-   **Internationalization (i18n):** The project now uses  and  to manage translations. Text is abstracted into JSON files and rendered using the  hook.
+-   **Serve Configuration:** A  file is used to control headers and routing for the static frontend server, specifically for cache-busting and SPA routing.
 
 **key DB schema**
--   , , , , , 
--   :  (NEW)
--   :  (NEW)
--   :  (NEW)
--   :  (NEW)
+-   : Modified to include a new document type for language configuration.
+    -   
 
 **All files of reference**
--   : The new core logic for all dynamic session and security rules.
--   : The new UI for configuring all session-related rules.
--   : Contains endpoints for all new Admin Panel features (Audit, Visibility, Session).
--   : Integrates all the new validation and security checks into the user-facing endpoints.
--   : Contains the crucial frontend validation and bug fixes for lead management.
--   : Contains the systemic fix for the  serialization bug.
+-   : The central configuration file for the translation system.
+-   : The directory containing all translation JSON files.
+-   : This entire directory needs to be audited and updated for translation.
+-   : A large component with significant remaining hardcoded text.
+-   : The new configuration file for the frontend static server.
+-   : Contains the new i18n dependencies and the  script.
 
 **Critical Info for New Agent**
--   The user's primary goal of a fully GUI-configurable Admin Panel is now functionally complete, including several advanced security features requested during the session.
--   The immediate next step is to present the completed work to the user and request final verification of all new features, especially the comprehensive Session Settings panel.
--   Do not start work on the Future Tasks (environment stability, testimonials) until the user has explicitly signed off on the current feature set.
--   The project has significant new backend logic in  and . The agent should familiarize itself with these files to understand the time-based security rules.
+-   **Top Priority:** The user is laser-focused on achieving 100% translation coverage. You must systematically go through every component mentioned in the user's feedback and replace all hardcoded text. Do not mark the task as complete until you have manually verified every page and every state in all five languages.
+-   **User Checklist:** The user's last message is your primary checklist. Address each point directly: Homepage, User Management, Team Management, Data Visibility, Session Settings, Audit Logs, and the Entity Config icon.
+-   **Verify Infrastructure Fixes:** The fixes for caching and preview stability are implemented but not confirmed. You should assume they might still be problematic and be prepared to debug them if the issues reappear. Do not claim they are fixed until you are certain.
+-   **Do Not Implement New Features:** The user explicitly stated **NOT** to work on the Client video testimonials feature. Stick to the translation and bug-fixing tasks.
 
 **Last 10 User Messages and any pending user messages**
-- A rapid series of iterative requests and implementations:
-    1.  **User Request:** Add a feature to automatically log users out after 6:30 PM Berlin time (Mon-Fri). (COMPLETED)
-    2.  **User Request:** Make session times editable in the GUI and add an after-hours login approval system. (COMPLETED)
-    3.  **User Request:** Make the duration of an after-hours approval customizable by the admin in the GUI. (COMPLETED)
-    4.  **User Request:** Add a timezone selector to the session settings so the admin can set any timezone for the system. (COMPLETED)
-    5.  **Pending User Action:** User needs to verify the final implementation of the timezone selector and the entire suite of session management features.
+-   **User (Msg 205):** Reports that after changing the language to English, many parts of the application remain in Italian. Asks the agent to fix this completely for all pages and languages. (IN PROGRESS)
+-   **User (Msg 296):** Provides a detailed, component-by-component list of translation failures:  (search bar), , ,  (Come funziona), and . Also reports a corrupted icon in . Demands a word-by-word check for all five languages. (IN PROGRESS)
 
 **Project Health Check:**
 -   **Broken:**
-    -   The preview environment is unstable and requires manual restarts after frontend builds.
+    -   The translation system is incomplete, resulting in a mixed-language UI which is a critical bug for the user.
+    -   The icon in the Entity Config page is visually broken.
 -   **Mocked:**
     -   None.
 
 **3rd Party Integrations**
--   None.
+-   **react-i18next**: For handling frontend internationalization.
+-   **i18next-browser-languagedetector**: To detect the user's browser language.
 
 **Testing status**
--   Testing agent used after significant changes: YES (For Data Visibility and Audit Logs).
+-   Testing agent used after significant changes: YES. However, the automated tests were not sufficient to catch all translation gaps.
 -   Troubleshoot agent used after agent stuck in loop: NO
 -   Test files created: None.
 -   Known regressions: None.
@@ -192,4 +185,6 @@ Task Detail:
     -   Password: 
 
 **What agent forgot to execute**
--   The agent did not address the two long-standing infrastructure issues mentioned in the initial handoff: preview environment stability and potential client-side caching problems. These were correctly de-prioritized in favor of implementing user-requested features but remain as technical debt.</analysis>
+-   The previous agent did not fully grasp the scale of the translation task initially, leading to an incomplete implementation that the user immediately caught.
+-   The agent did not translate all the text within components, missing items like search placeholders, button labels inside modals, and informational text, which led to the user's detailed bug report.
+-   The agent did not address the corrupted icon reported by the user.</analysis>
