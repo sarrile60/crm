@@ -36,7 +36,34 @@
     "active": "Aktiv",
     "inactive": "Inaktiv",
     "enabled": "Aktiviert",
-    "disabled": "Deaktiviert"
+    "disabled": "Deaktiviert",
+    "total": "Gesamt",
+    "new": "Neu",
+    "inProgress": "In Bearbeitung",
+    "urgent": "Dringend",
+    "amount": "Betrag",
+    "duration": "Dauer",
+    "countries": "Länder",
+    "recovered": "Wiedererlangt",
+    "cases": "Fälle",
+    "resolved": "Gelöst",
+    "responseTime": "Antwortzeit",
+    "missingFields": "Fehlende Felder",
+    "fillAllFields": "Bitte füllen Sie alle erforderlichen Felder aus.",
+    "alreadyRegistered": "Bereits registriert",
+    "alreadySubmitted": "Sie haben bereits eine Anfrage eingereicht. Unser Team wird Sie bald kontaktieren.",
+    "tryAgainLater": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+    "submitting": "Wird gesendet...",
+    "submit": "Absenden",
+    "goBack": "Zurück",
+    "backToSite": "Zurück zur Website",
+    "useCredentials": "Verwenden Sie Ihren Benutzernamen und Ihr Passwort zum Anmelden",
+    "loggingIn": "Anmeldung läuft...",
+    "logoutSuccess": "Abmeldung erfolgreich",
+    "sessionExpired": "Sitzung abgelaufen",
+    "sraRegulated": "SRA Reguliert",
+    "internationalCases": "Internationale Fälle",
+    "secureSubmission": "Sichere und vertrauliche Übermittlung"
   },
   "auth": {
     "login": "Anmelden",
@@ -47,7 +74,9 @@
     "loginSuccess": "Anmeldung erfolgreich!",
     "loginError": "Ungültige Anmeldedaten",
     "sessionExpires": "Sitzung endet um",
-    "timeRemaining": "verbleibend"
+    "timeRemaining": "verbleibend",
+    "crmPortal": "CRM Portal",
+    "accessClientManagement": "Zugriff auf das Kundenverwaltungssystem"
   },
   "nav": {
     "home": "Startseite",
@@ -60,7 +89,8 @@
     "howItWorks": "Wie es funktioniert",
     "successCases": "Erfolgsgeschichten",
     "faq": "FAQ",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "freeConsultation": "Kostenlose Beratung"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -203,7 +233,7 @@
   },
   "home": {
     "heroTitle": "Holen Sie Ihre Gelder von Online- und Krypto-Betrug zurück",
-    "heroSubtitle": "Anwaltskanzlei spezialisiert auf Geldrückgewinnung von Krypto-Betrug, Forex, betrügerischen Brokern und gefälschten Investitionsplattformen.",
+    "heroSubtitle": "Anwaltskanzlei spezialisiert auf Geldrückgewinnung von Krypto-Betrug, Forex, betrügerischen Brokern und gefälschten Investitionsplattformen. In vielen Fällen kann rechtliches Vorgehen den Kunden helfen, Gelder zurückzugewinnen.",
     "ctaButton": "Kostenlose Beratung erhalten",
     "howItWorks": "Wie es funktioniert",
     "whyChooseUs": "Warum 1 LAW SOLICITORS wählen?",
@@ -216,20 +246,29 @@
     "globalNetwork": "Globales Netzwerk",
     "globalNetworkDesc": "Internationale Zusammenarbeit",
     "readyToRecover": "Bereit, Ihre Gelder zurückzuholen?",
+    "readyToRecoverDesc": "Warten Sie nicht. Jeder Tag zählt. Erhalten Sie eine kostenlose rechtliche Bewertung.",
     "ctaNow": "Jetzt kostenlose Beratung erhalten",
     "formTitle": "Kostenlose Beratung anfordern",
     "formSubtitle": "Vertrauliche rechtliche Bewertung ohne Verpflichtung",
     "fullName": "Vollständiger Name",
     "phoneNumber": "Telefonnummer",
-    "continue": "Weiter",
-    "caseDetails": "Falldetails"
+    "continue": "Weiter → Falldetails",
+    "caseDetails": "Falldetails",
+    "scammerCompany": "Name des Betrügerunternehmens",
+    "amountLost": "Verlorener Betrag",
+    "selectAmount": "Betrag auswählen",
+    "tellUsWhatHappened": "Erzählen Sie uns, was passiert ist",
+    "describeFraud": "Beschreiben Sie die Details des Betrugs, wann er stattfand, welche Beweise Sie haben, usw.",
+    "submitRequest": "Beratungsanfrage senden",
+    "allRightsReserved": "Alle Rechte vorbehalten."
   },
   "footer": {
     "contacts": "Kontakte",
     "legalInfo": "Rechtliche Informationen",
     "companyType": "Typ: Private Limited Company",
-    "established": "Gegründet",
-    "sicCode": "SIC-Code"
+    "established": "Gegründet: 9. September 2021",
+    "sicCode": "SIC-Code: 69102 – Solicitors",
+    "recognisedBody": "Recognised Body Law Practice"
   },
   "messages": {
     "savedSuccess": "Erfolgreich gespeichert",
@@ -239,5 +278,11 @@
     "confirmDelete": "Sind Sie sicher, dass Sie löschen möchten?",
     "noData": "Keine Daten verfügbar",
     "loadingData": "Daten werden geladen..."
+  },
+  "successCases": {
+    "cryptoExchange": "Krypto-Exchange-Betrug",
+    "cryptoExchangeOutcome": "Vollständige Rückgewinnung durch rechtliche Schritte",
+    "week": "Woche",
+    "months": "Monate"
   }
 }
