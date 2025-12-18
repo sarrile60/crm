@@ -560,6 +560,22 @@
     "noData": "No data available",
     "loadingData": "Loading data..."
   },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure your application settings",
+    "profile": "Profile",
+    "preferences": "Preferences",
+    "notifications": "Notifications",
+    "security": "Security",
+    "language": "Language",
+    "timezone": "Timezone",
+    "theme": "Theme",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "autoMode": "Auto",
+    "saveSettings": "Save Settings",
+    "settingsSaved": "Settings saved successfully"
+  },
   "successCases": {
     "cryptoExchange": "Crypto Exchange Scam",
     "cryptoExchangeOutcome": "Complete recovery through legal action against unregulated exchange based in Malta",
