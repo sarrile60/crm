@@ -36,7 +36,34 @@
     "active": "Actif",
     "inactive": "Inactif",
     "enabled": "Activé",
-    "disabled": "Désactivé"
+    "disabled": "Désactivé",
+    "total": "Total",
+    "new": "Nouveau",
+    "inProgress": "En cours",
+    "urgent": "Urgent",
+    "amount": "Montant",
+    "duration": "Durée",
+    "countries": "Pays",
+    "recovered": "Récupéré",
+    "cases": "Cas",
+    "resolved": "Résolu",
+    "responseTime": "Temps de réponse",
+    "missingFields": "Champs manquants",
+    "fillAllFields": "Veuillez remplir tous les champs obligatoires.",
+    "alreadyRegistered": "Déjà enregistré",
+    "alreadySubmitted": "Vous avez déjà soumis une demande. Notre équipe vous contactera bientôt.",
+    "tryAgainLater": "Une erreur s'est produite. Veuillez réessayer plus tard.",
+    "submitting": "Envoi en cours...",
+    "submit": "Envoyer",
+    "goBack": "Retour",
+    "backToSite": "Retour au site",
+    "useCredentials": "Utilisez votre nom d'utilisateur et mot de passe pour vous connecter",
+    "loggingIn": "Connexion en cours...",
+    "logoutSuccess": "Déconnexion réussie",
+    "sessionExpired": "Session expirée",
+    "sraRegulated": "Réglementé SRA",
+    "internationalCases": "Cas internationaux",
+    "secureSubmission": "Envoi sécurisé et confidentiel"
   },
   "auth": {
     "login": "Connexion",
@@ -47,7 +74,9 @@
     "loginSuccess": "Connexion réussie !",
     "loginError": "Identifiants invalides",
     "sessionExpires": "Session expire à",
-    "timeRemaining": "restant"
+    "timeRemaining": "restant",
+    "crmPortal": "Portail CRM",
+    "accessClientManagement": "Accéder au système de gestion des clients"
   },
   "nav": {
     "home": "Accueil",
@@ -60,7 +89,8 @@
     "howItWorks": "Comment ça marche",
     "successCases": "Cas de succès",
     "faq": "FAQ",
-    "contact": "Contact"
+    "contact": "Contact",
+    "freeConsultation": "Consultation gratuite"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -216,20 +246,29 @@
     "globalNetwork": "Réseau mondial",
     "globalNetworkDesc": "Collaborations internationales",
     "readyToRecover": "Prêt à récupérer vos fonds ?",
+    "readyToRecoverDesc": "N'attendez pas. Chaque jour compte. Obtenez une évaluation juridique gratuite.",
     "ctaNow": "Obtenir une consultation gratuite maintenant",
     "formTitle": "Demander une consultation gratuite",
     "formSubtitle": "Évaluation juridique confidentielle sans engagement",
     "fullName": "Nom complet",
     "phoneNumber": "Numéro de téléphone",
-    "continue": "Continuer",
-    "caseDetails": "Détails du cas"
+    "continue": "Continuer → Détails du cas",
+    "caseDetails": "Détails du cas",
+    "scammerCompany": "Nom de l'entreprise frauduleuse",
+    "amountLost": "Montant perdu",
+    "selectAmount": "Sélectionner le montant",
+    "tellUsWhatHappened": "Racontez-nous ce qui s'est passé",
+    "describeFraud": "Décrivez les détails de la fraude, quand elle s'est produite, quelles preuves vous avez, etc.",
+    "submitRequest": "Envoyer la demande de consultation",
+    "allRightsReserved": "Tous droits réservés."
   },
   "footer": {
     "contacts": "Contacts",
     "legalInfo": "Informations légales",
     "companyType": "Type : Private Limited Company",
-    "established": "Fondée",
-    "sicCode": "Code SIC"
+    "established": "Fondée : 9 septembre 2021",
+    "sicCode": "Code SIC : 69102 – Solicitors",
+    "recognisedBody": "Recognised Body Law Practice"
   },
   "messages": {
     "savedSuccess": "Enregistré avec succès",
@@ -239,5 +278,11 @@
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer ?",
     "noData": "Aucune donnée disponible",
     "loadingData": "Chargement des données..."
+  },
+  "successCases": {
+    "cryptoExchange": "Arnaque Exchange Crypto",
+    "cryptoExchangeOutcome": "Récupération complète par action juridique",
+    "week": "semaine",
+    "months": "mois"
   }
 }
