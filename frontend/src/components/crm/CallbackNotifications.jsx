@@ -363,17 +363,17 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                   </div>
                   {urgentCallback.callback_notes && (
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Note:</label>
+                      <label className="text-sm font-semibold text-gray-600">{t('crm.notes')}:</label>
                       <p className="text-black">{urgentCallback.callback_notes}</p>
                     </div>
                   )}
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Stato:</label>
+                    <label className="text-sm font-semibold text-gray-600">{t('common.status')}:</label>
                     <p className="text-lg font-bold text-[#D4AF37]">{urgentCallback.status}</p>
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-gray-600">
-                      {urgentCallback?.status?.startsWith('Deposit') ? 'Ora Deposit:' : 'Ora Callback:'}
+                      {urgentCallback?.status?.startsWith('Deposit') ? t('crm.depositTime') : t('crm.callbackTime')}:
                     </label>
                     <p className="text-black font-semibold">
                       {new Date(urgentCallback.callback_date).toLocaleTimeString('it-IT', { 
@@ -394,8 +394,8 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                 return snoozeCount > 0 && (
                   <div className="bg-yellow-100 border-2 border-yellow-500 p-3 text-center">
                     <p className="text-sm font-bold text-yellow-800">
-                      ⚠️ Hai posticipato {snoozeCount} volte. 
-                      {snoozeCount === 2 ? ' Il prossimo posticipo notificherà il supervisore!' : ''}
+                      ⚠️ {t('crm.postponedTimes', { count: snoozeCount })}
+                      {snoozeCount === 2 ? ` ${t('crm.nextPostponeWillNotify')}` : ''}
                     </p>
                   </div>
                 );
@@ -407,14 +407,14 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                   className={`flex-1 text-white rounded-none text-lg py-6 font-bold ${urgentCallback?.status?.startsWith('Deposit') ? 'bg-green-600 hover:bg-green-700' : 'bg-green-600 hover:bg-green-700'}`}
                 >
                   <Phone className="w-5 h-5 mr-2" />
-                  CHIAMA ORA
+                  {t('crm.callNow')}
                 </Button>
                 <Button
                   onClick={() => handleSnooze(urgentCallback)}
                   className="flex-1 bg-orange-500 text-white hover:bg-orange-600 rounded-none text-lg py-6 font-bold"
                 >
                   <Clock className="w-5 h-5 mr-2" />
-                  PIÙ TARDI
+                  {t('crm.later')}
                 </Button>
               </div>
             </div>
