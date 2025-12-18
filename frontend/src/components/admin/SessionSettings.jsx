@@ -313,6 +313,65 @@ const SessionSettings = () => {
         </div>
       </div>
 
+      {/* Timezone Settings */}
+      <div className="bg-white border border-gray-200 p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Globe className="w-5 h-5 text-[#D4AF37]" />
+          <h3 className="font-bold text-gray-900">Fuso Orario</h3>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Seleziona Fuso Orario
+            </label>
+            <Select
+              value={settings.timezone || 'Europe/Berlin'}
+              onValueChange={(value) => updateSetting('timezone', value)}
+            >
+              <SelectTrigger className="rounded-none">
+                <SelectValue placeholder="Seleziona fuso orario" />
+              </SelectTrigger>
+              <SelectContent className="max-h-80">
+                {settings.all_timezones && settings.all_timezones.length > 0 ? (
+                  <>
+                    {['Europe', 'Americas', 'Asia', 'Africa', 'Oceania', 'UTC'].map(region => (
+                      <React.Fragment key={region}>
+                        <div className="px-2 py-1 text-xs font-bold text-gray-500 bg-gray-100 sticky top-0">
+                          {region}
+                        </div>
+                        {settings.all_timezones
+                          .filter(tz => tz.region === region)
+                          .map(tz => (
+                            <SelectItem key={tz.value} value={tz.value}>
+                              {tz.label}
+                            </SelectItem>
+                          ))}
+                      </React.Fragment>
+                    ))}
+                  </>
+                ) : (
+                  <SelectItem value="Europe/Berlin">Berlin (CET/CEST)</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="bg-gray-50 p-4 border border-gray-200">
+            <div className="text-sm text-gray-500 mb-1">Ora Corrente nel Fuso Selezionato</div>
+            <div className="text-3xl font-mono font-bold text-[#D4AF37]">
+              {settings.current_time ? settings.current_time.split(' ')[1] : '--:--:--'}
+            </div>
+            <div className="text-sm text-gray-600 mt-1">
+              {settings.current_day} • {settings.current_time ? settings.current_time.split(' ')[0] : ''}
+            </div>
+            <div className="text-xs text-gray-400 mt-2">
+              {settings.timezone}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* After Hours Settings */}
       <div className="bg-white border border-gray-200 p-6">
         <div className="flex items-center gap-2 mb-4">
