@@ -130,7 +130,7 @@ const AuditLogs = () => {
         has_more: response.data.has_more
       });
     } catch (error) {
-      toast.error('Errore nel caricamento dei log');
+      toast.error(t('audit.errorLoadingLogs'));
       console.error('Error:', error);
     } finally {
       setLoading(false);
