@@ -27,7 +27,11 @@ const SessionSettings = () => {
     session_end_minute: 30,
     work_days: [0, 1, 2, 3, 4],
     require_approval_after_hours: true,
-    approval_duration_minutes: 30
+    approval_duration_minutes: 30,
+    timezone: 'Europe/Berlin',
+    current_time: '',
+    current_day: '',
+    all_timezones: []
   });
   const [loginRequests, setLoginRequests] = useState([]);
   const [loading, setLoading] = useState(false);
