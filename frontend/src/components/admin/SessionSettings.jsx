@@ -230,7 +230,7 @@ const SessionSettings = () => {
                       {t('users.role')}: {req.role} • {req.reason}
                     </div>
                     <div className="text-xs text-gray-400">
-                      Richiesto: {new Date(req.requested_at).toLocaleString('it-IT')}
+                      {new Date(req.requested_at).toLocaleString()}
                     </div>
                   </div>
                 </div>
@@ -241,7 +241,7 @@ const SessionSettings = () => {
                     size="sm"
                   >
                     <Check className="w-4 h-4 mr-1" />
-                    Approva
+                    {t('session.approve')}
                   </Button>
                   <Button
                     onClick={() => handleDeny(req.id, req.username)}
@@ -250,7 +250,7 @@ const SessionSettings = () => {
                     size="sm"
                   >
                     <X className="w-4 h-4 mr-1" />
-                    Nega
+                    {t('session.reject')}
                   </Button>
                 </div>
               </div>
