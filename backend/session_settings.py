@@ -7,90 +7,136 @@ from datetime import datetime, time
 from zoneinfo import ZoneInfo
 from typing import Optional
 
-# All available timezones grouped by region
-ALL_TIMEZONES = [
-    # Europe
-    {"value": "Europe/London", "label": "London (GMT/BST)", "region": "Europe"},
-    {"value": "Europe/Berlin", "label": "Berlin (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Paris", "label": "Paris (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Rome", "label": "Rome (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Madrid", "label": "Madrid (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Amsterdam", "label": "Amsterdam (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Brussels", "label": "Brussels (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Vienna", "label": "Vienna (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Warsaw", "label": "Warsaw (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Prague", "label": "Prague (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Budapest", "label": "Budapest (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Stockholm", "label": "Stockholm (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Oslo", "label": "Oslo (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Copenhagen", "label": "Copenhagen (CET/CEST)", "region": "Europe"},
-    {"value": "Europe/Helsinki", "label": "Helsinki (EET/EEST)", "region": "Europe"},
-    {"value": "Europe/Athens", "label": "Athens (EET/EEST)", "region": "Europe"},
-    {"value": "Europe/Bucharest", "label": "Bucharest (EET/EEST)", "region": "Europe"},
-    {"value": "Europe/Sofia", "label": "Sofia (EET/EEST)", "region": "Europe"},
-    {"value": "Europe/Istanbul", "label": "Istanbul (TRT)", "region": "Europe"},
-    {"value": "Europe/Moscow", "label": "Moscow (MSK)", "region": "Europe"},
-    {"value": "Europe/Kiev", "label": "Kyiv (EET/EEST)", "region": "Europe"},
-    {"value": "Europe/Dublin", "label": "Dublin (GMT/IST)", "region": "Europe"},
-    {"value": "Europe/Lisbon", "label": "Lisbon (WET/WEST)", "region": "Europe"},
-    {"value": "Europe/Zurich", "label": "Zurich (CET/CEST)", "region": "Europe"},
-    # Americas
-    {"value": "America/New_York", "label": "New York (EST/EDT)", "region": "Americas"},
-    {"value": "America/Chicago", "label": "Chicago (CST/CDT)", "region": "Americas"},
-    {"value": "America/Denver", "label": "Denver (MST/MDT)", "region": "Americas"},
-    {"value": "America/Los_Angeles", "label": "Los Angeles (PST/PDT)", "region": "Americas"},
-    {"value": "America/Phoenix", "label": "Phoenix (MST)", "region": "Americas"},
-    {"value": "America/Anchorage", "label": "Anchorage (AKST/AKDT)", "region": "Americas"},
-    {"value": "America/Honolulu", "label": "Honolulu (HST)", "region": "Americas"},
-    {"value": "America/Toronto", "label": "Toronto (EST/EDT)", "region": "Americas"},
-    {"value": "America/Vancouver", "label": "Vancouver (PST/PDT)", "region": "Americas"},
-    {"value": "America/Mexico_City", "label": "Mexico City (CST/CDT)", "region": "Americas"},
-    {"value": "America/Bogota", "label": "Bogota (COT)", "region": "Americas"},
-    {"value": "America/Lima", "label": "Lima (PET)", "region": "Americas"},
-    {"value": "America/Santiago", "label": "Santiago (CLT/CLST)", "region": "Americas"},
-    {"value": "America/Buenos_Aires", "label": "Buenos Aires (ART)", "region": "Americas"},
-    {"value": "America/Sao_Paulo", "label": "São Paulo (BRT)", "region": "Americas"},
-    {"value": "America/Caracas", "label": "Caracas (VET)", "region": "Americas"},
-    # Asia
-    {"value": "Asia/Tokyo", "label": "Tokyo (JST)", "region": "Asia"},
-    {"value": "Asia/Seoul", "label": "Seoul (KST)", "region": "Asia"},
-    {"value": "Asia/Shanghai", "label": "Shanghai (CST)", "region": "Asia"},
-    {"value": "Asia/Hong_Kong", "label": "Hong Kong (HKT)", "region": "Asia"},
-    {"value": "Asia/Singapore", "label": "Singapore (SGT)", "region": "Asia"},
-    {"value": "Asia/Bangkok", "label": "Bangkok (ICT)", "region": "Asia"},
-    {"value": "Asia/Jakarta", "label": "Jakarta (WIB)", "region": "Asia"},
-    {"value": "Asia/Manila", "label": "Manila (PHT)", "region": "Asia"},
-    {"value": "Asia/Kuala_Lumpur", "label": "Kuala Lumpur (MYT)", "region": "Asia"},
-    {"value": "Asia/Ho_Chi_Minh", "label": "Ho Chi Minh (ICT)", "region": "Asia"},
-    {"value": "Asia/Kolkata", "label": "Kolkata (IST)", "region": "Asia"},
-    {"value": "Asia/Mumbai", "label": "Mumbai (IST)", "region": "Asia"},
-    {"value": "Asia/Delhi", "label": "Delhi (IST)", "region": "Asia"},
-    {"value": "Asia/Karachi", "label": "Karachi (PKT)", "region": "Asia"},
-    {"value": "Asia/Dubai", "label": "Dubai (GST)", "region": "Asia"},
-    {"value": "Asia/Riyadh", "label": "Riyadh (AST)", "region": "Asia"},
-    {"value": "Asia/Tehran", "label": "Tehran (IRST)", "region": "Asia"},
-    {"value": "Asia/Jerusalem", "label": "Jerusalem (IST/IDT)", "region": "Asia"},
-    {"value": "Asia/Beirut", "label": "Beirut (EET/EEST)", "region": "Asia"},
-    {"value": "Asia/Baghdad", "label": "Baghdad (AST)", "region": "Asia"},
-    # Africa
-    {"value": "Africa/Cairo", "label": "Cairo (EET)", "region": "Africa"},
-    {"value": "Africa/Johannesburg", "label": "Johannesburg (SAST)", "region": "Africa"},
-    {"value": "Africa/Lagos", "label": "Lagos (WAT)", "region": "Africa"},
-    {"value": "Africa/Nairobi", "label": "Nairobi (EAT)", "region": "Africa"},
-    {"value": "Africa/Casablanca", "label": "Casablanca (WET/WEST)", "region": "Africa"},
-    {"value": "Africa/Algiers", "label": "Algiers (CET)", "region": "Africa"},
-    {"value": "Africa/Tunis", "label": "Tunis (CET)", "region": "Africa"},
-    # Oceania
-    {"value": "Australia/Sydney", "label": "Sydney (AEST/AEDT)", "region": "Oceania"},
-    {"value": "Australia/Melbourne", "label": "Melbourne (AEST/AEDT)", "region": "Oceania"},
-    {"value": "Australia/Brisbane", "label": "Brisbane (AEST)", "region": "Oceania"},
-    {"value": "Australia/Perth", "label": "Perth (AWST)", "region": "Oceania"},
-    {"value": "Australia/Adelaide", "label": "Adelaide (ACST/ACDT)", "region": "Oceania"},
-    {"value": "Pacific/Auckland", "label": "Auckland (NZST/NZDT)", "region": "Oceania"},
-    {"value": "Pacific/Fiji", "label": "Fiji (FJT)", "region": "Oceania"},
-    # UTC
-    {"value": "UTC", "label": "UTC (Coordinated Universal Time)", "region": "UTC"},
-]
+
+def get_gmt_offset(tz_name: str) -> str:
+    """Get GMT offset string for a timezone (e.g., 'GMT+1', 'GMT-5')"""
+    try:
+        tz = ZoneInfo(tz_name)
+        now = datetime.now(tz)
+        offset = now.utcoffset()
+        if offset is None:
+            return "GMT"
+        
+        total_seconds = int(offset.total_seconds())
+        hours = total_seconds // 3600
+        minutes = abs(total_seconds % 3600) // 60
+        
+        if hours >= 0:
+            if minutes:
+                return f"GMT+{hours}:{minutes:02d}"
+            return f"GMT+{hours}" if hours > 0 else "GMT"
+        else:
+            if minutes:
+                return f"GMT{hours}:{minutes:02d}"
+            return f"GMT{hours}"
+    except Exception:
+        return "GMT"
+
+
+def get_all_timezones_with_offset() -> list:
+    """Get all timezones with current GMT offset calculated dynamically"""
+    base_timezones = [
+        # Europe
+        {"value": "Europe/London", "city": "London", "region": "Europe"},
+        {"value": "Europe/Berlin", "city": "Berlin", "region": "Europe"},
+        {"value": "Europe/Paris", "city": "Paris", "region": "Europe"},
+        {"value": "Europe/Rome", "city": "Rome", "region": "Europe"},
+        {"value": "Europe/Madrid", "city": "Madrid", "region": "Europe"},
+        {"value": "Europe/Amsterdam", "city": "Amsterdam", "region": "Europe"},
+        {"value": "Europe/Brussels", "city": "Brussels", "region": "Europe"},
+        {"value": "Europe/Vienna", "city": "Vienna", "region": "Europe"},
+        {"value": "Europe/Warsaw", "city": "Warsaw", "region": "Europe"},
+        {"value": "Europe/Prague", "city": "Prague", "region": "Europe"},
+        {"value": "Europe/Budapest", "city": "Budapest", "region": "Europe"},
+        {"value": "Europe/Stockholm", "city": "Stockholm", "region": "Europe"},
+        {"value": "Europe/Oslo", "city": "Oslo", "region": "Europe"},
+        {"value": "Europe/Copenhagen", "city": "Copenhagen", "region": "Europe"},
+        {"value": "Europe/Helsinki", "city": "Helsinki", "region": "Europe"},
+        {"value": "Europe/Athens", "city": "Athens", "region": "Europe"},
+        {"value": "Europe/Bucharest", "city": "Bucharest", "region": "Europe"},
+        {"value": "Europe/Sofia", "city": "Sofia", "region": "Europe"},
+        {"value": "Europe/Istanbul", "city": "Istanbul", "region": "Europe"},
+        {"value": "Europe/Moscow", "city": "Moscow", "region": "Europe"},
+        {"value": "Europe/Kiev", "city": "Kyiv", "region": "Europe"},
+        {"value": "Europe/Dublin", "city": "Dublin", "region": "Europe"},
+        {"value": "Europe/Lisbon", "city": "Lisbon", "region": "Europe"},
+        {"value": "Europe/Zurich", "city": "Zurich", "region": "Europe"},
+        # Americas
+        {"value": "America/New_York", "city": "New York", "region": "Americas"},
+        {"value": "America/Chicago", "city": "Chicago", "region": "Americas"},
+        {"value": "America/Denver", "city": "Denver", "region": "Americas"},
+        {"value": "America/Los_Angeles", "city": "Los Angeles", "region": "Americas"},
+        {"value": "America/Phoenix", "city": "Phoenix", "region": "Americas"},
+        {"value": "America/Anchorage", "city": "Anchorage", "region": "Americas"},
+        {"value": "America/Honolulu", "city": "Honolulu", "region": "Americas"},
+        {"value": "America/Toronto", "city": "Toronto", "region": "Americas"},
+        {"value": "America/Vancouver", "city": "Vancouver", "region": "Americas"},
+        {"value": "America/Mexico_City", "city": "Mexico City", "region": "Americas"},
+        {"value": "America/Bogota", "city": "Bogota", "region": "Americas"},
+        {"value": "America/Lima", "city": "Lima", "region": "Americas"},
+        {"value": "America/Santiago", "city": "Santiago", "region": "Americas"},
+        {"value": "America/Buenos_Aires", "city": "Buenos Aires", "region": "Americas"},
+        {"value": "America/Sao_Paulo", "city": "São Paulo", "region": "Americas"},
+        {"value": "America/Caracas", "city": "Caracas", "region": "Americas"},
+        # Asia
+        {"value": "Asia/Tokyo", "city": "Tokyo", "region": "Asia"},
+        {"value": "Asia/Seoul", "city": "Seoul", "region": "Asia"},
+        {"value": "Asia/Shanghai", "city": "Shanghai", "region": "Asia"},
+        {"value": "Asia/Hong_Kong", "city": "Hong Kong", "region": "Asia"},
+        {"value": "Asia/Singapore", "city": "Singapore", "region": "Asia"},
+        {"value": "Asia/Bangkok", "city": "Bangkok", "region": "Asia"},
+        {"value": "Asia/Jakarta", "city": "Jakarta", "region": "Asia"},
+        {"value": "Asia/Manila", "city": "Manila", "region": "Asia"},
+        {"value": "Asia/Kuala_Lumpur", "city": "Kuala Lumpur", "region": "Asia"},
+        {"value": "Asia/Ho_Chi_Minh", "city": "Ho Chi Minh", "region": "Asia"},
+        {"value": "Asia/Kolkata", "city": "Kolkata", "region": "Asia"},
+        {"value": "Asia/Mumbai", "city": "Mumbai", "region": "Asia"},
+        {"value": "Asia/Delhi", "city": "Delhi", "region": "Asia"},
+        {"value": "Asia/Karachi", "city": "Karachi", "region": "Asia"},
+        {"value": "Asia/Dubai", "city": "Dubai", "region": "Asia"},
+        {"value": "Asia/Riyadh", "city": "Riyadh", "region": "Asia"},
+        {"value": "Asia/Tehran", "city": "Tehran", "region": "Asia"},
+        {"value": "Asia/Jerusalem", "city": "Jerusalem", "region": "Asia"},
+        {"value": "Asia/Beirut", "city": "Beirut", "region": "Asia"},
+        {"value": "Asia/Baghdad", "city": "Baghdad", "region": "Asia"},
+        # Africa
+        {"value": "Africa/Cairo", "city": "Cairo", "region": "Africa"},
+        {"value": "Africa/Johannesburg", "city": "Johannesburg", "region": "Africa"},
+        {"value": "Africa/Lagos", "city": "Lagos", "region": "Africa"},
+        {"value": "Africa/Nairobi", "city": "Nairobi", "region": "Africa"},
+        {"value": "Africa/Casablanca", "city": "Casablanca", "region": "Africa"},
+        {"value": "Africa/Algiers", "city": "Algiers", "region": "Africa"},
+        {"value": "Africa/Tunis", "city": "Tunis", "region": "Africa"},
+        # Oceania
+        {"value": "Australia/Sydney", "city": "Sydney", "region": "Oceania"},
+        {"value": "Australia/Melbourne", "city": "Melbourne", "region": "Oceania"},
+        {"value": "Australia/Brisbane", "city": "Brisbane", "region": "Oceania"},
+        {"value": "Australia/Perth", "city": "Perth", "region": "Oceania"},
+        {"value": "Australia/Adelaide", "city": "Adelaide", "region": "Oceania"},
+        {"value": "Pacific/Auckland", "city": "Auckland", "region": "Oceania"},
+        {"value": "Pacific/Fiji", "city": "Fiji", "region": "Oceania"},
+        # UTC
+        {"value": "UTC", "city": "UTC", "region": "UTC"},
+    ]
+    
+    result = []
+    for tz in base_timezones:
+        offset = get_gmt_offset(tz["value"])
+        current_time = get_current_time_in_timezone(tz["value"])
+        result.append({
+            "value": tz["value"],
+            "label": f"{tz['city']} ({offset})",
+            "city": tz["city"],
+            "region": tz["region"],
+            "offset": offset,
+            "current_time": current_time.strftime("%H:%M")
+        })
+    
+    return result
+
+
+# Keep for backward compatibility
+ALL_TIMEZONES = get_all_timezones_with_offset()
 
 # Database reference - set from server.py
 db = None
