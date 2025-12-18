@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Textarea } from '../ui/textarea';
 import { Checkbox } from '../ui/checkbox';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import SmartDateTimePicker from './SmartDateTimePicker';
 
