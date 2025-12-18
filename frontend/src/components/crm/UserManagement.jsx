@@ -343,7 +343,7 @@ const UserManagement = ({ currentUser }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Username</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('users.usernameLabel')}</label>
                 <Input
                   type="text"
                   value={editUser.username}
@@ -353,17 +353,17 @@ const UserManagement = ({ currentUser }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Nuova Password (opzionale)</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('users.newPasswordOptional')}</label>
                 <Input
                   type="password"
                   value={editUser.password}
                   onChange={(e) => setEditUser({ ...editUser, password: e.target.value })}
-                  placeholder="Lascia vuoto per non modificare"
+                  placeholder={t('users.leaveBlankNoChange')}
                   className="bg-white border-gray-300 rounded-none"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Ruolo</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('users.role')}</label>
                 <Select value={editUser.role} onValueChange={(value) => setEditUser({ ...editUser, role: value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
                     <SelectValue />
@@ -376,13 +376,13 @@ const UserManagement = ({ currentUser }) => {
                 </Select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Team</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('users.team')}</label>
                 <Select value={editUser.team_id || "none"} onValueChange={(value) => setEditUser({ ...editUser, team_id: value === "none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Nessun team" />
+                    <SelectValue placeholder={t('common.noTeam')} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="none">Nessun team</SelectItem>
+                    <SelectItem value="none">{t('common.noTeam')}</SelectItem>
                     {teams.map(team => (
                       <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
                     ))}
@@ -390,7 +390,7 @@ const UserManagement = ({ currentUser }) => {
                 </Select>
               </div>
               <Button onClick={handleSaveEdit} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
-                Salva Modifiche
+                {t('common.saveChanges')}
               </Button>
             </div>
           </DialogContent>
@@ -404,30 +404,29 @@ const UserManagement = ({ currentUser }) => {
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
                 <AlertTriangle className="w-6 h-6" />
-                Conferma Eliminazione
+                {t('users.confirmDelete')}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <p className="text-gray-700">
-                Sei sicuro di voler eliminare l'utente <strong>{userToDelete.full_name}</strong> ({userToDelete.username})?
+                {t('users.confirmDeleteMessage', { name: userToDelete.full_name, username: userToDelete.username })}
               </p>
               <p className="text-sm text-gray-500">
-                L'utente verrà disattivato e non potrà più accedere al sistema. 
-                I lead assegnati a questo utente rimarranno nel sistema.
+                {t('users.deleteWarning')}
               </p>
               <div className="flex gap-3 pt-4">
                 <Button
                   onClick={() => setShowDeleteModal(false)}
                   className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
                 >
-                  Annulla
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   onClick={handleConfirmDelete}
                   className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Elimina
+                  {t('common.delete')}
                 </Button>
               </div>
             </div>
