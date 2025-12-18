@@ -1000,7 +1000,7 @@ const Home = () => {
 
           <div className="border-t border-gray-700 pt-8 text-center">
             <p className="text-gray-300">
-              © {new Date().getFullYear()} 1 LAW SOLICITORS LIMITED. Tutti i diritti riservati.
+              © {new Date().getFullYear()} 1 LAW SOLICITORS LIMITED. {t('home.allRightsReserved')}
             </p>
           </div>
         </div>
