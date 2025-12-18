@@ -235,13 +235,13 @@ const DataVisibilityRules = () => {
               {loading ? (
                 <tr>
                   <td colSpan={5} className="text-center py-8 text-gray-500">
-                    Caricamento...
+                    {t('common.loading')}
                   </td>
                 </tr>
               ) : filteredMatrix.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="text-center py-8 text-gray-500">
-                    Nessun ruolo o team trovato
+                    {t('common.noDataFound')}
                   </td>
                 </tr>
               ) : (
