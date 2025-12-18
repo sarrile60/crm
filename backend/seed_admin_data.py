@@ -36,7 +36,7 @@ async def seed_admin_data():
             {
                 "id": str(uuid.uuid4()),
                 "name": "admin",
-                "description": "Full system access - can manage everything",
+                "description": "role_desc_admin",
                 "is_system": True,
                 "created_at": datetime.now(timezone.utc),
                 "updated_at": datetime.now(timezone.utc)
@@ -44,7 +44,7 @@ async def seed_admin_data():
             {
                 "id": str(uuid.uuid4()),
                 "name": "supervisor",
-                "description": "Team management and team-level access",
+                "description": "role_desc_supervisor",
                 "is_system": True,
                 "created_at": datetime.now(timezone.utc),
                 "updated_at": datetime.now(timezone.utc)
@@ -52,7 +52,7 @@ async def seed_admin_data():
             {
                 "id": str(uuid.uuid4()),
                 "name": "agent",
-                "description": "Individual contributor - own records only",
+                "description": "role_desc_agent",
                 "is_system": True,
                 "created_at": datetime.now(timezone.utc),
                 "updated_at": datetime.now(timezone.utc)
