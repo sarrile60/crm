@@ -625,15 +625,15 @@ const Home = () => {
         <div className="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div>
             <div className="text-4xl font-bold text-[#D4AF37] mb-2">500+</div>
-            <div className="text-white">Casi Gestiti</div>
+            <div className="text-white">{t('home.casesManaged')}</div>
           </div>
           <div>
             <div className="text-4xl font-bold text-[#D4AF37] mb-2">€50M+</div>
-            <div className="text-white">Fondi Recuperati</div>
+            <div className="text-white">{t('home.fundsRecovered')}</div>
           </div>
           <div>
             <div className="text-4xl font-bold text-[#D4AF37] mb-2">35+</div>
-            <div className="text-white">Paesi Serviti</div>
+            <div className="text-white">{t('home.countriesServed')}</div>
           </div>
           <div>
             <div className="text-4xl font-bold text-[#D4AF37] mb-2">24h</div>
