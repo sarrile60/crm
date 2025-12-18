@@ -170,7 +170,7 @@ const DataVisibilityRules = () => {
 
       {/* Filter */}
       <div className="flex items-center gap-4">
-        <span className="text-sm font-medium text-gray-700">Filtra per:</span>
+        <span className="text-sm font-medium text-gray-700">{t('common.filterBy')}:</span>
         <div className="flex gap-2">
           <Button
             variant={filterType === 'all' ? 'default' : 'outline'}
