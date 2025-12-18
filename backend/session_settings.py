@@ -33,6 +33,15 @@ def get_gmt_offset(tz_name: str) -> str:
         return "GMT"
 
 
+def get_current_time_in_timezone(tz_name: str) -> datetime:
+    """Get current time in specified timezone"""
+    try:
+        tz = ZoneInfo(tz_name)
+    except Exception:
+        tz = ZoneInfo("Europe/Berlin")
+    return datetime.now(tz)
+
+
 def get_all_timezones_with_offset() -> list:
     """Get all timezones with current GMT offset calculated dynamically"""
     base_timezones = [
