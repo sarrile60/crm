@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Input } from '../ui/input';
 import { Clock, AlertCircle } from 'lucide-react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const SmartDateTimePicker = ({ value, onChange, currentUser, currentLeadId }) => {
+  const { t } = useTranslation();
   const [bookedSlots, setBookedSlots] = useState([]);
   const [conflicts, setConflicts] = useState([]);
 
@@ -92,7 +94,7 @@ const SmartDateTimePicker = ({ value, onChange, currentUser, currentLeadId }) =>
     <div className="space-y-2">
       <div className="flex items-center gap-2">
         <Clock className="w-4 h-4 text-gray-600" />
-        <label className="block text-sm font-semibold text-black">Data e Ora Callback</label>
+        <label className="block text-sm font-semibold text-black">{t('crm.callbackDateTime')}</label>
       </div>
       
       <Input
@@ -112,23 +114,23 @@ const SmartDateTimePicker = ({ value, onChange, currentUser, currentLeadId }) =>
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <p className="text-sm font-semibold text-red-800">
-                ⚠️ CONFLITTO DI ORARIO
+                ⚠️ {t('crm.scheduleConflict')}
               </p>
               <p className="text-xs text-red-700 mt-1">
-                Hai già un appuntamento in questo orario (incluso 15 min buffer):
+                {t('crm.appointmentConflictMessage')}
               </p>
               {conflicts.map((conflict, index) => (
                 <div key={index} className="mt-2 bg-red-100 p-2 rounded">
                   <p className="text-xs font-semibold text-red-900">
-                    Cliente: {conflict.leadName}
+                    {t('crm.client')}: {conflict.leadName}
                   </p>
                   <p className="text-xs text-red-800">
-                    Orario: {conflict.time}
+                    {t('crm.time')}: {conflict.time}
                   </p>
                 </div>
               ))}
               <p className="text-xs text-red-700 mt-2 font-semibold">
-                Scegli un altro orario per evitare sovrapposizioni.
+                {t('crm.chooseAnotherTime')}
               </p>
             </div>
           </div>
