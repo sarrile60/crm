@@ -1,7 +1,7 @@
 # 🔒 COMPLETE TECHNICAL SECURITY AUDIT REPORT
 ## 1 LAW SOLICITORS CRM System
 **Generated:** November 23, 2025  
-**System:** https://solicitor-suite.preview.emergentagent.com
+**System:** https://lawcrm-i18n.preview.emergentagent.com
 
 ---
 
@@ -155,10 +155,10 @@ Any attacker can:
 ```
 Risk Level: CRITICAL (10/10)
 Accessible Files:
-✓ https://solicitor-suite.preview.emergentagent.com/backend/.env
-✓ https://solicitor-suite.preview.emergentagent.com/backend/server.py
-✓ https://solicitor-suite.preview.emergentagent.com/backend/auth_utils.py
-✓ https://solicitor-suite.preview.emergentagent.com/backend/crm_routes.py
+✓ https://lawcrm-i18n.preview.emergentagent.com/backend/.env
+✓ https://lawcrm-i18n.preview.emergentagent.com/backend/server.py
+✓ https://lawcrm-i18n.preview.emergentagent.com/backend/auth_utils.py
+✓ https://lawcrm-i18n.preview.emergentagent.com/backend/crm_routes.py
 
 Exposed Information:
 - JWT secret key
@@ -442,7 +442,7 @@ Filtering:
 
 ### Public Landing Page Structure
 ```
-URL: https://solicitor-suite.preview.emergentagent.com/
+URL: https://lawcrm-i18n.preview.emergentagent.com/
 Technology: React SPA
 
 Components:
@@ -606,7 +606,7 @@ class LeadCreate(BaseModel):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://solicitor-suite.preview.emergentagent.com",
+        "https://lawcrm-i18n.preview.emergentagent.com",
         "https://yourdomain.com"
     ],  # Specific domains only
     allow_credentials=True,

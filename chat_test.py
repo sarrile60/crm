@@ -10,7 +10,7 @@ import sys
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://solicitor-suite.preview.emergentagent.com/api"
+BASE_URL = "https://lawcrm-i18n.preview.emergentagent.com/api"
 CRM_BASE_URL = f"{BASE_URL}/crm"
 CHAT_BASE_URL = f"{BASE_URL}/chat"
 

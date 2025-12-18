@@ -381,7 +381,7 @@ app.include_router(crm_router)
 app.include_router(admin_router)
 
 # CORS Configuration (Restricted for Production)
-cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://solicitor-suite.preview.emergentagent.com').split(',')
+cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://lawcrm-i18n.preview.emergentagent.com').split(',')
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
