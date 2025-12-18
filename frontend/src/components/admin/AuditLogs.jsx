@@ -407,25 +407,25 @@ const AuditLogs = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-900 text-white">
-                <th className="text-left p-4 font-semibold">Data/Ora</th>
-                <th className="text-left p-4 font-semibold">Utente</th>
-                <th className="text-left p-4 font-semibold">Azione</th>
-                <th className="text-left p-4 font-semibold">Tipo</th>
-                <th className="text-left p-4 font-semibold">Entità</th>
-                <th className="text-left p-4 font-semibold">Dettagli</th>
+                <th className="text-left p-4 font-semibold">{t('audit.dateTime')}</th>
+                <th className="text-left p-4 font-semibold">{t('audit.user')}</th>
+                <th className="text-left p-4 font-semibold">{t('audit.action')}</th>
+                <th className="text-left p-4 font-semibold">{t('audit.entityType')}</th>
+                <th className="text-left p-4 font-semibold">{t('audit.entity')}</th>
+                <th className="text-left p-4 font-semibold">{t('audit.details')}</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
                   <td colSpan={6} className="text-center py-8 text-gray-500">
-                    Caricamento...
+                    {t('audit.loadingLogs')}
                   </td>
                 </tr>
               ) : logs.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-8 text-gray-500">
-                    Nessun log trovato
+                    {t('audit.noLogsFound')}
                   </td>
                 </tr>
               ) : (
