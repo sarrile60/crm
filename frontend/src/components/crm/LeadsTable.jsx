@@ -1012,7 +1012,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                         <div className="flex items-start justify-between mb-2">
                           <div>
                             <p className="font-semibold text-black">{note.user_name}</p>
-                            <p className="text-xs text-gray-600">{new Date(note.created_at).toLocaleString('it-IT')}</p>
+                            <p className="text-xs text-gray-600">{new Date(note.created_at).toLocaleString()}</p>
                           </div>
                           {note.is_internal && (
                             <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">{t('crm.internal')}</span>
