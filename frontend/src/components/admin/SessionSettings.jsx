@@ -413,14 +413,14 @@ const SessionSettings = () => {
                             <SelectItem 
                               key={tz.value} 
                               value={tz.value}
-                              onMouseEnter={() => setPreviewTimezone(tz.value)}
-                              onMouseLeave={() => setPreviewTimezone(null)}
-                              className="flex justify-between"
+                              className="flex justify-between cursor-pointer"
                             >
-                              <span>{tz.city}</span>
-                              <span className="ml-2 text-gray-500 font-mono text-xs">
-                                {tz.offset} • {tz.current_time}
-                              </span>
+                              <div className="flex items-center justify-between w-full">
+                                <span>{tz.city}</span>
+                                <span className="ml-4 text-gray-500 font-mono text-xs whitespace-nowrap">
+                                  {tz.offset} • {tz.current_time}
+                                </span>
+                              </div>
                             </SelectItem>
                           ))}
                       </React.Fragment>
