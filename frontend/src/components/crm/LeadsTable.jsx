@@ -1315,11 +1315,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Note (Opzionale)</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('crm.notesOptional')}</label>
                 <Textarea
                   value={inlineStatusData.callback_notes}
                   onChange={(e) => setInlineStatusData({ ...inlineStatusData, callback_notes: e.target.value })}
-                  placeholder="Aggiungi note..."
+                  placeholder={t('crm.addNotes')}
                   className="bg-white border-gray-300 rounded-none"
                   rows={3}
                 />
