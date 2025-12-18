@@ -471,15 +471,15 @@ const SessionSettings = () => {
       <div className="bg-white border border-gray-200 p-6">
         <div className="flex items-center gap-2 mb-4">
           <Shield className="w-5 h-5 text-[#D4AF37]" />
-          <h3 className="font-bold text-gray-900">Sicurezza Fuori Orario</h3>
+          <h3 className="font-bold text-gray-900">{t('session.afterHoursSecurity')}</h3>
         </div>
         
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-medium">Richiedi Approvazione Admin</div>
+              <div className="font-medium">{t('session.requireApproval')}</div>
               <div className="text-sm text-gray-500">
-                Se attivo, gli utenti non-admin devono richiedere l'approvazione per accedere fuori orario di lavoro.
+                {t('session.requireApproval')}
               </div>
             </div>
             <Switch
@@ -491,7 +491,7 @@ const SessionSettings = () => {
           {settings.require_approval_after_hours && (
             <div className="pt-4 border-t border-gray-200">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Durata Approvazione (minuti)
+                {t('session.approvalDuration')}
               </label>
               <div className="flex items-center gap-3">
                 <Input
