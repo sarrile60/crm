@@ -268,8 +268,8 @@ const Home = () => {
           {/* Contact Form */}
           <div id="contact" className="bg-gray-50 border-2 border-[#D4AF37] p-8 shadow-xl">
             <div className="mb-6">
-              <h3 className="text-2xl font-bold text-black mb-2">Richiedi Consulenza Gratuita</h3>
-              <p className="text-gray-700">Valutazione legale confidenziale senza impegno</p>
+              <h3 className="text-2xl font-bold text-black mb-2">{t('home.formTitle')}</h3>
+              <p className="text-gray-700">{t('home.formSubtitle')}</p>
             </div>
 
             {formStep === 1 ? (
