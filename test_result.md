@@ -1060,6 +1060,18 @@ frontend:
         agent: "testing"
         comment: "⏰ SESSION SETTINGS TIMEZONE SELECTOR TESTING COMPLETED - 100% SUCCESS RATE. 📊 COMPREHENSIVE TEST RESULTS (13/13 TESTS PASSED): ✅ NAVIGATION & ACCESS CONTROL: Admin login successful with provided credentials (admin_f87450ce5d66), Administration Panel accessible via 'Administration' button, Session Settings tab found and functional, 'Impostazioni Sessione' page loaded correctly. ✅ TIMEZONE DROPDOWN FUNCTIONALITY: Found 'Fuso Orario' section with 'Seleziona Fuso Orario' label, timezone dropdown opened successfully showing 75 timezone options, timezone options properly formatted with city names, GMT offsets, and current times (e.g., 'Berlin GMT+1 • 10:58'). ✅ TIMEZONE SELECTION & UNSAVED CHANGES: Successfully selected different timezone (changed from UTC to Berlin GMT+1), unsaved changes warning '⚠️ Modifiche non salvate' appeared correctly, 'Salva Ora' button became available, right panel showed '👁️ Anteprima (Non Salvato)' label, 'Clicca Salva' animated badge displayed correctly, live clock updated to show time in newly selected timezone with proper GMT offset display. ✅ SAVE FUNCTIONALITY: 'Salva Ora' button clicked successfully, success toast 'Impostazioni salvate con successo' appeared, unsaved changes warning disappeared after save, panel returned to normal state (no preview labels), timezone change persisted correctly. All test specification requirements met perfectly - timezone selector working flawlessly with proper UI feedback and save functionality."
 
+  - task: "i18n Translation Issues - User Reported"
+    implemented: true
+    working: false
+    file: "SessionSettings.jsx, TeamsManagement.jsx, DataVisibilityRules.jsx, LeadsTable.jsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL I18N TRANSLATION ISSUES CONFIRMED - Multiple components have hardcoded Italian text instead of using translation functions. SessionSettings.jsx has extensive hardcoded Italian strings (lines 190-193, 57, 133, 210). TeamsManagement.jsx has hardcoded Italian in member management functions (lines 206-240). DataVisibilityRules.jsx has hardcoded 'Ruolo' and 'Team' labels (line 268). LeadsTable.jsx has multiple hardcoded Italian strings in functions. All reported user issues confirmed through code analysis."
+
   - task: "Language Settings Feature"
     implemented: true
     working: true
