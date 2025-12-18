@@ -382,7 +382,7 @@ const Home = () => {
               </div>
               <div className="flex items-center gap-2 text-gray-700 text-sm">
                 <CheckCircle className="w-4 h-4 text-[#D4AF37]" />
-                <span>Invio Sicuro e Confidenziale</span>
+                <span>{t('common.secureSubmission')}</span>
               </div>
               <div className="flex items-center gap-2 text-gray-700 text-sm">
                 <MapPin className="w-4 h-4 text-[#D4AF37]" />
