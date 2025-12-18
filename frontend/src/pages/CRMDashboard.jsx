@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Scale, Users, TrendingUp, AlertCircle, LogOut, Settings, FileText, Bell, Shield } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
@@ -14,6 +15,7 @@ const API = `${BACKEND_URL}/api`;
 
 const CRMDashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [currentUser, setCurrentUser] = useState(null);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState(null);
@@ -53,7 +55,7 @@ const CRMDashboard = () => {
       
       if (!response.data.valid) {
         // Session expired - auto logout
-        toast.error(response.data.reason || 'Sessione scaduta');
+        toast.error(response.data.reason || t('common.sessionExpired'));
         localStorage.removeItem('crmToken');
         localStorage.removeItem('crmUser');
         navigate('/crm/login');
@@ -104,7 +106,7 @@ const CRMDashboard = () => {
     
     localStorage.removeItem('crmToken');
     localStorage.removeItem('crmUser');
-    toast.success('Logout effettuato');
+    toast.success(t('common.logoutSuccess'));
     navigate('/crm/login');
   };
 
@@ -117,7 +119,7 @@ const CRMDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-black text-xl">Caricamento...</div>
+        <div className="text-black text-xl">{t('common.loading')}</div>
       </div>
     );
   }
@@ -139,16 +141,16 @@ const CRMDashboard = () => {
             {/* Session Timer */}
             {sessionInfo && (
               <div className="text-right text-xs">
-                <div className="text-gray-400">Sessione scade alle 18:30</div>
+                <div className="text-gray-400">{t('auth.sessionExpires')} 18:30</div>
                 <div className={`font-mono ${sessionInfo.minutes_remaining < 30 ? 'text-red-400' : 'text-[#D4AF37]'}`}>
-                  {Math.floor(sessionInfo.minutes_remaining / 60)}h {sessionInfo.minutes_remaining % 60}m rimanenti
+                  {Math.floor(sessionInfo.minutes_remaining / 60)}h {sessionInfo.minutes_remaining % 60}m {t('auth.timeRemaining')}
                 </div>
               </div>
             )}
             <CallbackNotifications onCallbackAlert={handleCallbackAlert} currentUser={currentUser} />
             <Button onClick={handleLogout} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
               <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              {t('auth.logout')}
             </Button>
           </div>
         </div>
@@ -166,7 +168,7 @@ const CRMDashboard = () => {
             }`}
           >
             <TrendingUp className="w-4 h-4 inline mr-2" />
-            Dashboard
+            {t('nav.dashboard')}
           </button>
           <button
             onClick={() => setActiveTab('leads')}
@@ -177,7 +179,7 @@ const CRMDashboard = () => {
             }`}
           >
             <FileText className="w-4 h-4 inline mr-2" />
-            Leads
+            {t('nav.leads')}
           </button>
           {/* Users tab moved to Administration Panel */}
           {currentUser?.role === 'admin' && (
@@ -190,7 +192,7 @@ const CRMDashboard = () => {
               }`}
             >
               <Settings className="w-4 h-4 inline mr-2" />
-              Impostazioni
+              {t('nav.settings')}
             </button>
           )}
           {currentUser?.role === 'admin' && (
@@ -199,7 +201,7 @@ const CRMDashboard = () => {
               className="px-4 py-2 font-semibold transition-all text-gray-600 hover:text-black bg-[#D4AF37] bg-opacity-10 hover:bg-opacity-20 border border-[#D4AF37] ml-4"
             >
               <Shield className="w-4 h-4 inline mr-2" />
-              Administration
+              {t('nav.administration')}
             </button>
           )}
         </div>
@@ -209,57 +211,57 @@ const CRMDashboard = () => {
       <main className="max-w-[1600px] mx-auto p-8">
         {activeTab === 'dashboard' && stats && (
           <div>
-            <h2 className="text-3xl font-bold text-black mb-8">Dashboard</h2>
+            <h2 className="text-3xl font-bold text-black mb-8">{t('dashboard.title')}</h2>
             
             {/* Stats Cards */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               <div className="bg-white border-2 border-[#D4AF37] p-6 shadow-lg">
                 <div className="flex items-center justify-between mb-4">
                   <FileText className="w-8 h-8 text-[#D4AF37]" />
-                  <span className="text-sm text-gray-600">Totale</span>
+                  <span className="text-sm text-gray-600">{t('common.total')}</span>
                 </div>
                 <div className="text-4xl font-bold text-black mb-2">{stats.total_leads}</div>
-                <p className="text-gray-600">Lead Totali</p>
+                <p className="text-gray-600">{t('dashboard.totalLeads')}</p>
               </div>
 
               <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
                 <div className="flex items-center justify-between mb-4">
                   <AlertCircle className="w-8 h-8 text-blue-600" />
-                  <span className="text-sm text-gray-600">Nuovi</span>
+                  <span className="text-sm text-gray-600">{t('common.new')}</span>
                 </div>
                 <div className="text-4xl font-bold text-black mb-2">{stats.new_leads}</div>
-                <p className="text-gray-600">Lead Nuovi</p>
+                <p className="text-gray-600">{t('dashboard.newLeads')}</p>
               </div>
 
               <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
                 <div className="flex items-center justify-between mb-4">
                   <TrendingUp className="w-8 h-8 text-orange-600" />
-                  <span className="text-sm text-gray-600">In Corso</span>
+                  <span className="text-sm text-gray-600">{t('common.inProgress')}</span>
                 </div>
                 <div className="text-4xl font-bold text-black mb-2">{stats.in_progress}</div>
-                <p className="text-gray-600">In Lavorazione</p>
+                <p className="text-gray-600">{t('dashboard.inProgress')}</p>
               </div>
 
               <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
                 <div className="flex items-center justify-between mb-4">
                   <Bell className="w-8 h-8 text-red-600" />
-                  <span className="text-sm text-gray-600">Urgenti</span>
+                  <span className="text-sm text-gray-600">{t('common.urgent')}</span>
                 </div>
                 <div className="text-4xl font-bold text-black mb-2">{stats.pending_callbacks}</div>
-                <p className="text-gray-600">Callback Pendenti</p>
+                <p className="text-gray-600">{t('dashboard.pendingCallbacks')}</p>
               </div>
             </div>
 
             {/* Quick Actions */}
             <div className="bg-gray-50 border-2 border-gray-200 p-6">
-              <h3 className="text-xl font-bold text-black mb-4">Azioni Rapide</h3>
+              <h3 className="text-xl font-bold text-black mb-4">{t('dashboard.quickActions')}</h3>
               <div className="flex flex-wrap gap-4">
                 <Button onClick={() => setActiveTab('leads')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
-                  Visualizza Tutti i Lead
+                  {t('dashboard.viewAllLeads')}
                 </Button>
                 {currentUser?.role === 'admin' && (
                   <Button onClick={() => navigate('/crm/admin')} className="bg-black text-white hover:bg-gray-800 rounded-none">
-                    Pannello Amministrazione
+                    {t('dashboard.adminPanel')}
                   </Button>
                 )}
               </div>
