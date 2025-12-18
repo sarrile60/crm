@@ -159,17 +159,17 @@ const UserManagement = ({ currentUser }) => {
   };
 
   if (loading) {
-    return <div className="text-center py-12">Caricamento utenti...</div>;
+    return <div className="text-center py-12">{t('common.loading')}...</div>;
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-black">Gestione Utenti</h2>
+        <h2 className="text-3xl font-bold text-black">{t('users.title')}</h2>
         {currentUser.role === 'admin' && (
           <Button onClick={() => setShowCreateModal(true)} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
             <Plus className="w-4 h-4 mr-2" />
-            Nuovo Utente
+            {t('users.newUser')}
           </Button>
         )}
       </div>
@@ -179,13 +179,13 @@ const UserManagement = ({ currentUser }) => {
         <table className="w-full">
           <thead className="bg-black">
             <tr>
-              <th className="text-left text-white p-4 font-semibold">Nome</th>
-              <th className="text-left text-white p-4 font-semibold">Username</th>
-              <th className="text-left text-white p-4 font-semibold">Ruolo</th>
-              <th className="text-left text-white p-4 font-semibold">Team</th>
-              <th className="text-left text-white p-4 font-semibold">Stato</th>
-              <th className="text-left text-white p-4 font-semibold">Ultimo Accesso</th>
-              <th className="text-left text-white p-4 font-semibold">Azioni</th>
+              <th className="text-left text-white p-4 font-semibold">{t('common.name')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('users.usernameLabel')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('users.role')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('users.team')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('common.status')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('users.lastLogin')}</th>
+              <th className="text-left text-white p-4 font-semibold">{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -199,21 +199,21 @@ const UserManagement = ({ currentUser }) => {
                   </span>
                 </td>
                 <td className="p-4 text-gray-700">
-                  {user.team_id ? teams.find(t => t.id === user.team_id)?.name || 'N/A' : 'Nessun team'}
+                  {user.team_id ? teams.find(t => t.id === user.team_id)?.name || 'N/A' : t('common.noTeam')}
                 </td>
                 <td className="p-4">
                   {user.is_active ? (
                     <span className="text-green-600 font-semibold flex items-center gap-1">
-                      <UserCheck className="w-4 h-4" /> Attivo
+                      <UserCheck className="w-4 h-4" /> {t('users.active')}
                     </span>
                   ) : (
                     <span className="text-red-600 font-semibold flex items-center gap-1">
-                      <UserX className="w-4 h-4" /> Inattivo
+                      <UserX className="w-4 h-4" /> {t('users.inactive')}
                     </span>
                   )}
                 </td>
                 <td className="p-4 text-gray-700">
-                  {user.last_login ? new Date(user.last_login).toLocaleString('it-IT') : 'Mai'}
+                  {user.last_login ? new Date(user.last_login).toLocaleString() : t('common.never')}
                 </td>
                 <td className="p-4">
                   {currentUser.role === 'admin' && (
@@ -232,7 +232,7 @@ const UserManagement = ({ currentUser }) => {
                             size="sm"
                             className={`${user.is_active ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'} text-white rounded-none`}
                           >
-                            {user.is_active ? 'Disattiva' : 'Attiva'}
+                            {user.is_active ? t('users.deactivate') : t('users.activate')}
                           </Button>
                           <Button
                             onClick={() => handleDeleteClick(user)}
