@@ -118,14 +118,14 @@ const Home = () => {
       // Handle duplicate registration error
       if (error.response?.status === 409) {
         toast({
-          title: "Registrazione già esistente",
-          description: error.response?.data?.detail || "Hai già inviato una richiesta. Il nostro team ti contatterà presto.",
+          title: t('common.alreadyRegistered'),
+          description: error.response?.data?.detail || t('common.alreadySubmitted'),
           variant: "destructive"
         });
       } else {
         toast({
-          title: "Errore",
-          description: "Si è verificato un errore. Riprova più tardi.",
+          title: t('common.error'),
+          description: t('common.tryAgainLater'),
           variant: "destructive"
         });
       }
