@@ -39,7 +39,6 @@ const SessionSettings = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [previewTimezone, setPreviewTimezone] = useState(null); // For hover preview
   const [localTime, setLocalTime] = useState(''); // Live updating time
 
   const fetchSettings = useCallback(async () => {
