@@ -78,14 +78,15 @@ const AdminPanel = () => {
   }
 
   const tabs = [
-    { id: 'users', label: 'Users', icon: UserCog, component: UsersManagement },
-    { id: 'teams', label: 'Teams', icon: Building2, component: TeamsManagement },
-    { id: 'roles', label: 'Roles', icon: Shield, component: RoleManagement },
-    { id: 'permissions', label: 'Permission Matrix', icon: Database, component: PermissionMatrix },
-    { id: 'visibility', label: 'Data Visibility', icon: Eye, component: DataVisibilityRules },
-    { id: 'session', label: 'Session Settings', icon: Clock, component: SessionSettings },
-    { id: 'audit', label: 'Audit Logs', icon: FileText, component: AuditLogs },
-    { id: 'entities', label: 'Entity Configuration', icon: Settings, component: EntityConfiguration }
+    { id: 'users', label: t('admin.users'), icon: UserCog, component: UsersManagement },
+    { id: 'teams', label: t('admin.teams'), icon: Building2, component: TeamsManagement },
+    { id: 'roles', label: t('admin.roles'), icon: Shield, component: RoleManagement },
+    { id: 'permissions', label: t('admin.permissions'), icon: Database, component: PermissionMatrix },
+    { id: 'visibility', label: t('admin.visibility'), icon: Eye, component: DataVisibilityRules },
+    { id: 'session', label: t('admin.sessionSettings'), icon: Clock, component: SessionSettings },
+    { id: 'language', label: t('admin.language'), icon: Languages, component: LanguageSettings },
+    { id: 'audit', label: t('admin.auditLogs'), icon: FileText, component: AuditLogs },
+    { id: 'entities', label: 'Entity Config', icon: Settings, component: EntityConfiguration }
   ];
 
   const ActiveComponent = tabs.find(t => t.id === activeTab)?.component;
