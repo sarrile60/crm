@@ -550,7 +550,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
   };
 
   if (loading) {
-    return <div className="text-center py-12">Caricamento lead...</div>;
+    return <div className="text-center py-12">{t('leads.loadingLeads')}</div>;
   }
 
   const canMassUpdate = ['admin', 'supervisor'].includes(currentUser.role);
@@ -558,7 +558,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-black">Gestione Lead</h2>
+        <h2 className="text-3xl font-bold text-black">{t('leads.title')}</h2>
         <div className="flex gap-3">
           {canMassUpdate && selectedLeadIds.length > 0 && (
             <Button onClick={() => setShowMassUpdateModal(true)} className="bg-purple-600 text-white hover:bg-purple-700 rounded-none">
@@ -568,17 +568,17 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
           )}
           <Button onClick={() => setShowCreateModal(true)} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
             <Plus className="w-4 h-4 mr-2" />
-            Crea Lead
+            {t('leads.createLead')}
           </Button>
           {currentUser.role === 'admin' && (
             <>
               <Button onClick={() => setShowImportModal(true)} className="bg-blue-600 text-white hover:bg-blue-700 rounded-none">
                 <Upload className="w-4 h-4 mr-2" />
-                Importa CSV
+                {t('common.import')} CSV
               </Button>
               <Button onClick={handleExportCSV} className="bg-green-600 text-white hover:bg-green-700 rounded-none">
                 <Download className="w-4 h-4 mr-2" />
-                Esporta CSV
+                {t('common.export')} CSV
               </Button>
             </>
           )}
@@ -589,11 +589,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       <div className="bg-gray-50 border-2 border-gray-200 p-6 mb-6">
         <div className="grid md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-black mb-2">Cerca</label>
+            <label className="block text-sm font-semibold text-black mb-2">{t('common.search')}</label>
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <Input
-                placeholder="Nome, email, azienda..."
+                placeholder={t('leads.searchPlaceholder')}
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                 className="pl-10 bg-white border-gray-300 rounded-none"
@@ -601,13 +601,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-black mb-2">Stato</label>
+            <label className="block text-sm font-semibold text-black mb-2">{t('common.status')}</label>
             <Select value={filters.status || "all"} onValueChange={(value) => setFilters({ ...filters, status: value === "all" ? "" : value })}>
               <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                <SelectValue placeholder="Tutti" />
+                <SelectValue placeholder={t('common.all')} />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="all">Tutti</SelectItem>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
                 {statuses.map(status => (
                   <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
                 ))}
@@ -615,7 +615,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
             </Select>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-black mb-2">Priorità</label>
+            <label className="block text-sm font-semibold text-black mb-2">{t('leads.priority')}</label>
             <Select value={filters.priority || "all"} onValueChange={(value) => setFilters({ ...filters, priority: value === "all" ? "" : value })}>
               <SelectTrigger className="bg-white border-gray-300 rounded-none">
                 <SelectValue placeholder="Tutte" />
