@@ -101,7 +101,7 @@ const AdminDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-xl">Caricamento...</div>
+        <div className="text-white text-xl">{t('common.loading')}</div>
       </div>
     );
   }
