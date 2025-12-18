@@ -191,6 +191,19 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       return;
     }
 
+    // Validate email format - must contain @
+    if (!newLead.email.includes('@')) {
+      toast.error('Email non valida: deve contenere @');
+      return;
+    }
+
+    // Validate phone - only digits, spaces, + and - allowed (no letters)
+    const phoneDigitsOnly = newLead.phone.replace(/[\s\-\+\(\)]/g, '');
+    if (!/^\d+$/.test(phoneDigitsOnly)) {
+      toast.error('Telefono non valido: inserire solo numeri');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
