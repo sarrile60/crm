@@ -298,19 +298,19 @@ const AuditLogs = () => {
       {showFilters && (
         <div className="bg-white border border-gray-200 p-4 space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="font-semibold text-gray-700">Filtri</h3>
+            <h3 className="font-semibold text-gray-700">{t('common.filters')}</h3>
             <Button variant="ghost" size="sm" onClick={clearFilters}>
-              Cancella Filtri
+              {t('common.clearFilters')}
             </Button>
           </div>
           
           <div className="grid grid-cols-6 gap-4">
             <div>
-              <label className="text-sm text-gray-500 block mb-1">Cerca</label>
+              <label className="text-sm text-gray-500 block mb-1">{t('common.search')}</label>
               <div className="relative">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <Input
-                  placeholder="Nome, utente..."
+                  placeholder={t('audit.searchPlaceholder')}
                   value={filters.search}
                   onChange={(e) => handleFilterChange('search', e.target.value)}
                   className="pl-10 rounded-none"
@@ -319,16 +319,16 @@ const AuditLogs = () => {
             </div>
             
             <div>
-              <label className="text-sm text-gray-500 block mb-1">Utente</label>
+              <label className="text-sm text-gray-500 block mb-1">{t('audit.user')}</label>
               <Select
                 value={filters.user_id || 'all'}
                 onValueChange={(value) => handleFilterChange('user_id', value)}
               >
                 <SelectTrigger className="rounded-none">
-                  <SelectValue placeholder="Tutti gli utenti" />
+                  <SelectValue placeholder={t('audit.allUsers')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tutti gli utenti</SelectItem>
+                  <SelectItem value="all">{t('audit.allUsers')}</SelectItem>
                   {filterOptions.users.map(u => (
                     <SelectItem key={u.user_id} value={u.user_id}>
                       {u.user_name}
@@ -339,16 +339,16 @@ const AuditLogs = () => {
             </div>
             
             <div>
-              <label className="text-sm text-gray-500 block mb-1">Azione</label>
+              <label className="text-sm text-gray-500 block mb-1">{t('audit.action')}</label>
               <Select
                 value={filters.action || 'all'}
                 onValueChange={(value) => handleFilterChange('action', value)}
               >
                 <SelectTrigger className="rounded-none">
-                  <SelectValue placeholder="Tutte le azioni" />
+                  <SelectValue placeholder={t('audit.allActions')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tutte le azioni</SelectItem>
+                  <SelectItem value="all">{t('audit.allActions')}</SelectItem>
                   {filterOptions.actions.map(a => (
                     <SelectItem key={a.value} value={a.value}>
                       {a.label}
@@ -359,16 +359,16 @@ const AuditLogs = () => {
             </div>
             
             <div>
-              <label className="text-sm text-gray-500 block mb-1">Tipo Entità</label>
+              <label className="text-sm text-gray-500 block mb-1">{t('audit.entityType')}</label>
               <Select
                 value={filters.entity_type || 'all'}
                 onValueChange={(value) => handleFilterChange('entity_type', value)}
               >
                 <SelectTrigger className="rounded-none">
-                  <SelectValue placeholder="Tutti i tipi" />
+                  <SelectValue placeholder={t('audit.allTypes')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tutti i tipi</SelectItem>
+                  <SelectItem value="all">{t('audit.allTypes')}</SelectItem>
                   {filterOptions.entity_types.map(e => (
                     <SelectItem key={e.value} value={e.value}>
                       {e.label}
@@ -379,7 +379,7 @@ const AuditLogs = () => {
             </div>
             
             <div>
-              <label className="text-sm text-gray-500 block mb-1">Data Da</label>
+              <label className="text-sm text-gray-500 block mb-1">{t('audit.dateFrom')}</label>
               <Input
                 type="datetime-local"
                 value={filters.date_from}
@@ -389,7 +389,7 @@ const AuditLogs = () => {
             </div>
             
             <div>
-              <label className="text-sm text-gray-500 block mb-1">Data A</label>
+              <label className="text-sm text-gray-500 block mb-1">{t('audit.dateTo')}</label>
               <Input
                 type="datetime-local"
                 value={filters.date_to}
