@@ -82,7 +82,8 @@
     "results": "résultats",
     "clearFilters": "Effacer les filtres",
     "filters": "Filtres",
-    "complete": "Complete"
+    "complete": "Complete",
+    "info": "Info"
   },
   "auth": {
     "login": "Connexion",
@@ -715,7 +716,13 @@
     "noNotes": "No notes",
     "noNotifications": "No notifications",
     "notificationsWillAppear": "All notifications will appear here",
-    "showOnlyExpiredCallbacks": "Shows only expired callbacks. They disappear when you change status or reschedule time"
+    "showOnlyExpiredCallbacks": "Shows only expired callbacks. They disappear when you change status or reschedule time",
+    "callbackDateTime": "Date et heure du rappel",
+    "scheduleConflict": "CONFLIT D'HORAIRE",
+    "appointmentConflictMessage": "Vous avez déjà un rendez-vous à cette heure (y compris 15 min de tampon):",
+    "time": "Heure",
+    "chooseAnotherTime": "Choisissez une autre heure pour éviter les chevauchements.",
+    "callbacksScheduledInfo": "Vous avez {{count}} rappels déjà programmés. Le système vous avertira automatiquement des conflits."
   },
   "settings": {
     "title": "Settings",
@@ -749,5 +756,16 @@
     "color": "Color",
     "order": "Order",
     "createStatus": "Create Status"
+  },
+  "thankYou": {
+    "title": "Merci pour votre demande!",
+    "message": "Nous avons reçu les détails de votre cas. Notre équipe d'avocats experts examinera attentivement votre demande et vous contactera dans les <strong>24 heures</strong>.",
+    "whatHappensNow": "Que se passe-t-il maintenant?",
+    "step1": "Un avocat de notre équipe examinera votre cas et évaluera les preuves disponibles",
+    "step2": "Nous vous contacterons par téléphone ou par e-mail pour discuter des options juridiques disponibles",
+    "step3": "La consultation initiale est <strong>entièrement gratuite</strong> et sans engagement",
+    "backToHome": "Retour à l'accueil",
+    "footerTagline": "Cabinet d'avocats spécialisé dans la récupération de fonds suite à des fraudes financières",
+    "copyright": "© 2024 1 Law Solicitors. Tous droits réservés."
   }
 }

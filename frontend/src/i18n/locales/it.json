@@ -82,7 +82,8 @@
     "results": "risultati",
     "clearFilters": "Cancella Filtri",
     "filters": "Filtri",
-    "complete": "Completa"
+    "complete": "Completa",
+    "info": "Info"
   },
   "auth": {
     "login": "Accedi",
@@ -679,7 +680,13 @@
     "noNotes": "Nessuna nota",
     "noNotifications": "Nessuna notifica",
     "notificationsWillAppear": "Tutte le notifiche compariranno qui",
-    "showOnlyExpiredCallbacks": "Mostra solo callback scaduti. Scompaiono quando cambi lo stato o riprogrammi l'ora"
+    "showOnlyExpiredCallbacks": "Mostra solo callback scaduti. Scompaiono quando cambi lo stato o riprogrammi l'ora",
+    "callbackDateTime": "Data e Ora Callback",
+    "scheduleConflict": "CONFLITTO DI ORARIO",
+    "appointmentConflictMessage": "Hai già un appuntamento in questo orario (incluso 15 min buffer):",
+    "time": "Orario",
+    "chooseAnotherTime": "Scegli un altro orario per evitare sovrapposizioni.",
+    "callbacksScheduledInfo": "Hai {{count}} callback già programmati. Il sistema ti avviserà di conflitti automaticamente."
   },
   "settings": {
     "crmSettings": "Impostazioni CRM",
@@ -699,5 +706,16 @@
     "color": "Colore",
     "order": "Ordine",
     "createStatus": "Crea Stato"
+  },
+  "thankYou": {
+    "title": "Grazie per la Tua Richiesta!",
+    "message": "Abbiamo ricevuto i dettagli del tuo caso. Il nostro team di avvocati esperti esaminerà attentamente la tua richiesta e ti contatterà entro <strong>24 ore</strong>.",
+    "whatHappensNow": "Cosa Succede Ora?",
+    "step1": "Un avvocato del nostro team esaminerà il tuo caso e valuterà le prove disponibili",
+    "step2": "Ti contatteremo via telefono o email per discutere le opzioni legali disponibili",
+    "step3": "La consulenza iniziale è <strong>completamente gratuita</strong> e senza impegno",
+    "backToHome": "Torna alla Home",
+    "footerTagline": "Studio legale specializzato nel recupero fondi da truffe finanziarie",
+    "copyright": "© 2024 1 Law Solicitors. Tutti i diritti riservati."
   }
 }

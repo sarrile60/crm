@@ -82,7 +82,8 @@
     "results": "resultados",
     "clearFilters": "Limpiar filtros",
     "filters": "Filtros",
-    "complete": "Complete"
+    "complete": "Complete",
+    "info": "Info"
   },
   "auth": {
     "login": "Iniciar sesión",
@@ -715,7 +716,13 @@
     "noNotes": "No notes",
     "noNotifications": "No notifications",
     "notificationsWillAppear": "All notifications will appear here",
-    "showOnlyExpiredCallbacks": "Shows only expired callbacks. They disappear when you change status or reschedule time"
+    "showOnlyExpiredCallbacks": "Shows only expired callbacks. They disappear when you change status or reschedule time",
+    "callbackDateTime": "Fecha y hora de devolución de llamada",
+    "scheduleConflict": "CONFLICTO DE HORARIO",
+    "appointmentConflictMessage": "Ya tiene una cita a esta hora (incluyendo 15 min de margen):",
+    "time": "Hora",
+    "chooseAnotherTime": "Elija otra hora para evitar superposiciones.",
+    "callbacksScheduledInfo": "Tiene {{count}} devoluciones de llamada ya programadas. El sistema le notificará automáticamente sobre conflictos."
   },
   "settings": {
     "title": "Settings",
@@ -749,5 +756,16 @@
     "color": "Color",
     "order": "Order",
     "createStatus": "Create Status"
+  },
+  "thankYou": {
+    "title": "¡Gracias por su solicitud!",
+    "message": "Hemos recibido los detalles de su caso. Nuestro equipo de abogados expertos revisará cuidadosamente su solicitud y le contactará dentro de <strong>24 horas</strong>.",
+    "whatHappensNow": "¿Qué sucede ahora?",
+    "step1": "Un abogado de nuestro equipo revisará su caso y evaluará las pruebas disponibles",
+    "step2": "Le contactaremos por teléfono o correo electrónico para discutir las opciones legales disponibles",
+    "step3": "La consulta inicial es <strong>completamente gratuita</strong> y sin compromiso",
+    "backToHome": "Volver al inicio",
+    "footerTagline": "Bufete de abogados especializado en la recuperación de fondos por fraude financiero",
+    "copyright": "© 2024 1 Law Solicitors. Todos los derechos reservados."
   }
 }

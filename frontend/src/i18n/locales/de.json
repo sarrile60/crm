@@ -82,7 +82,8 @@
     "results": "Ergebnisse",
     "clearFilters": "Filter löschen",
     "filters": "Filter",
-    "complete": "Complete"
+    "complete": "Complete",
+    "info": "Info"
   },
   "auth": {
     "login": "Anmelden",
@@ -715,7 +716,13 @@
     "noNotes": "No notes",
     "noNotifications": "No notifications",
     "notificationsWillAppear": "All notifications will appear here",
-    "showOnlyExpiredCallbacks": "Shows only expired callbacks. They disappear when you change status or reschedule time"
+    "showOnlyExpiredCallbacks": "Shows only expired callbacks. They disappear when you change status or reschedule time",
+    "callbackDateTime": "Rückruf Datum und Uhrzeit",
+    "scheduleConflict": "TERMINKONFLIKT",
+    "appointmentConflictMessage": "Sie haben bereits einen Termin zu dieser Zeit (einschließlich 15 Min. Puffer):",
+    "time": "Zeit",
+    "chooseAnotherTime": "Wählen Sie eine andere Zeit, um Überschneidungen zu vermeiden.",
+    "callbacksScheduledInfo": "Sie haben {{count}} Rückrufe bereits geplant. Das System benachrichtigt Sie automatisch über Konflikte."
   },
   "settings": {
     "title": "Settings",
@@ -749,5 +756,16 @@
     "color": "Color",
     "order": "Order",
     "createStatus": "Create Status"
+  },
+  "thankYou": {
+    "title": "Vielen Dank für Ihre Anfrage!",
+    "message": "Wir haben die Details Ihres Falls erhalten. Unser Team aus erfahrenen Anwälten wird Ihre Anfrage sorgfältig prüfen und Sie innerhalb von <strong>24 Stunden</strong> kontaktieren.",
+    "whatHappensNow": "Was passiert jetzt?",
+    "step1": "Ein Anwalt aus unserem Team wird Ihren Fall prüfen und die verfügbaren Beweise bewerten",
+    "step2": "Wir werden Sie telefonisch oder per E-Mail kontaktieren, um die verfügbaren rechtlichen Optionen zu besprechen",
+    "step3": "Die Erstberatung ist <strong>völlig kostenlos</strong> und unverbindlich",
+    "backToHome": "Zurück zur Startseite",
+    "footerTagline": "Auf Fondsrückgewinnung aus Finanzbetrug spezialisierte Anwaltskanzlei",
+    "copyright": "© 2024 1 Law Solicitors. Alle Rechte vorbehalten."
   }
 }

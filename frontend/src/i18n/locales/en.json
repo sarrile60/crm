@@ -82,7 +82,8 @@
     "results": "results",
     "clearFilters": "Clear Filters",
     "filters": "Filters",
-    "complete": "Complete"
+    "complete": "Complete",
+    "info": "Info"
   },
   "auth": {
     "login": "Login",
@@ -268,7 +269,13 @@
     "noNotes": "No notes",
     "noNotifications": "No notifications",
     "notificationsWillAppear": "All notifications will appear here",
-    "showOnlyExpiredCallbacks": "Shows only expired callbacks. They disappear when you change status or reschedule time"
+    "showOnlyExpiredCallbacks": "Shows only expired callbacks. They disappear when you change status or reschedule time",
+    "callbackDateTime": "Callback Date and Time",
+    "scheduleConflict": "SCHEDULE CONFLICT",
+    "appointmentConflictMessage": "You already have an appointment at this time (including 15 min buffer):",
+    "time": "Time",
+    "chooseAnotherTime": "Choose another time to avoid overlaps.",
+    "callbacksScheduledInfo": "You have {{count}} callbacks already scheduled. The system will automatically notify you of conflicts."
   },
   "admin": {
     "title": "Administration Panel",
@@ -425,7 +432,6 @@
     "errorRemovingMember": "Error removing member",
     "newTeam": "New Team",
     "teamCreated": "Team created successfully",
-    "errorCreatingTeam": "Error creating team",
     "noTeamsCreated": "No teams created",
     "createNewTeam": "Create New Team",
     "teamNamePlaceholder": "Ex. Team North",
@@ -750,5 +756,16 @@
     "ponziSchemeOutcome": "65% recovery through complex international legal procedure",
     "week": "week",
     "months": "months"
+  },
+  "thankYou": {
+    "title": "Thank You for Your Request!",
+    "message": "We have received the details of your case. Our team of expert lawyers will carefully review your request and contact you within <strong>24 hours</strong>.",
+    "whatHappensNow": "What Happens Now?",
+    "step1": "A lawyer from our team will review your case and assess the available evidence",
+    "step2": "We will contact you by phone or email to discuss the legal options available",
+    "step3": "The initial consultation is <strong>completely free</strong> and without obligation",
+    "backToHome": "Back to Home",
+    "footerTagline": "Law firm specialized in fund recovery from financial fraud",
+    "copyright": "© 2024 1 Law Solicitors. All rights reserved."
   }
 }
