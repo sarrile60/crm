@@ -380,7 +380,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
 
   const handleSaveInlineCallback = async () => {
     if (!inlineStatusData.callback_date) {
-      toast.error('Devi impostare data e ora');
+      toast.error(t('crm.mustSetDateTime'));
       return;
     }
 
@@ -389,12 +389,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       const headers = { Authorization: `Bearer ${token}` };
       await axios.put(`${API}/crm/leads/${inlineEditLeadId}`, inlineStatusData, { headers });
       localStorage.removeItem(`callback_alerted_${inlineEditLeadId}`);
-      toast.success('Stato aggiornato con callback');
+      toast.success(t('crm.statusUpdatedWithCallback'));
       setInlineEditLeadId(null);
       setInlineStatusData({ status: '', callback_date: '', callback_notes: '' });
       fetchData();
     } catch (error) {
-      toast.error('Errore aggiornamento');
+      toast.error(t('crm.errorUpdating'));
     }
   };
 
@@ -406,7 +406,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                             editData.status?.startsWith('Deposit');
     
     if (requiresCallback && !editData.callback_date) {
-      toast.error('Devi impostare data e ora per questo stato');
+      toast.error(t('crm.mustSetDateTimeForStatus'));
       return;
     }
 
@@ -419,7 +419,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       // Clear the old alert flag so new callbacks can trigger alerts
       localStorage.removeItem(`callback_alerted_${selectedLead.id}`);
       
-      toast.success('Lead aggiornato con successo');
+      toast.success(t('leads.leadUpdated'));
       setShowEditModal(false);
       fetchData();
       
@@ -428,7 +428,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         setSelectedLead({...selectedLead, ...editData});
       }
     } catch (error) {
-      toast.error('Errore nell\'aggiornamento del lead');
+      toast.error(t('crm.errorUpdatingLead'));
     }
   };
 
