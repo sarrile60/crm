@@ -439,11 +439,11 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
             <div>
               <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
                 <Phone className="w-5 h-5 text-red-600" />
-                Callback Scaduti ({pendingCallbacks.length})
+                {t('crm.expiredCallbacks')} ({pendingCallbacks.length})
               </h3>
               {pendingCallbacks.length === 0 ? (
                 <p className="text-center text-gray-500 py-4 bg-gray-50 border border-gray-200">
-                  Nessun callback scaduto
+                  {t('crm.noExpiredCallbacks')}
                 </p>
               ) : (
                 <div className="space-y-3">
@@ -457,11 +457,11 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                     
                     let overdueText = '';
                     if (daysOverdue > 0) {
-                      overdueText = `${daysOverdue} giorni fa`;
+                      overdueText = t('crm.daysAgo', { count: daysOverdue });
                     } else if (hoursOverdue > 0) {
-                      overdueText = `${hoursOverdue} ore fa`;
+                      overdueText = t('crm.hoursAgo', { count: hoursOverdue });
                     } else {
-                      overdueText = `${minutesOverdue} minuti fa`;
+                      overdueText = t('crm.minutesAgo', { count: minutesOverdue });
                     }
                     
                     return (
@@ -479,10 +479,10 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                             </div>
                             <div className="space-y-1 text-sm">
                               <p className="text-gray-700">
-                                <strong>Telefono:</strong> <a href={`tel:+39${lead.phone}`} className="text-[#D4AF37] hover:underline">+39 {lead.phone}</a>
+                                <strong>{t('common.phone')}:</strong> <a href={`tel:+39${lead.phone}`} className="text-[#D4AF37] hover:underline">+39 {lead.phone}</a>
                               </p>
                               <p className="text-gray-700">
-                                <strong>Importo:</strong> {lead.amountLost}
+                                <strong>{t('crm.amountLost')}:</strong> {lead.amountLost}
                               </p>
                               <p className="font-semibold text-red-600">
                                 <Clock className="w-4 h-4 inline mr-1" />
@@ -492,7 +492,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                                   hour: '2-digit',
                                   minute: '2-digit'
                                 })}
-                                {' '}<span className="text-red-700 font-bold">(SCADUTO {overdueText})</span>
+                                {' '}<span className="text-red-700 font-bold">({t('crm.expired')} {overdueText})</span>
                               </p>
                               {lead.callback_notes && (
                                 <p className="text-gray-600 text-xs italic">
@@ -512,7 +512,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                             className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold whitespace-nowrap"
                           >
                             <Phone className="w-4 h-4 mr-1" />
-                            Apri Lead
+                            {t('crm.openLead')}
                           </Button>
                         </div>
                       </div>
