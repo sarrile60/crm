@@ -213,7 +213,7 @@ const SettingsPanel = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Colore</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('settings.color')}</label>
                 <Input
                   type="color"
                   value={newStatus.color}
@@ -222,7 +222,7 @@ const SettingsPanel = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Ordine</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('settings.order')}</label>
                 <Input
                   type="number"
                   value={newStatus.order}
@@ -232,7 +232,7 @@ const SettingsPanel = () => {
                 />
               </div>
               <Button onClick={handleCreateStatus} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
-                Crea Stato
+                {t('settings.createStatus')}
               </Button>
             </div>
           </DialogContent>
@@ -244,35 +244,35 @@ const SettingsPanel = () => {
         <Dialog open={showCreateTeamModal} onOpenChange={setShowCreateTeamModal}>
           <DialogContent className="max-w-md bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">Crea Nuovo Team</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">{t('teams.createNewTeam')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Nome Team</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('teams.teamName')}</label>
                 <Input
                   value={newTeam.name}
                   onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
-                  placeholder="Es. Team Italia Nord"
+                  placeholder={t('teams.teamNamePlaceholder')}
                   className="bg-white border-gray-300 rounded-none"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Descrizione</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('common.description')}</label>
                 <Input
                   value={newTeam.description}
                   onChange={(e) => setNewTeam({ ...newTeam, description: e.target.value })}
-                  placeholder="Descrizione team (opzionale)"
+                  placeholder={t('teams.descriptionOptional')}
                   className="bg-white border-gray-300 rounded-none"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-black mb-2">Supervisor</label>
+                <label className="block text-sm font-semibold text-black mb-2">{t('teams.supervisor')}</label>
                 <Select value={newTeam.supervisor_id || "_none"} onValueChange={(value) => setNewTeam({ ...newTeam, supervisor_id: value === "_none" ? "" : value })}>
                   <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder="Seleziona supervisor" />
+                    <SelectValue placeholder={t('teams.selectSupervisor')} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="_none">Nessun supervisor</SelectItem>
+                    <SelectItem value="_none">{t('teams.noSupervisor')}</SelectItem>
                     {users.filter(u => u.role === 'supervisor').map(user => (
                       <SelectItem key={user.id} value={user.id}>{user.full_name} ({user.role})</SelectItem>
                     ))}
@@ -280,7 +280,7 @@ const SettingsPanel = () => {
                 </Select>
               </div>
               <Button onClick={handleCreateTeam} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
-                Crea Team
+                {t('teams.createTeam')}
               </Button>
             </div>
           </DialogContent>
