@@ -267,7 +267,14 @@
     "archived": "Archiviato",
     "viewMembers": "Vedi Membri",
     "defaultTeam": "Team Predefinito",
-    "noMembersInTeam": "Nessun membro in questo team"
+    "noMembersInTeam": "Nessun membro in questo team",
+    "addMembers": "Aggiungi Membri",
+    "addMembersToTeam": "Aggiungi Membri al Team",
+    "setAsDefaultTeam": "Imposta come team predefinito per i nuovi membri",
+    "allUsersAlreadyMembers": "Tutti gli utenti attivi sono già membri di questo team",
+    "currentTeam": "Team Attuale",
+    "usersSelected": "utenti selezionati",
+    "removeFromTeam": "Rimuovi dal team"
   },
   "visibility": {
     "title": "Visibilità Dati",
