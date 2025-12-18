@@ -130,10 +130,10 @@ const SessionSettings = () => {
       await axios.put(`${API}/session-settings`, settings, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success('Impostazioni salvate con successo');
+      toast.success(t('session.settingsSaved'));
       setHasChanges(false);
     } catch (error) {
-      toast.error('Errore nel salvataggio');
+      toast.error(t('session.errorSavingSettings'));
       console.error('Error:', error);
     } finally {
       setSaving(false);
