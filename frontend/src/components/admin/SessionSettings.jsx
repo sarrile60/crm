@@ -278,10 +278,6 @@ const SessionSettings = () => {
               </div>
             </div>
 
-            <div className="pt-2 text-sm text-gray-500">
-              <Clock className="w-4 h-4 inline mr-1" />
-              Fuso orario: Europe/Berlin (CET/CEST)
-            </div>
           </div>
         </div>
 
