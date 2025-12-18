@@ -185,15 +185,6 @@ async def get_session_settings() -> dict:
     return settings
 
 
-def get_current_time_in_timezone(tz_name: str) -> datetime:
-    """Get current time in specified timezone"""
-    try:
-        tz = ZoneInfo(tz_name)
-    except Exception:
-        tz = ZoneInfo("Europe/Berlin")
-    return datetime.now(tz)
-
-
 async def update_session_settings(
     session_start_hour: int,
     session_start_minute: int,
