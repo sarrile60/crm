@@ -441,11 +441,11 @@ const SessionSettings = () => {
           <div className={`p-4 border-2 transition-all ${hasChanges ? 'bg-amber-50 border-amber-300' : 'bg-gray-50 border-gray-200'}`}>
             <div className="flex items-center justify-between mb-1">
               <div className="text-sm text-gray-500">
-                {hasChanges ? '👁️ Anteprima (Non Salvato)' : 'Ora Corrente nel Fuso Selezionato'}
+                {hasChanges ? `👁️ ${t('session.preview')}` : t('session.currentTime')}
               </div>
               {hasChanges && (
                 <span className="text-xs bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full animate-pulse">
-                  Clicca Salva
+                  {t('session.clickSave')}
                 </span>
               )}
             </div>
