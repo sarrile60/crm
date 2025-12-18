@@ -15,6 +15,7 @@ import LanguageSettings from '../components/admin/LanguageSettings';
 
 const AdminPanel = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('users');
   const [isAuthorized, setIsAuthorized] = useState(null); // null = checking, true = admin, false = not admin
   const [currentUser, setCurrentUser] = useState(null);
