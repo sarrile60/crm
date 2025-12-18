@@ -527,13 +527,13 @@ const SessionSettings = () => {
 
       {/* Info Box */}
       <div className="bg-blue-50 border border-blue-200 p-4">
-        <h4 className="font-semibold text-blue-800 mb-2">Come Funziona</h4>
+        <h4 className="font-semibold text-blue-800 mb-2">{t('session.howItWorks')}</h4>
         <ul className="text-sm text-blue-700 space-y-1">
-          <li>• Gli utenti vengono <strong>automaticamente disconnessi</strong> all'orario di fine sessione</li>
-          <li>• Gli <strong>amministratori</strong> possono sempre accedere senza restrizioni</li>
-          <li>• Fuori orario, gli utenti non-admin vedono un messaggio e la richiesta viene inviata qui</li>
-          <li>• L'approvazione è <strong>valida per {settings.approval_duration_minutes} minuti</strong>, dopo i quali l'utente deve richiedere nuovamente</li>
-          <li>• Tutte le approvazioni e i rifiuti sono registrati nel <strong>log di audit</strong></li>
+          <li>• {t('session.howItWorksDesc1')}</li>
+          <li>• {t('session.howItWorksDesc2')}</li>
+          <li>• {t('session.howItWorksDesc3')}</li>
+          <li>• {t('session.howItWorksDesc4')}</li>
+          <li>• {t('session.howItWorksDesc5')}</li>
         </ul>
       </div>
     </div>
