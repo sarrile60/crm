@@ -526,7 +526,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
             {reminders.length > 0 && (
               <div>
                 <h3 className="text-lg font-bold text-black mb-3">
-                  Promemoria ({reminders.length})
+                  {t('crm.reminders')} ({reminders.length})
                 </h3>
                 <div className="space-y-3">
                   {reminders.map((reminder) => (
@@ -537,10 +537,10 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                             Lead ID: {reminder.lead_id}
                           </p>
                           <p className="text-sm text-gray-700 mb-2">
-                            <strong>Data Callback:</strong> {new Date(reminder.callback_date).toLocaleString('it-IT')}
+                            <strong>{t('crm.callbackDate')}:</strong> {new Date(reminder.callback_date).toLocaleString()}
                           </p>
                           <p className="text-sm text-gray-700">
-                            <strong>Note:</strong> {reminder.notes || 'Nessuna nota'}
+                            <strong>{t('crm.notes')}:</strong> {reminder.notes || t('crm.noNotes')}
                           </p>
                         </div>
                         <Button
@@ -548,7 +548,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                           size="sm"
                           className="bg-green-600 text-white hover:bg-green-700 rounded-none ml-4"
                         >
-                          Completa
+                          {t('common.complete')}
                         </Button>
                       </div>
                     </div>
@@ -561,8 +561,8 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
             {pendingCallbacks.length === 0 && reminders.length === 0 && (
               <div className="text-center py-12">
                 <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg">Nessuna notifica</p>
-                <p className="text-gray-400 text-sm">Tutte le notifiche compariranno qui</p>
+                <p className="text-gray-500 text-lg">{t('crm.noNotifications')}</p>
+                <p className="text-gray-400 text-sm">{t('crm.notificationsWillAppear')}</p>
               </div>
             )}
           </div>
