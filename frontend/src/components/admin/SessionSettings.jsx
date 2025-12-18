@@ -502,9 +502,9 @@ const SessionSettings = () => {
                   onChange={(e) => updateSetting('approval_duration_minutes', parseInt(e.target.value) || 30)}
                   className="w-24 rounded-none"
                 />
-                <span className="text-gray-500">minuti</span>
+                <span className="text-gray-500">{t('common.minutes')}</span>
                 <div className="text-sm text-gray-400 ml-4">
-                  (Tempo durante il quale l'utente può accedere dopo l'approvazione)
+                  ({t('session.approvalDurationDesc')})
                 </div>
               </div>
               <div className="mt-2 flex gap-2">
