@@ -715,12 +715,14 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                   </td>
                   <td className="p-4 text-gray-700">{lead.amountLost}</td>
                   <td className="p-4">
-                    <Select value={lead.status} onValueChange={(value) => handleInlineStatusChange(lead.id, value)}>
+                    <Select value={lead.status || undefined} onValueChange={(value) => handleInlineStatusChange(lead.id, value)}>
                       <SelectTrigger className="w-[180px] bg-white border-gray-300 rounded-none h-8">
-                        <SelectValue>
-                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(lead.status)}`}>
-                            {lead.status}
-                          </span>
+                        <SelectValue placeholder="Seleziona stato">
+                          {lead.status && (
+                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(lead.status)}`}>
+                              {lead.status}
+                            </span>
+                          )}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent className="bg-white">
