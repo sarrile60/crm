@@ -216,8 +216,8 @@ const DataVisibilityRules = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-900 text-white">
-                <th className="text-left p-4 font-semibold">Tipo</th>
-                <th className="text-left p-4 font-semibold">Nome</th>
+                <th className="text-left p-4 font-semibold">{t('visibility.scope')}</th>
+                <th className="text-left p-4 font-semibold">{t('visibility.scopeName')}</th>
                 {FIELDS.map(field => {
                   const Icon = field.icon;
                   return (
