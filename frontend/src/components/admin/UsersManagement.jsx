@@ -6,12 +6,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Checkbox } from '../ui/checkbox';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const UsersManagement = () => {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [teams, setTeams] = useState([]);
@@ -57,7 +59,6 @@ const UsersManagement = () => {
     if (user) {
       const userData = JSON.parse(user);
       setCurrentUser(userData);
-      console.log('Current admin user ID:', userData.id); // Debug
     }
     fetchData();
   }, []);
@@ -78,7 +79,7 @@ const UsersManagement = () => {
       setRoles(rolesRes.data);
       setTeams(teamsRes.data);
     } catch (error) {
-      toast.error('Errore nel caricamento dei dati');
+      toast.error(t('users.errorLoadingData'));
       console.error('Error:', error);
     } finally {
       setLoading(false);
@@ -87,7 +88,7 @@ const UsersManagement = () => {
 
   const handleCreateUser = async () => {
     if (!formData.username || !formData.full_name || !formData.password) {
-      toast.error('Compila tutti i campi obbligatori');
+      toast.error(t('users.fillRequiredFields'));
       return;
     }
 
@@ -96,18 +97,18 @@ const UsersManagement = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.post(`${API}/admin/users`, formData, { headers });
-      toast.success('Utente creato con successo');
+      toast.success(t('users.userCreatedSuccess'));
       setShowCreateModal(false);
       resetForm();
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nella creazione dell\'utente');
+      toast.error(error.response?.data?.detail || t('users.errorCreatingUser'));
     }
   };
 
   const handleEditUser = async () => {
     if (!formData.full_name) {
-      toast.error('Il nome completo è obbligatorio');
+      toast.error(t('users.fullNameRequired'));
       return;
     }
 
@@ -115,7 +116,6 @@ const UsersManagement = () => {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      // Build update payload - exclude password if not changed
       const updateData = {
         full_name: formData.full_name,
         username: formData.username,
@@ -126,29 +126,29 @@ const UsersManagement = () => {
       };
 
       await axios.put(`${API}/admin/users/${selectedUser.id}`, updateData, { headers });
-      toast.success('Utente aggiornato con successo');
+      toast.success(t('users.userUpdatedSuccess'));
       setShowEditModal(false);
       setSelectedUser(null);
       resetForm();
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nell\'aggiornamento dell\'utente');
+      toast.error(error.response?.data?.detail || t('users.errorUpdatingUser'));
     }
   };
 
   const handleResetPassword = async () => {
     if (!adminPassword) {
-      toast.error('Inserisci la tua password attuale per confermare');
+      toast.error(t('users.enterCurrentPassword'));
       return;
     }
     
     if (!newPassword || newPassword.length < 4) {
-      toast.error('La nuova password deve essere di almeno 4 caratteri');
+      toast.error(t('users.newPasswordMinLength'));
       return;
     }
     
     if (newPassword !== confirmPassword) {
-      toast.error('Le nuove password non corrispondono');
+      toast.error(t('users.passwordsDoNotMatch'));
       return;
     }
 
@@ -163,7 +163,7 @@ const UsersManagement = () => {
         }, 
         { headers }
       );
-      toast.success('Password reimpostata con successo');
+      toast.success(t('users.passwordResetSuccess'));
       setShowResetPasswordModal(false);
       setSelectedUser(null);
       setAdminPassword('');
@@ -171,7 +171,7 @@ const UsersManagement = () => {
       setConfirmPassword('');
       setShowPassword(false);
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nella reimpostazione della password');
+      toast.error(error.response?.data?.detail || t('users.errorResettingPassword'));
     }
   };
 
@@ -185,10 +185,10 @@ const UsersManagement = () => {
         { status: newStatus }, 
         { headers }
       );
-      toast.success(user.is_active ? 'Utente disattivato' : 'Utente attivato');
+      toast.success(user.is_active ? t('users.userDeactivated') : t('users.userActivated'));
       fetchData();
     } catch (error) {
-      toast.error('Errore nell\'aggiornamento dello stato');
+      toast.error(t('users.errorUpdatingStatus'));
     }
   };
 
@@ -200,12 +200,12 @@ const UsersManagement = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.delete(`${API}/admin/users/${selectedUser.id}`, { headers });
-      toast.success('Utente eliminato con successo');
+      toast.success(t('users.userDeletedSuccess'));
       setShowDeleteModal(false);
       setSelectedUser(null);
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nell\'eliminazione dell\'utente');
+      toast.error(error.response?.data?.detail || t('users.errorDeletingUser'));
     }
   };
 
@@ -248,12 +248,12 @@ const UsersManagement = () => {
 
   const getStatusBadge = (user) => {
     if (user.deleted_at) {
-      return <span className="px-2 py-1 bg-gray-200 text-gray-600 text-xs font-semibold rounded">Eliminato</span>;
+      return <span className="px-2 py-1 bg-gray-200 text-gray-600 text-xs font-semibold rounded">{t('common.deleted')}</span>;
     }
     if (!user.is_active) {
-      return <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-semibold rounded">Inattivo</span>;
+      return <span className="px-2 py-1 bg-red-100 text-red-600 text-xs font-semibold rounded">{t('common.inactive')}</span>;
     }
-    return <span className="px-2 py-1 bg-green-100 text-green-600 text-xs font-semibold rounded">Attivo</span>;
+    return <span className="px-2 py-1 bg-green-100 text-green-600 text-xs font-semibold rounded">{t('common.active')}</span>;
   };
 
   const getRoleBadge = (role) => {
@@ -266,7 +266,7 @@ const UsersManagement = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'Mai';
+    if (!dateString) return t('common.never');
     return new Date(dateString).toLocaleString('it-IT', {
       day: '2-digit',
       month: '2-digit',
@@ -300,7 +300,7 @@ const UsersManagement = () => {
   });
 
   if (loading) {
-    return <div className="text-center py-12 text-gray-600">Caricamento utenti...</div>;
+    return <div className="text-center py-12 text-gray-600">{t('users.loadingUsers')}</div>;
   }
 
   return (
@@ -308,15 +308,15 @@ const UsersManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-black">Users Management</h2>
-          <p className="text-gray-600 mt-1">Create, edit, and manage system users</p>
+          <h2 className="text-2xl font-bold text-black">{t('users.title')}</h2>
+          <p className="text-gray-600 mt-1">{t('users.subtitle')}</p>
         </div>
         <Button 
           onClick={() => { resetForm(); setShowCreateModal(true); }}
           className="bg-[#D4AF37] hover:bg-[#B8941F] text-black rounded-none"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Create User
+          {t('users.createUser')}
         </Button>
       </div>
 
@@ -326,7 +326,7 @@ const UsersManagement = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
-              placeholder="Cerca utente..."
+              placeholder={t('users.searchUser')}
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
               className="pl-10 bg-white border-gray-300 rounded-none"
@@ -334,10 +334,10 @@ const UsersManagement = () => {
           </div>
           <Select value={filters.role || "all"} onValueChange={(value) => setFilters({ ...filters, role: value === "all" ? "" : value })}>
             <SelectTrigger className="bg-white border-gray-300 rounded-none">
-              <SelectValue placeholder="Filtra per ruolo" />
+              <SelectValue placeholder={t('users.filterByRole')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tutti i ruoli</SelectItem>
+              <SelectItem value="all">{t('users.allRoles')}</SelectItem>
               {roles.map(role => (
                 <SelectItem key={role.id} value={role.name.toLowerCase()}>{role.name}</SelectItem>
               ))}
@@ -345,10 +345,10 @@ const UsersManagement = () => {
           </Select>
           <Select value={filters.team || "all"} onValueChange={(value) => setFilters({ ...filters, team: value === "all" ? "" : value })}>
             <SelectTrigger className="bg-white border-gray-300 rounded-none">
-              <SelectValue placeholder="Filtra per team" />
+              <SelectValue placeholder={t('users.filterByTeam')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tutti i team</SelectItem>
+              <SelectItem value="all">{t('users.allTeams')}</SelectItem>
               {teams.map(team => (
                 <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
               ))}
@@ -356,13 +356,13 @@ const UsersManagement = () => {
           </Select>
           <Select value={filters.status || "all"} onValueChange={(value) => setFilters({ ...filters, status: value === "all" ? "" : value })}>
             <SelectTrigger className="bg-white border-gray-300 rounded-none">
-              <SelectValue placeholder="Filtra per stato" />
+              <SelectValue placeholder={t('users.filterByStatus')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tutti gli stati</SelectItem>
-              <SelectItem value="active">Attivo</SelectItem>
-              <SelectItem value="inactive">Inattivo</SelectItem>
-              <SelectItem value="deleted">Eliminato</SelectItem>
+              <SelectItem value="all">{t('users.allStatuses')}</SelectItem>
+              <SelectItem value="active">{t('common.active')}</SelectItem>
+              <SelectItem value="inactive">{t('common.inactive')}</SelectItem>
+              <SelectItem value="deleted">{t('common.deleted')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -374,20 +374,20 @@ const UsersManagement = () => {
           <table className="w-full">
             <thead className="bg-black text-white">
               <tr>
-                <th className="text-left p-4 font-semibold">Utente</th>
-                <th className="text-left p-4 font-semibold">Ruolo</th>
-                <th className="text-left p-4 font-semibold">Team</th>
-                <th className="text-left p-4 font-semibold">Stato</th>
-                <th className="text-left p-4 font-semibold">Ultimo Accesso</th>
-                <th className="text-left p-4 font-semibold">Tipo</th>
-                <th className="text-left p-4 font-semibold">Azioni</th>
+                <th className="text-left p-4 font-semibold">{t('users.user')}</th>
+                <th className="text-left p-4 font-semibold">{t('users.role')}</th>
+                <th className="text-left p-4 font-semibold">{t('users.team')}</th>
+                <th className="text-left p-4 font-semibold">{t('common.status')}</th>
+                <th className="text-left p-4 font-semibold">{t('users.lastAccess')}</th>
+                <th className="text-left p-4 font-semibold">{t('users.userType')}</th>
+                <th className="text-left p-4 font-semibold">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="p-8 text-center text-gray-500">
-                    Nessun utente trovato
+                    {t('users.noUsersFound')}
                   </td>
                 </tr>
               ) : (
@@ -420,7 +420,7 @@ const UsersManagement = () => {
                       ) : user.team_id ? (
                         teams.find(t => t.id === user.team_id)?.name || 'N/A'
                       ) : (
-                        <span className="text-gray-400">Nessun team</span>
+                        <span className="text-gray-400">{t('common.noTeam')}</span>
                       )}
                     </td>
                     <td className="p-4">
@@ -432,11 +432,11 @@ const UsersManagement = () => {
                     <td className="p-4">
                       {user.is_system_user ? (
                         <span className="flex items-center gap-1 text-purple-600 text-xs">
-                          <Bot className="w-4 h-4" /> Sistema/API
+                          <Bot className="w-4 h-4" /> {t('users.systemApiUser')}
                         </span>
                       ) : (
                         <span className="flex items-center gap-1 text-gray-600 text-xs">
-                          <Users className="w-4 h-4" /> Utente
+                          <Users className="w-4 h-4" /> {t('users.regularUser')}
                         </span>
                       )}
                     </td>
@@ -446,7 +446,7 @@ const UsersManagement = () => {
                           onClick={() => openEditModal(user)}
                           size="sm"
                           className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
-                          title="Modifica"
+                          title={t('common.edit')}
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
@@ -454,31 +454,28 @@ const UsersManagement = () => {
                           onClick={() => openResetPasswordModal(user)}
                           size="sm"
                           className="bg-blue-600 text-white hover:bg-blue-700 rounded-none"
-                          title="Reimposta Password"
+                          title={t('users.resetPassword')}
                         >
                           <Key className="w-4 h-4" />
                         </Button>
-                        {/* Show activate/deactivate and delete buttons for all users except self */}
                         {user.id !== currentUser?.id && (
                           <>
-                            {/* Only show activate/deactivate if user is not deleted */}
                             {!user.deleted_at && (
                               <Button
                                 onClick={() => handleToggleStatus(user)}
                                 size="sm"
                                 className={`${user.is_active ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'} text-white rounded-none`}
-                                title={user.is_active ? 'Disattiva' : 'Attiva'}
+                                title={user.is_active ? t('users.deactivate') : t('users.activate')}
                               >
                                 {user.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                               </Button>
                             )}
-                            {/* Only show delete if user is not already deleted */}
                             {!user.deleted_at && (
                               <Button
                                 onClick={() => openDeleteModal(user)}
                                 size="sm"
                                 className="bg-red-600 text-white hover:bg-red-700 rounded-none"
-                                title="Elimina"
+                                title={t('common.delete')}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
@@ -497,49 +494,49 @@ const UsersManagement = () => {
 
       {/* Stats */}
       <div className="mt-4 text-sm text-gray-600">
-        Totale: {filteredUsers.length} utenti | 
-        Attivi: {filteredUsers.filter(u => u.is_active && !u.deleted_at).length} | 
-        Inattivi: {filteredUsers.filter(u => !u.is_active && !u.deleted_at).length} |
-        Eliminati: {filteredUsers.filter(u => u.deleted_at).length}
+        {t('users.totalUsers')}: {filteredUsers.length} | 
+        {t('users.activeUsers')}: {filteredUsers.filter(u => u.is_active && !u.deleted_at).length} | 
+        {t('users.inactiveUsers')}: {filteredUsers.filter(u => !u.is_active && !u.deleted_at).length} |
+        {t('users.deletedUsers')}: {filteredUsers.filter(u => u.deleted_at).length}
       </div>
 
       {/* Create User Modal */}
       <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
         <DialogContent className="max-w-lg bg-white">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-black">Crea Nuovo Utente</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-black">{t('users.createNewUser')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Username *</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.usernameLabel')} *</label>
               <Input
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                placeholder="es. mario_rossi"
+                placeholder="e.g. john_doe"
                 className="bg-white border-gray-300 rounded-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Nome Completo *</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.fullNameLabel')} *</label>
               <Input
                 value={formData.full_name}
                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                placeholder="es. Mario Rossi"
+                placeholder="e.g. John Doe"
                 className="bg-white border-gray-300 rounded-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Password *</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.passwordLabel')} *</label>
               <Input
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="Password sicura"
+                placeholder="Secure password"
                 className="bg-white border-gray-300 rounded-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Ruolo *</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.roleLabel')} *</label>
               <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
                 <SelectTrigger className="bg-white border-gray-300 rounded-none">
                   <SelectValue />
@@ -552,7 +549,7 @@ const UsersManagement = () => {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Team (Opzionale)</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.teamLabel')}</label>
               <Select 
                 value={formData.team_ids[0] || 'none'} 
                 onValueChange={(value) => setFormData({ 
@@ -562,10 +559,10 @@ const UsersManagement = () => {
                 })}
               >
                 <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                  <SelectValue placeholder="Seleziona team" />
+                  <SelectValue placeholder={t('users.selectTeam')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">Nessun team</SelectItem>
+                  <SelectItem value="none">{t('common.noTeam')}</SelectItem>
                   {teams.map(team => (
                     <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
                   ))}
@@ -579,7 +576,7 @@ const UsersManagement = () => {
                 onCheckedChange={(checked) => setFormData({ ...formData, is_system_user: checked })}
               />
               <label htmlFor="is_system_user" className="text-sm text-gray-700">
-                Utente di sistema/API (non può effettuare login interattivo)
+                {t('users.systemUserLabel')}
               </label>
             </div>
             <div className="flex gap-3 pt-4">
@@ -587,13 +584,13 @@ const UsersManagement = () => {
                 onClick={() => setShowCreateModal(false)}
                 className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
               >
-                Annulla
+                {t('common.cancel')}
               </Button>
               <Button 
                 onClick={handleCreateUser}
                 className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
               >
-                Crea Utente
+                {t('users.createUser')}
               </Button>
             </div>
           </div>
@@ -604,11 +601,11 @@ const UsersManagement = () => {
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
         <DialogContent className="max-w-lg bg-white">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-black">Modifica Utente</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-black">{t('users.editUser')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Username</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.usernameLabel')}</label>
               <Input
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
@@ -616,7 +613,7 @@ const UsersManagement = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Nome Completo *</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.fullNameLabel')} *</label>
               <Input
                 value={formData.full_name}
                 onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
@@ -624,7 +621,7 @@ const UsersManagement = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Ruolo</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.roleLabel')}</label>
               <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })}>
                 <SelectTrigger className="bg-white border-gray-300 rounded-none">
                   <SelectValue />
@@ -637,7 +634,7 @@ const UsersManagement = () => {
               </Select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Team</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.team')}</label>
               <Select 
                 value={formData.team_ids[0] || 'none'} 
                 onValueChange={(value) => setFormData({ 
@@ -647,10 +644,10 @@ const UsersManagement = () => {
                 })}
               >
                 <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                  <SelectValue placeholder="Seleziona team" />
+                  <SelectValue placeholder={t('users.selectTeam')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">Nessun team</SelectItem>
+                  <SelectItem value="none">{t('common.noTeam')}</SelectItem>
                   {teams.map(team => (
                     <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
                   ))}
@@ -664,7 +661,7 @@ const UsersManagement = () => {
                 onCheckedChange={(checked) => setFormData({ ...formData, is_system_user: checked })}
               />
               <label htmlFor="edit_is_system_user" className="text-sm text-gray-700">
-                Utente di sistema/API
+                {t('users.systemApiUser')}
               </label>
             </div>
             <div className="flex gap-3 pt-4">
@@ -672,13 +669,13 @@ const UsersManagement = () => {
                 onClick={() => setShowEditModal(false)}
                 className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
               >
-                Annulla
+                {t('common.cancel')}
               </Button>
               <Button 
                 onClick={handleEditUser}
                 className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
               >
-                Salva Modifiche
+                {t('common.saveChanges')}
               </Button>
             </div>
           </div>
@@ -699,42 +696,40 @@ const UsersManagement = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-black flex items-center gap-2">
               <Key className="w-6 h-6 text-blue-600" />
-              Reimposta Password
+              {t('users.resetPassword')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <p className="text-gray-600">
-              Stai reimpostando la password per <strong>{selectedUser?.full_name}</strong> (@{selectedUser?.username})
+              {t('users.resettingPasswordFor')} <strong>{selectedUser?.full_name}</strong> (@{selectedUser?.username})
             </p>
             
-            {/* Admin's current password for verification */}
             <div className="bg-gray-50 border border-gray-200 p-4 rounded">
               <label className="block text-sm font-semibold text-black mb-2">
-                🔐 La Tua Password Attuale *
+                🔐 {t('users.yourCurrentPassword')} *
               </label>
               <Input
                 type="password"
                 value={adminPassword}
                 onChange={(e) => setAdminPassword(e.target.value)}
-                placeholder="Inserisci la TUA password per confermare"
+                placeholder={t('users.enterYourPassword')}
                 className="bg-white border-gray-300 rounded-none"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Per sicurezza, conferma la tua identità inserendo la tua password
+                {t('users.securityConfirm')}
               </p>
             </div>
 
             <hr className="border-gray-200" />
 
-            {/* New password for the user */}
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Nuova Password per l'Utente *</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.newPasswordForUser')} *</label>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Inserisci nuova password (min. 4 caratteri)"
+                  placeholder={t('users.enterNewPassword')}
                   className="bg-white border-gray-300 rounded-none pr-20"
                 />
                 <button
@@ -742,29 +737,28 @@ const UsersManagement = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-blue-600 hover:text-blue-800"
                 >
-                  {showPassword ? 'Nascondi' : 'Mostra'}
+                  {showPassword ? t('users.hide') : t('users.show')}
                 </button>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-black mb-2">Conferma Nuova Password *</label>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.confirmNewPassword')} *</label>
               <Input
                 type={showPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Conferma nuova password"
+                placeholder={t('users.confirmNewPasswordPlaceholder')}
                 className={`bg-white border-gray-300 rounded-none ${
                   confirmPassword && newPassword !== confirmPassword ? 'border-red-500' : ''
                 }`}
               />
               {confirmPassword && newPassword !== confirmPassword && (
-                <p className="text-red-500 text-xs mt-1">Le password non corrispondono</p>
+                <p className="text-red-500 text-xs mt-1">{t('users.passwordsDoNotMatch')}</p>
               )}
             </div>
             <div className="bg-yellow-50 border border-yellow-200 p-3 rounded">
               <p className="text-sm text-yellow-800">
-                <strong>⚠️ Sicurezza:</strong> Assicurati di comunicare la nuova password all'utente in modo sicuro.
-                L'utente dovrà usare questa password per il prossimo accesso.
+                <strong>⚠️</strong> {t('users.securityNote')}
               </p>
             </div>
             <div className="flex gap-3 pt-4">
@@ -772,14 +766,14 @@ const UsersManagement = () => {
                 onClick={() => setShowResetPasswordModal(false)}
                 className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
               >
-                Annulla
+                {t('common.cancel')}
               </Button>
               <Button 
                 onClick={handleResetPassword}
                 disabled={!adminPassword || !newPassword || newPassword.length < 4 || newPassword !== confirmPassword}
                 className="flex-1 bg-blue-600 text-white hover:bg-blue-700 rounded-none disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Reimposta Password
+                {t('users.resetPassword')}
               </Button>
             </div>
           </div>
@@ -792,17 +786,16 @@ const UsersManagement = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
               <Trash2 className="w-6 h-6" />
-              Conferma Eliminazione
+              {t('users.confirmDelete')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <p className="text-gray-700">
-              Sei sicuro di voler eliminare l'utente <strong>{selectedUser?.full_name}</strong> (@{selectedUser?.username})?
+              {t('users.deleteWarning')} <strong>{selectedUser?.full_name}</strong> (@{selectedUser?.username})?
             </p>
             <div className="bg-yellow-50 border border-yellow-200 p-3 rounded">
               <p className="text-sm text-yellow-800">
-                <strong>⚠️ Nota:</strong> L'utente verrà disattivato e non potrà più accedere al sistema.
-                I dati associati (lead, note, attività) saranno mantenuti.
+                <strong>⚠️</strong> {t('users.softDeleteWarning')}
               </p>
             </div>
             <div className="flex gap-3 pt-4">
@@ -810,14 +803,13 @@ const UsersManagement = () => {
                 onClick={() => setShowDeleteModal(false)}
                 className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
               >
-                Annulla
+                {t('common.cancel')}
               </Button>
               <Button 
                 onClick={handleDeleteUser}
                 className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none"
               >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Elimina Utente
+                {t('common.delete')}
               </Button>
             </div>
           </div>
