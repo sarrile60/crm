@@ -123,17 +123,15 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Admin Panel - Teams Management Translation"
-    - "Admin Panel - Data Visibility Translation"
     - "Admin Panel - Session Settings Translation"
-    - "Admin Panel - Language Settings Translation"
-    - "Admin Panel - Audit Logs Translation"
     - "CRM Dashboard - Leads Table Translation"
-    - "Language Switching Functionality"
+    - "Admin Panel - Access Control Translation"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
   - agent: "testing"
     message: "Starting comprehensive i18n testing. Will verify all UI elements are properly translated and no hardcoded Italian text remains."
+  - agent: "testing"
+    message: "TESTING COMPLETE: Found 3 critical i18n issues requiring fixes: 1) 'Approva' button in Session Settings, 2) 'Crea' text in CRM Dashboard, 3) Multiple hardcoded Italian texts in AdminPanel.jsx access control messages. Most components are properly translated, but these specific issues need immediate attention."
