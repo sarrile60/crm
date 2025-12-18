@@ -1287,7 +1287,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
                 />
               </div>
               <Button onClick={handleCreateLead} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
-                Crea Lead
+                {t('leads.createLead')}
               </Button>
             </div>
           </DialogContent>
@@ -1299,12 +1299,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         <Dialog open={!!inlineEditLeadId} onOpenChange={() => setInlineEditLeadId(null)}>
           <DialogContent className="max-w-md bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">Imposta Callback/Deposit</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">{t('crm.setCallbackDeposit')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="bg-yellow-50 border-2 border-yellow-400 p-3">
-                <p className="text-sm font-semibold text-black mb-1">⚠️ Callback richiesto</p>
-                <p className="text-xs text-gray-700">Stato selezionato: <strong>{inlineStatusData.status}</strong></p>
+                <p className="text-sm font-semibold text-black mb-1">⚠️ {t('crm.callbackRequired')}</p>
+                <p className="text-xs text-gray-700">{t('crm.selectedStatus')}: <strong>{inlineStatusData.status}</strong></p>
               </div>
               <div>
                 <SmartDateTimePicker
@@ -1326,10 +1326,10 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
               </div>
               <div className="flex gap-3">
                 <Button onClick={handleSaveInlineCallback} className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
-                  Salva
+                  {t('common.save')}
                 </Button>
                 <Button onClick={() => setInlineEditLeadId(null)} className="flex-1 bg-gray-300 text-black hover:bg-gray-400 rounded-none">
-                  Annulla
+                  {t('common.cancel')}
                 </Button>
               </div>
             </div>
@@ -1342,15 +1342,15 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
           <DialogContent className="max-w-3xl bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">Importa Lead da CSV</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">{t('crm.importFromCSV')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="bg-yellow-50 border-2 border-yellow-200 p-4">
-                <h4 className="font-bold text-black mb-2">Formato CSV Richiesto:</h4>
-                <p className="text-sm text-gray-700 mb-3">Il file CSV deve avere queste colonne nell'ordine esatto:</p>
+                <h4 className="font-bold text-black mb-2">{t('crm.requiredCSVFormat')}</h4>
+                <p className="text-sm text-gray-700 mb-3">{t('crm.csvMustHaveColumns')}</p>
                 <div className="bg-white p-3 border border-gray-300 font-mono text-xs overflow-x-auto">
-                  <div className="font-bold mb-1">Nome,Email,Telefono,Azienda Truffatrice,Importo Perso,Dettagli Caso</div>
-                  <div className="text-gray-600">Mario Rossi,mario@email.com,3201234567,FakeInvest Ltd,€5.000 - €50.000,Descrizione della truffa...</div>
+                  <div className="font-bold mb-1">{t('common.name')},{t('common.email')},{t('common.phone')},{t('crm.scammerCompany')},{t('crm.amountLost')},{t('crm.caseDetails')}</div>
+                  <div className="text-gray-600">Mario Rossi,mario@email.com,3201234567,FakeInvest Ltd,€5.000 - €50.000,{t('crm.fraudDescription')}...</div>
                 </div>
               </div>
 
