@@ -103,18 +103,18 @@ const TeamsManagement = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.post(`${API}/admin/teams`, formData, { headers });
-      toast.success('Team creato con successo');
+      toast.success(t('teams.teamCreatedSuccess'));
       setShowCreateModal(false);
       resetForm();
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nella creazione del team');
+      toast.error(error.response?.data?.detail || t('teams.errorCreatingTeam'));
     }
   };
 
   const handleEditTeam = async () => {
     if (!formData.name) {
-      toast.error('Il nome del team è obbligatorio');
+      toast.error(t('teams.teamNameRequired'));
       return;
     }
 
@@ -123,13 +123,13 @@ const TeamsManagement = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.put(`${API}/admin/teams/${selectedTeam.id}`, formData, { headers });
-      toast.success('Team aggiornato con successo');
+      toast.success(t('teams.teamUpdatedSuccess'));
       setShowEditModal(false);
       setSelectedTeam(null);
       resetForm();
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nell\'aggiornamento del team');
+      toast.error(error.response?.data?.detail || t('teams.errorUpdatingTeam'));
     }
   };
 
@@ -140,7 +140,7 @@ const TeamsManagement = () => {
     
     // If team has members, require reassignment
     if (members.length > 0 && !reassignTeamId) {
-      toast.error('Seleziona un team per riassegnare i membri');
+      toast.error(t('teams.selectNewTeam'));
       return;
     }
 
@@ -152,13 +152,13 @@ const TeamsManagement = () => {
         headers,
         data: { reassign_to_team_id: reassignTeamId || null }
       });
-      toast.success('Team archiviato con successo');
+      toast.success(t('teams.teamArchivedSuccess'));
       setShowArchiveModal(false);
       setSelectedTeam(null);
       setReassignTeamId('');
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nell\'archiviazione del team');
+      toast.error(error.response?.data?.detail || t('teams.errorArchivingTeam'));
     }
   };
 
