@@ -447,11 +447,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
         { headers }
       );
       
-      toast.success('Lead assegnato con successo');
+      toast.success(t('crm.leadAssignedSuccess'));
       setShowAssignModal(false);
       fetchData();
     } catch (error) {
-      toast.error('Errore nell\'assegnazione del lead');
+      toast.error(t('crm.errorAssigningLead'));
     }
   };
 
@@ -473,12 +473,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
 
   const handleMassUpdate = async () => {
     if (selectedLeadIds.length === 0) {
-      toast.error('Nessun lead selezionato');
+      toast.error(t('crm.noLeadsSelected'));
       return;
     }
 
     if (!massUpdateData.status && !massUpdateData.team_id && !massUpdateData.assigned_to) {
-      toast.error('Seleziona almeno un campo da aggiornare');
+      toast.error(t('crm.selectAtLeastOneField'));
       return;
     }
 
@@ -495,13 +495,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
 
       const response = await axios.post(`${API}/crm/leads/mass-update`, updatePayload, { headers });
       
-      toast.success(`${response.data.updated_count} lead aggiornati con successo`);
+      toast.success(t('crm.leadsUpdatedSuccess', { count: response.data.updated_count }));
       setShowMassUpdateModal(false);
       setSelectedLeadIds([]);
       setMassUpdateData({ status: '', team_id: '', assigned_to: '' });
       fetchData();
     } catch (error) {
-      toast.error('Errore nell\'aggiornamento massivo');
+      toast.error(t('crm.errorMassUpdate'));
     }
   };
 
