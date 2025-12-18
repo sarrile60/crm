@@ -213,7 +213,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       // Use CRM endpoint which auto-assigns to creator's team and user
       await axios.post(`${API}/crm/leads/create`, newLead, { headers });
       
-      toast.success(`Lead creato con successo e assegnato a te${currentUser.team_id ? ' e al tuo team' : ''}`);
+      toast.success(t('crm.leadCreatedSuccess'));
       setShowCreateModal(false);
       setNewLead({
         fullName: '',
@@ -230,7 +230,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       }, 500);
     } catch (error) {
       console.error('Error creating lead:', error);
-      toast.error(error.response?.data?.detail || 'Errore nella creazione del lead');
+      toast.error(error.response?.data?.detail || t('crm.errorCreatingLead'));
     }
   };
 
@@ -247,23 +247,23 @@ const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.delete(`${API}/crm/leads/${leadToDelete.id}`, { headers });
-      toast.success('Lead eliminato con successo');
+      toast.success(t('leads.leadDeleted'));
       setShowDeleteModal(false);
       setLeadToDelete(null);
       fetchData();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Errore nell\'eliminazione del lead');
+      toast.error(error.response?.data?.detail || t('crm.errorDeletingLead'));
     }
   };
 
   const handleExportCSV = () => {
     if (leads.length === 0) {
-      toast.error('Nessun lead da esportare');
+      toast.error(t('crm.noLeadsToExport'));
       return;
     }
 
     const csvContent = [
-      ['Data Creazione', 'Nome', 'Email', 'Telefono', 'Azienda Truffatrice', 'Importo Perso', 'Stato', 'Priorità', 'Dettagli Caso'],
+      [t('crm.createdDate'), t('common.name'), t('common.email'), t('common.phone'), t('crm.scammerCompany'), t('crm.amountLost'), t('common.status'), t('leads.priority'), t('crm.caseDetails')],
       ...leads.map(lead => [
         formatCreatedDate(lead.created_at),
         lead.fullName,
