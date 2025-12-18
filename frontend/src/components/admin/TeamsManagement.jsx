@@ -729,7 +729,7 @@ const TeamsManagement = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-black flex items-center gap-2">
               <UserPlus className="w-6 h-6 text-green-600" />
-              Aggiungi Membri al Team: {selectedTeam?.name}
+              {t('teams.addMembersToTeam')}: {selectedTeam?.name}
             </DialogTitle>
           </DialogHeader>
           <div className="mt-4">
@@ -741,7 +741,7 @@ const TeamsManagement = () => {
                 onCheckedChange={(checked) => setSetAsDefault(checked)}
               />
               <label htmlFor="setAsDefault" className="text-sm text-gray-700">
-                Imposta come team predefinito per i nuovi membri
+                {t('teams.setAsDefaultTeam')}
               </label>
             </div>
 
@@ -749,7 +749,7 @@ const TeamsManagement = () => {
             <div className="border border-gray-200 rounded max-h-80 overflow-y-auto">
               {selectedTeam && getAvailableUsersForTeam(selectedTeam.id).length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  Tutti gli utenti attivi sono già membri di questo team
+                  {t('teams.allUsersAlreadyMembers')}
                 </div>
               ) : (
                 <table className="w-full">
@@ -767,9 +767,9 @@ const TeamsManagement = () => {
                           }}
                         />
                       </th>
-                      <th className="text-left p-3 font-semibold">Nome</th>
-                      <th className="text-left p-3 font-semibold">Ruolo</th>
-                      <th className="text-left p-3 font-semibold">Team Attuale</th>
+                      <th className="text-left p-3 font-semibold">{t('common.name')}</th>
+                      <th className="text-left p-3 font-semibold">{t('users.role')}</th>
+                      <th className="text-left p-3 font-semibold">{t('teams.currentTeam')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -806,7 +806,7 @@ const TeamsManagement = () => {
                           {user.team_id ? (
                             teams.find(t => t.id === user.team_id)?.name || 'N/A'
                           ) : (
-                            <span className="text-gray-400">Nessuno</span>
+                            <span className="text-gray-400">{t('common.none')}</span>
                           )}
                         </td>
                       </tr>
@@ -819,7 +819,7 @@ const TeamsManagement = () => {
             {/* Selected count */}
             {selectedUsersToAdd.length > 0 && (
               <div className="mt-3 text-sm text-green-600 font-medium">
-                {selectedUsersToAdd.length} utenti selezionati
+                {selectedUsersToAdd.length} {t('teams.usersSelected')}
               </div>
             )}
 
@@ -828,7 +828,7 @@ const TeamsManagement = () => {
                 onClick={() => setShowManageMembersModal(false)}
                 className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
               >
-                Annulla
+                {t('common.cancel')}
               </Button>
               <Button 
                 onClick={handleAddMembersToTeam}
@@ -836,7 +836,7 @@ const TeamsManagement = () => {
                 className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none disabled:opacity-50"
               >
                 <UserPlus className="w-4 h-4 mr-2" />
-                Aggiungi {selectedUsersToAdd.length > 0 ? `(${selectedUsersToAdd.length})` : ''}
+                {t('common.add')} {selectedUsersToAdd.length > 0 ? `(${selectedUsersToAdd.length})` : ''}
               </Button>
             </div>
           </div>
