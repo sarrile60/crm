@@ -85,8 +85,8 @@ const SessionSettings = () => {
   // Live clock update every second
   useEffect(() => {
     const updateLocalTime = () => {
-      // Get the timezone to display (preview or current selected)
-      const displayTimezone = previewTimezone || settings.timezone;
+      // Get the timezone to display (current selected)
+      const displayTimezone = settings.timezone;
       if (displayTimezone && settings.all_timezones?.length > 0) {
         const tzInfo = settings.all_timezones.find(tz => tz.value === displayTimezone);
         if (tzInfo) {
@@ -118,7 +118,7 @@ const SessionSettings = () => {
     const timeInterval = setInterval(updateLocalTime, 1000);
     
     return () => clearInterval(timeInterval);
-  }, [settings.timezone, settings.all_timezones, previewTimezone]);
+  }, [settings.timezone, settings.all_timezones]);
 
   const handleSave = async () => {
     try {
