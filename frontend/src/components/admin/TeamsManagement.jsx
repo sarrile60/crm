@@ -258,7 +258,7 @@ const TeamsManagement = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('it-IT', {
+    return new Date(dateString).toLocaleDateString(i18n.language, {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
