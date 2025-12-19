@@ -145,7 +145,7 @@ const CRMDashboard = () => {
             <Scale className="w-8 h-8 text-[#D4AF37]" />
             <div>
               <h1 className="text-white text-xl font-semibold">1 LAW SOLICITORS CRM</h1>
-              <p className="text-gray-400 text-sm">{currentUser?.full_name} - {currentUser?.role}</p>
+              <p className="text-gray-400 text-sm">{currentUser?.full_name} - {t(`users.roles.${currentUser?.role}`)}</p>
             </div>
           </div>
           
