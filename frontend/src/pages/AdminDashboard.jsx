@@ -15,6 +15,16 @@ const AdminDashboard = () => {
   const [analytics, setAnalytics] = useState(null);
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Helper to get proper locale for date formatting
+  const getLocale = () => {
+    const lang = i18n.language;
+    return lang === 'en' ? 'en-GB' : 
+           lang === 'it' ? 'it-IT' :
+           lang === 'de' ? 'de-DE' :
+           lang === 'fr' ? 'fr-FR' :
+           lang === 'es' ? 'es-ES' : 'en-GB';
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
