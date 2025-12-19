@@ -112,7 +112,8 @@
     "successCases": "Casi di Successo",
     "faq": "FAQ",
     "contact": "Contatti",
-    "freeConsultation": "Consulenza Gratuita"
+    "freeConsultation": "Consulenza Gratuita",
+    "team": "Team"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -898,5 +899,16 @@
     "formStartsToLeads": "Form iniziati → Lead completati",
     "amountLost": "Importo Perso",
     "caseDescription": "Descrizione Caso"
+  },
+  "team": {
+    "noTeamAssigned": "Nessun Team Assegnato",
+    "noTeamDescription": "Non sei ancora assegnato a supervisionare alcun team.",
+    "defaultDescription": "Membri del team e le loro prestazioni",
+    "members": "Membri",
+    "totalLeads": "Lead Totali",
+    "completedToday": "Completati Oggi",
+    "lastActive": "Ultima attività",
+    "noMembers": "Nessun Membro del Team",
+    "noMembersDescription": "Non ci sono ancora membri in questo team."
   }
 }

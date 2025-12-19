@@ -118,7 +118,8 @@
     "successCases": "Cas de succès",
     "faq": "FAQ",
     "contact": "Contact",
-    "freeConsultation": "Consultation gratuite"
+    "freeConsultation": "Consultation gratuite",
+    "team": "Équipe"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -966,5 +967,16 @@
     "formStartsToLeads": "Formulaires commencés → Prospects complétés",
     "amountLost": "Montant perdu",
     "caseDescription": "Description du cas"
+  },
+  "team": {
+    "noTeamAssigned": "Aucune Équipe Assignée",
+    "noTeamDescription": "Vous n'êtes pas encore assigné à superviser une équipe.",
+    "defaultDescription": "Membres de l'équipe et leurs performances",
+    "members": "Membres",
+    "totalLeads": "Total Prospects",
+    "completedToday": "Complétés Aujourd'hui",
+    "lastActive": "Dernière activité",
+    "noMembers": "Aucun Membre",
+    "noMembersDescription": "Il n'y a pas encore de membres dans cette équipe."
   }
 }

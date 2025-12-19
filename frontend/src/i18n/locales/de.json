@@ -119,7 +119,8 @@
     "successCases": "Erfolgsfälle",
     "faq": "FAQ",
     "contact": "Kontakt",
-    "freeConsultation": "Kostenlose Beratung"
+    "freeConsultation": "Kostenlose Beratung",
+    "team": "Team"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -967,5 +968,16 @@
     "formStartsToLeads": "Formularstarts → Abgeschlossene Leads",
     "amountLost": "Verlorener Betrag",
     "caseDescription": "Fallbeschreibung"
+  },
+  "team": {
+    "noTeamAssigned": "Kein Team Zugewiesen",
+    "noTeamDescription": "Sie sind noch keinem Team als Supervisor zugewiesen.",
+    "defaultDescription": "Teammitglieder und ihre Leistung",
+    "members": "Mitglieder",
+    "totalLeads": "Gesamt Leads",
+    "completedToday": "Heute Abgeschlossen",
+    "lastActive": "Zuletzt aktiv",
+    "noMembers": "Keine Teammitglieder",
+    "noMembersDescription": "Es gibt noch keine Mitglieder in diesem Team."
   }
 }

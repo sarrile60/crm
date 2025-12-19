@@ -112,7 +112,8 @@
     "successCases": "Success Cases",
     "faq": "FAQ",
     "contact": "Contact",
-    "freeConsultation": "Free Consultation"
+    "freeConsultation": "Free Consultation",
+    "team": "Team"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -255,8 +256,8 @@
     "notes": "Notes",
     "depositTime": "Deposit Time",
     "callbackTime": "Callback Time",
-    "postponedTimes": "You have postponed {{count}} times.",
-    "nextPostponeWillNotify": "The next postpone will notify the supervisor!",
+    "postponedTimes": "Postponed {{count}} time(s)",
+    "nextPostponeWillNotify": "Next postpone will notify your supervisor",
     "callNow": "CALL NOW",
     "later": "LATER",
     "expiredCallbacks": "Expired Callbacks",
@@ -276,8 +277,6 @@
     "supervisorNotified": "Supervisor {{supervisor}} has been notified",
     "cannotPostponeAnymore": "You cannot postpone anymore",
     "supervisorWasNotified": "Your supervisor has been notified",
-    "postponedTimes": "Postponed {{count}} time(s)",
-    "nextPostponeWillNotify": "Next postpone will notify your supervisor",
     "showOnlyExpiredCallbacks": "Shows only expired callbacks. They disappear when you change status or reschedule time",
     "callbackDateTime": "Callback Date and Time",
     "scheduleConflict": "SCHEDULE CONFLICT",
@@ -944,5 +943,16 @@
     "formStartsToLeads": "Form starts → Completed leads",
     "amountLost": "Amount Lost",
     "caseDescription": "Case Description"
+  },
+  "team": {
+    "noTeamAssigned": "No Team Assigned",
+    "noTeamDescription": "You are not assigned to supervise any team yet.",
+    "defaultDescription": "Team members and their performance",
+    "members": "Members",
+    "totalLeads": "Total Leads",
+    "completedToday": "Completed Today",
+    "lastActive": "Last active",
+    "noMembers": "No Team Members",
+    "noMembersDescription": "There are no members in this team yet."
   }
 }
