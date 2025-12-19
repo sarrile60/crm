@@ -203,11 +203,9 @@ async def login(credentials: UserLogin):
         {"$set": {"last_login": datetime.now(timezone.utc)}}
     )
     
-    # Clear any used login request
-    await db.login_requests.delete_many({
-        "user_id": user["id"],
-        "status": "approved"
-    })
+    # Note: Don't delete the approved request immediately - let it stay valid
+    # for its entire duration so user can re-login if needed. The cleanup
+    # at the start of this function will remove expired approvals.
     
     # Calculate session expiry from settings
     session_expiry = await get_session_expiry_from_settings()
