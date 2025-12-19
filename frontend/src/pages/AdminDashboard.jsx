@@ -106,7 +106,7 @@ const AdminDashboard = () => {
     }
     
     localStorage.removeItem('adminToken');
-    toast.success('Logout effettuato');
+    toast.success(t('common.logoutSuccess'));
     navigate('/admin-portal-login');
   };
 
