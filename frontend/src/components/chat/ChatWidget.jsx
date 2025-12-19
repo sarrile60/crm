@@ -284,7 +284,10 @@ const ChatWidget = ({ currentUser }) => {
 
   // Search messages
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
     
     setIsSearching(true);
     try {
@@ -297,6 +300,58 @@ const ChatWidget = ({ currentUser }) => {
       console.error('Error searching:', error);
     }
     setIsSearching(false);
+  };
+
+  // Handle search input change - clear results when input is cleared
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    if (!value.trim()) {
+      setSearchResults([]);
+    }
+  };
+
+  // Navigate to a message from search results
+  const navigateToMessage = async (msg) => {
+    // Find the conversation this message belongs to
+    const conversationId = msg.conversation_id;
+    
+    // Find the conversation in our list
+    let targetConversation = conversations.find(c => c.id === conversationId);
+    
+    // If not found, fetch conversations first
+    if (!targetConversation) {
+      await fetchConversations();
+      targetConversation = conversations.find(c => c.id === conversationId);
+    }
+    
+    if (targetConversation) {
+      setSelectedConversation(targetConversation);
+      await fetchMessages(conversationId);
+      
+      // Clear search after navigation
+      setSearchQuery('');
+      setSearchResults([]);
+      
+      // Wait for messages to render, then scroll to the message
+      setTimeout(() => {
+        const messageElement = document.getElementById(`message-${msg.id}`);
+        if (messageElement) {
+          messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Highlight the message briefly
+          messageElement.classList.add('ring-2', 'ring-[#D4AF37]', 'ring-offset-2');
+          setTimeout(() => {
+            messageElement.classList.remove('ring-2', 'ring-[#D4AF37]', 'ring-offset-2');
+          }, 2000);
+        }
+      }, 100);
+    } else {
+      // If conversation not found, create a minimal one to open
+      setSelectedConversation({ id: conversationId });
+      await fetchMessages(conversationId);
+      setSearchQuery('');
+      setSearchResults([]);
+    }
   };
 
   // Get conversation display name
