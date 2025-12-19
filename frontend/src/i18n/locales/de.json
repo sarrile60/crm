@@ -181,6 +181,7 @@
   },
   "admin": {
     "title": "Administrationspanel",
+    "subtitle": "Verwalten Sie Rollen, Berechtigungen und Systemkonfiguration",
     "roles": "Rollenverwaltung",
     "permissions": "Berechtigungsmatrix",
     "users": "Benutzerverwaltung",
