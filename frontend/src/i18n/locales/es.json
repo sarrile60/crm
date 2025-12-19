@@ -181,6 +181,7 @@
   },
   "admin": {
     "title": "Panel de administración",
+    "subtitle": "Administrar roles, permisos y configuración del sistema",
     "roles": "Gestión de roles",
     "permissions": "Matriz de permisos",
     "users": "Gestión de usuarios",
