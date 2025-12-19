@@ -82,7 +82,7 @@ async def create_conversation(data: ConversationCreate, request: Request):
 
 # Get all conversations for current user
 @router.get("/conversations")
-async def get_conversations(request):
+async def get_conversations(request: Request):
     from server import get_db
     db = await get_db()
     
@@ -114,7 +114,7 @@ async def get_conversations(request):
 
 # Get messages in a conversation
 @router.get("/conversations/{conversation_id}/messages")
-async def get_messages(conversation_id: str, request, limit: int = 50, before: Optional[str] = None):
+async def get_messages(conversation_id: str, request: Request, limit: int = 50, before: Optional[str] = None):
     from server import get_db
     db = await get_db()
     
@@ -147,7 +147,7 @@ async def get_messages(conversation_id: str, request, limit: int = 50, before: O
 
 # Send a message
 @router.post("/conversations/{conversation_id}/messages")
-async def send_message(conversation_id: str, data: MessageCreate, request):
+async def send_message(conversation_id: str, data: MessageCreate, request: Request):
     from server import get_db
     db = await get_db()
     
@@ -203,7 +203,7 @@ async def send_message(conversation_id: str, data: MessageCreate, request):
 
 # Mark messages as read
 @router.put("/conversations/{conversation_id}/read")
-async def mark_messages_read(conversation_id: str, request):
+async def mark_messages_read(conversation_id: str, request: Request):
     from server import get_db
     db = await get_db()
     
@@ -222,7 +222,7 @@ async def mark_messages_read(conversation_id: str, request):
 
 # Send typing indicator
 @router.post("/conversations/{conversation_id}/typing")
-async def send_typing(conversation_id: str, data: TypingIndicator, request):
+async def send_typing(conversation_id: str, data: TypingIndicator, request: Request):
     from server import get_db
     db = await get_db()
     
@@ -243,7 +243,7 @@ async def send_typing(conversation_id: str, data: TypingIndicator, request):
 
 # Get typing status for a conversation
 @router.get("/conversations/{conversation_id}/typing")
-async def get_typing(conversation_id: str, request):
+async def get_typing(conversation_id: str, request: Request):
     from server import get_db
     db = await get_db()
     
@@ -269,7 +269,7 @@ async def get_typing(conversation_id: str, request):
 
 # Upload file/image
 @router.post("/upload")
-async def upload_file(request, file: UploadFile = File(...)):
+async def upload_file(request: Request, file: UploadFile = File(...)):
     from server import get_db
     
     current_user = await get_current_user(request)
@@ -314,7 +314,7 @@ async def get_file(filename: str):
 
 # Search messages
 @router.get("/search")
-async def search_messages(request, q: str, limit: int = 20):
+async def search_messages(request: Request, q: str, limit: int = 20):
     from server import get_db
     db = await get_db()
     
@@ -349,7 +349,7 @@ async def search_messages(request, q: str, limit: int = 20):
 
 # Get all users for starting new chat
 @router.get("/users")
-async def get_chat_users(request):
+async def get_chat_users(request: Request):
     from server import get_db
     db = await get_db()
     
@@ -364,7 +364,7 @@ async def get_chat_users(request):
 
 # Get new messages (for polling)
 @router.get("/poll")
-async def poll_messages(request, since: Optional[str] = None):
+async def poll_messages(request: Request, since: Optional[str] = None):
     from server import get_db
     db = await get_db()
     
