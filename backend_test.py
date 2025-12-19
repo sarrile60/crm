@@ -1511,7 +1511,7 @@ class CRMTester:
             self.log_result("Dashboard Access - Error", False, f"Error: {str(e)}")
     
     def run_after_hours_tests(self):
-        """Run all after-hours login approval tests"""
+        """Run the complete after-hours login approval flow test"""
         print("\n" + "🕐" * 50)
         print("🕐 AFTER-HOURS LOGIN APPROVAL SYSTEM TESTING")
         print("🕐" * 50)
@@ -1522,8 +1522,8 @@ class CRMTester:
                 print("❌ Cannot proceed without admin login")
                 return False
         
-        # Run the after-hours tests
-        self.test_after_hours_login_approval()
+        # Run the complete after-hours flow test
+        self.test_after_hours_login_approval_flow()
         
         return True
     
