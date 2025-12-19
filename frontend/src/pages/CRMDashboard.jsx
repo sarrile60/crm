@@ -10,6 +10,7 @@ import UserManagement from '../components/crm/UserManagement';
 import SettingsPanel from '../components/crm/SettingsPanel';
 import CallbackNotifications from '../components/crm/CallbackNotifications';
 import ChatWidget from '../components/chat/ChatWidget';
+import TeamMembers from '../components/crm/TeamMembers';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
