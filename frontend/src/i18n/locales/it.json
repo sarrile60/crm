@@ -413,7 +413,8 @@
     "errorDenying": "Errore nel rifiuto",
     "notWorkDay": "Non è un giorno lavorativo ({{day}})",
     "beforeWorkHours": "Prima dell'orario di lavoro (inizio: {{time}})",
-    "afterWorkHours": "Dopo l'orario di lavoro (fine: {{time}})"
+    "afterWorkHours": "Dopo l'orario di lavoro (fine: {{time}})",
+    "afterHoursApprovalRequired": "Accesso fuori orario di lavoro. {{reason}}. Richiesta inviata all'amministratore per approvazione."
   },
   "audit": {
     "title": "Log di Audit",
