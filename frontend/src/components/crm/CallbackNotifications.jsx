@@ -191,6 +191,9 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       // Get current snooze data
       const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
       
+      // Get callbacks that have been marked as "called"
+      const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
+      
       // Check for callbacks within the next 1 minute
       const newUrgentCallbacks = [];
       
@@ -198,6 +201,12 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
         if (allNotifyStatuses.includes(lead.status) && lead.callback_date) {
           // ONLY alert for leads assigned to current user
           if (lead.assigned_to !== currentUser.id) {
+            continue;
+          }
+          
+          // Skip if this callback has been marked as "called" (agent pressed Chiama)
+          const calledData = calledCallbacks[lead.id];
+          if (calledData && calledData.callback_date === lead.callback_date) {
             continue;
           }
           
