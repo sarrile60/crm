@@ -11,6 +11,16 @@ const SmartDateTimePicker = ({ value, onChange, currentUser, currentLeadId }) =>
   const { t, i18n } = useTranslation();
   const [bookedSlots, setBookedSlots] = useState([]);
   const [conflicts, setConflicts] = useState([]);
+  
+  // Helper to get proper locale for date formatting
+  const getLocale = () => {
+    const lang = i18n.language;
+    return lang === 'en' ? 'en-GB' : 
+           lang === 'it' ? 'it-IT' :
+           lang === 'de' ? 'de-DE' :
+           lang === 'fr' ? 'fr-FR' :
+           lang === 'es' ? 'es-ES' : 'en-GB';
+  };
 
   useEffect(() => {
     fetchUserCallbacks();
