@@ -767,8 +767,8 @@
     "notes": "Note",
     "depositTime": "Ora Deposit",
     "callbackTime": "Ora Callback",
-    "postponedTimes": "Hai posticipato {{count}} volte.",
-    "nextPostponeWillNotify": "Il prossimo posticipo notificherà il supervisore!",
+    "postponedTimes": "Posticipato {{count}} volta/e",
+    "nextPostponeWillNotify": "Il prossimo rinvio notificherà il tuo supervisore",
     "callNow": "CHIAMA ORA",
     "later": "PIÙ TARDI",
     "expiredCallbacks": "Callback Scaduti",
@@ -792,7 +792,9 @@
     "appointmentConflictMessage": "Hai già un appuntamento in questo orario (incluso 15 min buffer):",
     "time": "Orario",
     "chooseAnotherTime": "Scegli un altro orario per evitare sovrapposizioni.",
-    "callbacksScheduledInfo": "Hai {{count}} callback già programmati. Il sistema ti avviserà di conflitti automaticamente."
+    "callbacksScheduledInfo": "Hai {{count}} callback già programmati. Il sistema ti avviserà di conflitti automaticamente.",
+    "cannotPostponeAnymore": "Non puoi più posticipare",
+    "supervisorWasNotified": "Il tuo supervisore è stato notificato"
   },
   "settings": {
     "crmSettings": "Impostazioni CRM",

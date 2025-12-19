@@ -807,8 +807,8 @@
     "notes": "Notas",
     "depositTime": "Hora del depósito",
     "callbackTime": "Hora del llamada",
-    "postponedTimes": "Ha pospuesto {{count}} veces.",
-    "nextPostponeWillNotify": "¡El próximo aplazamiento notificará al supervisor!",
+    "postponedTimes": "Pospuesto {{count}} vez/veces",
+    "nextPostponeWillNotify": "El próximo aplazamiento notificará a tu supervisor",
     "callNow": "LLAMAR AHORA",
     "later": "MÁS TARDE",
     "expiredCallbacks": "Llamadas vencidas",
@@ -847,7 +847,9 @@
     "delete": "Eliminar",
     "save": "Guardar",
     "cancel": "Cancelar",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "cannotPostponeAnymore": "No puedes posponer más",
+    "supervisorWasNotified": "Tu supervisor ha sido notificado"
   },
   "settings": {
     "title": "Configuración",

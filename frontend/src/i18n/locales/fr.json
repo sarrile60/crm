@@ -806,8 +806,8 @@
     "notes": "Notes",
     "depositTime": "Heure du dépôt",
     "callbackTime": "Heure du rappel",
-    "postponedTimes": "Vous avez reporté {{count}} fois.",
-    "nextPostponeWillNotify": "Le prochain report notifiera le superviseur !",
+    "postponedTimes": "Reporté {{count}} fois",
+    "nextPostponeWillNotify": "Le prochain report notifiera votre superviseur",
     "callNow": "APPELER MAINTENANT",
     "later": "PLUS TARD",
     "expiredCallbacks": "Rappels expirés",
@@ -846,7 +846,9 @@
     "delete": "Supprimer",
     "save": "Enregistrer",
     "cancel": "Annuler",
-    "close": "Fermer"
+    "close": "Fermer",
+    "cannotPostponeAnymore": "Vous ne pouvez plus reporter",
+    "supervisorWasNotified": "Votre superviseur a été notifié"
   },
   "settings": {
     "title": "Paramètres",

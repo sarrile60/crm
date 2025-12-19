@@ -807,8 +807,8 @@
     "notes": "Notizen",
     "depositTime": "Einzahlungszeit",
     "callbackTime": "Rückrufzeit",
-    "postponedTimes": "Sie haben {{count}} Mal verschoben.",
-    "nextPostponeWillNotify": "Das nächste Verschieben wird den Supervisor benachrichtigen!",
+    "postponedTimes": "{{count}} Mal verschoben",
+    "nextPostponeWillNotify": "Das nächste Verschieben benachrichtigt Ihren Supervisor",
     "callNow": "JETZT ANRUFEN",
     "later": "SPÄTER",
     "expiredCallbacks": "Abgelaufene Rückrufe",
@@ -847,7 +847,9 @@
     "delete": "Löschen",
     "save": "Speichern",
     "cancel": "Abbrechen",
-    "close": "Schließen"
+    "close": "Schließen",
+    "cannotPostponeAnymore": "Sie können nicht mehr verschieben",
+    "supervisorWasNotified": "Ihr Supervisor wurde benachrichtigt"
   },
   "settings": {
     "title": "Einstellungen",
