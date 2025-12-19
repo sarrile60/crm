@@ -291,6 +291,9 @@ const CRMDashboard = () => {
         {/* Users tab moved to Administration Panel */}
         {activeTab === 'settings' && <SettingsPanel />}
       </main>
+      
+      {/* Chat Widget */}
+      <ChatWidget currentUser={currentUser} />
     </div>
   );
 };
