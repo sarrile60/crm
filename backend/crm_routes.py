@@ -238,7 +238,7 @@ async def login(credentials: UserLogin):
         },
         "session": {
             "expiry": session_expiry.isoformat(),
-            "info": get_session_info()
+            "info": await get_session_info()
         }
     }
 
