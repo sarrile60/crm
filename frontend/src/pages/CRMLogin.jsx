@@ -33,7 +33,29 @@ const CRMLogin = () => {
         navigate('/crm/dashboard');
       }
     } catch (error) {
-      toast.error(error.response?.data?.detail || t('auth.loginError'));
+      const detail = error.response?.data?.detail || '';
+      
+      // Handle after-hours approval required message
+      if (detail.startsWith('after_hours_approval_required:')) {
+        const reason = detail.split(':')[1];
+        let translatedReason = reason;
+        
+        // Parse the reason code
+        if (reason.startsWith('after_work_hours')) {
+          const time = reason.split(':')[1] || '';
+          translatedReason = t('session.afterWorkHours', { time });
+        } else if (reason.startsWith('before_work_hours')) {
+          const time = reason.split(':')[1] || '';
+          translatedReason = t('session.beforeWorkHours', { time });
+        } else if (reason.startsWith('not_work_day')) {
+          const day = reason.split(':')[1] || '';
+          translatedReason = t('session.notWorkDay', { day });
+        }
+        
+        toast.error(t('session.afterHoursApprovalRequired', { reason: translatedReason }));
+      } else {
+        toast.error(detail || t('auth.loginError'));
+      }
     } finally {
       setLoading(false);
     }
