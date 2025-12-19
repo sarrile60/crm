@@ -917,19 +917,25 @@ class CRMTester:
             self.log_result("WebSocket Stability - Backend Logs", False, f"Error checking logs: {str(e)}")
     
     def test_after_hours_login_approval(self):
-        """Test after-hours login approval system"""
+        """Test after-hours login approval system with specific scenario"""
         print("\n" + "🕐" * 50)
-        print("🕐 AFTER-HOURS LOGIN APPROVAL TESTING")
+        print("🕐 AFTER-HOURS LOGIN APPROVAL TESTING - SPECIFIC SCENARIO")
         print("🕐" * 50)
         
-        # Test 1: Verify duplicate prevention
-        self.test_duplicate_login_request_prevention()
+        # Step 1: Change session end time to 14:20 to force after-hours
+        self.configure_session_for_after_hours()
         
-        # Test 2: Verify approval works
-        self.test_login_approval_workflow()
+        # Step 2: Clear existing approvals for maurizio1
+        self.clear_maurizio_approvals()
         
-        # Test 3: Verify error message format
-        self.test_error_message_format()
+        # Step 3: Test login failure with after_hours_approval_required
+        self.test_maurizio_login_failure()
+        
+        # Step 4: Approve the request via admin API
+        self.approve_maurizio_request()
+        
+        # Step 5: Test successful login after approval
+        self.test_maurizio_login_success()
     
     def test_duplicate_login_request_prevention(self):
         """Test that multiple login attempts create only one pending request"""
