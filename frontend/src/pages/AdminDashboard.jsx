@@ -262,29 +262,29 @@ const AdminDashboard = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-white text-xl font-semibold">{lead.fullName}</h4>
                   <span className="text-white/85 text-sm">
-                    {new Date(lead.createdAt).toLocaleString('it-IT')}
+                    {new Date(lead.createdAt).toLocaleString(i18n.language)}
                   </span>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <span className="text-white/85 text-sm">Email:</span>
+                    <span className="text-white/85 text-sm">{t('common.email')}:</span>
                     <p className="text-white">{lead.email}</p>
                   </div>
                   <div>
-                    <span className="text-white/85 text-sm">Telefono:</span>
+                    <span className="text-white/85 text-sm">{t('common.phone')}:</span>
                     <p className="text-white">+39 {lead.phone}</p>
                   </div>
                   <div>
-                    <span className="text-white/85 text-sm">Azienda Truffatrice:</span>
+                    <span className="text-white/85 text-sm">{t('crm.scammerCompany')}:</span>
                     <p className="text-white">{lead.scammerCompany}</p>
                   </div>
                   <div>
-                    <span className="text-white/85 text-sm">Importo Perso:</span>
+                    <span className="text-white/85 text-sm">{t('adminDashboard.amountLost')}:</span>
                     <p className="text-[#00FFD1] font-semibold">{lead.amountLost}</p>
                   </div>
                 </div>
                 <div>
-                  <span className="text-white/85 text-sm">Descrizione Caso:</span>
+                  <span className="text-white/85 text-sm">{t('adminDashboard.caseDescription')}:</span>
                   <p className="text-white mt-2 leading-relaxed">{lead.caseDetails}</p>
                 </div>
               </div>
