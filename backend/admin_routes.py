@@ -504,6 +504,87 @@ async def delete_user_admin(user_id: str, current_user: dict = Depends(get_curre
     return {"success": True}
 
 
+@admin_router.post("/users/{user_id}/restore", dependencies=[Depends(require_admin)])
+async def restore_user(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Restore a soft-deleted user from archive"""
+    from datetime import datetime, timezone
+    
+    user = await db.crm_users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if user is actually deleted
+    if not user.get("deleted_at"):
+        raise HTTPException(status_code=400, detail="User is not archived")
+    
+    # Restore user
+    await db.crm_users.update_one(
+        {"id": user_id},
+        {
+            "$set": {"is_active": True},
+            "$unset": {"deleted_at": ""}
+        }
+    )
+    
+    logger.info(f"User {user_id} restored by admin {current_user['username']}")
+    
+    # Log audit event
+    await create_audit_log(
+        action="user_restored",
+        entity_type="user",
+        user_id=current_user["id"],
+        user_name=current_user["username"],
+        entity_id=user_id,
+        entity_name=user.get("username", user_id),
+        details={"restored_by": current_user["username"]}
+    )
+    
+    return {"success": True, "message": f"User {user.get('username')} restored successfully"}
+
+
+@admin_router.delete("/users/{user_id}/permanent", dependencies=[Depends(require_admin)])
+async def permanently_delete_user(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Permanently delete a user from the archive (cannot be recovered)"""
+    from datetime import datetime, timezone
+    
+    user = await db.crm_users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Only allow permanent deletion of archived users
+    if not user.get("deleted_at"):
+        raise HTTPException(status_code=400, detail="User must be archived first before permanent deletion")
+    
+    # Cannot permanently delete yourself
+    if user_id == current_user["id"]:
+        raise HTTPException(status_code=400, detail="Cannot delete your own account")
+    
+    # Store user info for audit before deletion
+    username = user.get("username", user_id)
+    
+    # Permanently delete the user
+    await db.crm_users.delete_one({"id": user_id})
+    
+    # Also clean up related data
+    await db.user_roles.delete_many({"user_id": user_id})
+    await db.login_requests.delete_many({"user_id": user_id})
+    
+    logger.info(f"User {user_id} permanently deleted by admin {current_user['username']}")
+    
+    # Log audit event
+    await create_audit_log(
+        action="user_permanently_deleted",
+        entity_type="user",
+        user_id=current_user["id"],
+        user_name=current_user["username"],
+        entity_id=user_id,
+        entity_name=username,
+        details={"permanently_deleted_by": current_user["username"]}
+    )
+    
+    return {"success": True, "message": f"User {username} permanently deleted"}
+
+
 # ============================================
 # USER ROLES & TEAMS ASSIGNMENT
 # ============================================
