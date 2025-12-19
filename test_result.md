@@ -372,7 +372,7 @@ Added complete translations for the `settings` section in:
 - Password: zTFjPAcs*-(NL-qbj@AP0TcWt*8)nV4f6K(ZcVP_
 
 ### Test Scenario Executed
-1. ✅ Successfully logged into CRM with admin credentials at https://lawfirm-localize.preview.emergentagent.com/crm/login
+1. ✅ Successfully logged into CRM with admin credentials at https://lawcrm-i18n-1.preview.emergentagent.com/crm/login
 2. ✅ Dashboard loaded successfully
 3. ✅ Located gold/yellow circular chat button in bottom-right corner
 4. ✅ Clicked chat button to open chat widget

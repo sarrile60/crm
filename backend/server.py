@@ -383,7 +383,7 @@ app.include_router(admin_router)
 app.include_router(chat_router)
 
 # CORS Configuration (Restricted for Production)
-cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://lawfirm-localize.preview.emergentagent.com').split(',')
+cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://lawcrm-i18n-1.preview.emergentagent.com').split(',')
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,

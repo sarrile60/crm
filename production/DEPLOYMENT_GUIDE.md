@@ -83,10 +83,10 @@ find /app/production/*/build -name "*.map"
 sudo nginx -t -c /app/production/config/nginx-production.conf
 
 # Verify sensitive files are blocked
-curl -I https://lawfirm-localize.preview.emergentagent.com/backend/.env
+curl -I https://lawcrm-i18n-1.preview.emergentagent.com/backend/.env
 # Should return: 404
 
-curl -I https://lawfirm-localize.preview.emergentagent.com/backend/main.py
+curl -I https://lawcrm-i18n-1.preview.emergentagent.com/backend/main.py
 # Should return: 404
 ```
 
@@ -180,16 +180,16 @@ sudo supervisorctl start production_backend
 ### 1. Backend API Tests
 ```bash
 # Health check
-curl https://lawfirm-localize.preview.emergentagent.com/health
+curl https://lawcrm-i18n-1.preview.emergentagent.com/health
 # Expected: {"status":"healthy"}
 
 # Try to access blocked files (should all be 404)
-curl -I https://lawfirm-localize.preview.emergentagent.com/backend/.env
-curl -I https://lawfirm-localize.preview.emergentagent.com/backend/main.py
-curl -I https://lawfirm-localize.preview.emergentagent.com/.git/config
+curl -I https://lawcrm-i18n-1.preview.emergentagent.com/backend/.env
+curl -I https://lawcrm-i18n-1.preview.emergentagent.com/backend/main.py
+curl -I https://lawcrm-i18n-1.preview.emergentagent.com/.git/config
 
 # Test public lead submission (should work)
-curl -X POST https://lawfirm-localize.preview.emergentagent.com/api/leads/submit \
+curl -X POST https://lawcrm-i18n-1.preview.emergentagent.com/api/leads/submit \
   -H "Content-Type: application/json" \
   -d '{
     "fullName": "Test User",
@@ -202,7 +202,7 @@ curl -X POST https://lawfirm-localize.preview.emergentagent.com/api/leads/submit
 # Expected: {"success":true,"message":"..."}
 
 # Test admin login with NEW credentials
-curl -X POST https://lawfirm-localize.preview.emergentagent.com/api/admin/login \
+curl -X POST https://lawcrm-i18n-1.preview.emergentagent.com/api/admin/login \
   -H "Content-Type: application/json" \
   -d '{
     "username": "crm_admin_1cacbbfa",
@@ -214,21 +214,21 @@ curl -X POST https://lawfirm-localize.preview.emergentagent.com/api/admin/login 
 ### 2. Frontend Tests
 ```bash
 # Check public homepage
-curl -I https://lawfirm-localize.preview.emergentagent.com/
+curl -I https://lawcrm-i18n-1.preview.emergentagent.com/
 # Expected: 200 OK
 
 # Check admin panel
-curl -I https://lawfirm-localize.preview.emergentagent.com/admin
+curl -I https://lawcrm-i18n-1.preview.emergentagent.com/admin
 # Expected: 200 OK
 
 # Check static assets are cached
-curl -I https://lawfirm-localize.preview.emergentagent.com/static/js/main.*.js
+curl -I https://lawcrm-i18n-1.preview.emergentagent.com/static/js/main.*.js
 # Expected: Cache-Control: public, immutable
 ```
 
 ### 3. Security Headers Verification
 ```bash
-curl -I https://lawfirm-localize.preview.emergentagent.com/ | grep -E "X-Frame-Options|X-Content-Type|Strict-Transport"
+curl -I https://lawcrm-i18n-1.preview.emergentagent.com/ | grep -E "X-Frame-Options|X-Content-Type|Strict-Transport"
 
 # Expected to see:
 # X-Frame-Options: DENY
@@ -264,7 +264,7 @@ EOF
 ```bash
 # Try to hit login endpoint rapidly (should get rate limited)
 for i in {1..10}; do
-  curl -X POST https://lawfirm-localize.preview.emergentagent.com/api/crm/auth/login \
+  curl -X POST https://lawcrm-i18n-1.preview.emergentagent.com/api/crm/auth/login \
     -H "Content-Type: application/json" \
     -d '{"email":"test@test.com","password":"wrong"}' &
 done
