@@ -25,6 +25,21 @@ const CRMDashboard = () => {
   const [callbackLead, setCallbackLead] = useState(null);
   const [sessionInfo, setSessionInfo] = useState(null);
 
+  // Send heartbeat to update last_active status
+  const sendHeartbeat = async () => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      if (!token) return;
+      
+      await axios.post(`${API}/crm/heartbeat`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (error) {
+      // Silently fail - heartbeat is not critical
+      console.debug('Heartbeat failed:', error.message);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('crmToken');
     const user = localStorage.getItem('crmUser');
@@ -40,10 +55,19 @@ const CRMDashboard = () => {
     // Start session check interval (every 60 seconds)
     const sessionCheckInterval = setInterval(checkSession, 60000);
     
+    // Start heartbeat interval (every 30 seconds) to track activity
+    const heartbeatInterval = setInterval(sendHeartbeat, 30000);
+    
     // Check session immediately on load
     checkSession();
     
-    return () => clearInterval(sessionCheckInterval);
+    // Send initial heartbeat
+    sendHeartbeat();
+    
+    return () => {
+      clearInterval(sessionCheckInterval);
+      clearInterval(heartbeatInterval);
+    };
   }, []);
   
   const checkSession = async () => {
