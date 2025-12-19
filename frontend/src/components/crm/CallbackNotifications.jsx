@@ -327,11 +327,23 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     };
     localStorage.setItem('called_callbacks', JSON.stringify(calledCallbacks));
     
+    // Also clear the alert key so it can re-alert if a new callback is set
+    const alertKey = `callback_alerted_${lead.id}_${lead.callback_date}`;
+    localStorage.removeItem(alertKey);
+    
+    // Clear the urgent callback state
+    setUrgentCallback(null);
+    
+    // Remove this lead from the queue if it's still there
+    setUrgentCallbackQueue(prev => prev.filter(l => l.id !== lead.id));
+    
+    // Close the modal first
+    setShowUrgentModal(false);
+    
     // Call the parent callback to switch to leads tab and open the lead
     if (onCallbackAlert) {
       onCallbackAlert(lead);
     }
-    setShowUrgentModal(false);
   };
 
   const handleSnooze = async (lead) => {
