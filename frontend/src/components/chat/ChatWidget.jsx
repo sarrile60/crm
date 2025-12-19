@@ -168,11 +168,11 @@ const ChatWidget = ({ currentUser }) => {
     }
   }, [currentUser, lastPollTime, selectedConversation, playNotificationSound, fetchConversations]);
 
-  // Initial load
+  // Initial load - don't set lastPollTime yet, let first poll catch recent messages
   useEffect(() => {
     if (currentUser) {
       fetchConversations();
-      setLastPollTime(new Date().toISOString());
+      // Don't set lastPollTime here - let first poll get any recent messages
     }
   }, [currentUser, fetchConversations]);
 
