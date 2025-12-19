@@ -351,7 +351,8 @@ async def send_team_message(team_id: str, data: MessageCreate, request: Request)
         "role": current_user.get("role")
     }
     
-    del message["_id"] if "_id" in message else None
+    if "_id" in message:
+        del message["_id"]
     
     return message
 
