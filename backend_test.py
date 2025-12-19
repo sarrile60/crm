@@ -3499,6 +3499,9 @@ class CRMTester:
         self.test_audit_logs_immutability()
         self.test_audit_log_creation()
         
+        # Step 10: Test team chat read-only restrictions
+        self.test_team_chat_read_only_restrictions()
+        
         # Summary
         print("\n" + "=" * 50)
         print("📊 TEST SUMMARY")
