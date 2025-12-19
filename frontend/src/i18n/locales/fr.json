@@ -447,7 +447,8 @@
     "errorDenying": "Erreur lors du rejet",
     "notWorkDay": "Pas un jour de travail ({{day}})",
     "beforeWorkHours": "Avant les heures de travail (début: {{time}})",
-    "afterWorkHours": "Après les heures de travail (fin: {{time}})"
+    "afterWorkHours": "Après les heures de travail (fin: {{time}})",
+    "afterHoursApprovalRequired": "Accès en dehors des heures de travail. {{reason}}. Demande envoyée à l'administrateur pour approbation."
   },
   "audit": {
     "title": "Journal d'audit",
