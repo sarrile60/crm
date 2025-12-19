@@ -698,6 +698,20 @@ const ChatWidget = ({ currentUser }) => {
               <span>{t('chat.newConversation')}</span>
             </button>
 
+            {/* Team Chat Button (Admin/Supervisor only) */}
+            {['admin', 'supervisor'].includes(currentUser?.role?.toLowerCase()) && availableTeams.length > 0 && (
+              <button
+                onClick={() => { setShowTeamChat(true); fetchTeams(); }}
+                className="w-full p-3 text-left hover:bg-gray-50 border-b flex items-center gap-3 text-[#1a1a2e]"
+              >
+                <UsersRound className="w-5 h-5" />
+                <span>{t('chat.teamChat')}</span>
+                <span className="ml-auto text-xs text-gray-500">
+                  {availableTeams.length} {availableTeams.length === 1 ? 'team' : 'teams'}
+                </span>
+              </button>
+            )}
+
             {/* Search Results */}
             {searchResults.length > 0 && (
               <div className="border-b">
