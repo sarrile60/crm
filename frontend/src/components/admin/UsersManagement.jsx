@@ -536,44 +536,65 @@ const UsersManagement = () => {
                     </td>
                     <td className="p-4">
                       <div className="flex gap-2">
-                        <Button
-                          onClick={() => openEditModal(user)}
-                          size="sm"
-                          className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
-                          title={t('common.edit')}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          onClick={() => openResetPasswordModal(user)}
-                          size="sm"
-                          className="bg-blue-600 text-white hover:bg-blue-700 rounded-none"
-                          title={t('users.resetPassword')}
-                        >
-                          <Key className="w-4 h-4" />
-                        </Button>
-                        {user.id !== currentUser?.id && (
+                        {/* Show different actions based on viewMode */}
+                        {viewMode === 'active' ? (
                           <>
-                            {!user.deleted_at && (
-                              <Button
-                                onClick={() => handleToggleStatus(user)}
-                                size="sm"
-                                className={`${user.is_active ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'} text-white rounded-none`}
-                                title={user.is_active ? t('users.deactivate') : t('users.activate')}
-                              >
-                                {user.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                              </Button>
+                            <Button
+                              onClick={() => openEditModal(user)}
+                              size="sm"
+                              className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
+                              title={t('common.edit')}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              onClick={() => openResetPasswordModal(user)}
+                              size="sm"
+                              className="bg-blue-600 text-white hover:bg-blue-700 rounded-none"
+                              title={t('users.resetPassword')}
+                            >
+                              <Key className="w-4 h-4" />
+                            </Button>
+                            {user.id !== currentUser?.id && (
+                              <>
+                                <Button
+                                  onClick={() => handleToggleStatus(user)}
+                                  size="sm"
+                                  className={`${user.is_active ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-600 hover:bg-green-700'} text-white rounded-none`}
+                                  title={user.is_active ? t('users.deactivate') : t('users.activate')}
+                                >
+                                  {user.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                                </Button>
+                                <Button
+                                  onClick={() => openDeleteModal(user)}
+                                  size="sm"
+                                  className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                                  title={t('users.archive')}
+                                >
+                                  <Archive className="w-4 h-4" />
+                                </Button>
+                              </>
                             )}
-                            {!user.deleted_at && (
-                              <Button
-                                onClick={() => openDeleteModal(user)}
-                                size="sm"
-                                className="bg-red-600 text-white hover:bg-red-700 rounded-none"
-                                title={t('common.delete')}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            )}
+                          </>
+                        ) : (
+                          /* Archive view actions - Restore or Permanently Delete */
+                          <>
+                            <Button
+                              onClick={() => openRestoreModal(user)}
+                              size="sm"
+                              className="bg-green-600 text-white hover:bg-green-700 rounded-none"
+                              title={t('users.restore')}
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              onClick={() => openPermanentDeleteModal(user)}
+                              size="sm"
+                              className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                              title={t('users.permanentDelete')}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
                           </>
                         )}
                       </div>
