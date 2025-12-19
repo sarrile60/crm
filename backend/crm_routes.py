@@ -1197,6 +1197,83 @@ async def mark_alert_read(alert_id: str, current_user: dict = Depends(get_curren
     )
     return {"success": True}
 
+# ==================== HEARTBEAT / ACTIVITY TRACKING ====================
+
+@crm_router.post("/heartbeat")
+async def update_heartbeat(current_user: dict = Depends(get_current_user)):
+    """Update user's last_active timestamp and status - called periodically by frontend"""
+    now = datetime.now(timezone.utc)
+    
+    await db.crm_users.update_one(
+        {"id": current_user["id"]},
+        {"$set": {
+            "last_active": now,
+            "status": "active"
+        }}
+    )
+    
+    return {"success": True, "last_active": now.isoformat()}
+
+
+@crm_router.get("/team-members-status")
+async def get_team_members_status(current_user: dict = Depends(get_current_user)):
+    """Get real-time status of team members - for supervisors/admins to monitor agent activity"""
+    role = current_user.get("role", "").lower()
+    
+    if role not in ["admin", "supervisor"]:
+        raise HTTPException(status_code=403, detail="Only admins and supervisors can view team status")
+    
+    now = datetime.now(timezone.utc)
+    
+    # Get teams this supervisor manages (or all teams for admin)
+    if role == "admin":
+        teams = await db.teams.find(
+            {"$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]},
+            {"_id": 0}
+        ).to_list(100)
+        team_ids = [t["id"] for t in teams]
+    else:
+        teams = await db.teams.find(
+            {
+                "supervisor_id": current_user["id"],
+                "$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]
+            },
+            {"_id": 0}
+        ).to_list(100)
+        team_ids = [t["id"] for t in teams]
+    
+    if not team_ids:
+        return {"members": [], "teams": []}
+    
+    # Get all members in these teams
+    members = await db.crm_users.find(
+        {
+            "team_id": {"$in": team_ids},
+            "$or": [{"deleted_at": None}, {"deleted_at": {"$exists": False}}]
+        },
+        {"_id": 0, "password": 0}
+    ).to_list(200)
+    
+    # Calculate real-time status based on last_active
+    # If last_active is within 2 minutes, user is "active", otherwise "inactive"
+    for member in members:
+        last_active = member.get("last_active")
+        if last_active:
+            if isinstance(last_active, str):
+                last_active = datetime.fromisoformat(last_active.replace('Z', '+00:00'))
+            
+            time_diff = (now - last_active).total_seconds()
+            # Active if last seen within 2 minutes
+            if time_diff < 120:
+                member["status"] = "active"
+            else:
+                member["status"] = "inactive"
+        else:
+            member["status"] = "inactive"
+    
+    return {"members": members, "teams": teams}
+
+
 # ==================== DASHBOARD STATS ====================
 
 @crm_router.get("/dashboard/stats")
