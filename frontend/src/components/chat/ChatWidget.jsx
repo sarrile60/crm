@@ -172,7 +172,7 @@ const ChatWidget = ({ currentUser }) => {
     } catch (error) {
       console.error('Error polling messages:', error);
     }
-  }, [currentUser, lastPollTime, selectedConversation, playNotificationSound, fetchConversations]);
+  }, [currentUser, lastPollTime, selectedConversation, playNotificationSound, fetchConversations, isOpen]);
 
   // Initial load - don't set lastPollTime yet, let first poll catch recent messages
   useEffect(() => {
