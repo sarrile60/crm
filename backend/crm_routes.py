@@ -146,33 +146,41 @@ async def login(credentials: UserLogin):
             })
             
             if not approved_request:
-                # Create a pending login request
-                from uuid import uuid4
-                request_id = str(uuid4())
-                await db.login_requests.insert_one({
-                    "id": request_id,
+                # Check if there's already a pending request for this user (prevent duplicates)
+                existing_pending = await db.login_requests.find_one({
                     "user_id": user["id"],
-                    "username": user["username"],
-                    "full_name": user["full_name"],
-                    "role": user["role"],
-                    "status": "pending",
-                    "reason": reason,
-                    "requested_at": datetime.now(timezone.utc),
-                    "expires_at": None
+                    "status": "pending"
                 })
                 
-                # Log the attempt
-                await log_auth_event(
-                    action=AuditAction.LOGIN_FAILED,
-                    username=credentials.username,
-                    user_id=user["id"],
-                    success=False,
-                    details={"reason": "After hours - pending admin approval", "request_id": request_id}
-                )
+                if not existing_pending:
+                    # Create a new pending login request only if none exists
+                    from uuid import uuid4
+                    request_id = str(uuid4())
+                    await db.login_requests.insert_one({
+                        "id": request_id,
+                        "user_id": user["id"],
+                        "username": user["username"],
+                        "full_name": user["full_name"],
+                        "role": user["role"],
+                        "status": "pending",
+                        "reason": reason,
+                        "requested_at": datetime.now(timezone.utc),
+                        "expires_at": None
+                    })
+                    
+                    # Log the attempt
+                    await log_auth_event(
+                        action=AuditAction.LOGIN_FAILED,
+                        username=credentials.username,
+                        user_id=user["id"],
+                        success=False,
+                        details={"reason": "After hours - pending admin approval", "request_id": request_id}
+                    )
                 
+                # Return error with reason code (not hardcoded message - frontend will translate)
                 raise HTTPException(
                     status_code=403, 
-                    detail=f"Accesso fuori orario di lavoro. {reason}. Richiesta inviata all'amministratore per approvazione."
+                    detail=f"after_hours_approval_required:{reason}"
                 )
     
     # Update last login
