@@ -808,6 +808,32 @@ async def archive_team_admin(team_id: str, request_data: dict = None, current_us
     return {"success": True, "members_reassigned": len(members)}
 
 
+@admin_router.get("/teams/{team_id}/members")
+async def get_team_members(team_id: str, current_user: dict = Depends(get_current_user)):
+    """Get members of a team - accessible by admins and team supervisors"""
+    team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    # Check permission: admin can see all, supervisor can see their team
+    role = current_user.get("role", "").lower()
+    if role == "supervisor" and team.get("supervisor_id") != current_user["id"]:
+        raise HTTPException(status_code=403, detail="You can only view your own team members")
+    elif role not in ["admin", "supervisor"]:
+        raise HTTPException(status_code=403, detail="Only admins and supervisors can view team members")
+    
+    # Get all users in this team
+    members = await db.crm_users.find(
+        {
+            "team_id": team_id,
+            "$or": [{"deleted_at": None}, {"deleted_at": {"$exists": False}}]
+        },
+        {"_id": 0, "password": 0}
+    ).to_list(100)
+    
+    return {"members": members, "team": team}
+
+
 @admin_router.post("/teams/{team_id}/members", dependencies=[Depends(require_admin)])
 async def add_members_to_team(team_id: str, member_data: dict, current_user: dict = Depends(get_current_user)):
     """Add members to team via Admin GUI"""
