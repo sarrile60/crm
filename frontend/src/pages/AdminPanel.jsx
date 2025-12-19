@@ -12,6 +12,7 @@ import DataVisibilityRules from '../components/admin/DataVisibilityRules';
 import AuditLogs from '../components/admin/AuditLogs';
 import SessionSettings from '../components/admin/SessionSettings';
 import LanguageSettings from '../components/admin/LanguageSettings';
+import ChatWidget from '../components/chat/ChatWidget';
 
 const AdminPanel = () => {
   const navigate = useNavigate();
