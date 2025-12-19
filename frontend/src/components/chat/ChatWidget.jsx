@@ -138,10 +138,13 @@ const ChatWidget = ({ currentUser }) => {
               if (trulyNewMsgs.length === 0) return prev;
               return [...prev, ...trulyNewMsgs];
             });
-            // Mark as read
-            axios.put(`${BACKEND_URL}/api/chat/conversations/${selectedConversation.id}/read`, {}, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
+            // Only mark as read if chat widget is open AND we're viewing this conversation
+            // AND the document is visible (user is actually looking at it)
+            if (isOpen && document.visibilityState === 'visible') {
+              axios.put(`${BACKEND_URL}/api/chat/conversations/${selectedConversation.id}/read`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+            }
           }
         }
         
