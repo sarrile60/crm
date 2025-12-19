@@ -910,6 +910,14 @@
     "completedToday": "Completati Oggi",
     "lastActive": "Ultima attività",
     "noMembers": "Nessun Membro del Team",
-    "noMembersDescription": "Non ci sono ancora membri in questo team."
+    "noMembersDescription": "Non ci sono ancora membri in questo team.",
+    "clickToSwitch": "Clicca per cambiare team",
+    "teamsTotal": "team",
+    "liveStatus": "Aggiornamenti stato in tempo reale",
+    "justNow": "Adesso",
+    "minutesAgo": "{{count}} min fa",
+    "hoursAgo": "{{count}} ore fa",
+    "daysAgo": "{{count}} giorni fa",
+    "neverActive": "Mai"
   }
 }
