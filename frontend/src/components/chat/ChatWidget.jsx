@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MessageCircle, X, Send, Search, Users, ArrowLeft, Paperclip, Image, Check, CheckCheck, Smile } from 'lucide-react';
+import { MessageCircle, X, Send, Search, Users, ArrowLeft, Paperclip, Image, Check, CheckCheck, Smile, UsersRound } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -24,6 +25,8 @@ const ChatWidget = ({ currentUser }) => {
   const [conversationFilter, setConversationFilter] = useState('');
   const [users, setUsers] = useState([]);
   const [showNewChat, setShowNewChat] = useState(false);
+  const [showTeamChat, setShowTeamChat] = useState(false);
+  const [availableTeams, setAvailableTeams] = useState([]);
   const [typingUsers, setTypingUsers] = useState({});
   const [unreadTotal, setUnreadTotal] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
