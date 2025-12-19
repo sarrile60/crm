@@ -366,7 +366,7 @@ async def get_chat_users(request: Request):
 
 # Get new messages (for polling)
 @router.get("/poll")
-async def poll_messages(request: Request, since: Optional[str] = None):
+async def poll_messages(request: Request, since: Optional[str] = None, conversation_id: Optional[str] = None):
     from server import db
     
     
@@ -407,7 +407,21 @@ async def poll_messages(request: Request, since: Optional[str] = None):
             if typing_users:
                 typing_info[conv_id] = typing_users
     
+    # Get read status updates for the current conversation (if specified)
+    read_updates = []
+    if conversation_id:
+        # Get messages sent by current user in this conversation with their read_by status
+        my_messages = await db.messages.find(
+            {
+                "conversation_id": conversation_id,
+                "sender_id": current_user["id"]
+            },
+            {"_id": 0, "id": 1, "read_by": 1}
+        ).to_list(100)
+        read_updates = my_messages
+    
     return {
         "messages": new_messages,
-        "typing": typing_info
+        "typing": typing_info,
+        "read_updates": read_updates
     }
