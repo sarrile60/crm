@@ -897,6 +897,8 @@
   "chat": {
     "title": "Chat",
     "searchMessages": "Rechercher des messages...",
+    "filterConversations": "Trouver une conversation...",
+    "noMatchingConversations": "Aucune conversation trouvée",
     "newConversation": "Nouvelle Conversation",
     "searchResults": "Résultats de recherche",
     "selectUser": "Sélectionner un utilisateur",
