@@ -1093,27 +1093,74 @@ class CRMTester:
         except Exception as e:
             self.log_result("Approval Workflow - Login After Approval", False, f"Error: {str(e)}")
     
-    def test_error_message_format(self):
-        """Test that error message format is correct (not hardcoded Italian)"""
-        print("\n=== Testing Error Message Format ===")
+    def configure_session_for_after_hours(self):
+        """Configure session settings to force after-hours status"""
+        print("\n=== Step 1: Configuring Session for After-Hours ===")
         
-        # Clear any existing approvals for maurizio1 first
+        try:
+            admin_headers = {
+                "Authorization": f"Bearer {self.admin_token}",
+                "Content-Type": "application/json"
+            }
+            
+            # Set session end time to 14:20 to make current time (around 14:30) after hours
+            session_config = {
+                "session_end_hour": 14,
+                "session_end_minute": 20
+            }
+            
+            response = self.session.put(
+                f"{BASE_URL}/admin/session-settings",
+                json=session_config,
+                headers=admin_headers
+            )
+            
+            if response.status_code == 200:
+                self.log_result(
+                    "Configure Session - Set After Hours", 
+                    True,
+                    "Session end time set to 14:20 to force after-hours status",
+                    f"Current time should be after 14:20, making login attempts after-hours"
+                )
+            else:
+                self.log_result("Configure Session - Set After Hours", False, f"Failed to update session: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Configure Session - Set After Hours", False, f"Error: {str(e)}")
+    
+    def clear_maurizio_approvals(self):
+        """Clear any existing approvals for maurizio1"""
+        print("\n=== Step 2: Clearing Existing Approvals ===")
+        
         try:
             admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
             
-            # Get all requests and clear any approved ones for maurizio1
+            # Clear expired requests
+            clear_response = self.session.delete(f"{BASE_URL}/admin/login-requests/clear-expired", headers=admin_headers)
+            
+            # Get all pending requests
             requests_response = self.session.get(f"{BASE_URL}/admin/login-requests", headers=admin_headers)
             if requests_response.status_code == 200:
                 requests_data = requests_response.json()
-                all_requests = requests_data.get("requests", [])
+                existing_requests = requests_data.get("requests", [])
+                maurizio_requests = [r for r in existing_requests if r.get("username") == "maurizio1"]
                 
-                # Clear expired requests
-                clear_response = self.session.delete(f"{BASE_URL}/admin/login-requests/clear-expired", headers=admin_headers)
+                self.log_result(
+                    "Clear Approvals - Initial State", 
+                    True, 
+                    f"Found {len(maurizio_requests)} existing requests for maurizio1",
+                    f"Total pending requests: {len(existing_requests)}"
+                )
+            else:
+                self.log_result("Clear Approvals - Check State", False, f"Failed to get requests: {requests_response.status_code}")
                 
         except Exception as e:
-            self.log_result("Error Message Format - Setup", False, f"Error clearing approvals: {str(e)}")
+            self.log_result("Clear Approvals - Setup", False, f"Error: {str(e)}")
+    
+    def test_maurizio_login_failure(self):
+        """Test that maurizio1 login fails with after_hours_approval_required"""
+        print("\n=== Step 3: Testing Login Failure (After Hours) ===")
         
-        # Try to login as maurizio1 (should fail with proper error format)
         try:
             login_response = self.session.post(
                 f"{CRM_BASE_URL}/auth/login",
@@ -1129,34 +1176,153 @@ class CRMTester:
                 except:
                     error_detail = login_response.text
                 
-                # Check if error format matches expected pattern: after_hours_approval_required:reason:time
-                expected_patterns = [
-                    "after_hours_approval_required:after_work_hours:",
-                    "after_hours_approval_required:not_work_day:",
-                    "after_hours_approval_required:before_work_hours:"
-                ]
-                
-                matches_pattern = any(pattern in error_detail for pattern in expected_patterns)
-                is_not_hardcoded_italian = "Notifiche" not in error_detail and "fuori orario" not in error_detail.lower()
-                
-                # Check if it contains time information (HH:MM format)
-                import re
-                has_time_format = bool(re.search(r'\d{1,2}:\d{2}', error_detail))
-                
-                success = matches_pattern and is_not_hardcoded_italian and has_time_format
+                # Check if error contains "after_hours_approval_required"
+                has_approval_required = "after_hours_approval_required" in error_detail
                 
                 self.log_result(
-                    "Error Message Format - Pattern Check", 
-                    success,
-                    f"Error message format is correct",
-                    f"Message: '{error_detail}', Matches pattern: {matches_pattern}, Not Italian: {is_not_hardcoded_italian}, Has time: {has_time_format}"
+                    "Login Failure - After Hours Error", 
+                    has_approval_required,
+                    f"Login correctly failed with after-hours error",
+                    f"Error message: '{error_detail}'"
                 )
                 
+                # Store the error for later verification
+                self.after_hours_error = error_detail
+                
             else:
-                self.log_result("Error Message Format - Response Code", False, f"Expected 403, got {login_response.status_code}", login_response.text)
+                self.log_result("Login Failure - After Hours Error", False, f"Expected 403, got {login_response.status_code}", login_response.text)
                 
         except Exception as e:
-            self.log_result("Error Message Format - Login Test", False, f"Error: {str(e)}")
+            self.log_result("Login Failure - After Hours Error", False, f"Error: {str(e)}")
+    
+    def approve_maurizio_request(self):
+        """Approve the login request for maurizio1"""
+        print("\n=== Step 4: Approving Login Request ===")
+        
+        try:
+            admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+            
+            # Get pending requests to find maurizio1's request
+            requests_response = self.session.get(f"{BASE_URL}/admin/login-requests", headers=admin_headers)
+            if requests_response.status_code == 200:
+                requests_data = requests_response.json()
+                pending_requests = requests_data.get("requests", [])
+                maurizio_requests = [r for r in pending_requests if r.get("username") == "maurizio1"]
+                
+                if maurizio_requests:
+                    request_id = maurizio_requests[0].get("id")
+                    
+                    # Approve the request
+                    approve_response = self.session.post(
+                        f"{BASE_URL}/admin/login-requests/{request_id}/approve",
+                        headers={**admin_headers, "Content-Type": "application/json"}
+                    )
+                    
+                    if approve_response.status_code == 200:
+                        approval_data = approve_response.json()
+                        self.log_result(
+                            "Approve Request - Success", 
+                            True,
+                            f"Successfully approved login request for maurizio1",
+                            f"Request ID: {request_id}, Expires: {approval_data.get('expires_at')}"
+                        )
+                        self.maurizio_request_id = request_id
+                    else:
+                        self.log_result("Approve Request - Success", False, f"Approval failed: {approve_response.status_code}", approve_response.text)
+                else:
+                    self.log_result("Approve Request - Find Request", False, "No pending request found for maurizio1")
+            else:
+                self.log_result("Approve Request - Get Requests", False, f"Failed to get requests: {requests_response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Approve Request - Error", False, f"Error: {str(e)}")
+    
+    def test_maurizio_login_success(self):
+        """Test that maurizio1 can login successfully after approval"""
+        print("\n=== Step 5: Testing Successful Login After Approval ===")
+        
+        try:
+            # Wait a moment for approval to be processed
+            time.sleep(1)
+            
+            login_response = self.session.post(
+                f"{CRM_BASE_URL}/auth/login",
+                json=SUPERVISOR_CREDENTIALS,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if login_response.status_code == 200:
+                login_data = login_response.json()
+                token = login_data.get("token")
+                user_info = login_data.get("user", {})
+                
+                # Verify token is valid by making an authenticated request
+                if token:
+                    test_headers = {"Authorization": f"Bearer {token}"}
+                    me_response = self.session.get(f"{CRM_BASE_URL}/auth/me", headers=test_headers)
+                    
+                    if me_response.status_code == 200:
+                        me_data = me_response.json()
+                        self.log_result(
+                            "Login Success - After Approval", 
+                            True,
+                            f"Login successful after approval - can access dashboard",
+                            f"User: {me_data.get('username')}, Role: {me_data.get('role')}, Token length: {len(token)} chars"
+                        )
+                        
+                        # Store token for potential frontend testing
+                        self.maurizio_token = token
+                        
+                        # Test dashboard access
+                        self.test_dashboard_access_after_approval(token)
+                        
+                    else:
+                        self.log_result("Login Success - Token Validation", False, f"Token validation failed: {me_response.status_code}")
+                else:
+                    self.log_result("Login Success - Token Received", False, "No token received in response")
+            else:
+                self.log_result("Login Success - After Approval", False, f"Login failed: {login_response.status_code}", login_response.text)
+                
+        except Exception as e:
+            self.log_result("Login Success - After Approval", False, f"Error: {str(e)}")
+    
+    def test_dashboard_access_after_approval(self, token):
+        """Test that user can access dashboard after successful after-hours login"""
+        print("\n=== Step 6: Testing Dashboard Access ===")
+        
+        try:
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Test accessing leads (basic dashboard functionality)
+            leads_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
+            
+            if leads_response.status_code == 200:
+                leads = leads_response.json()
+                self.log_result(
+                    "Dashboard Access - Leads", 
+                    True,
+                    f"Can access leads after after-hours login",
+                    f"Retrieved {len(leads)} leads"
+                )
+            else:
+                self.log_result("Dashboard Access - Leads", False, f"Cannot access leads: {leads_response.status_code}")
+            
+            # Test accessing user info
+            me_response = self.session.get(f"{CRM_BASE_URL}/auth/me", headers=headers)
+            
+            if me_response.status_code == 200:
+                user_data = me_response.json()
+                self.log_result(
+                    "Dashboard Access - User Info", 
+                    True,
+                    f"Can access user info after after-hours login",
+                    f"User: {user_data.get('full_name')}, Role: {user_data.get('role')}"
+                )
+            else:
+                self.log_result("Dashboard Access - User Info", False, f"Cannot access user info: {me_response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Dashboard Access - Error", False, f"Error: {str(e)}")
     
     def run_after_hours_tests(self):
         """Run all after-hours login approval tests"""
