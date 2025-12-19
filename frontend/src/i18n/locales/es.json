@@ -953,7 +953,8 @@
     "member": "miembro",
     "members": "miembros",
     "errorOpeningTeamChat": "Error al abrir el chat de equipo",
-    "errorSendingMessage": "Error al enviar el mensaje"
+    "errorSendingMessage": "Error al enviar el mensaje",
+    "teamChatReadOnly": "Solo supervisores y administradores pueden enviar mensajes en chats de equipo"
   },
   "adminDashboard": {
     "pageViews": "Visitas de página",
