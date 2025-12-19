@@ -217,44 +217,25 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const updateTotalNotifications = (remindersCount, callbacksCount, loginRequestsCount = 0) => {
     setTotalNotifications(remindersCount + callbacksCount + loginRequestsCount);
   };
-
-  // Fetch pending login requests (admin only)
-  const fetchLoginRequests = async () => {
-    try {
-      const token = localStorage.getItem('crmToken');
-      if (!token) return;
-      
-      const headers = { Authorization: `Bearer ${token}` };
-
-      const res = await axios.get(`${API}/admin/login-requests`, { headers });
-      const requests = res.data.requests || [];
-      
-      console.log('Login requests fetched:', requests.length);
-      
-      // Check if there are new requests (play sound)
-      if (requests.length > previousLoginRequestCount && previousLoginRequestCount > 0) {
-        playAlertSound();
-        toast.info(t('admin.newLoginRequest'), {
-          description: t('admin.userNeedsApproval'),
-          duration: 5000
-        });
-      }
-      
-      setPreviousLoginRequestCount(requests.length);
-      setLoginRequests(requests);
-    } catch (error) {
-      // Non-admins will get 403 error - just silently ignore
-      if (error.response?.status !== 403) {
-        console.error('Error fetching login requests:', error);
-      }
-    }
-  };
   
   // Update total notifications whenever any notification type changes
   useEffect(() => {
     const total = reminders.length + pendingCallbacks.length + loginRequests.length;
     setTotalNotifications(total);
   }, [reminders.length, pendingCallbacks.length, loginRequests.length]);
+
+  // Helper to refresh login requests after approve/deny
+  const refreshLoginRequests = async () => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      if (!token) return;
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.get(`${API}/admin/login-requests`, { headers });
+      setLoginRequests(res.data.requests || []);
+    } catch (error) {
+      console.error('Error refreshing login requests:', error);
+    }
+  };
 
   // Handle approve login request
   const handleApproveLogin = async (requestId, username) => {
@@ -264,7 +245,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
 
       await axios.post(`${API}/admin/login-requests/${requestId}/approve`, {}, { headers });
       toast.success(t('admin.loginApproved', { username }));
-      fetchLoginRequests();
+      refreshLoginRequests();
     } catch (error) {
       toast.error(t('admin.errorApprovingLogin'));
     }
