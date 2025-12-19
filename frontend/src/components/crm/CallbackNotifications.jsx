@@ -140,10 +140,22 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     const now = Date.now();
     const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
     
+    // Get callbacks that have been marked as "called"
+    const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
+    
     const newAlerts = [];
     
     Object.keys(snoozeDataFromStorage).forEach(leadId => {
       const snooze = snoozeDataFromStorage[leadId];
+      
+      // Skip if this callback has been marked as "called" (agent pressed Chiama)
+      const calledData = calledCallbacks[leadId];
+      if (calledData && snooze.lead && calledData.callback_date === snooze.lead.callback_date) {
+        // Clean up the snooze data for this called callback
+        delete snoozeDataFromStorage[leadId];
+        localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
+        return;
+      }
       
       // Check if snooze time has passed
       if (snooze.snoozeUntil <= now) {
