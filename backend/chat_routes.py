@@ -24,7 +24,7 @@ class TypingIndicator(BaseModel):
     is_typing: bool
 
 # Dependency to get current user from token
-async def get_current_user(request):
+async def get_current_user(request: Request):
     from server import get_db
     db = await get_db()
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
@@ -43,7 +43,7 @@ async def get_current_user(request):
 
 # Create a new conversation (private or group)
 @router.post("/conversations")
-async def create_conversation(data: ConversationCreate, request):
+async def create_conversation(data: ConversationCreate, request: Request):
     from server import get_db
     db = await get_db()
     
