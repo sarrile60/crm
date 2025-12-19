@@ -447,7 +447,8 @@
     "errorDenying": "Fehler bei der Ablehnung",
     "notWorkDay": "Kein Arbeitstag ({{day}})",
     "beforeWorkHours": "Vor der Arbeitszeit (Beginn: {{time}})",
-    "afterWorkHours": "Nach der Arbeitszeit (Ende: {{time}})"
+    "afterWorkHours": "Nach der Arbeitszeit (Ende: {{time}})",
+    "afterHoursApprovalRequired": "Zugriff außerhalb der Arbeitszeit. {{reason}}. Anfrage zur Genehmigung an den Administrator gesendet."
   },
   "audit": {
     "title": "Audit-Protokoll",
