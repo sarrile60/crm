@@ -311,25 +311,28 @@ const SessionSettings = () => {
               </label>
               <div className="flex gap-2 items-center">
                 <Input
-                  type="number"
-                  min="0"
-                  max="23"
-                  value={settings.session_end_hour}
-                  onChange={(e) => updateSetting('session_end_hour', parseInt(e.target.value) || 0)}
-                  className="w-20 rounded-none"
+                  type="text"
+                  maxLength="2"
+                  value={String(settings.session_end_hour).padStart(2, '0')}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    const num = parseInt(val) || 0;
+                    updateSetting('session_end_hour', Math.min(23, num));
+                  }}
+                  className="w-16 rounded-none text-center"
                 />
-                <span className="text-gray-500">:</span>
+                <span className="text-gray-500 text-xl font-bold">:</span>
                 <Input
-                  type="number"
-                  min="0"
-                  max="59"
-                  value={settings.session_end_minute}
-                  onChange={(e) => updateSetting('session_end_minute', parseInt(e.target.value) || 0)}
-                  className="w-20 rounded-none"
+                  type="text"
+                  maxLength="2"
+                  value={String(settings.session_end_minute).padStart(2, '0')}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    const num = parseInt(val) || 0;
+                    updateSetting('session_end_minute', Math.min(59, num));
+                  }}
+                  className="w-16 rounded-none text-center"
                 />
-                <span className="text-gray-500 ml-2">
-                  ({formatTime(settings.session_end_hour, settings.session_end_minute)})
-                </span>
               </div>
             </div>
 
