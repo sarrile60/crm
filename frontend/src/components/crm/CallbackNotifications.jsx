@@ -86,6 +86,9 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       const depositStatuses = ['Deposit 1', 'Deposit 2', 'Deposit 3', 'Deposit 4', 'Deposit 5'];
       const allNotifyStatuses = [...callbackStatuses, ...depositStatuses];
       
+      // Get callbacks that have been marked as "called"
+      const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
+      
       // Filter leads - ONLY show OVERDUE callbacks (scaduto)
       const now = new Date();
       const pending = allLeads.filter(lead => {
@@ -96,6 +99,12 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
         
         // ONLY show notifications for leads assigned to current user
         if (lead.assigned_to !== currentUser.id) {
+          return false;
+        }
+        
+        // Skip if this callback has been marked as "called" (agent pressed Chiama)
+        const calledData = calledCallbacks[lead.id];
+        if (calledData && calledData.callback_date === lead.callback_date) {
           return false;
         }
         
