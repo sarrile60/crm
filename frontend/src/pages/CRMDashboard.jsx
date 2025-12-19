@@ -303,6 +303,7 @@ const CRMDashboard = () => {
         )}
 
         {activeTab === 'leads' && <LeadsTable currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} />}
+        {activeTab === 'team' && currentUser?.role === 'supervisor' && <TeamMembers currentUser={currentUser} />}
         {/* Users tab moved to Administration Panel */}
         {activeTab === 'settings' && <SettingsPanel />}
       </main>
