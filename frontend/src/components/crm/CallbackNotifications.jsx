@@ -178,10 +178,10 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
 
   // Fetch pending login requests (admin only)
   const fetchLoginRequests = async () => {
-    if (currentUser?.role !== 'admin') return;
-    
     try {
       const token = localStorage.getItem('crmToken');
+      if (!token) return;
+      
       const headers = { Authorization: `Bearer ${token}` };
 
       const res = await axios.get(`${API}/admin/login-requests`, { headers });
@@ -201,7 +201,10 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       setPreviousLoginRequestCount(requests.length);
       setLoginRequests(requests);
     } catch (error) {
-      console.error('Error fetching login requests:', error);
+      // Non-admins will get 403 error - just silently ignore
+      if (error.response?.status !== 403) {
+        console.error('Error fetching login requests:', error);
+      }
     }
   };
   
