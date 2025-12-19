@@ -52,6 +52,8 @@ class CRMTester:
         self.test_lead_id = None
         self.test_results = []
         self.test_users = {}
+        self.maurizio_request_id = None
+        self.maurizio_token = None
         
     def log_result(self, test_name, success, message, details=None):
         """Log test result"""
