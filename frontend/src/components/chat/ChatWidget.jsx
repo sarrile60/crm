@@ -187,19 +187,27 @@ const ChatWidget = ({ currentUser }) => {
 
   // Send message
   const sendMessage = async () => {
-    if (!newMessage.trim() || !selectedConversation) return;
+    // Prevent duplicate sends
+    if (!newMessage.trim() || !selectedConversation || isSending) return;
+    
+    const messageToSend = newMessage.trim();
+    setIsSending(true);
+    setNewMessage(''); // Clear immediately to prevent double-send
     
     try {
       const token = localStorage.getItem('crmToken');
       const response = await axios.post(`${BACKEND_URL}/api/chat/conversations/${selectedConversation.id}/messages`, {
-        content: newMessage,
+        content: messageToSend,
         message_type: 'text'
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      setMessages(prev => [...prev, response.data]);
-      setNewMessage('');
+      // Add message only if it doesn't already exist
+      setMessages(prev => {
+        if (prev.some(m => m.id === response.data.id)) return prev;
+        return [...prev, response.data];
+      });
       
       // Stop typing indicator
       sendTypingIndicator(false);
@@ -207,6 +215,10 @@ const ChatWidget = ({ currentUser }) => {
       fetchConversations();
     } catch (error) {
       console.error('Error sending message:', error);
+      // Restore message on error
+      setNewMessage(messageToSend);
+    } finally {
+      setIsSending(false);
     }
   };
 
