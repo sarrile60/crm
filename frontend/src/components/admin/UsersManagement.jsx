@@ -277,7 +277,7 @@ const UsersManagement = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return t('common.never');
-    return new Date(dateString).toLocaleString(i18n.language, {
+    return new Date(dateString).toLocaleString(getLocale(), {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
