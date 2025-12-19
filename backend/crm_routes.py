@@ -138,14 +138,24 @@ async def login(credentials: UserLogin):
         is_work_hours, reason = await is_within_work_hours(settings)
         
         if not is_work_hours and settings.get("require_approval_after_hours", True):
-            # Check if user has an approved login request
+            # Clean up expired approved requests first
+            await db.login_requests.delete_many({
+                "user_id": user["id"],
+                "status": "approved",
+                "expires_at": {"$lt": datetime.now(timezone.utc)}
+            })
+            
+            # Check if user has a valid approved login request
             approved_request = await db.login_requests.find_one({
                 "user_id": user["id"],
                 "status": "approved",
                 "expires_at": {"$gt": datetime.now(timezone.utc)}
             })
             
-            if not approved_request:
+            if approved_request:
+                # User has valid approval - allow login and consume the approval
+                logger.info(f"User {user['username']} has valid approval, allowing after-hours login")
+            else:
                 # Check if there's already a pending request for this user (prevent duplicates)
                 existing_pending = await db.login_requests.find_one({
                     "user_id": user["id"],
