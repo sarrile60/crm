@@ -29,6 +29,10 @@ init_admin_db(db)
 from audit_utils import init_audit_db
 init_audit_db(db)
 
+# Initialize session settings
+from session_settings import init_session_settings_db
+init_session_settings_db(db)
+
 # JWT Secret (MUST be set in .env - no default allowed)
 JWT_SECRET = os.environ.get('JWT_SECRET')
 if not JWT_SECRET or JWT_SECRET == 'your-secret-key-here-change-in-production':
