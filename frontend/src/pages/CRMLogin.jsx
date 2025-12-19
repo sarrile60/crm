@@ -36,19 +36,25 @@ const CRMLogin = () => {
       const detail = error.response?.data?.detail || '';
       
       // Handle after-hours approval required message
+      // Format: after_hours_approval_required:after_work_hours:14:20
       if (detail.startsWith('after_hours_approval_required:')) {
-        const reason = detail.split(':')[1];
-        let translatedReason = reason;
+        const parts = detail.split(':');
+        // parts[0] = "after_hours_approval_required"
+        // parts[1] = "after_work_hours" or "before_work_hours" or "not_work_day"
+        // parts[2] = hour or day name
+        // parts[3] = minute (if time)
+        const reasonType = parts[1];
+        let translatedReason = reasonType;
         
         // Parse the reason code
-        if (reason.startsWith('after_work_hours')) {
-          const time = reason.split(':')[1] || '';
+        if (reasonType === 'after_work_hours') {
+          const time = parts.length >= 4 ? `${parts[2]}:${parts[3]}` : parts[2] || '';
           translatedReason = t('session.afterWorkHours', { time });
-        } else if (reason.startsWith('before_work_hours')) {
-          const time = reason.split(':')[1] || '';
+        } else if (reasonType === 'before_work_hours') {
+          const time = parts.length >= 4 ? `${parts[2]}:${parts[3]}` : parts[2] || '';
           translatedReason = t('session.beforeWorkHours', { time });
-        } else if (reason.startsWith('not_work_day')) {
-          const day = reason.split(':')[1] || '';
+        } else if (reasonType === 'not_work_day') {
+          const day = parts[2] || '';
           translatedReason = t('session.notWorkDay', { day });
         }
         
