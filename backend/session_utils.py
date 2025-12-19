@@ -101,38 +101,53 @@ def is_session_valid(session_expiry_utc: datetime) -> bool:
     return now_utc < session_expiry_utc
 
 
-def get_session_info() -> dict:
+async def get_session_info() -> dict:
     """
     Get current session information for debugging/display.
+    Uses database settings instead of hardcoded values.
     
     Returns:
         dict with berlin_time, is_work_hours, session_expiry, etc.
     """
-    berlin_now = get_berlin_time()
-    is_weekday = berlin_now.weekday() < 5
+    # Import here to avoid circular imports
+    from session_settings import get_session_settings, is_within_work_hours, get_current_time_in_timezone
     
-    today_end = berlin_now.replace(
-        hour=SESSION_END_HOUR, 
-        minute=SESSION_END_MINUTE, 
-        second=0, 
-        microsecond=0
-    )
+    # Get settings from database
+    settings = await get_session_settings()
+    tz_name = settings.get("timezone", "Europe/Berlin")
+    current_tz_time = get_current_time_in_timezone(tz_name)
     
-    is_work_hours = is_weekday and berlin_now < today_end
+    # Check if within work hours using database settings
+    is_work_hours, reason = await is_within_work_hours(settings)
+    
+    # Calculate session end time from settings
+    end_hour = settings.get("session_end_hour", 18)
+    end_minute = settings.get("session_end_minute", 30)
+    session_end_time = f"{end_hour:02d}:{end_minute:02d}"
     
     # Calculate time remaining
     if is_work_hours:
-        time_remaining = today_end - berlin_now
+        today_end = current_tz_time.replace(
+            hour=end_hour,
+            minute=end_minute,
+            second=0,
+            microsecond=0
+        )
+        time_remaining = today_end - current_tz_time
         minutes_remaining = int(time_remaining.total_seconds() / 60)
     else:
         minutes_remaining = 0
     
+    # Get session expiry from settings
+    from session_settings import get_session_expiry_from_settings
+    session_expiry = await get_session_expiry_from_settings()
+    
     return {
-        "berlin_time": berlin_now.strftime("%Y-%m-%d %H:%M:%S"),
-        "day_of_week": berlin_now.strftime("%A"),
-        "is_weekday": is_weekday,
+        "berlin_time": current_tz_time.strftime("%Y-%m-%d %H:%M:%S"),
+        "day_of_week": current_tz_time.strftime("%A"),
+        "is_weekday": current_tz_time.weekday() in settings.get("work_days", [0,1,2,3,4]),
         "is_work_hours": is_work_hours,
-        "session_end_time": "18:30",
-        "minutes_remaining": minutes_remaining,
-        "session_expiry_utc": get_session_expiry().isoformat()
+        "session_end_time": session_end_time,
+        "minutes_remaining": max(0, minutes_remaining),
+        "session_expiry_utc": session_expiry.isoformat()
     }
