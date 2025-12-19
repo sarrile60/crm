@@ -147,37 +147,37 @@ const AdminDashboard = () => {
           <div className="bg-[#121212] border border-white/25 p-6">
             <div className="flex items-center justify-between mb-4">
               <Eye className="w-8 h-8 text-[#00FFD1]" />
-              <span className="text-white/85 text-sm">Visite Pagina</span>
+              <span className="text-white/85 text-sm">{t('adminDashboard.pageViews')}</span>
             </div>
             <div className="text-4xl font-bold text-white mb-2">{analytics?.pageViews || 0}</div>
-            <p className="text-white/85 text-sm">Visualizzazioni totali</p>
+            <p className="text-white/85 text-sm">{t('adminDashboard.totalViews')}</p>
           </div>
 
           <div className="bg-[#121212] border border-white/25 p-6">
             <div className="flex items-center justify-between mb-4">
               <Users className="w-8 h-8 text-[#00FFD1]" />
-              <span className="text-white/85 text-sm">Form Iniziati</span>
+              <span className="text-white/85 text-sm">{t('adminDashboard.formStarts')}</span>
             </div>
             <div className="text-4xl font-bold text-white mb-2">{analytics?.formStarts || 0}</div>
-            <p className="text-white/85 text-sm">Utenti che hanno iniziato il form</p>
+            <p className="text-white/85 text-sm">{t('adminDashboard.usersStartedForm')}</p>
           </div>
 
           <div className="bg-[#121212] border border-white/25 p-6">
             <div className="flex items-center justify-between mb-4">
               <TrendingUp className="w-8 h-8 text-[#00FFD1]" />
-              <span className="text-white/85 text-sm">Lead Totali</span>
+              <span className="text-white/85 text-sm">{t('adminDashboard.totalLeads')}</span>
             </div>
             <div className="text-4xl font-bold text-white mb-2">{analytics?.totalLeads || 0}</div>
-            <p className="text-white/85 text-sm">Form completati con successo</p>
+            <p className="text-white/85 text-sm">{t('adminDashboard.formsCompletedSuccessfully')}</p>
           </div>
 
           <div className="bg-[#121212] border border-white/25 p-6">
             <div className="flex items-center justify-between mb-4">
               <MousePointerClick className="w-8 h-8 text-[#00FFD1]" />
-              <span className="text-white/85 text-sm">Click CTA</span>
+              <span className="text-white/85 text-sm">{t('adminDashboard.ctaClicks')}</span>
             </div>
             <div className="text-4xl font-bold text-white mb-2">{analytics?.ctaClicks || 0}</div>
-            <p className="text-white/85 text-sm">Click sui pulsanti CTA</p>
+            <p className="text-white/85 text-sm">{t('adminDashboard.clicksOnCtaButtons')}</p>
           </div>
         </div>
 
