@@ -27,6 +27,7 @@ const ChatWidget = ({ currentUser }) => {
   const [unreadTotal, setUnreadTotal] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const [lastPollTime, setLastPollTime] = useState(null);
+  const [zoomedImage, setZoomedImage] = useState(null);
   
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
