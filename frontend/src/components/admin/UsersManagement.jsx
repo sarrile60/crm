@@ -35,6 +35,11 @@ const UsersManagement = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
+  const [showPermanentDeleteModal, setShowPermanentDeleteModal] = useState(false);
+  const [showRestoreModal, setShowRestoreModal] = useState(false);
+  
+  // View mode: 'active' or 'archived'
+  const [viewMode, setViewMode] = useState('active');
   
   // Selected user for operations
   const [selectedUser, setSelectedUser] = useState(null);
