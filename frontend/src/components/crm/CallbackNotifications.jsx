@@ -518,10 +518,18 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
         console.error('Error notifying supervisor:', error);
       }
       
-      // Reset count and close modal
-      delete snoozeDataFromStorage[lead.id];
+      // Keep count at 3 so UI knows to hide the "Later" button
+      // Don't close modal - user must click "Call Now"
+      snoozeDataFromStorage[lead.id] = {
+        count: 3,
+        snoozeUntil: null,
+        lead: lead,
+        supervisorNotified: true
+      };
       localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
-      setShowUrgentModal(false);
+      
+      // Force re-render to update button visibility
+      setUrgentCallback({...lead});
       return;
     }
     
