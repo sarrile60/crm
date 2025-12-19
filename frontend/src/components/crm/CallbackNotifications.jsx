@@ -257,6 +257,15 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     delete snoozeDataFromStorage[lead.id];
     localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
     
+    // Mark this callback as "called" - so it won't show popup again
+    // Store the callback_date to track which specific callback time was handled
+    const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
+    calledCallbacks[lead.id] = {
+      callback_date: lead.callback_date,
+      called_at: new Date().toISOString()
+    };
+    localStorage.setItem('called_callbacks', JSON.stringify(calledCallbacks));
+    
     // Call the parent callback to switch to leads tab and open the lead
     if (onCallbackAlert) {
       onCallbackAlert(lead);
