@@ -283,9 +283,16 @@ const ChatWidget = ({ currentUser }) => {
     e.target.value = '';
   };
 
-  // Search messages
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
+  // Search messages - can be called directly or via debounce
+  const performSearch = async (query) => {
+    if (!query || !query.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+    
+    // Only search if at least 2 characters
+    if (query.trim().length < 2) {
       setSearchResults([]);
       return;
     }
@@ -293,7 +300,7 @@ const ChatWidget = ({ currentUser }) => {
     setIsSearching(true);
     try {
       const token = localStorage.getItem('crmToken');
-      const response = await axios.get(`${BACKEND_URL}/api/chat/search?q=${encodeURIComponent(searchQuery)}`, {
+      const response = await axios.get(`${BACKEND_URL}/api/chat/search?q=${encodeURIComponent(query)}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSearchResults(response.data.messages);
@@ -303,13 +310,36 @@ const ChatWidget = ({ currentUser }) => {
     setIsSearching(false);
   };
 
-  // Handle search input change - clear results when input is cleared
+  // Ref for search debounce timeout
+  const searchTimeoutRef = useRef(null);
+
+  // Handle search input change - search automatically as user types
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
+    
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
     if (!value.trim()) {
       setSearchResults([]);
+      return;
     }
+    
+    // Debounce search - wait 300ms after user stops typing
+    searchTimeoutRef.current = setTimeout(() => {
+      performSearch(value);
+    }, 300);
+  };
+  
+  // Manual search (for Enter key or button click)
+  const handleSearch = () => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    performSearch(searchQuery);
   };
 
   // Navigate to a message from search results
