@@ -558,10 +558,16 @@ const ChatWidget = ({ currentUser }) => {
             )}
 
             {/* Conversations */}
-            {conversations.map(conv => (
+            {conversations
+              .filter(conv => {
+                if (!conversationFilter.trim()) return true;
+                const name = getConversationName(conv).toLowerCase();
+                return name.includes(conversationFilter.toLowerCase());
+              })
+              .map(conv => (
               <button
                 key={conv.id}
-                onClick={() => { setSelectedConversation(conv); fetchMessages(conv.id); }}
+                onClick={() => { setSelectedConversation(conv); fetchMessages(conv.id); setConversationFilter(''); }}
                 className="w-full p-3 text-left hover:bg-gray-50 border-b flex items-center gap-3"
               >
                 <div className="w-10 h-10 bg-[#1a1a2e] rounded-full flex items-center justify-center text-white font-semibold">
