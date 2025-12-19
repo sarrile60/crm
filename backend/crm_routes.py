@@ -3,6 +3,7 @@ from typing import Optional, List
 from datetime import datetime, timezone
 import os
 import uuid
+import logging
 from crm_models import (
     User, UserCreate, UserLogin, UserUpdate,
     Team, TeamCreate,
