@@ -515,7 +515,12 @@ const ChatWidget = ({ currentUser }) => {
                         : 'bg-white border'
                     }`}>
                       {msg.message_type === 'image' ? (
-                        <img src={msg.file_url} alt={msg.file_name} className="max-w-full rounded" />
+                        <img 
+                          src={msg.file_url} 
+                          alt={msg.file_name} 
+                          className="max-w-full rounded cursor-pointer hover:opacity-90 transition-opacity" 
+                          onClick={() => setZoomedImage(msg.file_url)}
+                        />
                       ) : msg.message_type === 'file' ? (
                         <a href={msg.file_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 underline">
                           <Paperclip className="w-4 h-4" />
