@@ -336,6 +336,11 @@ const ChatWidget = ({ currentUser }) => {
     // Prevent duplicate sends
     if (!newMessage.trim() || !selectedConversation || isSending) return;
     
+    // If this is a team chat, use the team message endpoint
+    if (selectedConversation.is_team_chat && selectedConversation.team_id) {
+      return sendTeamMessage();
+    }
+    
     const messageToSend = newMessage.trim();
     setIsSending(true);
     setNewMessage(''); // Clear immediately to prevent double-send
