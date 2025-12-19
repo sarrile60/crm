@@ -308,7 +308,8 @@
     "errorDenyingLogin": "Error denying login",
     "approve": "Approve",
     "deny": "Deny",
-    "reason": "Reason"
+    "reason": "Reason",
+    "noLoginRequests": "No pending login requests"
   },
   "roles": {
     "title": "Role Management",
