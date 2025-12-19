@@ -198,7 +198,17 @@
     "accessDeniedMessage": "Sie haben keine Berechtigung, auf das Administrationsfeld zuzugreifen. Nur Benutzer mit der Rolle \"admin\" können auf diesen Bereich zugreifen.",
     "session": "Sitzungseinstellungen",
     "audit": "Audit-Protokolle",
-    "entity": "Entitätskonfiguration"
+    "entity": "Entitätskonfiguration",
+    "loginRequests": "Anmeldeanfragen",
+    "newLoginRequest": "Neue Anmeldeanfrage",
+    "userNeedsApproval": "Ein Benutzer fordert Zugang außerhalb der Arbeitszeit an",
+    "loginApproved": "Anmeldung für {{username}} genehmigt",
+    "loginDenied": "Anmeldung für {{username}} abgelehnt",
+    "errorApprovingLogin": "Fehler bei der Genehmigung der Anmeldung",
+    "errorDenyingLogin": "Fehler bei der Ablehnung der Anmeldung",
+    "approve": "Genehmigen",
+    "deny": "Ablehnen",
+    "reason": "Grund"
   },
   "roles": {
     "title": "Rollenverwaltung",
