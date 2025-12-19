@@ -60,6 +60,13 @@ const SessionSettings = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSettings(response.data);
+      // Sync time inputs with loaded settings
+      setTimeInputs({
+        startHour: String(response.data.session_start_hour).padStart(2, '0'),
+        startMinute: String(response.data.session_start_minute).padStart(2, '0'),
+        endHour: String(response.data.session_end_hour).padStart(2, '0'),
+        endMinute: String(response.data.session_end_minute).padStart(2, '0')
+      });
       setHasChanges(false);
     } catch (error) {
       toast.error(t('session.errorLoadingSettings'));
