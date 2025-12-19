@@ -6,7 +6,7 @@ All changes persist to database and take effect immediately
 from fastapi import APIRouter, HTTPException, Depends, Header
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from typing import List, Dict, Any, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import logging
 
 from admin_models import (
@@ -363,7 +363,7 @@ async def create_user_admin(user_data: dict, current_user: dict = Depends(get_cu
 @admin_router.put("/users/{user_id}", dependencies=[Depends(require_admin)])
 async def update_user_admin(user_id: str, user_data: dict, current_user: dict = Depends(get_current_user)):
     """Update user via Admin GUI"""
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, timedelta
     
     user = await db.crm_users.find_one({"id": user_id})
     if not user:
@@ -438,7 +438,7 @@ async def reset_user_password(user_id: str, password_data: dict, current_user: d
 @admin_router.put("/users/{user_id}/status", dependencies=[Depends(require_admin)])
 async def update_user_status(user_id: str, status_data: dict, current_user: dict = Depends(get_current_user)):
     """Activate/Deactivate user via Admin GUI"""
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, timedelta
     
     user = await db.crm_users.find_one({"id": user_id})
     if not user:
@@ -467,7 +467,7 @@ async def update_user_status(user_id: str, status_data: dict, current_user: dict
 @admin_router.delete("/users/{user_id}", dependencies=[Depends(require_admin)])
 async def delete_user_admin(user_id: str, current_user: dict = Depends(get_current_user)):
     """Soft-delete user via Admin GUI"""
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, timedelta
     
     user = await db.crm_users.find_one({"id": user_id})
     if not user:
@@ -507,7 +507,7 @@ async def delete_user_admin(user_id: str, current_user: dict = Depends(get_curre
 @admin_router.post("/users/{user_id}/restore", dependencies=[Depends(require_admin)])
 async def restore_user(user_id: str, current_user: dict = Depends(get_current_user)):
     """Restore a soft-deleted user from archive"""
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, timedelta
     
     user = await db.crm_users.find_one({"id": user_id})
     if not user:
@@ -545,7 +545,7 @@ async def restore_user(user_id: str, current_user: dict = Depends(get_current_us
 @admin_router.delete("/users/{user_id}/permanent", dependencies=[Depends(require_admin)])
 async def permanently_delete_user(user_id: str, current_user: dict = Depends(get_current_user)):
     """Permanently delete a user from the archive (cannot be recovered)"""
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, timedelta
     
     user = await db.crm_users.find_one({"id": user_id})
     if not user:
@@ -696,7 +696,7 @@ async def create_team_admin(team_data: dict, current_user: dict = Depends(get_cu
 @admin_router.put("/teams/{team_id}", dependencies=[Depends(require_admin)])
 async def update_team_admin(team_id: str, team_data: dict, current_user: dict = Depends(get_current_user)):
     """Update team via Admin GUI"""
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, timedelta
     
     team = await db.teams.find_one({"id": team_id})
     if not team:
@@ -739,7 +739,7 @@ async def update_team_admin(team_id: str, team_data: dict, current_user: dict = 
 @admin_router.delete("/teams/{team_id}", dependencies=[Depends(require_admin)])
 async def archive_team_admin(team_id: str, request_data: dict = None, current_user: dict = Depends(get_current_user)):
     """Archive team via Admin GUI - requires reassignment of members"""
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, timedelta
     
     team = await db.teams.find_one({"id": team_id})
     if not team:
@@ -811,7 +811,7 @@ async def archive_team_admin(team_id: str, request_data: dict = None, current_us
 @admin_router.post("/teams/{team_id}/members", dependencies=[Depends(require_admin)])
 async def add_members_to_team(team_id: str, member_data: dict, current_user: dict = Depends(get_current_user)):
     """Add members to team via Admin GUI"""
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, timedelta
     
     team = await db.teams.find_one({"id": team_id})
     if not team:
@@ -857,7 +857,7 @@ async def add_members_to_team(team_id: str, member_data: dict, current_user: dic
 @admin_router.delete("/teams/{team_id}/members/{user_id}", dependencies=[Depends(require_admin)])
 async def remove_member_from_team(team_id: str, user_id: str, current_user: dict = Depends(get_current_user)):
     """Remove member from team via Admin GUI"""
-    from datetime import datetime, timezone
+    from datetime import datetime, timezone, timedelta
     
     team = await db.teams.find_one({"id": team_id})
     if not team:
