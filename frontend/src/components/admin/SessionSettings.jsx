@@ -334,29 +334,53 @@ const SessionSettings = () => {
                 {t('session.sessionEnd')}
               </label>
               <div className="flex gap-2 items-center">
-                <Input
-                  type="text"
-                  maxLength="2"
-                  value={String(settings.session_end_hour).padStart(2, '0')}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, '');
-                    const num = parseInt(val) || 0;
-                    updateSetting('session_end_hour', Math.min(23, num));
-                  }}
-                  className="w-16 rounded-none text-center"
-                />
+                <div className="flex flex-col">
+                  <button 
+                    type="button"
+                    onClick={() => updateSetting('session_end_hour', Math.min(23, settings.session_end_hour + 1))}
+                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs"
+                  >▲</button>
+                  <Input
+                    type="text"
+                    maxLength="2"
+                    value={String(settings.session_end_hour).padStart(2, '0')}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      const num = parseInt(val) || 0;
+                      updateSetting('session_end_hour', Math.min(23, num));
+                    }}
+                    className="w-16 rounded-none text-center"
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => updateSetting('session_end_hour', Math.max(0, settings.session_end_hour - 1))}
+                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs"
+                  >▼</button>
+                </div>
                 <span className="text-gray-500 text-xl font-bold">:</span>
-                <Input
-                  type="text"
-                  maxLength="2"
-                  value={String(settings.session_end_minute).padStart(2, '0')}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, '');
-                    const num = parseInt(val) || 0;
-                    updateSetting('session_end_minute', Math.min(59, num));
-                  }}
-                  className="w-16 rounded-none text-center"
-                />
+                <div className="flex flex-col">
+                  <button 
+                    type="button"
+                    onClick={() => updateSetting('session_end_minute', Math.min(59, settings.session_end_minute + 5))}
+                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs"
+                  >▲</button>
+                  <Input
+                    type="text"
+                    maxLength="2"
+                    value={String(settings.session_end_minute).padStart(2, '0')}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      const num = parseInt(val) || 0;
+                      updateSetting('session_end_minute', Math.min(59, num));
+                    }}
+                    className="w-16 rounded-none text-center"
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => updateSetting('session_end_minute', Math.max(0, settings.session_end_minute - 5))}
+                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs"
+                  >▼</button>
+                </div>
               </div>
             </div>
 
