@@ -872,6 +872,8 @@
   "chat": {
     "title": "Chat",
     "searchMessages": "Search messages...",
+    "filterConversations": "Find a conversation...",
+    "noMatchingConversations": "No conversations found",
     "newConversation": "New Conversation",
     "searchResults": "Search Results",
     "selectUser": "Select User",
