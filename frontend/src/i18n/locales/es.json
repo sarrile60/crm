@@ -198,7 +198,17 @@
     "accessDeniedMessage": "No tiene permiso para acceder al panel de administración. Solo los usuarios con el rol \"admin\" pueden acceder a esta sección.",
     "session": "Configuración de sesión",
     "audit": "Registros de auditoría",
-    "entity": "Configuración de entidades"
+    "entity": "Configuración de entidades",
+    "loginRequests": "Solicitudes de Acceso",
+    "newLoginRequest": "Nueva Solicitud de Acceso",
+    "userNeedsApproval": "Un usuario solicita acceso fuera del horario de trabajo",
+    "loginApproved": "Acceso aprobado para {{username}}",
+    "loginDenied": "Acceso denegado para {{username}}",
+    "errorApprovingLogin": "Error al aprobar el acceso",
+    "errorDenyingLogin": "Error al denegar el acceso",
+    "approve": "Aprobar",
+    "deny": "Denegar",
+    "reason": "Motivo"
   },
   "roles": {
     "title": "Gestión de Roles",
