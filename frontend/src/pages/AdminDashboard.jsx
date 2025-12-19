@@ -272,7 +272,7 @@ const AdminDashboard = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="text-white text-xl font-semibold">{lead.fullName}</h4>
                   <span className="text-white/85 text-sm">
-                    {new Date(lead.createdAt).toLocaleString(i18n.language)}
+                    {new Date(lead.createdAt).toLocaleString(getLocale())}
                   </span>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4 mb-4">
