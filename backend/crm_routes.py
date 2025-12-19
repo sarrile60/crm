@@ -335,6 +335,9 @@ async def check_session(current_user: dict = Depends(get_current_user)):
             # User has valid approval - session is still valid
             approval_expires = approved_request.get("expires_at")
             if approval_expires:
+                # Ensure datetime is timezone-aware for comparison
+                if approval_expires.tzinfo is None:
+                    approval_expires = approval_expires.replace(tzinfo=timezone.utc)
                 # Calculate minutes remaining until approval expires
                 time_until_expiry = approval_expires - datetime.now(timezone.utc)
                 approval_minutes_remaining = int(time_until_expiry.total_seconds() / 60)
