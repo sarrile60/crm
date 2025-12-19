@@ -910,5 +910,19 @@
     "attachFile": "Datei anhängen",
     "messageRead": "Gelesen",
     "messageDelivered": "Zugestellt"
+  },
+  "adminDashboard": {
+    "pageViews": "Seitenaufrufe",
+    "totalViews": "Gesamtaufrufe",
+    "formStarts": "Formular gestartet",
+    "usersStartedForm": "Benutzer, die das Formular gestartet haben",
+    "totalLeads": "Gesamte Leads",
+    "formsCompletedSuccessfully": "Erfolgreich ausgefüllte Formulare",
+    "ctaClicks": "CTA-Klicks",
+    "clicksOnCtaButtons": "Klicks auf CTA-Buttons",
+    "conversionRate": "Konversionsrate",
+    "formStartsToLeads": "Formularstarts → Abgeschlossene Leads",
+    "amountLost": "Verlorener Betrag",
+    "caseDescription": "Fallbeschreibung"
   }
 }
