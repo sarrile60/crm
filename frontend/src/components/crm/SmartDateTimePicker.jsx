@@ -8,7 +8,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const SmartDateTimePicker = ({ value, onChange, currentUser, currentLeadId }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [bookedSlots, setBookedSlots] = useState([]);
   const [conflicts, setConflicts] = useState([]);
 
