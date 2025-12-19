@@ -109,7 +109,7 @@ const LanguageSettings = () => {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{lang.flag}</span>
+                  <span className={`fi fi-${lang.flagCode} text-3xl`} style={{ fontSize: '2rem' }}></span>
                   <div>
                     <div className="font-semibold text-gray-900">{lang.name}</div>
                     <div className="text-sm text-gray-500 uppercase">{lang.code}</div>
