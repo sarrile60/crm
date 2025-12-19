@@ -109,6 +109,9 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       const leadsRes = await axios.get(`${API}/crm/leads`, { headers });
       const allLeads = leadsRes.data;
       
+      // Clean up old "called" markers
+      cleanupCalledCallbacks(allLeads);
+      
       // Statuses that require callback notifications
       const callbackStatuses = ['Callback', 'Potential Callback', 'Pharos in progress'];
       const depositStatuses = ['Deposit 1', 'Deposit 2', 'Deposit 3', 'Deposit 4', 'Deposit 5'];
