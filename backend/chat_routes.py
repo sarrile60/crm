@@ -123,6 +123,237 @@ async def get_conversations(request: Request):
     
     return {"conversations": conversations}
 
+# Get available teams for team chat (admin sees all, supervisor sees their teams)
+@router.get("/teams")
+async def get_chat_teams(request: Request):
+    from server import db
+    
+    current_user = await get_current_user(request)
+    role = current_user.get("role", "").lower()
+    
+    # Only admins and supervisors can access team chat
+    if role not in ["admin", "supervisor"]:
+        return {"teams": []}
+    
+    if role == "admin":
+        # Admin sees all active teams
+        teams = await db.teams.find(
+            {"$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]},
+            {"_id": 0, "id": 1, "name": 1, "description": 1, "supervisor_id": 1}
+        ).to_list(100)
+    else:
+        # Supervisor sees only teams they supervise
+        teams = await db.teams.find(
+            {
+                "supervisor_id": current_user["id"],
+                "$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]
+            },
+            {"_id": 0, "id": 1, "name": 1, "description": 1, "supervisor_id": 1}
+        ).to_list(100)
+    
+    # Add member count to each team
+    for team in teams:
+        member_count = await db.crm_users.count_documents({
+            "team_id": team["id"],
+            "$or": [{"deleted_at": None}, {"deleted_at": {"$exists": False}}],
+            "is_active": {"$ne": False}
+        })
+        team["member_count"] = member_count
+    
+    return {"teams": teams}
+
+# Create or get team conversation
+@router.post("/teams/{team_id}/conversation")
+async def create_team_conversation(team_id: str, request: Request):
+    from server import db
+    
+    current_user = await get_current_user(request)
+    role = current_user.get("role", "").lower()
+    
+    # Only admins and supervisors can create team chats
+    if role not in ["admin", "supervisor"]:
+        raise HTTPException(status_code=403, detail="Only admins and supervisors can create team chats")
+    
+    # Verify team exists
+    team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    # For supervisors, verify they supervise this team
+    if role == "supervisor" and team.get("supervisor_id") != current_user["id"]:
+        raise HTTPException(status_code=403, detail="You can only chat with teams you supervise")
+    
+    # Check if team conversation already exists
+    existing = await db.conversations.find_one({
+        "team_id": team_id,
+        "is_team_chat": True
+    }, {"_id": 0})
+    
+    if existing:
+        return existing
+    
+    # Get all team members
+    team_members = await db.crm_users.find(
+        {
+            "team_id": team_id,
+            "$or": [{"deleted_at": None}, {"deleted_at": {"$exists": False}}],
+            "is_active": {"$ne": False}
+        },
+        {"_id": 0, "id": 1}
+    ).to_list(100)
+    
+    participant_ids = [m["id"] for m in team_members]
+    
+    # Add supervisor if not already in team
+    if team.get("supervisor_id") and team["supervisor_id"] not in participant_ids:
+        participant_ids.append(team["supervisor_id"])
+    
+    # Add current user if not already included
+    if current_user["id"] not in participant_ids:
+        participant_ids.append(current_user["id"])
+    
+    # Create team conversation
+    conversation = {
+        "id": str(uuid4()),
+        "team_id": team_id,
+        "is_team_chat": True,
+        "is_group": True,
+        "name": f"Team: {team['name']}",
+        "participant_ids": participant_ids,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_by": current_user["id"],
+        "last_message": None,
+        "last_message_at": None,
+        "typing_users": []
+    }
+    
+    await db.conversations.insert_one(conversation)
+    del conversation["_id"] if "_id" in conversation else None
+    
+    return conversation
+
+# Send message to team (updates participant list dynamically)
+@router.post("/teams/{team_id}/messages")
+async def send_team_message(team_id: str, data: MessageCreate, request: Request):
+    from server import db
+    
+    current_user = await get_current_user(request)
+    role = current_user.get("role", "").lower()
+    
+    # Only admins and supervisors can send team messages
+    if role not in ["admin", "supervisor"]:
+        raise HTTPException(status_code=403, detail="Only admins and supervisors can send team messages")
+    
+    # Verify team exists
+    team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    # For supervisors, verify they supervise this team
+    if role == "supervisor" and team.get("supervisor_id") != current_user["id"]:
+        raise HTTPException(status_code=403, detail="You can only message teams you supervise")
+    
+    # Get or create team conversation
+    conversation = await db.conversations.find_one({
+        "team_id": team_id,
+        "is_team_chat": True
+    }, {"_id": 0})
+    
+    if not conversation:
+        # Create conversation first
+        team_members = await db.crm_users.find(
+            {
+                "team_id": team_id,
+                "$or": [{"deleted_at": None}, {"deleted_at": {"$exists": False}}],
+                "is_active": {"$ne": False}
+            },
+            {"_id": 0, "id": 1}
+        ).to_list(100)
+        
+        participant_ids = [m["id"] for m in team_members]
+        if team.get("supervisor_id") and team["supervisor_id"] not in participant_ids:
+            participant_ids.append(team["supervisor_id"])
+        if current_user["id"] not in participant_ids:
+            participant_ids.append(current_user["id"])
+        
+        conversation = {
+            "id": str(uuid4()),
+            "team_id": team_id,
+            "is_team_chat": True,
+            "is_group": True,
+            "name": f"Team: {team['name']}",
+            "participant_ids": participant_ids,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": current_user["id"],
+            "last_message": None,
+            "last_message_at": None,
+            "typing_users": []
+        }
+        await db.conversations.insert_one(conversation)
+    else:
+        # Update participant list to include any new team members
+        team_members = await db.crm_users.find(
+            {
+                "team_id": team_id,
+                "$or": [{"deleted_at": None}, {"deleted_at": {"$exists": False}}],
+                "is_active": {"$ne": False}
+            },
+            {"_id": 0, "id": 1}
+        ).to_list(100)
+        
+        new_participant_ids = set(conversation.get("participant_ids", []))
+        for m in team_members:
+            new_participant_ids.add(m["id"])
+        if team.get("supervisor_id"):
+            new_participant_ids.add(team["supervisor_id"])
+        if current_user["id"] not in new_participant_ids:
+            new_participant_ids.add(current_user["id"])
+        
+        await db.conversations.update_one(
+            {"id": conversation["id"]},
+            {"$set": {"participant_ids": list(new_participant_ids)}}
+        )
+    
+    # Create message
+    now = datetime.now(timezone.utc)
+    message = {
+        "id": str(uuid4()),
+        "conversation_id": conversation["id"],
+        "sender_id": current_user["id"],
+        "content": data.content,
+        "message_type": data.message_type,
+        "file_url": data.file_url,
+        "file_name": data.file_name,
+        "created_at": now.isoformat(),
+        "read_by": [current_user["id"]],
+        "delivered_to": [current_user["id"]]
+    }
+    
+    await db.messages.insert_one(message)
+    
+    # Update conversation
+    await db.conversations.update_one(
+        {"id": conversation["id"]},
+        {
+            "$set": {
+                "last_message": data.content[:50] + "..." if len(data.content) > 50 else data.content,
+                "last_message_at": now.isoformat()
+            }
+        }
+    )
+    
+    # Add sender info
+    message["sender"] = {
+        "id": current_user["id"],
+        "full_name": current_user.get("full_name"),
+        "username": current_user.get("username"),
+        "role": current_user.get("role")
+    }
+    
+    del message["_id"] if "_id" in message else None
+    
+    return message
+
 # Get messages in a conversation
 @router.get("/conversations/{conversation_id}/messages")
 async def get_messages(conversation_id: str, request: Request, limit: int = 50, before: Optional[str] = None):
