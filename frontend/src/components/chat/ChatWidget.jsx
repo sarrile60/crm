@@ -70,6 +70,81 @@ const ChatWidget = ({ currentUser }) => {
     }
   }, []);
 
+  // Fetch available teams for team chat (admin/supervisor only)
+  const fetchTeams = useCallback(async () => {
+    if (!currentUser || !['admin', 'supervisor'].includes(currentUser.role?.toLowerCase())) {
+      return;
+    }
+    try {
+      const token = localStorage.getItem('crmToken');
+      const response = await axios.get(`${BACKEND_URL}/api/chat/teams`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setAvailableTeams(response.data.teams || []);
+    } catch (error) {
+      console.error('Error fetching teams:', error);
+    }
+  }, [currentUser]);
+
+  // Start or open team conversation
+  const openTeamChat = async (team) => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      
+      // Create or get team conversation
+      const response = await axios.post(
+        `${BACKEND_URL}/api/chat/teams/${team.id}/conversation`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      const conversation = response.data;
+      
+      // Add team info to conversation for display
+      conversation.team_name = team.name;
+      conversation.is_team_chat = true;
+      
+      setSelectedConversation(conversation);
+      setShowTeamChat(false);
+      fetchMessages(conversation.id);
+      fetchConversations();
+    } catch (error) {
+      console.error('Error opening team chat:', error);
+      toast.error(t('chat.errorOpeningTeamChat'));
+    }
+  };
+
+  // Send message to team
+  const sendTeamMessage = async () => {
+    if (!newMessage.trim() || !selectedConversation?.team_id || isSending) return;
+    
+    const messageToSend = newMessage.trim();
+    setIsSending(true);
+    setNewMessage('');
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      const response = await axios.post(
+        `${BACKEND_URL}/api/chat/teams/${selectedConversation.team_id}/messages`,
+        { content: messageToSend, message_type: 'text' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      setMessages(prev => {
+        if (prev.some(m => m.id === response.data.id)) return prev;
+        return [...prev, response.data];
+      });
+      
+      fetchConversations();
+    } catch (error) {
+      console.error('Error sending team message:', error);
+      setNewMessage(messageToSend);
+      toast.error(t('chat.errorSendingMessage'));
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   // Track which message IDs we've already seen to prevent duplicate sounds
   const seenMessageIds = useRef(new Set());
   
