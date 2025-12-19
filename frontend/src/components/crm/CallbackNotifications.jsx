@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Phone, Clock } from 'lucide-react';
+import { Bell, Phone, Clock, UserCheck, UserX, LogIn } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { toast } from 'sonner';
@@ -13,12 +13,14 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const { t, i18n } = useTranslation();
   const [reminders, setReminders] = useState([]);
   const [pendingCallbacks, setPendingCallbacks] = useState([]);
+  const [loginRequests, setLoginRequests] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [urgentCallback, setUrgentCallback] = useState(null);
   const [showUrgentModal, setShowUrgentModal] = useState(false);
   const [snoozeData, setSnoozeData] = useState({});
   const [totalNotifications, setTotalNotifications] = useState(0);
   const [urgentCallbackQueue, setUrgentCallbackQueue] = useState([]);
+  const [previousLoginRequestCount, setPreviousLoginRequestCount] = useState(0);
   
   // Helper to get proper locale for date formatting
   const getLocale = () => {
