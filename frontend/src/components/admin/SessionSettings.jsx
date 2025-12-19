@@ -348,16 +348,20 @@ const SessionSettings = () => {
                     onClick={() => updateSetting('session_end_hour', Math.min(23, settings.session_end_hour + 1))}
                     className="px-3 py-1 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs"
                   >▲</button>
-                  <Input
+                  <input
                     type="text"
                     maxLength="2"
                     value={String(settings.session_end_hour).padStart(2, '0')}
                     onChange={(e) => {
                       const val = e.target.value.replace(/\D/g, '');
-                      const num = parseInt(val) || 0;
-                      updateSetting('session_end_hour', Math.min(23, num));
+                      if (val === '') {
+                        updateSetting('session_end_hour', 0);
+                      } else {
+                        const num = parseInt(val, 10);
+                        updateSetting('session_end_hour', Math.min(23, num));
+                      }
                     }}
-                    className="w-16 rounded-none text-center"
+                    className="w-16 text-center border border-gray-300 px-2 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                   />
                   <button 
                     type="button"
@@ -369,23 +373,27 @@ const SessionSettings = () => {
                 <div className="flex flex-col">
                   <button 
                     type="button"
-                    onClick={() => updateSetting('session_end_minute', Math.min(59, settings.session_end_minute + 5))}
+                    onClick={() => updateSetting('session_end_minute', Math.min(59, settings.session_end_minute + 1))}
                     className="px-3 py-1 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs"
                   >▲</button>
-                  <Input
+                  <input
                     type="text"
                     maxLength="2"
                     value={String(settings.session_end_minute).padStart(2, '0')}
                     onChange={(e) => {
                       const val = e.target.value.replace(/\D/g, '');
-                      const num = parseInt(val) || 0;
-                      updateSetting('session_end_minute', Math.min(59, num));
+                      if (val === '') {
+                        updateSetting('session_end_minute', 0);
+                      } else {
+                        const num = parseInt(val, 10);
+                        updateSetting('session_end_minute', Math.min(59, num));
+                      }
                     }}
-                    className="w-16 rounded-none text-center"
+                    className="w-16 text-center border border-gray-300 px-2 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                   />
                   <button 
                     type="button"
-                    onClick={() => updateSetting('session_end_minute', Math.max(0, settings.session_end_minute - 5))}
+                    onClick={() => updateSetting('session_end_minute', Math.max(0, settings.session_end_minute - 1))}
                     className="px-3 py-1 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs"
                   >▼</button>
                 </div>
