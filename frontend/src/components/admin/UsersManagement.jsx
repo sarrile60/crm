@@ -895,22 +895,22 @@ const UsersManagement = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete User Modal */}
+      {/* Archive User Modal (Soft Delete) */}
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
         <DialogContent className="max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
-              <Trash2 className="w-6 h-6" />
-              {t('users.confirmDelete')}
+            <DialogTitle className="text-2xl font-bold text-orange-600 flex items-center gap-2">
+              <Archive className="w-6 h-6" />
+              {t('users.confirmArchive')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <p className="text-gray-700">
-              {t('users.deleteWarning')} <strong>{selectedUser?.full_name}</strong> (@{selectedUser?.username})?
+              {t('users.archiveWarning')} <strong>{selectedUser?.full_name}</strong> (@{selectedUser?.username})?
             </p>
-            <div className="bg-yellow-50 border border-yellow-200 p-3 rounded">
-              <p className="text-sm text-yellow-800">
-                <strong>⚠️</strong> {t('users.softDeleteWarning')}
+            <div className="bg-blue-50 border border-blue-200 p-3 rounded">
+              <p className="text-sm text-blue-800">
+                <strong>ℹ️</strong> {t('users.archiveNote')}
               </p>
             </div>
             <div className="flex gap-3 pt-4">
@@ -922,9 +922,81 @@ const UsersManagement = () => {
               </Button>
               <Button 
                 onClick={handleDeleteUser}
+                className="flex-1 bg-orange-600 text-white hover:bg-orange-700 rounded-none"
+              >
+                {t('users.archive')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Restore User Modal */}
+      <Dialog open={showRestoreModal} onOpenChange={setShowRestoreModal}>
+        <DialogContent className="max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-green-600 flex items-center gap-2">
+              <RotateCcw className="w-6 h-6" />
+              {t('users.confirmRestore')}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <p className="text-gray-700">
+              {t('users.restoreWarning')} <strong>{selectedUser?.full_name}</strong> (@{selectedUser?.username})?
+            </p>
+            <div className="bg-green-50 border border-green-200 p-3 rounded">
+              <p className="text-sm text-green-800">
+                <strong>✓</strong> {t('users.restoreNote')}
+              </p>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button 
+                onClick={() => setShowRestoreModal(false)}
+                className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button 
+                onClick={handleRestoreUser}
+                className="flex-1 bg-green-600 text-white hover:bg-green-700 rounded-none"
+              >
+                {t('users.restore')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Permanent Delete Modal */}
+      <Dialog open={showPermanentDeleteModal} onOpenChange={setShowPermanentDeleteModal}>
+        <DialogContent className="max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
+              <AlertTriangle className="w-6 h-6" />
+              {t('users.confirmPermanentDelete')}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <p className="text-gray-700">
+              {t('users.permanentDeleteWarning')} <strong>{selectedUser?.full_name}</strong> (@{selectedUser?.username})?
+            </p>
+            <div className="bg-red-50 border border-red-200 p-3 rounded">
+              <p className="text-sm text-red-800">
+                <strong>⚠️ {t('common.warning')}:</strong> {t('users.permanentDeleteNote')}
+              </p>
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button 
+                onClick={() => setShowPermanentDeleteModal(false)}
+                className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button 
+                onClick={handlePermanentDelete}
                 className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none"
               >
-                {t('common.delete')}
+                {t('users.permanentDelete')}
               </Button>
             </div>
           </div>
