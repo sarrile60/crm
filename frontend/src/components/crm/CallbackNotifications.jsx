@@ -695,7 +695,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
             </div>
 
             {/* Login Approval Requests Section (Admin Only) */}
-            {currentUser?.role === 'admin' && loginRequests.length > 0 && (
+            {currentUser?.role === 'admin' && (
               <div>
                 <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
                   <LogIn className="w-5 h-5 text-orange-600" />
