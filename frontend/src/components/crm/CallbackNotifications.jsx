@@ -259,7 +259,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
 
       await axios.post(`${API}/admin/login-requests/${requestId}/deny`, {}, { headers });
       toast.success(t('admin.loginDenied', { username }));
-      fetchLoginRequests();
+      refreshLoginRequests();
     } catch (error) {
       toast.error(t('admin.errorDenyingLogin'));
     }
