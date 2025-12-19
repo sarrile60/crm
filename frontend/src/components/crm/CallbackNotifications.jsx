@@ -32,12 +32,38 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   };
 
   // Process queue - show next callback popup when current one is closed
+  // Track which callbacks have been shown to prevent duplicates
+  const shownCallbacksRef = useRef(new Set());
+  
   useEffect(() => {
     if (urgentCallbackQueue.length > 0 && !showUrgentModal) {
-      const nextCallback = urgentCallbackQueue[0];
-      setUrgentCallback(nextCallback);
-      setShowUrgentModal(true);
-      setUrgentCallbackQueue(prev => prev.slice(1)); // Remove from queue
+      // Find the first callback that hasn't been shown recently
+      let nextIndex = 0;
+      while (nextIndex < urgentCallbackQueue.length) {
+        const callback = urgentCallbackQueue[nextIndex];
+        const shownKey = `${callback.id}_${callback.callback_date}`;
+        
+        if (!shownCallbacksRef.current.has(shownKey)) {
+          // Show this callback
+          shownCallbacksRef.current.add(shownKey);
+          setUrgentCallback(callback);
+          setShowUrgentModal(true);
+          setUrgentCallbackQueue(prev => prev.filter((_, i) => i !== nextIndex));
+          
+          // Clear the shown key after 30 seconds to allow re-showing if needed
+          setTimeout(() => {
+            shownCallbacksRef.current.delete(shownKey);
+          }, 30000);
+          
+          break;
+        }
+        nextIndex++;
+      }
+      
+      // If all callbacks in queue were already shown, clear the queue
+      if (nextIndex >= urgentCallbackQueue.length && urgentCallbackQueue.length > 0) {
+        setUrgentCallbackQueue([]);
+      }
     }
   }, [urgentCallbackQueue, showUrgentModal]);
 
