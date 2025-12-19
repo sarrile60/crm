@@ -47,6 +47,11 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     fetchPendingCallbacks();
     checkUpcomingCallbacks();
     
+    // Admins also need to check for login requests
+    if (currentUser?.role === 'admin') {
+      fetchLoginRequests();
+    }
+    
     // Check for reminders and callbacks every 30 seconds
     const interval = setInterval(() => {
       checkUpcomingCallbacks();
@@ -56,11 +61,18 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     // Check for snoozed callbacks every 10 seconds
     const snoozeInterval = setInterval(checkSnoozedCallbacks, 10000);
     
+    // Admins: Check for new login requests every 10 seconds
+    let loginRequestInterval;
+    if (currentUser?.role === 'admin') {
+      loginRequestInterval = setInterval(fetchLoginRequests, 10000);
+    }
+    
     return () => {
       clearInterval(interval);
       clearInterval(snoozeInterval);
+      if (loginRequestInterval) clearInterval(loginRequestInterval);
     };
-  }, []);
+  }, [currentUser?.role]);
 
   // Clean up old "called" markers - if callback_date changed, the marker should be cleared
   const cleanupCalledCallbacks = (leads) => {
