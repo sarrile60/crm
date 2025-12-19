@@ -37,6 +37,9 @@ crm_router = APIRouter(prefix="/api/crm")
 db = None
 permission_engine: PermissionEngine = None
 
+# Logger
+logger = logging.getLogger(__name__)
+
 def init_crm_db(database):
     global db, permission_engine
     init_session_settings_db(database)  # Initialize session settings
