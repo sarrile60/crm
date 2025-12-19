@@ -178,12 +178,16 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
 
   // Fetch pending login requests (admin only)
   const fetchLoginRequests = async () => {
+    if (currentUser?.role !== 'admin') return;
+    
     try {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
       const res = await axios.get(`${API}/admin/login-requests`, { headers });
       const requests = res.data.requests || [];
+      
+      console.log('Login requests fetched:', requests.length);
       
       // Check if there are new requests (play sound)
       if (requests.length > previousLoginRequestCount && previousLoginRequestCount > 0) {
@@ -196,11 +200,16 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       
       setPreviousLoginRequestCount(requests.length);
       setLoginRequests(requests);
-      updateTotalNotifications(reminders.length, pendingCallbacks.length, requests.length);
     } catch (error) {
       console.error('Error fetching login requests:', error);
     }
   };
+  
+  // Update total notifications whenever any notification type changes
+  useEffect(() => {
+    const total = reminders.length + pendingCallbacks.length + loginRequests.length;
+    setTotalNotifications(total);
+  }, [reminders.length, pendingCallbacks.length, loginRequests.length]);
 
   // Handle approve login request
   const handleApproveLogin = async (requestId, username) => {
