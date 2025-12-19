@@ -3444,6 +3444,153 @@ class CRMTester:
         except Exception as e:
             self.log_result("Session Settings - Berlin Timezone", False, f"Error: {str(e)}")
 
+    def test_team_chat_read_only_restrictions(self):
+        """Test team chat read-only restrictions for agents"""
+        print("\n" + "💬" * 50)
+        print("💬 TESTING TEAM CHAT READ-ONLY RESTRICTIONS")
+        print("💬 Agent should NOT be able to send team messages")
+        print("💬 Supervisor SHOULD be able to send team messages")
+        print("💬" * 50)
+        
+        # Test credentials from review request
+        agent_credentials = {"username": "agente", "password": "12345"}
+        supervisor_credentials = {"username": "maurizio1", "password": "12345"}
+        
+        # Step 1: Login as agent
+        print("\n=== Step 1: Login as Agent (agente) ===")
+        agent_token = self.login_user(agent_credentials["username"], agent_credentials["password"])
+        if not agent_token:
+            self.log_result("Team Chat - Agent Login", False, "Could not login as agent")
+            return
+        
+        self.log_result("Team Chat - Agent Login", True, "Successfully logged in as agent")
+        
+        # Step 2: Login as supervisor
+        print("\n=== Step 2: Login as Supervisor (maurizio1) ===")
+        supervisor_token = self.login_user(supervisor_credentials["username"], supervisor_credentials["password"])
+        if not supervisor_token:
+            self.log_result("Team Chat - Supervisor Login", False, "Could not login as supervisor")
+            return
+        
+        self.log_result("Team Chat - Supervisor Login", True, "Successfully logged in as supervisor")
+        
+        # Step 3: Get supervisor's teams
+        print("\n=== Step 3: Get Supervisor's Teams ===")
+        supervisor_headers = {"Authorization": f"Bearer {supervisor_token}"}
+        
+        try:
+            teams_response = self.session.get(f"{CHAT_BASE_URL}/teams", headers=supervisor_headers)
+            
+            if teams_response.status_code == 200:
+                teams_data = teams_response.json()
+                teams = teams_data.get("teams", [])
+                
+                if teams:
+                    team_id = teams[0]["id"]
+                    team_name = teams[0]["name"]
+                    self.log_result(
+                        "Team Chat - Get Teams", 
+                        True,
+                        f"Found {len(teams)} teams for supervisor",
+                        f"Using team: {team_name} (ID: {team_id})"
+                    )
+                    
+                    # Step 4: Test Agent CANNOT send team message (should get 403)
+                    print("\n=== Step 4: Test Agent Cannot Send Team Message ===")
+                    self.test_agent_team_message_blocked(agent_token, team_id)
+                    
+                    # Step 5: Test Supervisor CAN send team message (should work)
+                    print("\n=== Step 5: Test Supervisor Can Send Team Message ===")
+                    self.test_supervisor_team_message_allowed(supervisor_token, team_id)
+                    
+                else:
+                    self.log_result("Team Chat - Get Teams", False, "No teams found for supervisor")
+            else:
+                self.log_result("Team Chat - Get Teams", False, f"Failed to get teams: {teams_response.status_code}", teams_response.text)
+                
+        except Exception as e:
+            self.log_result("Team Chat - Get Teams", False, f"Error: {str(e)}")
+    
+    def test_agent_team_message_blocked(self, agent_token, team_id):
+        """Test that agent cannot send team messages"""
+        try:
+            agent_headers = {
+                "Authorization": f"Bearer {agent_token}",
+                "Content-Type": "application/json"
+            }
+            
+            message_data = {
+                "content": "Test message from agent - this should be blocked",
+                "message_type": "text"
+            }
+            
+            response = self.session.post(
+                f"{CHAT_BASE_URL}/teams/{team_id}/messages",
+                json=message_data,
+                headers=agent_headers
+            )
+            
+            if response.status_code == 403:
+                error_detail = ""
+                try:
+                    error_data = response.json()
+                    error_detail = error_data.get("detail", "")
+                except:
+                    error_detail = response.text
+                
+                # Check for expected error message
+                expected_message = "Only admins and supervisors can send team messages"
+                has_correct_error = expected_message in error_detail
+                
+                self.log_result(
+                    "Team Chat - Agent Blocked", 
+                    has_correct_error,
+                    f"Agent correctly blocked from sending team message",
+                    f"Error: '{error_detail}'"
+                )
+            else:
+                self.log_result("Team Chat - Agent Blocked", False, f"Expected 403, got {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Team Chat - Agent Blocked", False, f"Error: {str(e)}")
+    
+    def test_supervisor_team_message_allowed(self, supervisor_token, team_id):
+        """Test that supervisor can send team messages"""
+        try:
+            supervisor_headers = {
+                "Authorization": f"Bearer {supervisor_token}",
+                "Content-Type": "application/json"
+            }
+            
+            message_data = {
+                "content": f"Test message from supervisor at {datetime.now().strftime('%H:%M:%S')}",
+                "message_type": "text"
+            }
+            
+            response = self.session.post(
+                f"{CHAT_BASE_URL}/teams/{team_id}/messages",
+                json=message_data,
+                headers=supervisor_headers
+            )
+            
+            if response.status_code == 200:
+                message_result = response.json()
+                message_id = message_result.get("id")
+                content = message_result.get("content")
+                sender = message_result.get("sender", {})
+                
+                self.log_result(
+                    "Team Chat - Supervisor Allowed", 
+                    True,
+                    f"Supervisor successfully sent team message",
+                    f"Message ID: {message_id}, Sender: {sender.get('full_name')}, Content: {content[:50]}..."
+                )
+            else:
+                self.log_result("Team Chat - Supervisor Allowed", False, f"Supervisor message failed: {response.status_code}", response.text)
+                
+        except Exception as e:
+            self.log_result("Team Chat - Supervisor Allowed", False, f"Error: {str(e)}")
+
     def run_all_tests(self):
         """Run all CRM backend tests including deletion functionality"""
         print("🚀 Starting CRM Backend Tests")
