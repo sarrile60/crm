@@ -23,22 +23,24 @@ class ConversationCreate(BaseModel):
 class TypingIndicator(BaseModel):
     is_typing: bool
 
-# Dependency to get current user from token
+# Dependency to get current user from token (reuse CRM auth)
 async def get_current_user(request: Request):
     from server import db
-    token = request.headers.get("Authorization", "").replace("Bearer ", "")
-    if not token:
+    from crm_routes import get_user_from_token
+    
+    authorization = request.headers.get("Authorization", "")
+    if not authorization:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
-    session = await db.sessions.find_one({"token": token})
-    if not session:
-        raise HTTPException(status_code=401, detail="Invalid session")
-    
-    user = await db.users.find_one({"id": session["user_id"]}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
-    
-    return user
+    try:
+        token = authorization.replace('Bearer ', '')
+        user_data = get_user_from_token(token)
+        user = await db.crm_users.find_one({"id": user_data["user_id"]}, {"_id": 0})
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+        return user
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=str(e))
 
 # Create a new conversation (private or group)
 @router.post("/conversations")
