@@ -335,8 +335,12 @@ const UsersManagement = () => {
     });
   };
 
-  // Filter users
+  // Filter users based on viewMode first
   const filteredUsers = users.filter(user => {
+    // Filter by view mode (active vs archived)
+    if (viewMode === 'active' && user.deleted_at) return false;
+    if (viewMode === 'archived' && !user.deleted_at) return false;
+    
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       if (!user.username?.toLowerCase().includes(searchLower) && 
@@ -350,13 +354,15 @@ const UsersManagement = () => {
     if (filters.team && user.team_id !== filters.team && !user.team_ids?.includes(filters.team)) {
       return false;
     }
-    if (filters.status) {
+    if (filters.status && viewMode === 'active') {
       if (filters.status === 'active' && !user.is_active) return false;
       if (filters.status === 'inactive' && user.is_active) return false;
-      if (filters.status === 'deleted' && !user.deleted_at) return false;
     }
     return true;
   });
+  
+  // Count archived users for badge
+  const archivedCount = users.filter(u => u.deleted_at).length;
 
   if (loading) {
     return <div className="text-center py-12 text-gray-600">{t('users.loadingUsers')}</div>;
