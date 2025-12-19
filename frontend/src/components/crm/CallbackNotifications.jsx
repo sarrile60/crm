@@ -428,7 +428,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-black flex items-center gap-2">
               <Bell className="w-6 h-6" />
-              Notifiche ({totalNotifications})
+              {t('crm.notifications')} ({totalNotifications})
             </DialogTitle>
             <p className="text-sm text-gray-500 mt-2">
               💡 {t('crm.showOnlyExpiredCallbacks')}
