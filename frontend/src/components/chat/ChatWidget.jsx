@@ -88,6 +88,9 @@ const ChatWidget = ({ currentUser }) => {
     }
   }, [fetchConversations]);
 
+  // Track which message IDs we've already seen to prevent duplicate sounds
+  const seenMessageIds = useRef(new Set());
+  
   // Poll for new messages
   const pollMessages = useCallback(async () => {
     if (!currentUser) return;
@@ -100,12 +103,22 @@ const ChatWidget = ({ currentUser }) => {
       });
       
       if (response.data.messages.length > 0) {
-        // Play sound for new messages
-        playNotificationSound();
-        
-        // Update last poll time
+        // Update last poll time FIRST to prevent re-fetching same messages
         const lastMsg = response.data.messages[response.data.messages.length - 1];
         setLastPollTime(lastMsg.created_at);
+        
+        // Filter out messages we've already seen and our own messages
+        const trulyNewMessages = response.data.messages.filter(m => 
+          !seenMessageIds.current.has(m.id) && m.sender_id !== currentUser.id
+        );
+        
+        // Add all message IDs to seen set
+        response.data.messages.forEach(m => seenMessageIds.current.add(m.id));
+        
+        // Only play sound if there are truly new messages from OTHER users
+        if (trulyNewMessages.length > 0) {
+          playNotificationSound();
+        }
         
         // If we're viewing the conversation, add messages
         if (selectedConversation) {
