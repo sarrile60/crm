@@ -294,26 +294,28 @@ async def check_session(current_user: dict = Depends(get_current_user)):
     settings = await get_session_settings()
     is_work_hours, reason = await is_within_work_hours(settings)
     
-    # Build session info for display
-    from session_utils import get_berlin_time
-    berlin_now = get_berlin_time()
+    # Build session info for display - use configured timezone
+    from session_settings import get_current_time_in_timezone
+    tz_name = settings.get("timezone", "Europe/Berlin")
+    current_tz_time = get_current_time_in_timezone(tz_name)
     from datetime import time as dt_time
     end_time = dt_time(settings["session_end_hour"], settings["session_end_minute"])
     
     if is_work_hours:
-        end_datetime = berlin_now.replace(
+        end_datetime = current_tz_time.replace(
             hour=settings["session_end_hour"],
             minute=settings["session_end_minute"],
             second=0
         )
-        minutes_remaining = int((end_datetime - berlin_now).total_seconds() / 60)
+        minutes_remaining = int((end_datetime - current_tz_time).total_seconds() / 60)
     else:
         minutes_remaining = 0
     
     session_info = {
-        "berlin_time": berlin_now.strftime("%Y-%m-%d %H:%M:%S"),
-        "day_of_week": berlin_now.strftime("%A"),
-        "is_weekday": berlin_now.weekday() in settings.get("work_days", [0,1,2,3,4]),
+        "current_time": current_tz_time.strftime("%Y-%m-%d %H:%M:%S"),
+        "timezone": tz_name,
+        "day_of_week": current_tz_time.strftime("%A"),
+        "is_weekday": current_tz_time.weekday() in settings.get("work_days", [0,1,2,3,4]),
         "is_work_hours": is_work_hours,
         "session_end_time": f"{settings['session_end_hour']:02d}:{settings['session_end_minute']:02d}",
         "minutes_remaining": max(0, minutes_remaining)
