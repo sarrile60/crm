@@ -376,7 +376,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                       {urgentCallback?.status?.startsWith('Deposit') ? t('crm.depositTime') : t('crm.callbackTime')}:
                     </label>
                     <p className="text-black font-semibold">
-                      {new Date(urgentCallback.callback_date).toLocaleTimeString('it-IT', { 
+                      {new Date(urgentCallback.callback_date).toLocaleTimeString(i18n.language, { 
                         hour: '2-digit', 
                         minute: '2-digit' 
                       })}
