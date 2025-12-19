@@ -447,7 +447,8 @@
     "errorDenying": "Error al rechazar",
     "notWorkDay": "No es un día laborable ({{day}})",
     "beforeWorkHours": "Antes del horario de trabajo (inicio: {{time}})",
-    "afterWorkHours": "Después del horario de trabajo (fin: {{time}})"
+    "afterWorkHours": "Después del horario de trabajo (fin: {{time}})",
+    "afterHoursApprovalRequired": "Acceso fuera del horario de trabajo. {{reason}}. Solicitud enviada al administrador para su aprobación."
   },
   "audit": {
     "title": "Registro de auditoría",
