@@ -100,7 +100,11 @@ const ChatWidget = ({ currentUser }) => {
     
     try {
       const token = localStorage.getItem('crmToken');
-      const params = lastPollTime ? `?since=${lastPollTime}` : '';
+      // Include conversation_id if we're viewing one, to get read status updates
+      let params = lastPollTime ? `?since=${lastPollTime}` : '';
+      if (selectedConversation) {
+        params += params ? `&conversation_id=${selectedConversation.id}` : `?conversation_id=${selectedConversation.id}`;
+      }
       const response = await axios.get(`${BACKEND_URL}/api/chat/poll${params}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -143,6 +147,17 @@ const ChatWidget = ({ currentUser }) => {
         
         // Refresh conversations
         fetchConversations();
+      }
+      
+      // Update read status for messages we sent (live "seen" updates)
+      if (response.data.read_updates && response.data.read_updates.length > 0) {
+        setMessages(prev => prev.map(msg => {
+          const update = response.data.read_updates.find(u => u.id === msg.id);
+          if (update && update.read_by) {
+            return { ...msg, read_by: update.read_by };
+          }
+          return msg;
+        }));
       }
       
       // Update typing indicators
