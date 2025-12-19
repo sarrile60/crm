@@ -297,7 +297,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     
     localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
     
-    toast.info(`Callback posticipato di 5 minuti (${newCount}/2)`);
+    toast.info(t('crm.callbackSnoozed', { count: newCount }));
     setShowUrgentModal(false);
   };
 
