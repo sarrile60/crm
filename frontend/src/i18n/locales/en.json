@@ -886,5 +886,19 @@
     "attachFile": "Attach file",
     "messageRead": "Read",
     "messageDelivered": "Delivered"
+  },
+  "adminDashboard": {
+    "pageViews": "Page Views",
+    "totalViews": "Total views",
+    "formStarts": "Form Starts",
+    "usersStartedForm": "Users who started the form",
+    "totalLeads": "Total Leads",
+    "formsCompletedSuccessfully": "Forms completed successfully",
+    "ctaClicks": "CTA Clicks",
+    "clicksOnCtaButtons": "Clicks on CTA buttons",
+    "conversionRate": "Conversion Rate",
+    "formStartsToLeads": "Form starts → Completed leads",
+    "amountLost": "Amount Lost",
+    "caseDescription": "Case Description"
   }
 }
