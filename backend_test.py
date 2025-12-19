@@ -11,6 +11,7 @@ from datetime import datetime
 import uuid
 import time
 import asyncio
+import logging
 
 # Configuration
 BASE_URL = "https://lawcrm-i18n-1.preview.emergentagent.com/api"
