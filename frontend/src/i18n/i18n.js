@@ -35,11 +35,11 @@ i18n
 
 export default i18n;
 
-// Available languages
+// Available languages with ISO country codes for flag-icons
 export const LANGUAGES = [
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' }
+  { code: 'it', name: 'Italiano', flagCode: 'it' },
+  { code: 'en', name: 'English', flagCode: 'gb' },
+  { code: 'de', name: 'Deutsch', flagCode: 'de' },
+  { code: 'fr', name: 'Français', flagCode: 'fr' },
+  { code: 'es', name: 'Español', flagCode: 'es' }
 ];
