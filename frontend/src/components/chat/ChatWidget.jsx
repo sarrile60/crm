@@ -21,6 +21,7 @@ const ChatWidget = ({ currentUser }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [conversationFilter, setConversationFilter] = useState('');
   const [users, setUsers] = useState([]);
   const [showNewChat, setShowNewChat] = useState(false);
   const [typingUsers, setTypingUsers] = useState({});
