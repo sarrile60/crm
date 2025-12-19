@@ -136,7 +136,7 @@ const AdminDashboard = () => {
           </div>
           <Button onClick={handleLogout} className="bg-white/10 text-white hover:bg-white hover:text-black rounded-none">
             <LogOut className="w-4 h-4 mr-2" />
-            Logout
+            {t('common.logout')}
           </Button>
         </div>
       </header>
