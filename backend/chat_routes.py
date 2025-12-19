@@ -151,8 +151,16 @@ async def get_messages(conversation_id: str, request: Request, limit: int = 50, 
     
     # Add sender info to each message
     for msg in messages:
-        sender = await db.crm_users.find_one({"id": msg["sender_id"]}, {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1})
-        msg["sender"] = sender
+        if msg["sender_id"] == "system_notifications":
+            msg["sender"] = {
+                "id": "system_notifications",
+                "full_name": "⚠️ System Alerts",
+                "username": "system",
+                "role": "system"
+            }
+        else:
+            sender = await db.crm_users.find_one({"id": msg["sender_id"]}, {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1})
+            msg["sender"] = sender
     
     return {"messages": list(reversed(messages))}
 
