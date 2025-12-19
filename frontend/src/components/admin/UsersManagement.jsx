@@ -376,13 +376,42 @@ const UsersManagement = () => {
           <h2 className="text-2xl font-bold text-black">{t('users.title')}</h2>
           <p className="text-gray-600 mt-1">{t('users.subtitle')}</p>
         </div>
-        <Button 
-          onClick={() => { resetForm(); setShowCreateModal(true); }}
-          className="bg-[#D4AF37] hover:bg-[#B8941F] text-black rounded-none"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          {t('users.createUser')}
-        </Button>
+        <div className="flex items-center gap-3">
+          {/* View Mode Toggle */}
+          <div className="flex border border-gray-300">
+            <Button
+              variant="ghost"
+              onClick={() => setViewMode('active')}
+              className={`rounded-none px-4 ${viewMode === 'active' ? 'bg-[#D4AF37] text-black' : 'text-gray-600'}`}
+            >
+              <Users className="w-4 h-4 mr-2" />
+              {t('users.activeUsers')}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setViewMode('archived')}
+              className={`rounded-none px-4 ${viewMode === 'archived' ? 'bg-[#D4AF37] text-black' : 'text-gray-600'}`}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              {t('users.archive')}
+              {archivedCount > 0 && (
+                <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                  {archivedCount}
+                </span>
+              )}
+            </Button>
+          </div>
+          
+          {viewMode === 'active' && (
+            <Button 
+              onClick={() => { resetForm(); setShowCreateModal(true); }}
+              className="bg-[#D4AF37] hover:bg-[#B8941F] text-black rounded-none"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              {t('users.createUser')}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Filters */}
