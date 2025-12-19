@@ -208,8 +208,11 @@ const ChatWidget = ({ currentUser }) => {
           playNotificationSound();
           
           // Check for system alert messages and show toast notification
+          // IMPORTANT: Only show toast for UNREAD system alerts (not already in read_by array)
           const systemAlerts = trulyNewMessages.filter(m => 
-            m.sender_id === 'system_notifications' || m.message_type === 'system_alert'
+            (m.sender_id === 'system_notifications' || m.message_type === 'system_alert') &&
+            // Check if current user has NOT already read this message
+            (!m.read_by || !m.read_by.includes(currentUser.id))
           );
           
           systemAlerts.forEach(alert => {
