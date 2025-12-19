@@ -280,9 +280,10 @@ const ChatWidget = ({ currentUser }) => {
   useEffect(() => {
     if (currentUser) {
       fetchConversations();
+      fetchTeams();
       // Don't set lastPollTime here - let first poll get any recent messages
     }
-  }, [currentUser, fetchConversations]);
+  }, [currentUser, fetchConversations, fetchTeams]);
 
   // Polling interval
   useEffect(() => {
