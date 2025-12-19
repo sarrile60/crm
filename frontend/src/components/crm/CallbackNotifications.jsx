@@ -10,7 +10,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [reminders, setReminders] = useState([]);
   const [pendingCallbacks, setPendingCallbacks] = useState([]);
   const [showModal, setShowModal] = useState(false);
