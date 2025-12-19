@@ -232,7 +232,7 @@ const AdminDashboard = () => {
                       <td className="p-4 text-white/85">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4 text-[#00FFD1]" />
-                          {new Date(lead.createdAt).toLocaleDateString('it-IT')}
+                          {new Date(lead.createdAt).toLocaleDateString(i18n.language)}
                         </div>
                       </td>
                       <td className="p-4 text-white font-semibold">{lead.fullName}</td>
