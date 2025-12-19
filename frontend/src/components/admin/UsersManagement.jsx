@@ -215,13 +215,57 @@ const UsersManagement = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       await axios.delete(`${API}/admin/users/${selectedUser.id}`, { headers });
-      toast.success(t('users.userDeletedSuccess'));
+      toast.success(t('users.userArchivedSuccess'));
       setShowDeleteModal(false);
       setSelectedUser(null);
       fetchData();
     } catch (error) {
       toast.error(error.response?.data?.detail || t('users.errorDeletingUser'));
     }
+  };
+
+  const handleRestoreUser = async () => {
+    if (!selectedUser) return;
+
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.post(`${API}/admin/users/${selectedUser.id}/restore`, {}, { headers });
+      toast.success(t('users.userRestoredSuccess'));
+      setShowRestoreModal(false);
+      setSelectedUser(null);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('users.errorRestoringUser'));
+    }
+  };
+
+  const handlePermanentDelete = async () => {
+    if (!selectedUser) return;
+
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.delete(`${API}/admin/users/${selectedUser.id}/permanent`, { headers });
+      toast.success(t('users.userPermanentlyDeletedSuccess'));
+      setShowPermanentDeleteModal(false);
+      setSelectedUser(null);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('users.errorPermanentlyDeletingUser'));
+    }
+  };
+
+  const openRestoreModal = (user) => {
+    setSelectedUser(user);
+    setShowRestoreModal(true);
+  };
+
+  const openPermanentDeleteModal = (user) => {
+    setSelectedUser(user);
+    setShowPermanentDeleteModal(true);
   };
 
   const openEditModal = (user) => {
