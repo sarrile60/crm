@@ -917,7 +917,15 @@
     "sendMessage": "Send",
     "attachFile": "Attach file",
     "messageRead": "Read",
-    "messageDelivered": "Delivered"
+    "messageDelivered": "Delivered",
+    "teamChat": "Team Chat",
+    "selectTeam": "Select a Team",
+    "noTeamsAvailable": "No teams available",
+    "team": "Team",
+    "member": "member",
+    "members": "members",
+    "errorOpeningTeamChat": "Error opening team chat",
+    "errorSendingMessage": "Error sending message"
   },
   "adminDashboard": {
     "pageViews": "Page Views",
