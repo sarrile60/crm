@@ -128,6 +128,30 @@ const ChatWidget = ({ currentUser }) => {
         // Only play sound if there are truly new messages from OTHER users
         if (trulyNewMessages.length > 0) {
           playNotificationSound();
+          
+          // Check for system alert messages and show toast notification
+          const systemAlerts = trulyNewMessages.filter(m => 
+            m.sender_id === 'system_notifications' || m.message_type === 'system_alert'
+          );
+          
+          systemAlerts.forEach(alert => {
+            toast.warning('⚠️ System Alert', {
+              description: alert.content?.substring(0, 100) + '...',
+              duration: 10000,
+              action: {
+                label: 'View',
+                onClick: () => {
+                  // Open chat widget and select system conversation
+                  setIsOpen(true);
+                  const systemConv = conversations.find(c => c.is_system_chat);
+                  if (systemConv) {
+                    setSelectedConversation(systemConv);
+                    fetchMessages(systemConv.id);
+                  }
+                }
+              }
+            });
+          });
         }
         
         // If we're viewing the conversation, add messages
