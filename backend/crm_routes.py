@@ -274,6 +274,9 @@ async def check_session(current_user: dict = Depends(get_current_user)):
     Check if the current session is still valid.
     Sessions expire based on admin-configured settings.
     Frontend should call this periodically and logout if expired.
+    
+    IMPORTANT: Users with valid after-hours approval remain logged in
+    even outside work hours until their approval expires.
     """
     # Admin users are never auto-logged out
     if current_user.get("role", "").lower() == "admin":
@@ -319,9 +322,34 @@ async def check_session(current_user: dict = Depends(get_current_user)):
         "minutes_remaining": max(0, minutes_remaining)
     }
     
-    # Check if we're within work hours
+    # If outside work hours, check for valid after-hours approval
     if not is_work_hours:
-        # Log automatic session expiry
+        # Check if user has a valid approved login request
+        approved_request = await db.login_requests.find_one({
+            "user_id": current_user["id"],
+            "status": "approved",
+            "expires_at": {"$gt": datetime.now(timezone.utc)}
+        })
+        
+        if approved_request:
+            # User has valid approval - session is still valid
+            approval_expires = approved_request.get("expires_at")
+            if approval_expires:
+                # Calculate minutes remaining until approval expires
+                time_until_expiry = approval_expires - datetime.now(timezone.utc)
+                approval_minutes_remaining = int(time_until_expiry.total_seconds() / 60)
+                session_info["approval_expires_at"] = approval_expires.isoformat()
+                session_info["approval_minutes_remaining"] = max(0, approval_minutes_remaining)
+                session_info["has_after_hours_approval"] = True
+            
+            logger.info(f"User {current_user['username']} has valid after-hours approval, session valid")
+            return {
+                "valid": True,
+                "session_info": session_info,
+                "message": f"After-hours access approved. Approval expires in {session_info.get('approval_minutes_remaining', 0)} minutes."
+            }
+        
+        # No valid approval - session expired
         end_time_str = f"{settings['session_end_hour']:02d}:{settings['session_end_minute']:02d}"
         await log_auth_event(
             action=AuditAction.LOGOUT,
