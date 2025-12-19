@@ -20,7 +20,6 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const [snoozeData, setSnoozeData] = useState({});
   const [totalNotifications, setTotalNotifications] = useState(0);
   const [urgentCallbackQueue, setUrgentCallbackQueue] = useState([]);
-  const [previousLoginRequestCount, setPreviousLoginRequestCount] = useState(0);
   
   // Helper to get proper locale for date formatting
   const getLocale = () => {
