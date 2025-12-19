@@ -278,6 +278,8 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     
     const newAlerts = [];
     
+    let dataChanged = false;
+    
     Object.keys(snoozeDataFromStorage).forEach(leadId => {
       const snooze = snoozeDataFromStorage[leadId];
       
@@ -286,7 +288,12 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       if (calledData && snooze.lead && calledData.callback_date === snooze.lead.callback_date) {
         // Clean up the snooze data for this called callback
         delete snoozeDataFromStorage[leadId];
-        localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
+        dataChanged = true;
+        return;
+      }
+      
+      // Skip if snoozeUntil is null (already triggered, waiting for user action)
+      if (snooze.snoozeUntil === null) {
         return;
       }
       
@@ -296,19 +303,31 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
         if (snooze.lead) {
           newAlerts.push(snooze.lead);
           
-          // Update snooze data
+          // Set snoozeUntil to null to prevent duplicate triggers
+          // The snooze data will be updated when user clicks snooze again
           snoozeDataFromStorage[leadId] = {
             ...snooze,
-            snoozeUntil: null
+            snoozeUntil: null,  // Mark as triggered, prevent re-trigger
+            triggeredAt: now
           };
-          localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
+          dataChanged = true;
         }
       }
     });
     
-    // Add all new alerts to queue
+    // Save changes once
+    if (dataChanged) {
+      localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
+    }
+    
+    // Add all new alerts to queue (deduplicate)
     if (newAlerts.length > 0) {
-      setUrgentCallbackQueue(prev => [...prev, ...newAlerts]);
+      setUrgentCallbackQueue(prev => {
+        const existingIds = new Set(prev.map(l => l.id));
+        const uniqueNewAlerts = newAlerts.filter(l => !existingIds.has(l.id));
+        if (uniqueNewAlerts.length === 0) return prev;
+        return [...prev, ...uniqueNewAlerts];
+      });
       playAlertSound();
     }
   };
