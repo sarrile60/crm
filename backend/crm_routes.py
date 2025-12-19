@@ -1262,12 +1262,19 @@ async def get_team_members_status(current_user: dict = Depends(get_current_user)
             if isinstance(last_active, str):
                 last_active = datetime.fromisoformat(last_active.replace('Z', '+00:00'))
             
+            # Make sure last_active is timezone-aware for comparison
+            if last_active.tzinfo is None:
+                last_active = last_active.replace(tzinfo=timezone.utc)
+            
             time_diff = (now - last_active).total_seconds()
             # Active if last seen within 2 minutes
             if time_diff < 120:
                 member["status"] = "active"
             else:
                 member["status"] = "inactive"
+            
+            # Convert last_active to ISO string for JSON serialization
+            member["last_active"] = last_active.isoformat()
         else:
             member["status"] = "inactive"
     
