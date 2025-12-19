@@ -730,11 +730,12 @@ const ChatWidget = ({ currentUser }) => {
                   placeholder={t('chat.typeMessage')}
                   value={newMessage}
                   onChange={handleTyping}
-                  onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                  onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && !isSending && sendMessage()}
                   className="flex-1"
+                  disabled={isSending}
                 />
-                <Button onClick={sendMessage} disabled={!newMessage.trim()}>
-                  <Send className="w-4 h-4" />
+                <Button onClick={sendMessage} disabled={!newMessage.trim() || isSending}>
+                  <Send className={`w-4 h-4 ${isSending ? 'animate-pulse' : ''}`} />
                 </Button>
               </div>
             </div>
