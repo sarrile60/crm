@@ -319,39 +319,44 @@ const ChatWidget = ({ currentUser }) => {
     // Find the conversation in our list
     let targetConversation = conversations.find(c => c.id === conversationId);
     
-    // If not found, fetch conversations first
+    // If not found in current state, try to get fresh conversations
     if (!targetConversation) {
-      await fetchConversations();
-      targetConversation = conversations.find(c => c.id === conversationId);
+      try {
+        const token = localStorage.getItem('crmToken');
+        const response = await axios.get(`${BACKEND_URL}/api/chat/conversations`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const freshConversations = response.data.conversations;
+        setConversations(freshConversations);
+        targetConversation = freshConversations.find(c => c.id === conversationId);
+      } catch (error) {
+        console.error('Error fetching conversations:', error);
+      }
     }
     
-    if (targetConversation) {
-      setSelectedConversation(targetConversation);
-      await fetchMessages(conversationId);
-      
-      // Clear search after navigation
-      setSearchQuery('');
-      setSearchResults([]);
-      
-      // Wait for messages to render, then scroll to the message
-      setTimeout(() => {
-        const messageElement = document.getElementById(`message-${msg.id}`);
-        if (messageElement) {
-          messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Highlight the message briefly
-          messageElement.classList.add('ring-2', 'ring-[#D4AF37]', 'ring-offset-2');
-          setTimeout(() => {
-            messageElement.classList.remove('ring-2', 'ring-[#D4AF37]', 'ring-offset-2');
-          }, 2000);
-        }
-      }, 100);
-    } else {
-      // If conversation not found, create a minimal one to open
-      setSelectedConversation({ id: conversationId });
-      await fetchMessages(conversationId);
-      setSearchQuery('');
-      setSearchResults([]);
-    }
+    // Clear search first
+    setSearchQuery('');
+    setSearchResults([]);
+    
+    // Set the conversation (use the found one or create a minimal object)
+    const convToUse = targetConversation || { id: conversationId, ...msg.conversation };
+    setSelectedConversation(convToUse);
+    
+    // Fetch messages for this conversation
+    await fetchMessages(conversationId);
+    
+    // Wait for messages to render, then scroll to the message
+    setTimeout(() => {
+      const messageElement = document.getElementById(`message-${msg.id}`);
+      if (messageElement) {
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Highlight the message briefly
+        messageElement.classList.add('ring-2', 'ring-[#D4AF37]', 'ring-offset-2');
+        setTimeout(() => {
+          messageElement.classList.remove('ring-2', 'ring-[#D4AF37]', 'ring-offset-2');
+        }, 2000);
+      }
+    }, 200);
   };
 
   // Get conversation display name
