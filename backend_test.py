@@ -3092,7 +3092,14 @@ class CRMTester:
             print("❌ Cannot proceed without admin login")
             return False
         
-        # Step 2: Test Session Settings Timezone Selector (PRIORITY - as per review request)
+        # Step 2: Test After-Hours Login Approval System (PRIORITY - as per review request)
+        print("\n🕐" * 50)
+        print("🕐 AFTER-HOURS LOGIN APPROVAL SYSTEM TESTING")
+        print("🕐" * 50)
+        
+        self.run_after_hours_tests()
+        
+        # Step 3: Test Session Settings Timezone Selector
         print("\n⏰" * 50)
         print("⏰ SESSION SETTINGS TIMEZONE SELECTOR TESTING")
         print("⏰" * 50)
