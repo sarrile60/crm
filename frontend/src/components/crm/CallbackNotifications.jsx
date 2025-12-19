@@ -496,7 +496,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                               </p>
                               <p className="font-semibold text-red-600">
                                 <Clock className="w-4 h-4 inline mr-1" />
-                                {callbackTime.toLocaleString(i18n.language, { 
+                                {callbackTime.toLocaleString(getLocale(), { 
                                   day: '2-digit',
                                   month: 'short',
                                   hour: '2-digit',
