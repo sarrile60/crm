@@ -71,7 +71,8 @@ const ChatWidget = ({ currentUser }) => {
   const seenMessageIds = useRef(new Set());
   
   // Fetch messages for selected conversation
-  const fetchMessages = useCallback(async (conversationId) => {
+  // onlyMarkReadIfVisible parameter controls whether to mark as read
+  const fetchMessages = useCallback(async (conversationId, markAsRead = true) => {
     try {
       const token = localStorage.getItem('crmToken');
       const response = await axios.get(`${BACKEND_URL}/api/chat/conversations/${conversationId}/messages`, {
@@ -82,10 +83,12 @@ const ChatWidget = ({ currentUser }) => {
       // Add all fetched message IDs to seen set (so we don't play sounds for them)
       response.data.messages.forEach(m => seenMessageIds.current.add(m.id));
       
-      // Mark as read
-      await axios.put(`${BACKEND_URL}/api/chat/conversations/${conversationId}/read`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      // Only mark as read if explicitly requested AND document is visible
+      if (markAsRead && document.visibilityState === 'visible') {
+        await axios.put(`${BACKEND_URL}/api/chat/conversations/${conversationId}/read`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
       
       // Update unread count
       fetchConversations();
