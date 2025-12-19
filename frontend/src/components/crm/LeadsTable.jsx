@@ -28,10 +28,14 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   const [selectedLeadIds, setSelectedLeadIds] = useState([]);
   const [showMassUpdateModal, setShowMassUpdateModal] = useState(false);
 
-  // Handle urgent callback lead
+  // Handle urgent callback lead - only trigger once, then clear
   useEffect(() => {
     if (urgentCallbackLead) {
       handleViewDetails(urgentCallbackLead);
+      // Clear the callback lead after opening so it doesn't re-trigger
+      if (onClearCallbackLead) {
+        onClearCallbackLead();
+      }
     }
   }, [urgentCallbackLead]);
   
