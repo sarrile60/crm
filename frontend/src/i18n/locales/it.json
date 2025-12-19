@@ -842,5 +842,19 @@
     "attachFile": "Allega file",
     "messageRead": "Letto",
     "messageDelivered": "Consegnato"
+  },
+  "adminDashboard": {
+    "pageViews": "Visite Pagina",
+    "totalViews": "Visualizzazioni totali",
+    "formStarts": "Form Iniziati",
+    "usersStartedForm": "Utenti che hanno iniziato il form",
+    "totalLeads": "Lead Totali",
+    "formsCompletedSuccessfully": "Form completati con successo",
+    "ctaClicks": "Click CTA",
+    "clicksOnCtaButtons": "Click sui pulsanti CTA",
+    "conversionRate": "Tasso di Conversione",
+    "formStartsToLeads": "Form iniziati → Lead completati",
+    "amountLost": "Importo Perso",
+    "caseDescription": "Descrizione Caso"
   }
 }
