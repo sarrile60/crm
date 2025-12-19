@@ -571,7 +571,8 @@ const ChatWidget = ({ currentUser }) => {
               {messages.map(msg => (
                 <div
                   key={msg.id}
-                  className={`flex ${msg.sender_id === currentUser?.id ? 'justify-end' : 'justify-start'}`}
+                  id={`message-${msg.id}`}
+                  className={`flex transition-all duration-300 ${msg.sender_id === currentUser?.id ? 'justify-end' : 'justify-start'}`}
                 >
                   <div className={`max-w-[70%] ${msg.sender_id === currentUser?.id ? 'order-1' : ''}`}>
                     {msg.sender_id !== currentUser?.id && (
