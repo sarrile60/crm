@@ -228,7 +228,8 @@ async def create_team_conversation(team_id: str, request: Request):
     }
     
     await db.conversations.insert_one(conversation)
-    del conversation["_id"] if "_id" in conversation else None
+    if "_id" in conversation:
+        del conversation["_id"]
     
     return conversation
 
