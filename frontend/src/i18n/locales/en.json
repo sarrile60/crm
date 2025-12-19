@@ -546,7 +546,8 @@
     "errorDenying": "Error denying",
     "notWorkDay": "Not a work day ({{day}})",
     "beforeWorkHours": "Before work hours (start: {{time}})",
-    "afterWorkHours": "After work hours (end: {{time}})"
+    "afterWorkHours": "After work hours (end: {{time}})",
+    "afterHoursApprovalRequired": "Access outside work hours. {{reason}}. Request sent to administrator for approval."
   },
   "audit": {
     "title": "Audit Log",
