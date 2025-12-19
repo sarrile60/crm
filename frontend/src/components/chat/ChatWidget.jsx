@@ -67,6 +67,9 @@ const ChatWidget = ({ currentUser }) => {
     }
   }, []);
 
+  // Track which message IDs we've already seen to prevent duplicate sounds
+  const seenMessageIds = useRef(new Set());
+  
   // Fetch messages for selected conversation
   const fetchMessages = useCallback(async (conversationId) => {
     try {
@@ -75,6 +78,9 @@ const ChatWidget = ({ currentUser }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages(response.data.messages);
+      
+      // Add all fetched message IDs to seen set (so we don't play sounds for them)
+      response.data.messages.forEach(m => seenMessageIds.current.add(m.id));
       
       // Mark as read
       await axios.put(`${BACKEND_URL}/api/chat/conversations/${conversationId}/read`, {}, {
@@ -87,9 +93,6 @@ const ChatWidget = ({ currentUser }) => {
       console.error('Error fetching messages:', error);
     }
   }, [fetchConversations]);
-
-  // Track which message IDs we've already seen to prevent duplicate sounds
-  const seenMessageIds = useRef(new Set());
   
   // Poll for new messages
   const pollMessages = useCallback(async () => {
