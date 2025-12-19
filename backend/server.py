@@ -387,7 +387,7 @@ app.include_router(admin_router)
 app.include_router(chat_router)
 
 # CORS Configuration (Restricted for Production)
-cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://i18n-dashboard-6.preview.emergentagent.com').split(',')
+cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://teamalerts.preview.emergentagent.com').split(',')
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
