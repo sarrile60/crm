@@ -103,7 +103,7 @@ RATE_LIMIT_ENABLED=true
 
 **File: `/app/frontend/.env`**
 ```env
-REACT_APP_BACKEND_URL=https://lawcrm-i18n-1.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://i18n-dashboard-6.preview.emergentagent.com
 REACT_APP_ENV=production
 GENERATE_SOURCEMAP=false
 ```
@@ -184,7 +184,7 @@ async def security_middleware(request: Request, call_next):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://lawcrm-i18n-1.preview.emergentagent.com",
+        "https://i18n-dashboard-6.preview.emergentagent.com",
         "http://localhost:3000"  # For development only
     ],
     allow_credentials=True,

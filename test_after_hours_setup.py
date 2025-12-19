@@ -7,7 +7,7 @@ import requests
 import json
 
 # Configuration
-BASE_URL = "https://lawcrm-i18n-1.preview.emergentagent.com/api"
+BASE_URL = "https://i18n-dashboard-6.preview.emergentagent.com/api"
 
 # Admin credentials
 ADMIN_CREDENTIALS = {
