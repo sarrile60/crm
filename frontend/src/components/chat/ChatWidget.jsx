@@ -816,12 +816,24 @@ const ChatWidget = ({ currentUser }) => {
                 onClick={() => { setSelectedConversation(conv); fetchMessages(conv.id); setConversationFilter(''); }}
                 className="w-full p-3 text-left hover:bg-gray-50 border-b flex items-center gap-3"
               >
-                <div className="w-10 h-10 bg-[#1a1a2e] rounded-full flex items-center justify-center text-white font-semibold">
-                  {getConversationName(conv).charAt(0)}
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${
+                  conv.is_team_chat ? 'bg-[#1a1a2e]' : 
+                  conv.is_system_chat ? 'bg-orange-500' : 'bg-[#D4AF37]'
+                }`}>
+                  {conv.is_team_chat ? (
+                    <UsersRound className="w-5 h-5" />
+                  ) : conv.is_system_chat ? (
+                    '⚠️'
+                  ) : (
+                    getConversationName(conv).charAt(0)
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between">
-                    <span className="font-medium truncate">{getConversationName(conv)}</span>
+                    <span className={`font-medium truncate ${conv.is_team_chat ? 'text-[#1a1a2e]' : ''}`}>
+                      {conv.is_team_chat && <span className="text-xs text-gray-500 mr-1">{t('chat.team')}:</span>}
+                      {getConversationName(conv)}
+                    </span>
                     {conv.last_message_at && (
                       <span className="text-xs text-gray-400">{formatTime(conv.last_message_at)}</span>
                     )}
