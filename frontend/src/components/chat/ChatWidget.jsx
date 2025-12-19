@@ -478,11 +478,24 @@ const ChatWidget = ({ currentUser }) => {
             {/* Search Results */}
             {searchResults.length > 0 && (
               <div className="border-b">
-                <div className="px-3 py-2 text-xs text-gray-500 bg-gray-50">{t('chat.searchResults')}</div>
+                <div className="px-3 py-2 text-xs text-gray-500 bg-gray-50 flex justify-between items-center">
+                  <span>{t('chat.searchResults')} ({searchResults.length})</span>
+                  <button 
+                    onClick={() => { setSearchQuery(''); setSearchResults([]); }}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
                 {searchResults.map(msg => (
-                  <div key={msg.id} className="p-3 hover:bg-gray-50 cursor-pointer border-b">
-                    <div className="text-sm font-medium">{msg.sender?.full_name}</div>
+                  <div 
+                    key={msg.id} 
+                    className="p-3 hover:bg-gray-100 cursor-pointer border-b transition-colors"
+                    onClick={() => navigateToMessage(msg)}
+                  >
+                    <div className="text-sm font-medium text-[#1a1a2e]">{msg.sender?.full_name}</div>
                     <div className="text-sm text-gray-600 truncate">{msg.content}</div>
+                    <div className="text-xs text-gray-400 mt-1">{formatTime(msg.created_at)}</div>
                   </div>
                 ))}
               </div>
