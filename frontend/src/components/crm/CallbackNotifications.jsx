@@ -19,6 +19,16 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const [snoozeData, setSnoozeData] = useState({});
   const [totalNotifications, setTotalNotifications] = useState(0);
   const [urgentCallbackQueue, setUrgentCallbackQueue] = useState([]);
+  
+  // Helper to get proper locale for date formatting
+  const getLocale = () => {
+    const lang = i18n.language;
+    return lang === 'en' ? 'en-GB' : 
+           lang === 'it' ? 'it-IT' :
+           lang === 'de' ? 'de-DE' :
+           lang === 'fr' ? 'fr-FR' :
+           lang === 'es' ? 'es-ES' : 'en-GB';
+  };
 
   // Process queue - show next callback popup when current one is closed
   useEffect(() => {
