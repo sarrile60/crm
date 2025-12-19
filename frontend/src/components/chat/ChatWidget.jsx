@@ -456,7 +456,7 @@ const ChatWidget = ({ currentUser }) => {
                 <Input
                   placeholder={t('chat.searchMessages')}
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleSearchChange}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                   className="flex-1"
                 />
