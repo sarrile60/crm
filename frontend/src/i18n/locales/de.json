@@ -209,7 +209,8 @@
     "errorDenyingLogin": "Fehler bei der Ablehnung der Anmeldung",
     "approve": "Genehmigen",
     "deny": "Ablehnen",
-    "reason": "Grund"
+    "reason": "Grund",
+    "noLoginRequests": "Keine ausstehenden Anmeldeanfragen"
   },
   "roles": {
     "title": "Rollenverwaltung",

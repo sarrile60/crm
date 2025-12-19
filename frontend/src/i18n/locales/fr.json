@@ -208,7 +208,8 @@
     "errorDenyingLogin": "Erreur lors du refus de la connexion",
     "approve": "Approuver",
     "deny": "Refuser",
-    "reason": "Raison"
+    "reason": "Raison",
+    "noLoginRequests": "Aucune demande de connexion en attente"
   },
   "roles": {
     "title": "Gestion des Rôles",

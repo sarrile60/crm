@@ -178,7 +178,8 @@
     "errorDenyingLogin": "Errore nel rifiuto dell'accesso",
     "approve": "Approva",
     "deny": "Rifiuta",
-    "reason": "Motivo"
+    "reason": "Motivo",
+    "noLoginRequests": "Nessuna richiesta di accesso in attesa"
   },
   "roles": {
     "title": "Gestione Ruoli",

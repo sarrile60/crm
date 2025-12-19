@@ -209,7 +209,8 @@
     "errorDenyingLogin": "Error al denegar el acceso",
     "approve": "Aprobar",
     "deny": "Denegar",
-    "reason": "Motivo"
+    "reason": "Motivo",
+    "noLoginRequests": "No hay solicitudes de acceso pendientes"
   },
   "roles": {
     "title": "Gestión de Roles",
