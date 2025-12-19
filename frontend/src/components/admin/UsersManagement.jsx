@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, UserCheck, UserX, Key, Search, Filter, Users, Bot } from 'lucide-react';
+import { Plus, Edit, Trash2, UserCheck, UserX, Key, Search, Filter, Users, Bot, Archive, RotateCcw, AlertTriangle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
