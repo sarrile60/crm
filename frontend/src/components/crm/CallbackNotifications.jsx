@@ -172,8 +172,62 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     }
   };
 
-  const updateTotalNotifications = (remindersCount, callbacksCount) => {
-    setTotalNotifications(remindersCount + callbacksCount);
+  const updateTotalNotifications = (remindersCount, callbacksCount, loginRequestsCount = 0) => {
+    setTotalNotifications(remindersCount + callbacksCount + loginRequestsCount);
+  };
+
+  // Fetch pending login requests (admin only)
+  const fetchLoginRequests = async () => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const res = await axios.get(`${API}/admin/login-requests`, { headers });
+      const requests = res.data.requests || [];
+      
+      // Check if there are new requests (play sound)
+      if (requests.length > previousLoginRequestCount && previousLoginRequestCount > 0) {
+        playAlertSound();
+        toast.info(t('admin.newLoginRequest'), {
+          description: t('admin.userNeedsApproval'),
+          duration: 5000
+        });
+      }
+      
+      setPreviousLoginRequestCount(requests.length);
+      setLoginRequests(requests);
+      updateTotalNotifications(reminders.length, pendingCallbacks.length, requests.length);
+    } catch (error) {
+      console.error('Error fetching login requests:', error);
+    }
+  };
+
+  // Handle approve login request
+  const handleApproveLogin = async (requestId, username) => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.post(`${API}/admin/login-requests/${requestId}/approve`, {}, { headers });
+      toast.success(t('admin.loginApproved', { username }));
+      fetchLoginRequests();
+    } catch (error) {
+      toast.error(t('admin.errorApprovingLogin'));
+    }
+  };
+
+  // Handle deny login request
+  const handleDenyLogin = async (requestId, username) => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.post(`${API}/admin/login-requests/${requestId}/deny`, {}, { headers });
+      toast.success(t('admin.loginDenied', { username }));
+      fetchLoginRequests();
+    } catch (error) {
+      toast.error(t('admin.errorDenyingLogin'));
+    }
   };
 
   const checkSnoozedCallbacks = () => {
