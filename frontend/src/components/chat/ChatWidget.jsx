@@ -111,7 +111,13 @@ const ChatWidget = ({ currentUser }) => {
         if (selectedConversation) {
           const newMsgs = response.data.messages.filter(m => m.conversation_id === selectedConversation.id);
           if (newMsgs.length > 0) {
-            setMessages(prev => [...prev, ...newMsgs]);
+            // Add only messages that don't already exist
+            setMessages(prev => {
+              const existingIds = new Set(prev.map(m => m.id));
+              const trulyNewMsgs = newMsgs.filter(m => !existingIds.has(m.id));
+              if (trulyNewMsgs.length === 0) return prev;
+              return [...prev, ...trulyNewMsgs];
+            });
             // Mark as read
             axios.put(`${BACKEND_URL}/api/chat/conversations/${selectedConversation.id}/read`, {}, {
               headers: { Authorization: `Bearer ${token}` }
