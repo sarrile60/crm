@@ -47,11 +47,6 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     fetchPendingCallbacks();
     checkUpcomingCallbacks();
     
-    // Admins also need to check for login requests
-    if (currentUser?.role === 'admin') {
-      fetchLoginRequests();
-    }
-    
     // Check for reminders and callbacks every 30 seconds
     const interval = setInterval(() => {
       checkUpcomingCallbacks();
@@ -61,18 +56,65 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     // Check for snoozed callbacks every 10 seconds
     const snoozeInterval = setInterval(checkSnoozedCallbacks, 10000);
     
-    // Admins: Check for new login requests every 10 seconds
-    let loginRequestInterval;
-    if (currentUser?.role === 'admin') {
-      loginRequestInterval = setInterval(fetchLoginRequests, 10000);
-    }
-    
     return () => {
       clearInterval(interval);
       clearInterval(snoozeInterval);
-      if (loginRequestInterval) clearInterval(loginRequestInterval);
     };
-  }, [currentUser?.role]);
+  }, []);
+  
+  // Separate useEffect for admin login requests (polls every 10 seconds)
+  useEffect(() => {
+    if (currentUser?.role !== 'admin') return;
+    
+    // Immediately fetch login requests
+    const fetchAdminLoginRequests = async () => {
+      try {
+        const token = localStorage.getItem('crmToken');
+        if (!token) return;
+        
+        const headers = { Authorization: `Bearer ${token}` };
+        const res = await axios.get(`${API}/admin/login-requests`, { headers });
+        const requests = res.data.requests || [];
+        
+        console.log('Admin: Fetched login requests:', requests.length);
+        
+        setLoginRequests(prev => {
+          // Check if there are new requests
+          if (requests.length > prev.length && prev.length > 0) {
+            // Play alert sound
+            try {
+              const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+              const oscillator = audioContext.createOscillator();
+              const gainNode = audioContext.createGain();
+              oscillator.connect(gainNode);
+              gainNode.connect(audioContext.destination);
+              oscillator.frequency.value = 800;
+              oscillator.type = 'sine';
+              gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+              gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+              oscillator.start(audioContext.currentTime);
+              oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {}
+            
+            toast.info(t('admin.newLoginRequest'), {
+              description: t('admin.userNeedsApproval'),
+              duration: 5000
+            });
+          }
+          return requests;
+        });
+      } catch (error) {
+        if (error.response?.status !== 403) {
+          console.error('Error fetching login requests:', error);
+        }
+      }
+    };
+    
+    fetchAdminLoginRequests();
+    const loginRequestInterval = setInterval(fetchAdminLoginRequests, 10000);
+    
+    return () => clearInterval(loginRequestInterval);
+  }, [currentUser?.role, t]);
 
   // Clean up old "called" markers - if callback_date changed, the marker should be cleared
   const cleanupCalledCallbacks = (leads) => {
