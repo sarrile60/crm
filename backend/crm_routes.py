@@ -1002,6 +1002,43 @@ async def create_crm_lead(lead_data: dict, current_user: dict = Depends(get_curr
 
 # ==================== CALLBACK SNOOZE ALERTS ====================
 
+@crm_router.get("/user-stats/{user_id}")
+async def get_user_stats(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Get statistics for a user - for team member display"""
+    from datetime import datetime, timezone, timedelta
+    
+    # Get today's date range
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = today_start + timedelta(days=1)
+    
+    # Count total leads assigned to user
+    total_leads = await db.leads.count_documents({
+        "assigned_to": user_id,
+        "$or": [{"deleted_at": None}, {"deleted_at": {"$exists": False}}]
+    })
+    
+    # Count leads completed today (status changed to completed statuses)
+    completed_statuses = ["Won", "Sold", "Converted", "Completed", "Closed Won"]
+    completed_today = await db.leads.count_documents({
+        "assigned_to": user_id,
+        "status": {"$in": completed_statuses},
+        "updated_at": {"$gte": today_start, "$lt": today_end}
+    })
+    
+    # Count callbacks made today
+    callbacks_today = await db.activity_logs.count_documents({
+        "user_id": user_id,
+        "action": {"$in": ["callback_completed", "call_made"]},
+        "timestamp": {"$gte": today_start.isoformat(), "$lt": today_end.isoformat()}
+    })
+    
+    return {
+        "total_leads": total_leads,
+        "completed_today": completed_today,
+        "callbacks_today": callbacks_today
+    }
+
+
 @crm_router.post("/callback-snooze-alert")
 async def notify_supervisor_callback_ignored(
     lead_id: str,
