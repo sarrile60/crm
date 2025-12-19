@@ -43,6 +43,14 @@ const SessionSettings = () => {
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [localTime, setLocalTime] = useState(''); // Live updating time
+  
+  // Separate state for editable time inputs (allows free typing)
+  const [timeInputs, setTimeInputs] = useState({
+    startHour: '09',
+    startMinute: '00',
+    endHour: '18',
+    endMinute: '30'
+  });
 
   const fetchSettings = useCallback(async () => {
     try {
