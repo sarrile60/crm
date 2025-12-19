@@ -64,7 +64,7 @@ const SmartDateTimePicker = ({ value, onChange, currentUser, currentLeadId }) =>
       if (selected >= slotStart && selected < slotEnd) {
         conflictingSlots.push({
           leadName: slot.leadName,
-          time: slotStart.toLocaleString('it-IT', {
+          time: slotStart.toLocaleString(i18n.language, {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
