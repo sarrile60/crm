@@ -183,11 +183,11 @@ const AdminDashboard = () => {
 
         {/* Conversion Rate */}
         <div className="bg-[#121212] border border-white/25 p-6 mb-12">
-          <h3 className="text-white text-xl font-semibold mb-4">Tasso di Conversione</h3>
+          <h3 className="text-white text-xl font-semibold mb-4">{t('adminDashboard.conversionRate')}</h3>
           <div className="flex items-end gap-8">
             <div>
               <div className="text-5xl font-bold text-[#00FFD1] mb-2">{conversionRate}%</div>
-              <p className="text-white/85">Form iniziati → Lead completati</p>
+              <p className="text-white/85">{t('adminDashboard.formStartsToLeads')}</p>
             </div>
             <div className="flex-1">
               <div className="h-4 bg-black rounded-none overflow-hidden">
