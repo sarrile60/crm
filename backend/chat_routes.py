@@ -356,8 +356,9 @@ async def get_chat_users(request: Request):
     
     current_user = await get_current_user(request)
     
+    # Get all users except current user (status field may not exist in crm_users)
     users = await db.crm_users.find(
-        {"id": {"$ne": current_user["id"]}, "status": "active"},
+        {"id": {"$ne": current_user["id"]}, "status": {"$ne": "deleted"}},
         {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1}
     ).to_list(100)
     
