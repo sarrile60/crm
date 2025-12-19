@@ -701,68 +701,74 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                   <LogIn className="w-5 h-5 text-orange-600" />
                   {t('admin.loginRequests')} ({loginRequests.length})
                 </h3>
-                <div className="space-y-3">
-                  {loginRequests.map((request) => {
-                    const requestTime = new Date(request.requested_at);
-                    const now = new Date();
-                    const minutesAgo = Math.floor((now - requestTime) / (1000 * 60));
-                    
-                    return (
-                      <div 
-                        key={request.id} 
-                        className="border-2 p-4 bg-orange-50 border-orange-300"
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <p className="font-bold text-black text-lg">{request.full_name || request.username}</p>
-                              <span className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-700">
-                                {t(`users.roles.${request.role}`) || request.role}
-                              </span>
+                {loginRequests.length === 0 ? (
+                  <p className="text-center text-gray-500 py-4 bg-gray-50 border border-gray-200">
+                    {t('admin.noLoginRequests')}
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {loginRequests.map((request) => {
+                      const requestTime = new Date(request.requested_at);
+                      const now = new Date();
+                      const minutesAgo = Math.floor((now - requestTime) / (1000 * 60));
+                      
+                      return (
+                        <div 
+                          key={request.id} 
+                          className="border-2 p-4 bg-orange-50 border-orange-300"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <p className="font-bold text-black text-lg">{request.full_name || request.username}</p>
+                                <span className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-700">
+                                  {t(`users.roles.${request.role}`) || request.role}
+                                </span>
+                              </div>
+                              <div className="space-y-1 text-sm">
+                                <p className="text-gray-700">
+                                  <strong>{t('auth.username')}:</strong> {request.username}
+                                </p>
+                                <p className="text-gray-700">
+                                  <strong>{t('admin.reason')}:</strong> {t('session.afterWorkHours', { time: request.reason?.split(':').slice(1).join(':') || '' })}
+                                </p>
+                                <p className="font-semibold text-orange-600">
+                                  <Clock className="w-4 h-4 inline mr-1" />
+                                  {requestTime.toLocaleString(getLocale(), { 
+                                    day: '2-digit',
+                                    month: 'short',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                  {' '}<span className="text-orange-700">({minutesAgo} {t('common.minutesAgo')})</span>
+                                </p>
+                              </div>
                             </div>
-                            <div className="space-y-1 text-sm">
-                              <p className="text-gray-700">
-                                <strong>{t('auth.username')}:</strong> {request.username}
-                              </p>
-                              <p className="text-gray-700">
-                                <strong>{t('admin.reason')}:</strong> {t('session.afterWorkHours', { time: request.reason?.split(':').slice(1).join(':') || '' })}
-                              </p>
-                              <p className="font-semibold text-orange-600">
-                                <Clock className="w-4 h-4 inline mr-1" />
-                                {requestTime.toLocaleString(getLocale(), { 
-                                  day: '2-digit',
-                                  month: 'short',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                                {' '}<span className="text-orange-700">({minutesAgo} {t('common.minutesAgo')})</span>
-                              </p>
+                            <div className="flex flex-col gap-2">
+                              <Button
+                                onClick={() => handleApproveLogin(request.id, request.username)}
+                                size="sm"
+                                className="bg-green-600 text-white hover:bg-green-700 rounded-none font-semibold"
+                              >
+                                <UserCheck className="w-4 h-4 mr-1" />
+                                {t('admin.approve')}
+                              </Button>
+                              <Button
+                                onClick={() => handleDenyLogin(request.id, request.username)}
+                                size="sm"
+                                variant="outline"
+                                className="border-red-600 text-red-600 hover:bg-red-50 rounded-none font-semibold"
+                              >
+                                <UserX className="w-4 h-4 mr-1" />
+                                {t('admin.deny')}
+                              </Button>
                             </div>
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            <Button
-                              onClick={() => handleApproveLogin(request.id, request.username)}
-                              size="sm"
-                              className="bg-green-600 text-white hover:bg-green-700 rounded-none font-semibold"
-                            >
-                              <UserCheck className="w-4 h-4 mr-1" />
-                              {t('admin.approve')}
-                            </Button>
-                            <Button
-                              onClick={() => handleDenyLogin(request.id, request.username)}
-                              size="sm"
-                              variant="outline"
-                              className="border-red-600 text-red-600 hover:bg-red-50 rounded-none font-semibold"
-                            >
-                              <UserX className="w-4 h-4 mr-1" />
-                              {t('admin.deny')}
-                            </Button>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 
