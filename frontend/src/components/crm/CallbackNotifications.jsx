@@ -60,6 +60,34 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     };
   }, []);
 
+  // Clean up old "called" markers - if callback_date changed, the marker should be cleared
+  const cleanupCalledCallbacks = (leads) => {
+    const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
+    let hasChanges = false;
+    
+    Object.keys(calledCallbacks).forEach(leadId => {
+      const calledData = calledCallbacks[leadId];
+      const lead = leads.find(l => l.id === leadId);
+      
+      // If lead no longer exists or callback_date has changed, remove the "called" marker
+      if (!lead || lead.callback_date !== calledData.callback_date) {
+        delete calledCallbacks[leadId];
+        hasChanges = true;
+      }
+      
+      // Also remove markers older than 24 hours
+      const calledAt = new Date(calledData.called_at);
+      if (Date.now() - calledAt.getTime() > 24 * 60 * 60 * 1000) {
+        delete calledCallbacks[leadId];
+        hasChanges = true;
+      }
+    });
+    
+    if (hasChanges) {
+      localStorage.setItem('called_callbacks', JSON.stringify(calledCallbacks));
+    }
+  };
+
   const fetchReminders = async () => {
     try {
       const token = localStorage.getItem('crmToken');
