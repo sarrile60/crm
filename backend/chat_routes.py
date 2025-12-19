@@ -405,8 +405,14 @@ async def poll_messages(request: Request, since: Optional[str] = None, conversat
     
     # Add sender info
     for msg in new_messages:
-        sender = await db.crm_users.find_one({"id": msg["sender_id"]}, {"_id": 0, "id": 1, "full_name": 1})
-        msg["sender"] = sender
+        if msg["sender_id"] == "system_notifications":
+            msg["sender"] = {
+                "id": "system_notifications",
+                "full_name": "⚠️ System Alerts"
+            }
+        else:
+            sender = await db.crm_users.find_one({"id": msg["sender_id"]}, {"_id": 0, "id": 1, "full_name": 1})
+            msg["sender"] = sender
     
     # Get typing indicators
     typing_info = {}
