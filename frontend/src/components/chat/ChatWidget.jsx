@@ -592,10 +592,25 @@ const ChatWidget = ({ currentUser }) => {
               </button>
             ))}
 
+            {/* No conversations or no filter results */}
             {conversations.length === 0 && !showNewChat && (
               <div className="p-8 text-center text-gray-500">
                 <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>{t('chat.noConversations')}</p>
+              </div>
+            )}
+            
+            {conversations.length > 0 && conversationFilter && 
+              conversations.filter(conv => getConversationName(conv).toLowerCase().includes(conversationFilter.toLowerCase())).length === 0 && (
+              <div className="p-6 text-center text-gray-500">
+                <Users className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">{t('chat.noMatchingConversations')}</p>
+                <button 
+                  onClick={() => setConversationFilter('')}
+                  className="text-[#D4AF37] text-sm mt-2 hover:underline"
+                >
+                  {t('common.clearFilters')}
+                </button>
               </div>
             )}
           </div>
