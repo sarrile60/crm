@@ -25,8 +25,7 @@ class TypingIndicator(BaseModel):
 
 # Dependency to get current user from token
 async def get_current_user(request: Request):
-    from server import get_db
-    db = await get_db()
+    from server import db
     token = request.headers.get("Authorization", "").replace("Bearer ", "")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
