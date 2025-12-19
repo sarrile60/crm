@@ -3684,7 +3684,7 @@ class CRMTester:
             print(f"Deletion Success Rate: {(deletion_passed/deletion_total)*100:.1f}%")
         
         # Separate WebSocket test results
-        websocket_tests = [r for r in self.test_results if "WebSocket" in r["test"] or "Direct Messaging" in r["test"] or "Team Messaging" in r["test"] or "Message Flow" in r["test"] or "Chat Contacts" in r["test"]]
+        websocket_tests = [r for r in self.test_results if "WebSocket" in r["test"] or "Direct Messaging" in r["test"] or "Team Messaging" in r["test"] or "Message Flow" in r["test"] or "Chat Contacts" in r["test"] or "Team Chat" in r["test"]]
         websocket_passed = sum(1 for r in websocket_tests if r["success"])
         websocket_total = len(websocket_tests)
         
