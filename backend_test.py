@@ -18,6 +18,9 @@ BASE_URL = "https://lawcrm-i18n-1.preview.emergentagent.com/api"
 CRM_BASE_URL = f"{BASE_URL}/crm"
 CHAT_BASE_URL = f"{BASE_URL}/chat"
 
+# Setup logging
+logger = logging.getLogger(__name__)
+
 # Test credentials
 ADMIN_CREDENTIALS = {
     "username": "admin_f87450ce5d66",
