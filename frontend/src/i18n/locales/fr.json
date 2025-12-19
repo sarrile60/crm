@@ -198,7 +198,17 @@
     "accessDeniedMessage": "Vous n'avez pas la permission d'accéder au panneau d'administration. Seuls les utilisateurs ayant le rôle \"admin\" peuvent accéder à cette section.",
     "session": "Paramètres de session",
     "audit": "Journaux d'audit",
-    "entity": "Configuration des entités"
+    "entity": "Configuration des entités",
+    "loginRequests": "Demandes de Connexion",
+    "newLoginRequest": "Nouvelle Demande de Connexion",
+    "userNeedsApproval": "Un utilisateur demande l'accès en dehors des heures de travail",
+    "loginApproved": "Connexion approuvée pour {{username}}",
+    "loginDenied": "Connexion refusée pour {{username}}",
+    "errorApprovingLogin": "Erreur lors de l'approbation de la connexion",
+    "errorDenyingLogin": "Erreur lors du refus de la connexion",
+    "approve": "Approuver",
+    "deny": "Refuser",
+    "reason": "Raison"
   },
   "roles": {
     "title": "Gestion des Rôles",
