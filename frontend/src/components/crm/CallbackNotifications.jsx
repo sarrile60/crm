@@ -273,7 +273,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
         );
         
         if (response.data.success) {
-          toast.warning(`Supervisor ${response.data.supervisor} è stato notificato`);
+          toast.warning(t('crm.supervisorNotified', { supervisor: response.data.supervisor }));
         }
       } catch (error) {
         console.error('Error notifying supervisor:', error);
