@@ -910,5 +910,19 @@
     "attachFile": "Joindre un fichier",
     "messageRead": "Lu",
     "messageDelivered": "Livré"
+  },
+  "adminDashboard": {
+    "pageViews": "Pages vues",
+    "totalViews": "Vues totales",
+    "formStarts": "Formulaires commencés",
+    "usersStartedForm": "Utilisateurs ayant commencé le formulaire",
+    "totalLeads": "Total des prospects",
+    "formsCompletedSuccessfully": "Formulaires complétés avec succès",
+    "ctaClicks": "Clics CTA",
+    "clicksOnCtaButtons": "Clics sur les boutons CTA",
+    "conversionRate": "Taux de conversion",
+    "formStartsToLeads": "Formulaires commencés → Prospects complétés",
+    "amountLost": "Montant perdu",
+    "caseDescription": "Description du cas"
   }
 }
