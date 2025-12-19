@@ -828,6 +828,8 @@
   "chat": {
     "title": "Chat",
     "searchMessages": "Cerca messaggi...",
+    "filterConversations": "Trova una conversazione...",
+    "noMatchingConversations": "Nessuna conversazione trovata",
     "newConversation": "Nuova Conversazione",
     "searchResults": "Risultati Ricerca",
     "selectUser": "Seleziona Utente",
