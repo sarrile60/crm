@@ -916,26 +916,212 @@ class CRMTester:
         except Exception as e:
             self.log_result("WebSocket Stability - Backend Logs", False, f"Error checking logs: {str(e)}")
     
-    def test_after_hours_login_approval(self):
-        """Test after-hours login approval system with specific scenario"""
+    def test_after_hours_login_approval_flow(self):
+        """Test the complete after-hours login approval flow as specified in review request"""
         print("\n" + "🕐" * 50)
-        print("🕐 AFTER-HOURS LOGIN APPROVAL TESTING - SPECIFIC SCENARIO")
+        print("🕐 TESTING AFTER-HOURS LOGIN APPROVAL FLOW")
+        print("🕐 Session end time: 14:30, Current time: ~14:50 (after hours)")
         print("🕐" * 50)
         
-        # Step 1: Change session end time to 14:20 to force after-hours
-        self.configure_session_for_after_hours()
+        # Test credentials from review request
+        agent_credentials = {"username": "agente", "password": "12345"}
         
-        # Step 2: Clear existing approvals for maurizio1
-        self.clear_maurizio_approvals()
+        # Step 1: Test After-Hours Login Block
+        print("\n=== Step 1: Testing After-Hours Login Block ===")
+        try:
+            response = self.session.post(
+                f"{CRM_BASE_URL}/auth/login",
+                json=agent_credentials,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 403:
+                error_detail = ""
+                try:
+                    error_data = response.json()
+                    error_detail = error_data.get("detail", "")
+                except:
+                    error_detail = response.text
+                
+                # Check for specific error format: "after_hours_approval_required:after_work_hours:14:30"
+                expected_pattern = "after_hours_approval_required:after_work_hours:14:30"
+                has_correct_error = expected_pattern in error_detail
+                
+                self.log_result(
+                    "After-Hours Login Block", 
+                    has_correct_error,
+                    f"Login correctly blocked with expected error format",
+                    f"Error: '{error_detail}', Expected pattern: '{expected_pattern}'"
+                )
+            else:
+                self.log_result("After-Hours Login Block", False, f"Expected 403, got {response.status_code}", response.text)
+                return
+                
+        except Exception as e:
+            self.log_result("After-Hours Login Block", False, f"Error: {str(e)}")
+            return
         
-        # Step 3: Test login failure with after_hours_approval_required
-        self.test_maurizio_login_failure()
+        # Step 2: Get Admin Token (should always succeed)
+        print("\n=== Step 2: Getting Admin Token ===")
+        if not self.admin_token:
+            if not self.login_admin():
+                self.log_result("Admin Login", False, "Cannot proceed without admin token")
+                return
         
-        # Step 4: Approve the request via admin API
-        self.approve_maurizio_request()
-        
-        # Step 5: Test successful login after approval
-        self.test_maurizio_login_success()
+        # Step 3: Check Pending Requests
+        print("\n=== Step 3: Checking Pending Login Requests ===")
+        try:
+            admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+            requests_response = self.session.get(f"{BASE_URL}/admin/login-requests", headers=admin_headers)
+            
+            if requests_response.status_code == 200:
+                requests_data = requests_response.json()
+                pending_requests = requests_data.get("requests", [])
+                agente_requests = [r for r in pending_requests if r.get("username") == "agente"]
+                
+                if agente_requests:
+                    request_id = agente_requests[0].get("id")
+                    self.log_result(
+                        "Check Pending Requests", 
+                        True,
+                        f"Found pending request for agente",
+                        f"Request ID: {request_id}, Status: {agente_requests[0].get('status')}"
+                    )
+                    
+                    # Step 4: Approve the Request
+                    print("\n=== Step 4: Approving Login Request ===")
+                    approve_response = self.session.post(
+                        f"{BASE_URL}/admin/login-requests/{request_id}/approve",
+                        headers={**admin_headers, "Content-Type": "application/json"}
+                    )
+                    
+                    if approve_response.status_code == 200:
+                        approval_data = approve_response.json()
+                        expires_at = approval_data.get("expires_at")
+                        duration_minutes = approval_data.get("duration_minutes", 30)
+                        
+                        self.log_result(
+                            "Approve Request", 
+                            True,
+                            f"Request approved successfully",
+                            f"Expires: {expires_at}, Duration: {duration_minutes} minutes"
+                        )
+                        
+                        # Step 5: Test Login After Approval
+                        print("\n=== Step 5: Testing Login After Approval ===")
+                        time.sleep(1)  # Brief delay for approval processing
+                        
+                        login_response = self.session.post(
+                            f"{CRM_BASE_URL}/auth/login",
+                            json=agent_credentials,
+                            headers={"Content-Type": "application/json"}
+                        )
+                        
+                        if login_response.status_code == 200:
+                            login_data = login_response.json()
+                            agent_token = login_data.get("token")
+                            user_info = login_data.get("user", {})
+                            
+                            self.log_result(
+                                "Login After Approval", 
+                                True,
+                                f"Login successful after approval",
+                                f"User: {user_info.get('username')}, Token received: {len(agent_token) if agent_token else 0} chars"
+                            )
+                            
+                            if agent_token:
+                                # Step 6: CRITICAL - Test Session Check After Approval
+                                print("\n=== Step 6: CRITICAL - Testing Session Check After Approval ===")
+                                self.test_session_check_after_approval(agent_token)
+                                
+                                # Step 7: Test Dashboard Access
+                                print("\n=== Step 7: Testing Dashboard Access ===")
+                                self.test_dashboard_access_after_approval(agent_token)
+                            else:
+                                self.log_result("Token Validation", False, "No token received in login response")
+                        else:
+                            self.log_result("Login After Approval", False, f"Login failed: {login_response.status_code}", login_response.text)
+                    else:
+                        self.log_result("Approve Request", False, f"Approval failed: {approve_response.status_code}", approve_response.text)
+                else:
+                    self.log_result("Check Pending Requests", False, "No pending request found for agente")
+            else:
+                self.log_result("Check Pending Requests", False, f"Failed to get requests: {requests_response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Check Pending Requests", False, f"Error: {str(e)}")
+    
+    def test_session_check_after_approval(self, agent_token):
+        """Test the critical session check functionality after approval"""
+        try:
+            headers = {"Authorization": f"Bearer {agent_token}"}
+            session_response = self.session.get(f"{CRM_BASE_URL}/auth/session-check", headers=headers)
+            
+            if session_response.status_code == 200:
+                session_data = session_response.json()
+                is_valid = session_data.get("valid", False)
+                session_info = session_data.get("session_info", {})
+                has_after_hours_approval = session_info.get("has_after_hours_approval", False)
+                
+                # This is the CRITICAL test - session should be valid with approval
+                success = is_valid and has_after_hours_approval
+                
+                self.log_result(
+                    "Session Check After Approval - CRITICAL", 
+                    success,
+                    f"Session check returns valid: {is_valid}, has_after_hours_approval: {has_after_hours_approval}",
+                    f"Full response: valid={is_valid}, has_approval={has_after_hours_approval}, message='{session_data.get('message', '')}'"
+                )
+                
+                if not success:
+                    # This was the main bug - log detailed info for debugging
+                    self.log_result(
+                        "Session Check Analysis", 
+                        False,
+                        "CRITICAL BUG: Session check should return valid=true for approved users",
+                        f"Session info: {session_info}"
+                    )
+            else:
+                self.log_result("Session Check After Approval", False, f"Session check failed: {session_response.status_code}", session_response.text)
+                
+        except Exception as e:
+            self.log_result("Session Check After Approval", False, f"Error: {str(e)}")
+    
+    def test_dashboard_access_after_approval(self, agent_token):
+        """Test dashboard access after successful after-hours login"""
+        try:
+            headers = {"Authorization": f"Bearer {agent_token}"}
+            
+            # Test /api/crm/auth/me
+            me_response = self.session.get(f"{CRM_BASE_URL}/auth/me", headers=headers)
+            
+            if me_response.status_code == 200:
+                user_data = me_response.json()
+                self.log_result(
+                    "Dashboard Access - User Info", 
+                    True,
+                    f"Can access user info after after-hours login",
+                    f"User: {user_data.get('full_name')}, Role: {user_data.get('role')}"
+                )
+            else:
+                self.log_result("Dashboard Access - User Info", False, f"Cannot access user info: {me_response.status_code}")
+            
+            # Test /api/crm/dashboard/stats
+            stats_response = self.session.get(f"{CRM_BASE_URL}/dashboard/stats", headers=headers)
+            
+            if stats_response.status_code == 200:
+                stats_data = stats_response.json()
+                self.log_result(
+                    "Dashboard Access - Stats", 
+                    True,
+                    f"Can access dashboard stats after after-hours login",
+                    f"Total leads: {stats_data.get('total_leads', 0)}, New: {stats_data.get('new_leads', 0)}"
+                )
+            else:
+                self.log_result("Dashboard Access - Stats", False, f"Cannot access dashboard stats: {stats_response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Dashboard Access", False, f"Error: {str(e)}")
     
     def test_duplicate_login_request_prevention(self):
         """Test that multiple login attempts create only one pending request"""
