@@ -378,27 +378,36 @@ const SessionSettings = () => {
                 <div className="flex flex-col">
                   <button 
                     type="button"
-                    onClick={() => updateSetting('session_end_hour', Math.min(23, settings.session_end_hour + 1))}
+                    onClick={() => {
+                      const newVal = Math.min(23, settings.session_end_hour + 1);
+                      updateSetting('session_end_hour', newVal);
+                      setTimeInputs(prev => ({ ...prev, endHour: String(newVal).padStart(2, '0') }));
+                    }}
                     className="px-3 py-1 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs"
                   >▲</button>
                   <input
                     type="text"
                     maxLength="2"
-                    value={String(settings.session_end_hour).padStart(2, '0')}
+                    value={timeInputs.endHour}
                     onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      if (val === '') {
-                        updateSetting('session_end_hour', 0);
-                      } else {
-                        const num = parseInt(val, 10);
-                        updateSetting('session_end_hour', Math.min(23, num));
-                      }
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 2);
+                      setTimeInputs(prev => ({ ...prev, endHour: val }));
+                      setHasChanges(true);
+                    }}
+                    onBlur={(e) => {
+                      const num = Math.min(23, Math.max(0, parseInt(e.target.value, 10) || 0));
+                      updateSetting('session_end_hour', num);
+                      setTimeInputs(prev => ({ ...prev, endHour: String(num).padStart(2, '0') }));
                     }}
                     className="w-16 text-center border border-gray-300 px-2 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                   />
                   <button 
                     type="button"
-                    onClick={() => updateSetting('session_end_hour', Math.max(0, settings.session_end_hour - 1))}
+                    onClick={() => {
+                      const newVal = Math.max(0, settings.session_end_hour - 1);
+                      updateSetting('session_end_hour', newVal);
+                      setTimeInputs(prev => ({ ...prev, endHour: String(newVal).padStart(2, '0') }));
+                    }}
                     className="px-3 py-1 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs"
                   >▼</button>
                 </div>
@@ -406,27 +415,36 @@ const SessionSettings = () => {
                 <div className="flex flex-col">
                   <button 
                     type="button"
-                    onClick={() => updateSetting('session_end_minute', Math.min(59, settings.session_end_minute + 1))}
+                    onClick={() => {
+                      const newVal = Math.min(59, settings.session_end_minute + 1);
+                      updateSetting('session_end_minute', newVal);
+                      setTimeInputs(prev => ({ ...prev, endMinute: String(newVal).padStart(2, '0') }));
+                    }}
                     className="px-3 py-1 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs"
                   >▲</button>
                   <input
                     type="text"
                     maxLength="2"
-                    value={String(settings.session_end_minute).padStart(2, '0')}
+                    value={timeInputs.endMinute}
                     onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      if (val === '') {
-                        updateSetting('session_end_minute', 0);
-                      } else {
-                        const num = parseInt(val, 10);
-                        updateSetting('session_end_minute', Math.min(59, num));
-                      }
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 2);
+                      setTimeInputs(prev => ({ ...prev, endMinute: val }));
+                      setHasChanges(true);
+                    }}
+                    onBlur={(e) => {
+                      const num = Math.min(59, Math.max(0, parseInt(e.target.value, 10) || 0));
+                      updateSetting('session_end_minute', num);
+                      setTimeInputs(prev => ({ ...prev, endMinute: String(num).padStart(2, '0') }));
                     }}
                     className="w-16 text-center border border-gray-300 px-2 py-2 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
                   />
                   <button 
                     type="button"
-                    onClick={() => updateSetting('session_end_minute', Math.max(0, settings.session_end_minute - 1))}
+                    onClick={() => {
+                      const newVal = Math.max(0, settings.session_end_minute - 1);
+                      updateSetting('session_end_minute', newVal);
+                      setTimeInputs(prev => ({ ...prev, endMinute: String(newVal).padStart(2, '0') }));
+                    }}
                     className="px-3 py-1 bg-gray-100 hover:bg-gray-200 border border-gray-300 text-xs"
                   >▼</button>
                 </div>
