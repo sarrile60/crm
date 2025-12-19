@@ -456,16 +456,39 @@ const ChatWidget = ({ currentUser }) => {
         {!selectedConversation ? (
           // Conversation List
           <div className="flex-1 overflow-y-auto">
-            {/* Search */}
-            <div className="p-3 border-b">
-              <div className="flex gap-2">
+            {/* Search Section */}
+            <div className="p-3 border-b space-y-2">
+              {/* Conversation Filter */}
+              <div className="relative">
+                <Users className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <Input
-                  placeholder={t('chat.searchMessages')}
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  className="flex-1"
+                  placeholder={t('chat.filterConversations')}
+                  value={conversationFilter}
+                  onChange={(e) => setConversationFilter(e.target.value)}
+                  className="pl-9 text-sm"
                 />
+                {conversationFilter && (
+                  <button 
+                    onClick={() => setConversationFilter('')}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              
+              {/* Message Search */}
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Input
+                    placeholder={t('chat.searchMessages')}
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                    className="pl-9 text-sm"
+                  />
+                </div>
                 <Button size="sm" onClick={handleSearch} disabled={isSearching}>
                   <Search className="w-4 h-4" />
                 </Button>
