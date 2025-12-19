@@ -1008,7 +1008,7 @@ async def notify_supervisor_callback_ignored(
     agent_id: str,
     current_user: dict = Depends(get_current_user)
 ):
-    """Notify supervisor when agent ignores callback 3 times"""
+    """Notify supervisor when agent ignores callback 3 times - sends chat message"""
     try:
         # Get the lead and agent info
         lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
@@ -1034,7 +1034,7 @@ async def notify_supervisor_callback_ignored(
         if not supervisor:
             return {"success": False, "message": "Supervisor not found"}
         
-        # Create notification/alert for supervisor
+        # Create notification/alert for supervisor (database record)
         alert = {
             "id": str(uuid.uuid4()),
             "type": "callback_ignored",
@@ -1052,9 +1052,78 @@ async def notify_supervisor_callback_ignored(
         
         await db.supervisor_alerts.insert_one(alert)
         
+        # Send chat message to supervisor
+        # First, find or create a conversation between system and supervisor
+        system_user_id = "system_notifications"
+        
+        # Check if conversation exists
+        conversation = await db.conversations.find_one({
+            "participant_ids": {"$all": [system_user_id, supervisor_id]},
+            "is_system_chat": True
+        }, {"_id": 0})
+        
+        if not conversation:
+            # Create system notification conversation
+            conversation = {
+                "id": str(uuid.uuid4()),
+                "participant_ids": [system_user_id, supervisor_id],
+                "is_group": False,
+                "is_system_chat": True,
+                "name": "System Notifications",
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "last_message": None,
+                "last_message_at": None,
+                "typing_users": []
+            }
+            await db.conversations.insert_one(conversation)
+        
+        # Format callback date nicely
+        callback_date_str = lead.get("callback_date", "N/A")
+        if callback_date_str and callback_date_str != "N/A":
+            try:
+                callback_dt = datetime.fromisoformat(callback_date_str.replace('Z', '+00:00'))
+                callback_date_str = callback_dt.strftime("%d/%m/%Y %H:%M")
+            except:
+                pass
+        
+        # Create the chat message
+        now = datetime.now(timezone.utc)
+        message_content = f"""⚠️ CALLBACK ALERT ⚠️
+
+Agent: {agent.get('full_name', 'Unknown')}
+Lead: {lead.get('fullName', 'Unknown')} ({lead.get('phone', 'N/A')})
+Scheduled callback: {callback_date_str}
+Time: {now.strftime("%d/%m/%Y %H:%M")}
+
+The agent has postponed this callback 3 times."""
+
+        message = {
+            "id": str(uuid.uuid4()),
+            "conversation_id": conversation["id"],
+            "sender_id": system_user_id,
+            "content": message_content,
+            "message_type": "system_alert",
+            "created_at": now.isoformat(),
+            "read_by": [system_user_id],
+            "delivered_to": [system_user_id]
+        }
+        
+        await db.messages.insert_one(message)
+        
+        # Update conversation with last message
+        await db.conversations.update_one(
+            {"id": conversation["id"]},
+            {
+                "$set": {
+                    "last_message": "⚠️ Callback Alert",
+                    "last_message_at": now.isoformat()
+                }
+            }
+        )
+        
         return {
             "success": True, 
-            "message": "Supervisor notified",
+            "message": "Supervisor notified via chat",
             "supervisor": supervisor.get("full_name")
         }
         
