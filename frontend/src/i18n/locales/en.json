@@ -865,5 +865,23 @@
     "errorLoadingRoles": "Error loading roles",
     "errorLoadingPermissions": "Error loading permissions",
     "errorSaving": "Error saving permissions"
+  },
+  "chat": {
+    "title": "Chat",
+    "searchMessages": "Search messages...",
+    "newConversation": "New Conversation",
+    "searchResults": "Search Results",
+    "selectUser": "Select User",
+    "noMessages": "No messages yet",
+    "noConversations": "No conversations yet. Start a new chat!",
+    "typeMessage": "Type a message...",
+    "typing": "typing...",
+    "yesterday": "Yesterday",
+    "online": "Online",
+    "offline": "Offline",
+    "sendMessage": "Send",
+    "attachFile": "Attach file",
+    "messageRead": "Read",
+    "messageDelivered": "Delivered"
   }
 }

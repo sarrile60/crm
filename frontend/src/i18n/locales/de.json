@@ -889,5 +889,23 @@
     "errorLoadingRoles": "Fehler beim Laden der Rollen",
     "errorLoadingPermissions": "Fehler beim Laden der Berechtigungen",
     "errorSaving": "Fehler beim Speichern der Berechtigungen"
+  },
+  "chat": {
+    "title": "Chat",
+    "searchMessages": "Nachrichten suchen...",
+    "newConversation": "Neue Unterhaltung",
+    "searchResults": "Suchergebnisse",
+    "selectUser": "Benutzer auswählen",
+    "noMessages": "Noch keine Nachrichten",
+    "noConversations": "Keine Unterhaltungen. Starten Sie einen neuen Chat!",
+    "typeMessage": "Nachricht eingeben...",
+    "typing": "schreibt...",
+    "yesterday": "Gestern",
+    "online": "Online",
+    "offline": "Offline",
+    "sendMessage": "Senden",
+    "attachFile": "Datei anhängen",
+    "messageRead": "Gelesen",
+    "messageDelivered": "Zugestellt"
   }
 }

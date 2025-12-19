@@ -821,5 +821,23 @@
     "errorLoadingRoles": "Errore nel caricamento dei ruoli",
     "errorLoadingPermissions": "Errore nel caricamento dei permessi",
     "errorSaving": "Errore nel salvataggio dei permessi"
+  },
+  "chat": {
+    "title": "Chat",
+    "searchMessages": "Cerca messaggi...",
+    "newConversation": "Nuova Conversazione",
+    "searchResults": "Risultati Ricerca",
+    "selectUser": "Seleziona Utente",
+    "noMessages": "Nessun messaggio",
+    "noConversations": "Nessuna conversazione. Inizia una nuova chat!",
+    "typeMessage": "Scrivi un messaggio...",
+    "typing": "sta scrivendo...",
+    "yesterday": "Ieri",
+    "online": "Online",
+    "offline": "Offline",
+    "sendMessage": "Invia",
+    "attachFile": "Allega file",
+    "messageRead": "Letto",
+    "messageDelivered": "Consegnato"
   }
 }
