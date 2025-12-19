@@ -98,7 +98,7 @@ async def get_conversations(request: Request):
     for conv in conversations:
         participants = []
         for pid in conv["participant_ids"]:
-            user = await db.users.find_one({"id": pid}, {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1, "status": 1})
+            user = await db.crm_users.find_one({"id": pid}, {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1, "status": 1})
             if user:
                 participants.append(user)
         conv["participants"] = participants
@@ -141,7 +141,7 @@ async def get_messages(conversation_id: str, request: Request, limit: int = 50, 
     
     # Add sender info to each message
     for msg in messages:
-        sender = await db.users.find_one({"id": msg["sender_id"]}, {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1})
+        sender = await db.crm_users.find_one({"id": msg["sender_id"]}, {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1})
         msg["sender"] = sender
     
     return {"messages": list(reversed(messages))}
@@ -262,7 +262,7 @@ async def get_typing(conversation_id: str, request: Request):
     typing_users = []
     for uid in conversation.get("typing_users", []):
         if uid != current_user["id"]:
-            user = await db.users.find_one({"id": uid}, {"_id": 0, "id": 1, "full_name": 1})
+            user = await db.crm_users.find_one({"id": uid}, {"_id": 0, "id": 1, "full_name": 1})
             if user:
                 typing_users.append(user)
     
@@ -340,7 +340,7 @@ async def search_messages(request: Request, q: str, limit: int = 20):
     
     # Add sender and conversation info
     for msg in messages:
-        sender = await db.users.find_one({"id": msg["sender_id"]}, {"_id": 0, "id": 1, "full_name": 1})
+        sender = await db.crm_users.find_one({"id": msg["sender_id"]}, {"_id": 0, "id": 1, "full_name": 1})
         msg["sender"] = sender
         
         conv = await db.conversations.find_one({"id": msg["conversation_id"]}, {"_id": 0, "id": 1, "name": 1, "is_group": 1})
@@ -356,7 +356,7 @@ async def get_chat_users(request: Request):
     
     current_user = await get_current_user(request)
     
-    users = await db.users.find(
+    users = await db.crm_users.find(
         {"id": {"$ne": current_user["id"]}, "status": "active"},
         {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1}
     ).to_list(100)
@@ -394,7 +394,7 @@ async def poll_messages(request: Request, since: Optional[str] = None):
     
     # Add sender info
     for msg in new_messages:
-        sender = await db.users.find_one({"id": msg["sender_id"]}, {"_id": 0, "id": 1, "full_name": 1})
+        sender = await db.crm_users.find_one({"id": msg["sender_id"]}, {"_id": 0, "id": 1, "full_name": 1})
         msg["sender"] = sender
     
     # Get typing indicators
