@@ -942,7 +942,15 @@
     "sendMessage": "Senden",
     "attachFile": "Datei anhängen",
     "messageRead": "Gelesen",
-    "messageDelivered": "Zugestellt"
+    "messageDelivered": "Zugestellt",
+    "teamChat": "Team-Chat",
+    "selectTeam": "Team auswählen",
+    "noTeamsAvailable": "Keine Teams verfügbar",
+    "team": "Team",
+    "member": "Mitglied",
+    "members": "Mitglieder",
+    "errorOpeningTeamChat": "Fehler beim Öffnen des Team-Chats",
+    "errorSendingMessage": "Fehler beim Senden der Nachricht"
   },
   "adminDashboard": {
     "pageViews": "Seitenaufrufe",

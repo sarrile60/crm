@@ -873,7 +873,15 @@
     "sendMessage": "Invia",
     "attachFile": "Allega file",
     "messageRead": "Letto",
-    "messageDelivered": "Consegnato"
+    "messageDelivered": "Consegnato",
+    "teamChat": "Chat di Team",
+    "selectTeam": "Seleziona un Team",
+    "noTeamsAvailable": "Nessun team disponibile",
+    "team": "Team",
+    "member": "membro",
+    "members": "membri",
+    "errorOpeningTeamChat": "Errore nell'apertura della chat di team",
+    "errorSendingMessage": "Errore nell'invio del messaggio"
   },
   "adminDashboard": {
     "pageViews": "Visite Pagina",

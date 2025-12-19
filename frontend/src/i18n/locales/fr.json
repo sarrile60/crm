@@ -941,7 +941,15 @@
     "sendMessage": "Envoyer",
     "attachFile": "Joindre un fichier",
     "messageRead": "Lu",
-    "messageDelivered": "Livré"
+    "messageDelivered": "Livré",
+    "teamChat": "Chat d'équipe",
+    "selectTeam": "Sélectionner une équipe",
+    "noTeamsAvailable": "Aucune équipe disponible",
+    "team": "Équipe",
+    "member": "membre",
+    "members": "membres",
+    "errorOpeningTeamChat": "Erreur lors de l'ouverture du chat d'équipe",
+    "errorSendingMessage": "Erreur lors de l'envoi du message"
   },
   "adminDashboard": {
     "pageViews": "Pages vues",
