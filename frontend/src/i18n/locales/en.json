@@ -297,7 +297,17 @@
     "entityConfig": "Entity Config",
     "accessDenied": "Access Denied",
     "accessDeniedDesc": "You do not have permission to access the Administration Panel. This area is reserved for system administrators only.",
-    "backToCRM": "Back to CRM"
+    "backToCRM": "Back to CRM",
+    "loginRequests": "Login Requests",
+    "newLoginRequest": "New Login Request",
+    "userNeedsApproval": "A user is requesting access outside work hours",
+    "loginApproved": "Login approved for {{username}}",
+    "loginDenied": "Login denied for {{username}}",
+    "errorApprovingLogin": "Error approving login",
+    "errorDenyingLogin": "Error denying login",
+    "approve": "Approve",
+    "deny": "Deny",
+    "reason": "Reason"
   },
   "roles": {
     "title": "Role Management",
