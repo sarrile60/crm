@@ -20,6 +20,16 @@ const UsersManagement = () => {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   
+  // Helper to get proper locale for date formatting
+  const getLocale = () => {
+    const lang = i18n.language;
+    return lang === 'en' ? 'en-GB' : 
+           lang === 'it' ? 'it-IT' :
+           lang === 'de' ? 'de-DE' :
+           lang === 'fr' ? 'fr-FR' :
+           lang === 'es' ? 'es-ES' : 'en-GB';
+  };
+  
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
