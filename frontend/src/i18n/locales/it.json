@@ -167,7 +167,17 @@
     "accessDeniedDesc": "Non hai i permessi per accedere al Pannello Amministrazione. Quest'area è riservata solo agli amministratori di sistema.",
     "backToCRM": "Torna al CRM",
     "verifyingAuth": "Verifica autorizzazione...",
-    "accessDeniedMessage": "Non hai i permessi per accedere al pannello di amministrazione. Solo gli utenti con ruolo \"admin\" possono accedere a questa sezione."
+    "accessDeniedMessage": "Non hai i permessi per accedere al pannello di amministrazione. Solo gli utenti con ruolo \"admin\" possono accedere a questa sezione.",
+    "loginRequests": "Richieste di Accesso",
+    "newLoginRequest": "Nuova Richiesta di Accesso",
+    "userNeedsApproval": "Un utente richiede l'accesso fuori orario di lavoro",
+    "loginApproved": "Accesso approvato per {{username}}",
+    "loginDenied": "Accesso negato per {{username}}",
+    "errorApprovingLogin": "Errore nell'approvazione dell'accesso",
+    "errorDenyingLogin": "Errore nel rifiuto dell'accesso",
+    "approve": "Approva",
+    "deny": "Rifiuta",
+    "reason": "Motivo"
   },
   "roles": {
     "title": "Gestione Ruoli",
