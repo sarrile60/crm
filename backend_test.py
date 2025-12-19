@@ -910,6 +910,259 @@ class CRMTester:
         except Exception as e:
             self.log_result("WebSocket Stability - Backend Logs", False, f"Error checking logs: {str(e)}")
     
+    def test_after_hours_login_approval(self):
+        """Test after-hours login approval system"""
+        print("\n" + "🕐" * 50)
+        print("🕐 AFTER-HOURS LOGIN APPROVAL TESTING")
+        print("🕐" * 50)
+        
+        # Test 1: Verify duplicate prevention
+        self.test_duplicate_login_request_prevention()
+        
+        # Test 2: Verify approval works
+        self.test_login_approval_workflow()
+        
+        # Test 3: Verify error message format
+        self.test_error_message_format()
+    
+    def test_duplicate_login_request_prevention(self):
+        """Test that multiple login attempts create only one pending request"""
+        print("\n=== Testing Duplicate Login Request Prevention ===")
+        
+        # Clear any existing requests for maurizio1
+        try:
+            admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+            clear_response = self.session.delete(f"{BASE_URL}/admin/login-requests/clear-expired", headers=admin_headers)
+            
+            # Also manually clear any pending requests for maurizio1
+            # We'll do this by getting all requests and checking
+            requests_response = self.session.get(f"{BASE_URL}/admin/login-requests", headers=admin_headers)
+            if requests_response.status_code == 200:
+                requests_data = requests_response.json()
+                existing_requests = requests_data.get("requests", [])
+                maurizio_requests = [r for r in existing_requests if r.get("username") == "maurizio1"]
+                self.log_result(
+                    "Duplicate Prevention - Initial State", 
+                    True, 
+                    f"Found {len(maurizio_requests)} existing requests for maurizio1"
+                )
+        except Exception as e:
+            self.log_result("Duplicate Prevention - Setup", False, f"Error clearing requests: {str(e)}")
+        
+        # Attempt to login as maurizio1 multiple times (should be after hours)
+        login_attempts = []
+        for i in range(3):
+            try:
+                response = self.session.post(
+                    f"{CRM_BASE_URL}/auth/login",
+                    json=SUPERVISOR_CREDENTIALS,
+                    headers={"Content-Type": "application/json"}
+                )
+                login_attempts.append({
+                    "attempt": i + 1,
+                    "status_code": response.status_code,
+                    "response": response.text
+                })
+                time.sleep(0.5)  # Small delay between attempts
+            except Exception as e:
+                login_attempts.append({
+                    "attempt": i + 1,
+                    "error": str(e)
+                })
+        
+        # Check that all attempts failed with 403 (after hours)
+        failed_attempts = [a for a in login_attempts if a.get("status_code") == 403]
+        self.log_result(
+            "Duplicate Prevention - Login Attempts", 
+            len(failed_attempts) == 3,
+            f"All 3 login attempts failed with 403 as expected",
+            f"Failed attempts: {len(failed_attempts)}/3"
+        )
+        
+        # Check admin's pending requests - should be only ONE for maurizio1
+        try:
+            admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+            requests_response = self.session.get(f"{BASE_URL}/admin/login-requests", headers=admin_headers)
+            
+            if requests_response.status_code == 200:
+                requests_data = requests_response.json()
+                pending_requests = requests_data.get("requests", [])
+                maurizio_requests = [r for r in pending_requests if r.get("username") == "maurizio1"]
+                
+                success = len(maurizio_requests) == 1
+                self.log_result(
+                    "Duplicate Prevention - Single Request", 
+                    success,
+                    f"Only ONE pending request exists for maurizio1",
+                    f"Found {len(maurizio_requests)} requests (expected 1)"
+                )
+                
+                if maurizio_requests:
+                    self.maurizio_request_id = maurizio_requests[0].get("id")
+                    self.log_result(
+                        "Duplicate Prevention - Request Details", 
+                        True,
+                        f"Request ID captured: {self.maurizio_request_id}",
+                        f"Status: {maurizio_requests[0].get('status')}, Reason: {maurizio_requests[0].get('reason')}"
+                    )
+            else:
+                self.log_result("Duplicate Prevention - Get Requests", False, f"Failed to get requests: {requests_response.status_code}")
+                
+        except Exception as e:
+            self.log_result("Duplicate Prevention - Get Requests", False, f"Error: {str(e)}")
+    
+    def test_login_approval_workflow(self):
+        """Test the complete approval workflow"""
+        print("\n=== Testing Login Approval Workflow ===")
+        
+        if not hasattr(self, 'maurizio_request_id') or not self.maurizio_request_id:
+            self.log_result("Approval Workflow - Setup", False, "No request ID available from previous test")
+            return
+        
+        # Step 1: Approve the request
+        try:
+            admin_headers = {
+                "Authorization": f"Bearer {self.admin_token}",
+                "Content-Type": "application/json"
+            }
+            
+            approve_response = self.session.post(
+                f"{BASE_URL}/admin/login-requests/{self.maurizio_request_id}/approve",
+                headers=admin_headers
+            )
+            
+            if approve_response.status_code == 200:
+                approval_data = approve_response.json()
+                expires_at = approval_data.get("expires_at")
+                duration_minutes = approval_data.get("duration_minutes", 30)
+                
+                self.log_result(
+                    "Approval Workflow - Approve Request", 
+                    True,
+                    f"Request approved successfully",
+                    f"Expires at: {expires_at}, Duration: {duration_minutes} minutes"
+                )
+            else:
+                self.log_result("Approval Workflow - Approve Request", False, f"Approval failed: {approve_response.status_code}", approve_response.text)
+                return
+                
+        except Exception as e:
+            self.log_result("Approval Workflow - Approve Request", False, f"Error: {str(e)}")
+            return
+        
+        # Step 2: Now try to login as maurizio1 - should succeed
+        try:
+            time.sleep(1)  # Brief delay to ensure approval is processed
+            
+            login_response = self.session.post(
+                f"{CRM_BASE_URL}/auth/login",
+                json=SUPERVISOR_CREDENTIALS,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if login_response.status_code == 200:
+                login_data = login_response.json()
+                token = login_data.get("token")
+                user_info = login_data.get("user", {})
+                
+                self.log_result(
+                    "Approval Workflow - Login After Approval", 
+                    True,
+                    f"Login successful after approval",
+                    f"User: {user_info.get('username')}, Role: {user_info.get('role')}"
+                )
+                
+                # Store token for potential future tests
+                self.maurizio_token = token
+                
+            else:
+                self.log_result("Approval Workflow - Login After Approval", False, f"Login failed: {login_response.status_code}", login_response.text)
+                
+        except Exception as e:
+            self.log_result("Approval Workflow - Login After Approval", False, f"Error: {str(e)}")
+    
+    def test_error_message_format(self):
+        """Test that error message format is correct (not hardcoded Italian)"""
+        print("\n=== Testing Error Message Format ===")
+        
+        # Clear any existing approvals for maurizio1 first
+        try:
+            admin_headers = {"Authorization": f"Bearer {self.admin_token}"}
+            
+            # Get all requests and clear any approved ones for maurizio1
+            requests_response = self.session.get(f"{BASE_URL}/admin/login-requests", headers=admin_headers)
+            if requests_response.status_code == 200:
+                requests_data = requests_response.json()
+                all_requests = requests_data.get("requests", [])
+                
+                # Clear expired requests
+                clear_response = self.session.delete(f"{BASE_URL}/admin/login-requests/clear-expired", headers=admin_headers)
+                
+        except Exception as e:
+            self.log_result("Error Message Format - Setup", False, f"Error clearing approvals: {str(e)}")
+        
+        # Try to login as maurizio1 (should fail with proper error format)
+        try:
+            login_response = self.session.post(
+                f"{CRM_BASE_URL}/auth/login",
+                json=SUPERVISOR_CREDENTIALS,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if login_response.status_code == 403:
+                error_detail = ""
+                try:
+                    error_data = login_response.json()
+                    error_detail = error_data.get("detail", "")
+                except:
+                    error_detail = login_response.text
+                
+                # Check if error format matches expected pattern: after_hours_approval_required:reason:time
+                expected_patterns = [
+                    "after_hours_approval_required:after_work_hours:",
+                    "after_hours_approval_required:not_work_day:",
+                    "after_hours_approval_required:before_work_hours:"
+                ]
+                
+                matches_pattern = any(pattern in error_detail for pattern in expected_patterns)
+                is_not_hardcoded_italian = "Notifiche" not in error_detail and "fuori orario" not in error_detail.lower()
+                
+                # Check if it contains time information (HH:MM format)
+                import re
+                has_time_format = bool(re.search(r'\d{1,2}:\d{2}', error_detail))
+                
+                success = matches_pattern and is_not_hardcoded_italian and has_time_format
+                
+                self.log_result(
+                    "Error Message Format - Pattern Check", 
+                    success,
+                    f"Error message format is correct",
+                    f"Message: '{error_detail}', Matches pattern: {matches_pattern}, Not Italian: {is_not_hardcoded_italian}, Has time: {has_time_format}"
+                )
+                
+            else:
+                self.log_result("Error Message Format - Response Code", False, f"Expected 403, got {login_response.status_code}", login_response.text)
+                
+        except Exception as e:
+            self.log_result("Error Message Format - Login Test", False, f"Error: {str(e)}")
+    
+    def run_after_hours_tests(self):
+        """Run all after-hours login approval tests"""
+        print("\n" + "🕐" * 50)
+        print("🕐 AFTER-HOURS LOGIN APPROVAL SYSTEM TESTING")
+        print("🕐" * 50)
+        
+        # Ensure we have admin token
+        if not self.admin_token:
+            if not self.login_admin():
+                print("❌ Cannot proceed without admin login")
+                return False
+        
+        # Run the after-hours tests
+        self.test_after_hours_login_approval()
+        
+        return True
+    
     def test_message_flow_architecture(self):
         """Test the complete message flow: POST to /send → save to DB → broadcast via WebSocket"""
         print("\n=== Testing Message Flow Architecture ===")
