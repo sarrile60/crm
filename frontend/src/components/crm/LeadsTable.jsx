@@ -15,7 +15,7 @@ import i18n from '../../i18n/i18n';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const LeadsTable = ({ currentUser, urgentCallbackLead }) => {
+const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) => {
   const { t } = useTranslation();
   const [leads, setLeads] = useState([]);
   const [filteredLeads, setFilteredLeads] = useState([]);
