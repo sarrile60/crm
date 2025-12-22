@@ -538,9 +538,55 @@ const DepositsManager = ({ currentUser }) => {
                     placeholder="Bank name"
                   />
                 </div>
-                <p className="text-xs text-blue-600">
-                  ℹ️ {t('deposits.attachmentsRequired')}
-                </p>
+                
+                {/* Attachment Upload Section */}
+                <div className="mt-4 pt-4 border-t border-blue-200">
+                  <h5 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                    <Upload className="w-4 h-4" />
+                    {t('deposits.requiredDocuments')}
+                  </h5>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { key: 'id_front', label: t('deposits.attachment.id_front') },
+                      { key: 'id_back', label: t('deposits.attachment.id_back') },
+                      { key: 'proof_of_residence', label: t('deposits.attachment.proof_of_residence') },
+                      { key: 'selfie_with_id', label: t('deposits.attachment.selfie_with_id') }
+                    ].map(({ key, label }) => (
+                      <div key={key} className="relative">
+                        <label className="block text-xs font-medium mb-1">{label}</label>
+                        <div className={`border-2 border-dashed rounded p-2 text-center cursor-pointer hover:bg-blue-100 transition-colors ${
+                          attachmentFiles[key] ? 'border-green-400 bg-green-50' : 'border-gray-300'
+                        }`}>
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setAttachmentFiles(prev => ({ ...prev, [key]: file }));
+                              }
+                            }}
+                          />
+                          {attachmentFiles[key] ? (
+                            <div className="flex items-center justify-center gap-1 text-green-600">
+                              <Image className="w-4 h-4" />
+                              <span className="text-xs truncate max-w-[100px]">{attachmentFiles[key].name}</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-center gap-1 text-gray-500">
+                              <Upload className="w-4 h-4" />
+                              <span className="text-xs">{t('common.upload')}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-blue-600 mt-2">
+                    ℹ️ {t('deposits.attachmentsOptionalNow')}
+                  </p>
+                </div>
               </div>
             )}
 
