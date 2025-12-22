@@ -174,6 +174,43 @@ const TeamsManagement = () => {
     }
   };
 
+  // Restore an archived team
+  const handleRestoreTeam = async (team) => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.put(`${API}/crm/teams/${team.id}/restore`, {}, { headers });
+      toast.success(t('teams.teamRestored'));
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('teams.errorRestoringTeam'));
+    }
+  };
+
+  // Permanently delete an archived team
+  const handleDeleteTeam = async () => {
+    if (!teamToDelete) return;
+
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.delete(`${API}/crm/teams/${teamToDelete.id}`, { headers });
+      toast.success(t('teams.teamDeleted'));
+      setShowDeleteModal(false);
+      setTeamToDelete(null);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('teams.errorDeletingTeam'));
+    }
+  };
+
+  const openDeleteModal = (team) => {
+    setTeamToDelete(team);
+    setShowDeleteModal(true);
+  };
+
   const openEditModal = (team) => {
     setSelectedTeam(team);
     setFormData({
