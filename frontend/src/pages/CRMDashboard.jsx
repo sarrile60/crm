@@ -156,12 +156,16 @@ const CRMDashboard = () => {
     setCallbackLead(lead);
   };
 
+  // State for deposit creation from notification
+  const [pendingDepositData, setPendingDepositData] = useState(null);
+
   // Listen for openDepositCreate event from notifications
   useEffect(() => {
     const handleOpenDepositCreate = (event) => {
-      // First switch to deposits tab
+      const depositData = event.detail;
+      // Store the deposit data and switch to deposits tab
+      setPendingDepositData(depositData);
       setActiveTab('deposits');
-      // The DepositsManager component will handle the event and open the modal
     };
 
     window.addEventListener('openDepositCreate', handleOpenDepositCreate);
@@ -169,6 +173,13 @@ const CRMDashboard = () => {
       window.removeEventListener('openDepositCreate', handleOpenDepositCreate);
     };
   }, []);
+
+  // Clear pending deposit data when tab changes away from deposits
+  useEffect(() => {
+    if (activeTab !== 'deposits') {
+      setPendingDepositData(null);
+    }
+  }, [activeTab]);
 
   if (loading) {
     return (
