@@ -706,7 +706,7 @@ async def update_lead(lead_id: str, update_data: LeadUpdate, current_user: dict 
                 if team and team.get("supervisor_id"):
                     # Create notification for supervisor
                     deposit_notification = {
-                        "id": str(uuid4()),
+                        "id": str(uuid.uuid4()),
                         "type": "lead_deposit_status",
                         "lead_id": lead_id,
                         "lead_name": lead.get("fullName", "Unknown"),
