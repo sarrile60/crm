@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Users, Phone, Mail, Clock, CheckCircle, XCircle, ChevronDown } from 'lucide-react';
+import { Users, Phone, Mail, Clock, CheckCircle, XCircle, ChevronDown, FileText, X, User } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -15,6 +16,12 @@ const TeamMembers = ({ currentUser }) => {
   const [loading, setLoading] = useState(true);
   const [memberStats, setMemberStats] = useState({});
   const [showTeamDropdown, setShowTeamDropdown] = useState(false);
+  
+  // New state for viewing member leads
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [memberLeads, setMemberLeads] = useState([]);
+  const [loadingLeads, setLoadingLeads] = useState(false);
+  const [showLeadsModal, setShowLeadsModal] = useState(false);
 
   // Fetch all teams this supervisor manages
   const fetchTeams = useCallback(async () => {
@@ -85,6 +92,31 @@ const TeamMembers = ({ currentUser }) => {
     }
   }, [members]);
 
+  // Fetch leads for a specific member
+  const fetchMemberLeads = async (member) => {
+    setSelectedMember(member);
+    setLoadingLeads(true);
+    setShowLeadsModal(true);
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      // Fetch all leads and filter by assigned_to
+      const leadsRes = await axios.get(`${API}/crm/leads`, { headers });
+      const allLeads = leadsRes.data || [];
+      
+      // Filter leads assigned to this member
+      const agentLeads = allLeads.filter(lead => lead.assigned_to === member.id);
+      setMemberLeads(agentLeads);
+    } catch (error) {
+      console.error('Error fetching member leads:', error);
+      setMemberLeads([]);
+    } finally {
+      setLoadingLeads(false);
+    }
+  };
+
   // Initial load
   useEffect(() => {
     const init = async () => {
@@ -132,6 +164,17 @@ const TeamMembers = ({ currentUser }) => {
       case 'supervisor': return 'bg-purple-100 text-purple-800';
       case 'agent': return 'bg-blue-100 text-blue-800';
       case 'admin': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getLeadStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'new': return 'bg-blue-100 text-blue-800';
+      case 'callback': return 'bg-yellow-100 text-yellow-800';
+      case 'potential callback': return 'bg-orange-100 text-orange-800';
+      case 'won': return 'bg-green-100 text-green-800';
+      case 'lost': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -245,6 +288,7 @@ const TeamMembers = ({ currentUser }) => {
       <div className="flex items-center gap-2 text-sm text-gray-500">
         <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
         {t('team.liveStatus')}
+        <span className="text-xs text-gray-400 ml-2">• {t('team.clickToViewLeads')}</span>
       </div>
 
       {/* Members Grid */}
@@ -256,8 +300,9 @@ const TeamMembers = ({ currentUser }) => {
           return (
             <div 
               key={member.id} 
-              className={`bg-white border-2 transition-all ${
-                isActive ? 'border-green-300 shadow-green-100 shadow-md' : 'border-gray-200 hover:border-[#D4AF37]'
+              onClick={() => fetchMemberLeads(member)}
+              className={`bg-white border-2 transition-all cursor-pointer hover:shadow-lg ${
+                isActive ? 'border-green-300 shadow-green-100 shadow-md hover:border-green-400' : 'border-gray-200 hover:border-[#D4AF37]'
               }`}
             >
               {/* Member Header */}
@@ -325,6 +370,14 @@ const TeamMembers = ({ currentUser }) => {
                   <Clock className="w-3 h-3" />
                   {t('team.lastActive')}: {formatLastActive(member.last_active)}
                 </div>
+                
+                {/* View Leads hint */}
+                <div className="text-center pt-2">
+                  <span className="text-xs text-[#D4AF37] flex items-center justify-center gap-1">
+                    <FileText className="w-3 h-3" />
+                    {t('team.clickToViewLeads')}
+                  </span>
+                </div>
               </div>
             </div>
           );
@@ -338,6 +391,91 @@ const TeamMembers = ({ currentUser }) => {
           <p className="text-gray-500">{t('team.noMembersDescription')}</p>
         </div>
       )}
+
+      {/* Member Leads Modal */}
+      <Dialog open={showLeadsModal} onOpenChange={setShowLeadsModal}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold flex items-center gap-3">
+              <User className="w-6 h-6 text-[#D4AF37]" />
+              {selectedMember?.full_name} - {t('team.agentLeads')}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="overflow-y-auto max-h-[60vh]">
+            {loadingLeads ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D4AF37]"></div>
+              </div>
+            ) : memberLeads.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                <p>{t('team.noLeadsAssigned')}</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {/* Summary Stats */}
+                <div className="grid grid-cols-4 gap-3 mb-4">
+                  <div className="bg-blue-50 p-3 rounded text-center">
+                    <div className="text-2xl font-bold text-blue-600">{memberLeads.length}</div>
+                    <div className="text-xs text-gray-600">{t('team.totalLeads')}</div>
+                  </div>
+                  <div className="bg-yellow-50 p-3 rounded text-center">
+                    <div className="text-2xl font-bold text-yellow-600">
+                      {memberLeads.filter(l => l.status === 'Callback' || l.status === 'Potential Callback').length}
+                    </div>
+                    <div className="text-xs text-gray-600">{t('leads.callbacks')}</div>
+                  </div>
+                  <div className="bg-green-50 p-3 rounded text-center">
+                    <div className="text-2xl font-bold text-green-600">
+                      {memberLeads.filter(l => l.status === 'Won').length}
+                    </div>
+                    <div className="text-xs text-gray-600">{t('leads.won')}</div>
+                  </div>
+                  <div className="bg-red-50 p-3 rounded text-center">
+                    <div className="text-2xl font-bold text-red-600">
+                      {memberLeads.filter(l => l.status === 'Lost').length}
+                    </div>
+                    <div className="text-xs text-gray-600">{t('leads.lost')}</div>
+                  </div>
+                </div>
+
+                {/* Leads List */}
+                <div className="border rounded">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="p-3 text-left font-semibold">{t('common.name')}</th>
+                        <th className="p-3 text-left font-semibold">{t('common.phone')}</th>
+                        <th className="p-3 text-left font-semibold">{t('common.status')}</th>
+                        <th className="p-3 text-left font-semibold">{t('crm.amountLost')}</th>
+                        <th className="p-3 text-left font-semibold">{t('leads.callbackDate')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {memberLeads.map(lead => (
+                        <tr key={lead.id} className="border-t hover:bg-gray-50">
+                          <td className="p-3 font-medium">{lead.fullName}</td>
+                          <td className="p-3 text-gray-600">{lead.phone}</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-1 rounded text-xs font-semibold ${getLeadStatusColor(lead.status)}`}>
+                              {lead.status}
+                            </span>
+                          </td>
+                          <td className="p-3 text-gray-600">{lead.amountLost || '-'}</td>
+                          <td className="p-3 text-gray-600">
+                            {lead.callback_date ? new Date(lead.callback_date).toLocaleString() : '-'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
