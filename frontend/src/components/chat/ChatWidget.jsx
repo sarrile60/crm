@@ -205,9 +205,19 @@ const ChatWidget = ({ currentUser }) => {
         // Add all message IDs to seen set
         response.data.messages.forEach(m => seenMessageIds.current.add(m.id));
         
-        // Only play sound if there are truly new messages from OTHER users
-        if (trulyNewMessages.length > 0) {
-          playNotificationSound();
+        // Only play sound if:
+        // 1. There are truly new messages from OTHER users
+        // 2. This is NOT the initial poll (first load should be silent)
+        // 3. Messages are not already read by current user
+        if (trulyNewMessages.length > 0 && !isInitialPoll.current) {
+          // Only play sound for messages that are NOT already read by current user
+          const unreadNewMessages = trulyNewMessages.filter(m => 
+            !m.read_by || !m.read_by.includes(currentUser.id)
+          );
+          
+          if (unreadNewMessages.length > 0) {
+            playNotificationSound();
+          }
           
           // Check for system alert messages and show toast notification
           // IMPORTANT: Only show toast for UNREAD system alerts (not already in read_by array)
