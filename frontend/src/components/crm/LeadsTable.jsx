@@ -1155,29 +1155,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                   </div>
                 </>
               )}
+              {/* For Deposit statuses - no date required, just show info */}
               {(editData.status?.startsWith('Deposit')) && (
                 <>
-                  <div className="bg-blue-50 border-2 border-blue-400 p-4 mb-4">
-                    <p className="text-sm font-semibold text-black mb-2">💰 {t('crm.depositSetDate')}</p>
-                    <p className="text-xs text-gray-700">{t('crm.setDateForDeposit')}</p>
-                  </div>
-                  <div>
-                    <SmartDateTimePicker
-                      value={editData.callback_date}
-                      onChange={(value) => setEditData({ ...editData, callback_date: value })}
-                      currentUser={currentUser}
-                      currentLeadId={selectedLead?.id}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-black mb-2">{t('crm.depositNotesOptional')}</label>
-                    <Textarea
-                      value={editData.callback_notes}
-                      onChange={(e) => setEditData({ ...editData, callback_notes: e.target.value })}
-                      placeholder={t('crm.addDepositNotes')}
-                      className="bg-white border-gray-300 rounded-none"
-                      rows={3}
-                    />
+                  <div className="bg-blue-50 border-2 border-blue-400 p-4">
+                    <p className="text-sm font-semibold text-black mb-2">💰 {t('deposits.depositInfo')}</p>
+                    <p className="text-xs text-gray-700">{t('deposits.supervisorWillBeNotified')}</p>
                   </div>
                 </>
               )}
