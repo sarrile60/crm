@@ -84,7 +84,12 @@
     "clearFilters": "Clear Filters",
     "filters": "Filters",
     "complete": "Complete",
-    "info": "Info"
+    "info": "Info",
+    "download": "Download",
+    "upload": "Upload",
+    "uploading": "Uploading...",
+    "on": "on",
+    "review": "Review"
   },
   "auth": {
     "login": "Login",
@@ -96,7 +101,7 @@
     "loginError": "Invalid credentials",
     "sessionExpires": "Session expires at",
     "timeRemaining": "remaining",
-    "approvedSession": "⚠️ After-hours approved",
+    "approvedSession": "\u26a0\ufe0f After-hours approved",
     "crmPortal": "CRM Portal",
     "accessClientManagement": "Access the client management system",
     "adminNoExpiry": "Admin - No session expiry"
@@ -192,7 +197,15 @@
     "rejectReasonRequired": "Please provide a reason for rejection",
     "rejectNoteRequired": "Required when rejecting a deposit",
     "newDepositNotification": "New Deposit Pending",
-    "newDepositDesc": "A new deposit is waiting for your approval"
+    "newDepositDesc": "A new deposit is waiting for your approval",
+    "attachmentUploaded": "Attachment uploaded successfully",
+    "uploadError": "Error uploading attachment",
+    "downloadError": "Error downloading attachment",
+    "notUploaded": "Not uploaded",
+    "agentDepositRequests": "Agent Deposit Requests",
+    "agentMarkedDeposit": "New Deposit Request",
+    "agentMarkedDepositDesc": "An agent has marked a lead for deposit",
+    "createDeposit": "Create Deposit"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -876,14 +889,14 @@
     "legalInfo": "Legal Information",
     "companyType": "Type: Private Limited Company",
     "established": "Established: September 9, 2021",
-    "sicCode": "SIC Code: 69102 – Solicitors"
+    "sicCode": "SIC Code: 69102 \u2013 Solicitors"
   },
   "footer": {
     "contacts": "Contacts",
     "legalInfo": "Legal Information",
     "companyType": "Type: Private Limited Company",
     "established": "Established: September 9, 2021",
-    "sicCode": "SIC Code: 69102 – Solicitors",
+    "sicCode": "SIC Code: 69102 \u2013 Solicitors",
     "recognisedBody": "Recognised Body Law Practice"
   },
   "messages": {
@@ -953,7 +966,7 @@
     "step3": "The initial consultation is <strong>completely free</strong> and without obligation",
     "backToHome": "Back to Home",
     "footerTagline": "Law firm specialized in fund recovery from financial fraud",
-    "copyright": "© 2024 1 Law Solicitors. All rights reserved."
+    "copyright": "\u00a9 2024 1 Law Solicitors. All rights reserved."
   },
   "permissions": {
     "title": "Permission Matrix",
@@ -1025,7 +1038,7 @@
     "ctaClicks": "CTA Clicks",
     "clicksOnCtaButtons": "Clicks on CTA buttons",
     "conversionRate": "Conversion Rate",
-    "formStartsToLeads": "Form starts → Completed leads",
+    "formStartsToLeads": "Form starts \u2192 Completed leads",
     "amountLost": "Amount Lost",
     "caseDescription": "Case Description"
   },
