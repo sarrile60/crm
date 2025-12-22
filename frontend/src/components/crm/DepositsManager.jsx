@@ -213,6 +213,12 @@ const DepositsManager = ({ currentUser, pendingDepositData, onDepositCreated }) 
       
       toast.success(t('deposits.created'));
       setShowCreateModal(false);
+      
+      // Notify parent that deposit was created (to clear pending data)
+      if (onDepositCreated) {
+        onDepositCreated();
+      }
+      
       setNewDeposit({
         lead_id: '',
         agent_id: '',
