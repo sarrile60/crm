@@ -12,6 +12,7 @@ from models import Lead, LeadCreate, Analytics, AdminLogin, AdminToken
 from crm_routes import crm_router, init_crm_db
 from chat_routes import router as chat_router
 from admin_routes import admin_router, init_admin_db
+from deposit_routes import deposit_router, init_deposit_routes
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
