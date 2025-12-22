@@ -237,6 +237,18 @@ const CRMDashboard = () => {
             <FileText className="w-4 h-4 inline mr-2" />
             {t('nav.leads')}
           </button>
+          {/* Deposits tab for all users */}
+          <button
+            onClick={() => setActiveTab('deposits')}
+            className={`px-4 py-2 font-semibold transition-all ${
+              activeTab === 'deposits'
+                ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
+                : 'text-gray-600 hover:text-black'
+            }`}
+          >
+            <DollarSign className="w-4 h-4 inline mr-2" />
+            {t('nav.deposits')}
+          </button>
           {/* Team tab for supervisors */}
           {currentUser?.role === 'supervisor' && (
             <button
@@ -249,6 +261,20 @@ const CRMDashboard = () => {
             >
               <Users className="w-4 h-4 inline mr-2" />
               {t('nav.team')}
+            </button>
+          )}
+          {/* Deposit Approvals for Admin */}
+          {currentUser?.role === 'admin' && (
+            <button
+              onClick={() => setActiveTab('depositApprovals')}
+              className={`px-4 py-2 font-semibold transition-all ${
+                activeTab === 'depositApprovals'
+                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
+                  : 'text-gray-600 hover:text-black'
+              }`}
+            >
+              <DollarSign className="w-4 h-4 inline mr-2" />
+              {t('nav.depositApprovals')}
             </button>
           )}
           {/* Users tab moved to Administration Panel */}
