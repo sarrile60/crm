@@ -910,6 +910,46 @@ const TeamsManagement = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Team Confirmation Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className="max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
+              <Trash2 className="w-6 h-6" />
+              {t('teams.confirmDeleteTitle')}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4 space-y-4">
+            <div className="bg-red-50 border-2 border-red-200 p-4 rounded">
+              <p className="text-sm text-red-800">
+                {t('teams.confirmDeleteMessage', { teamName: teamToDelete?.name })}
+              </p>
+              <p className="text-xs text-red-600 mt-2 font-semibold">
+                {t('teams.deleteWarning')}
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setTeamToDelete(null);
+                }} 
+                className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button 
+                onClick={handleDeleteTeam}
+                className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {t('teams.deletePermanently')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
