@@ -641,23 +641,102 @@ const DepositsManager = ({ currentUser }) => {
                     {t('deposits.attachments')}
                   </h4>
                   <div className="grid grid-cols-2 gap-3">
-                    {['id_front', 'id_back', 'proof_of_residence', 'selfie_with_id'].map(type => (
-                      <div 
-                        key={type}
-                        className={`p-3 border rounded flex items-center gap-2 ${
-                          selectedDeposit.attachments?.[type] 
-                            ? 'bg-green-50 border-green-200' 
-                            : 'bg-red-50 border-red-200'
-                        }`}
-                      >
-                        {selectedDeposit.attachments?.[type] ? (
-                          <Check className="w-4 h-4 text-green-600" />
-                        ) : (
-                          <X className="w-4 h-4 text-red-600" />
-                        )}
-                        <span className="text-sm">{t(`deposits.attachment.${type}`)}</span>
-                      </div>
-                    ))}
+                    {['id_front', 'id_back', 'proof_of_residence', 'selfie_with_id'].map(type => {
+                      const attachment = selectedDeposit.attachments?.[type];
+                      const canUpload = selectedDeposit.status === 'pending' && (isSupervisor || isAdmin);
+                      
+                      return (
+                        <div 
+                          key={type}
+                          className={`p-3 border rounded ${
+                            attachment 
+                              ? 'bg-green-50 border-green-200' 
+                              : 'bg-red-50 border-red-200'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            {attachment ? (
+                              <Check className="w-4 h-4 text-green-600" />
+                            ) : (
+                              <X className="w-4 h-4 text-red-600" />
+                            )}
+                            <span className="text-sm font-medium">{t(`deposits.attachment.${type}`)}</span>
+                          </div>
+                          
+                          {attachment ? (
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-500 truncate flex-1">
+                                {attachment.filename}
+                              </span>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 text-xs"
+                                onClick={() => {
+                                  // Download the file
+                                  const token = localStorage.getItem('crmToken');
+                                  const url = `${API}/crm/deposits/${selectedDeposit.id}/attachments/${type}/download`;
+                                  // Create hidden link and click it
+                                  const link = document.createElement('a');
+                                  link.href = url;
+                                  link.setAttribute('download', attachment.filename);
+                                  // Add auth header via fetch and blob
+                                  fetch(url, {
+                                    headers: { Authorization: `Bearer ${token}` }
+                                  })
+                                    .then(res => res.blob())
+                                    .then(blob => {
+                                      const blobUrl = window.URL.createObjectURL(blob);
+                                      link.href = blobUrl;
+                                      link.click();
+                                      window.URL.revokeObjectURL(blobUrl);
+                                    })
+                                    .catch(err => toast.error(t('deposits.downloadError')));
+                                }}
+                              >
+                                <Download className="w-3 h-3 mr-1" />
+                                {t('common.download')}
+                              </Button>
+                            </div>
+                          ) : canUpload ? (
+                            <div className="relative">
+                              <input
+                                type="file"
+                                accept="image/*,.pdf"
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    handleFileUpload(selectedDeposit.id, type, file);
+                                  }
+                                }}
+                                disabled={uploading[type]}
+                              />
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 text-xs w-full"
+                                disabled={uploading[type]}
+                              >
+                                {uploading[type] ? (
+                                  <span className="flex items-center gap-1">
+                                    <div className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                                    {t('common.uploading')}
+                                  </span>
+                                ) : (
+                                  <>
+                                    <Upload className="w-3 h-3 mr-1" />
+                                    {t('common.upload')}
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-red-500">{t('deposits.notUploaded')}</span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
