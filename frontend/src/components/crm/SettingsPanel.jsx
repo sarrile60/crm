@@ -30,15 +30,8 @@ const SettingsPanel = () => {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      const [statusesRes, teamsRes, usersRes] = await Promise.all([
-        axios.get(`${API}/crm/statuses`, { headers }),
-        axios.get(`${API}/crm/teams`, { headers }),
-        axios.get(`${API}/crm/users`, { headers })
-      ]);
-
+      const statusesRes = await axios.get(`${API}/crm/statuses`, { headers });
       setStatuses(statusesRes.data);
-      setTeams(teamsRes.data);
-      setUsers(usersRes.data);
     } catch (error) {
       toast.error(t('users.errorLoadingData'));
     } finally {
@@ -61,18 +54,7 @@ const SettingsPanel = () => {
     }
   };
 
-  const handleCreateTeam = async () => {
-    try {
-      const token = localStorage.getItem('crmToken');
-      const headers = { Authorization: `Bearer ${token}` };
-
-      await axios.post(`${API}/crm/teams`, newTeam, { headers });
-      toast.success(t('teams.teamCreated'));
-      setShowCreateTeamModal(false);
-      setNewTeam({ name: '', description: '', supervisor_id: '' });
-      fetchData();
-    } catch (error) {
-      toast.error(t('teams.errorCreatingTeam'));
+  const handleDeleteStatus = async (statusId) => {
     }
   };
 
