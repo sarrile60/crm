@@ -207,7 +207,9 @@
     "agentMarkedDepositDesc": "An agent has marked a lead for deposit",
     "createDeposit": "Create Deposit",
     "depositInfo": "Deposit Status Selected",
-    "supervisorWillBeNotified": "Your supervisor will be notified about this deposit request and will handle the next steps."
+    "supervisorWillBeNotified": "Your supervisor will be notified about this deposit request and will handle the next steps.",
+    "requiredDocuments": "Required Documents",
+    "attachmentsOptionalNow": "You can upload documents now or add them later from the deposit details."
   },
   "dashboard": {
     "title": "Dashboard",
