@@ -276,15 +276,46 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     }
   };
 
-  const updateTotalNotifications = (remindersCount, callbacksCount, loginRequestsCount = 0) => {
-    setTotalNotifications(remindersCount + callbacksCount + loginRequestsCount);
+  const updateTotalNotifications = (remindersCount, callbacksCount, loginRequestsCount = 0, depositCount = 0) => {
+    setTotalNotifications(remindersCount + callbacksCount + loginRequestsCount + depositCount);
   };
   
   // Update total notifications whenever any notification type changes
   useEffect(() => {
-    const total = reminders.length + pendingCallbacks.length + loginRequests.length;
+    const total = reminders.length + pendingCallbacks.length + loginRequests.length + depositNotifications.length;
     setTotalNotifications(total);
-  }, [reminders.length, pendingCallbacks.length, loginRequests.length]);
+  }, [reminders.length, pendingCallbacks.length, loginRequests.length, depositNotifications.length]);
+
+  // Fetch deposit notifications for admin
+  const fetchDepositNotifications = async () => {
+    if (currentUser?.role?.toLowerCase() !== 'admin') return;
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      if (!token) return;
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.get(`${API}/crm/deposits/notifications`, { headers });
+      
+      const notifications = res.data.notifications || [];
+      
+      // Check for new notifications and play sound
+      if (notifications.length > depositNotifications.length && depositNotifications.length > 0) {
+        // New deposit notification - play sound and show toast
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleQUINYDOxqdnEg4wfs+/mVsVEy191cSaYR8PNXbQwJhgHxU3ctHAmWMhFTlwz7+YYiEVPW3Ov5ZdHRM/a86+lFoaET1r0L+XXB0TQGnQvpVaGhFBaNC9k1kYD0NnzryRVhYNRWfNu49UFA1HZ8y6jFESDkhn');
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+        
+        toast.info('💰 ' + t('deposits.newDepositNotification'), {
+          description: t('deposits.newDepositDesc'),
+          duration: 8000
+        });
+      }
+      
+      setDepositNotifications(notifications);
+    } catch (error) {
+      console.error('Error fetching deposit notifications:', error);
+    }
+  };
 
   // Helper to refresh login requests after approve/deny
   const refreshLoginRequests = async () => {
