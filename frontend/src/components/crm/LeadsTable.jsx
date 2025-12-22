@@ -362,15 +362,14 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   const handleInlineStatusChange = async (leadId, newStatus) => {
     const requiresCallback = newStatus === 'Callback' || 
                             newStatus === 'Potential Callback' || 
-                            newStatus === 'Pharos in progress' ||
-                            newStatus?.startsWith('Deposit');
+                            newStatus === 'Pharos in progress';
     
     if (requiresCallback) {
       // Open a mini modal for callback date/time
       setInlineEditLeadId(leadId);
       setInlineStatusData({ status: newStatus, callback_date: '', callback_notes: '' });
     } else {
-      // Update status directly
+      // Update status directly (including Deposit statuses)
       try {
         const token = localStorage.getItem('crmToken');
         const headers = { Authorization: `Bearer ${token}` };
