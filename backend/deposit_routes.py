@@ -6,6 +6,7 @@ Deposit Management Routes
 """
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Header
+from fastapi.responses import FileResponse
 from typing import Optional, List
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -13,8 +14,13 @@ import os
 import shutil
 from pydantic import BaseModel
 import jwt
+import mimetypes
 
 deposit_router = APIRouter(prefix="/deposits", tags=["Deposits"])
+
+# Ensure upload directory exists
+UPLOAD_DIR = "/app/backend/uploads/deposits"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Initialize db reference (will be set from server.py)
 db = None
