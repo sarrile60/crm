@@ -34,6 +34,8 @@ const TeamsManagement = () => {
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [showMembersModal, setShowMembersModal] = useState(false);
   const [showManageMembersModal, setShowManageMembersModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [teamToDelete, setTeamToDelete] = useState(null);
   
   // Selected team
   const [selectedTeam, setSelectedTeam] = useState(null);
