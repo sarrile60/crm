@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Archive, RotateCcw, Eye, EyeOff } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -19,6 +19,9 @@ const SettingsPanel = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
+  const [showArchivedTeams, setShowArchivedTeams] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [teamToDelete, setTeamToDelete] = useState(null);
   const [newStatus, setNewStatus] = useState({
     name: '',
     color: '#3B82F6',
