@@ -305,18 +305,46 @@ const DepositApprovals = ({ currentUser }) => {
                             attachment ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
                           }`}
                         >
-                          <div className="flex items-center gap-2">
-                            {attachment ? (
-                              <CheckCircle className="w-5 h-5 text-green-600" />
-                            ) : (
-                              <XCircle className="w-5 h-5 text-red-600" />
-                            )}
-                            <div>
-                              <div className="font-medium">{t(`deposits.attachment.${type}`)}</div>
-                              {attachment && (
-                                <div className="text-xs text-gray-500">{attachment.filename}</div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              {attachment ? (
+                                <CheckCircle className="w-5 h-5 text-green-600" />
+                              ) : (
+                                <XCircle className="w-5 h-5 text-red-600" />
                               )}
+                              <div>
+                                <div className="font-medium text-sm">{t(`deposits.attachment.${type}`)}</div>
+                                {attachment && (
+                                  <div className="text-xs text-gray-500">{attachment.filename}</div>
+                                )}
+                              </div>
                             </div>
+                            {attachment && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 text-xs"
+                                onClick={() => {
+                                  const token = localStorage.getItem('crmToken');
+                                  const url = `${API}/crm/deposits/${selectedDeposit.id}/attachments/${type}/download`;
+                                  fetch(url, {
+                                    headers: { Authorization: `Bearer ${token}` }
+                                  })
+                                    .then(res => res.blob())
+                                    .then(blob => {
+                                      const blobUrl = window.URL.createObjectURL(blob);
+                                      const link = document.createElement('a');
+                                      link.href = blobUrl;
+                                      link.setAttribute('download', attachment.filename);
+                                      link.click();
+                                      window.URL.revokeObjectURL(blobUrl);
+                                    })
+                                    .catch(err => console.error('Download error:', err));
+                                }}
+                              >
+                                {t('common.view')}
+                              </Button>
+                            )}
                           </div>
                         </div>
                       );
