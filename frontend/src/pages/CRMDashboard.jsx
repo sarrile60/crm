@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Scale, Users, TrendingUp, AlertCircle, LogOut, Settings, FileText, Bell, Shield } from 'lucide-react';
+import { Scale, Users, TrendingUp, AlertCircle, LogOut, Settings, FileText, Bell, Shield, DollarSign } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -11,6 +11,8 @@ import SettingsPanel from '../components/crm/SettingsPanel';
 import CallbackNotifications from '../components/crm/CallbackNotifications';
 import ChatWidget from '../components/chat/ChatWidget';
 import TeamMembers from '../components/crm/TeamMembers';
+import DepositsManager from '../components/crm/DepositsManager';
+import DepositApprovals from '../components/crm/DepositApprovals';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
