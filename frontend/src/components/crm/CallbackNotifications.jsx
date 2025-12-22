@@ -653,11 +653,36 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       </button>
 
       {/* Urgent Callback Alert Modal - NO X BUTTON */}
-      <Dialog open={showUrgentModal} onOpenChange={() => {}}>
+      <Dialog open={showUrgentModal} onOpenChange={(open) => {
+        // Allow closing only if max postpones reached OR if explicitly closing
+        const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
+        const currentSnooze = urgentCallback ? snoozeDataFromStorage[urgentCallback.id] : { count: 0 };
+        const maxPostponesReached = (currentSnooze?.count || 0) >= 3;
+        
+        if (!open && maxPostponesReached) {
+          setShowUrgentModal(false);
+        }
+      }}>
         <DialogContent 
           className={`max-w-lg border-4 ${urgentCallback?.status?.startsWith('Deposit') ? 'bg-blue-50 border-blue-600' : 'bg-red-50 border-red-600'}`}
-          onPointerDownOutside={(e) => e.preventDefault()}
-          onEscapeKeyDown={(e) => e.preventDefault()}
+          onPointerDownOutside={(e) => {
+            // Allow clicking outside to close only if max postpones reached
+            const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
+            const currentSnooze = urgentCallback ? snoozeDataFromStorage[urgentCallback.id] : { count: 0 };
+            const maxPostponesReached = (currentSnooze?.count || 0) >= 3;
+            if (!maxPostponesReached) {
+              e.preventDefault();
+            }
+          }}
+          onEscapeKeyDown={(e) => {
+            // Allow escape to close only if max postpones reached
+            const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
+            const currentSnooze = urgentCallback ? snoozeDataFromStorage[urgentCallback.id] : { count: 0 };
+            const maxPostponesReached = (currentSnooze?.count || 0) >= 3;
+            if (!maxPostponesReached) {
+              e.preventDefault();
+            }
+          }}
         >
           <DialogHeader>
             <DialogTitle className={`text-3xl font-bold flex items-center gap-3 ${urgentCallback?.status?.startsWith('Deposit') ? 'text-blue-600' : 'text-red-600'}`}>
