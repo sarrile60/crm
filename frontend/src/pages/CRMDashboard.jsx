@@ -391,7 +391,13 @@ const CRMDashboard = () => {
         )}
 
         {activeTab === 'leads' && <LeadsTable currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} />}
-        {activeTab === 'deposits' && <DepositsManager currentUser={currentUser} />}
+        {activeTab === 'deposits' && (
+          <DepositsManager 
+            currentUser={currentUser} 
+            pendingDepositData={pendingDepositData}
+            onDepositCreated={() => setPendingDepositData(null)}
+          />
+        )}
         {activeTab === 'depositApprovals' && currentUser?.role === 'admin' && <DepositApprovals currentUser={currentUser} />}
         {activeTab === 'team' && currentUser?.role === 'supervisor' && <TeamMembers currentUser={currentUser} />}
         {/* Users tab moved to Administration Panel */}
