@@ -338,8 +338,6 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   };
 
   // Fetch supervisor deposit notifications (when agent marks lead as Deposit)
-  const [supervisorDepositNotifications, setSupervisorDepositNotifications] = useState([]);
-  
   const fetchSupervisorDepositNotifications = async () => {
     if (currentUser?.role?.toLowerCase() !== 'supervisor') return;
     
