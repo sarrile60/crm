@@ -266,7 +266,11 @@
     "selectPriority": "Select priority",
     "selectSource": "Select source",
     "confirmDeleteMessage": "Are you sure you want to delete lead {{name}}?",
-    "deleteWarningText": "This action is irreversible. All notes and lead activity will be deleted."
+    "deleteWarningText": "This action is irreversible. All notes and lead activity will be deleted.",
+    "callbacks": "Callbacks",
+    "won": "Won",
+    "lost": "Lost",
+    "callbackDate": "Callback Date"
   },
   "crm": {
     "noteCannotBeEmpty": "Note cannot be empty",

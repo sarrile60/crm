@@ -245,7 +245,11 @@
     "createLead": "Crea Lead",
     "searchPlaceholder": "Cerca lead...",
     "confirmDeleteMessage": "Sei sicuro di voler eliminare il lead {{name}}?",
-    "deleteWarningText": "Questa azione è irreversibile. Tutte le note e l'attività del lead verranno eliminate."
+    "deleteWarningText": "Questa azione è irreversibile. Tutte le note e l'attività del lead verranno eliminate.",
+    "callbacks": "Richiamate",
+    "won": "Vinti",
+    "lost": "Persi",
+    "callbackDate": "Data Richiamata"
   },
   "admin": {
     "title": "Pannello Amministrazione",
