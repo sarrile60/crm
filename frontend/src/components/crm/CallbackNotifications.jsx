@@ -158,9 +158,14 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     };
     
     fetchAdminLoginRequests();
+    fetchDepositNotifications();
     const loginRequestInterval = setInterval(fetchAdminLoginRequests, 10000);
+    const depositInterval = setInterval(fetchDepositNotifications, 10000);
     
-    return () => clearInterval(loginRequestInterval);
+    return () => {
+      clearInterval(loginRequestInterval);
+      clearInterval(depositInterval);
+    };
   }, [currentUser?.role, t]);
 
   // Clean up old "called" markers - if callback_date changed, the marker should be cleared
