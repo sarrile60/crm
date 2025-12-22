@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Archive, Users, UserCheck, Eye, AlertTriangle, Building2, UserPlus, UserMinus, X } from 'lucide-react';
+import { Plus, Edit, Archive, Users, UserCheck, Eye, AlertTriangle, Building2, UserPlus, UserMinus, X, RotateCcw, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
