@@ -210,6 +210,13 @@ const DepositsManager = ({ currentUser }) => {
         wallet_address: '',
         notes: ''
       });
+      // Reset attachment files
+      setAttachmentFiles({
+        id_front: null,
+        id_back: null,
+        proof_of_residence: null,
+        selfie_with_id: null
+      });
       fetchDeposits();
     } catch (error) {
       console.error('Error creating deposit:', error);
