@@ -220,12 +220,35 @@ class PermissionEngine:
             return {"assigned_to": user_id}
         
         if scope == PermissionScope.TEAM:
-            # Team records - get user's team from crm_users
+            # Team records - for entities with assigned_to (like leads), 
+            # we need to find all team members and filter by their IDs
             user = await self.db.crm_users.find_one({"id": user_id})
             user_team_id = user.get("team_id") if user else None
             
+            # For supervisors, also check teams they supervise
+            supervised_teams = await self.db.teams.find({"supervisor_id": user_id}).to_list(100)
+            supervised_team_ids = [t["id"] for t in supervised_teams]
+            
+            all_team_ids = set()
             if user_team_id:
-                return {"team_id": user_team_id}
+                all_team_ids.add(user_team_id)
+            all_team_ids.update(supervised_team_ids)
+            
+            if all_team_ids:
+                # For leads (which use assigned_to), find all users in these teams
+                if entity == "leads":
+                    team_members = await self.db.crm_users.find(
+                        {"team_id": {"$in": list(all_team_ids)}},
+                        {"id": 1}
+                    ).to_list(1000)
+                    member_ids = [m["id"] for m in team_members]
+                    if member_ids:
+                        return {"assigned_to": {"$in": member_ids}}
+                    else:
+                        return {"_id": {"$exists": False}}
+                else:
+                    # For other entities, use team_id filter
+                    return {"team_id": {"$in": list(all_team_ids)}}
             else:
                 # User has no team - return nothing
                 return {"_id": {"$exists": False}}
