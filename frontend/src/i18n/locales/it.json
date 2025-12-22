@@ -924,6 +924,9 @@
     "minutesAgo": "{{count}} min fa",
     "hoursAgo": "{{count}} ore fa",
     "daysAgo": "{{count}} giorni fa",
-    "neverActive": "Mai"
+    "neverActive": "Mai",
+    "clickToViewLeads": "Clicca per vedere i lead",
+    "agentLeads": "Lead",
+    "noLeadsAssigned": "Nessun lead assegnato a questo agente"
   }
 }
