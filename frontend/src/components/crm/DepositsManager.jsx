@@ -13,7 +13,7 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const DepositsManager = ({ currentUser }) => {
+const DepositsManager = ({ currentUser, pendingDepositData, onDepositCreated }) => {
   const { t } = useTranslation();
   const [deposits, setDeposits] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +53,22 @@ const DepositsManager = ({ currentUser }) => {
   const isAdmin = role === 'admin';
   const isAgent = role === 'agent';
 
-  // Listen for openDepositCreate event from notification
+  // Handle pending deposit data from notification click
+  useEffect(() => {
+    if (pendingDepositData) {
+      const { lead_id, lead_name, agent_id, agent_name, notification_id } = pendingDepositData;
+      // Pre-fill the deposit form
+      setNewDeposit(prev => ({
+        ...prev,
+        lead_id: lead_id || '',
+        agent_id: agent_id || ''
+      }));
+      setPrefilledNotificationId(notification_id);
+      setShowCreateModal(true);
+    }
+  }, [pendingDepositData]);
+
+  // Listen for openDepositCreate event (for when already on deposits page)
   useEffect(() => {
     const handleOpenDepositCreate = (event) => {
       const { lead_id, lead_name, agent_id, agent_name, notification_id } = event.detail;
