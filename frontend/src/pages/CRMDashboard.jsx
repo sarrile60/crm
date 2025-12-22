@@ -179,10 +179,21 @@ const CRMDashboard = () => {
             {/* Session Timer */}
             {sessionInfo && !sessionInfo.is_admin && (
               <div className="text-right text-xs">
-                <div className="text-gray-400">{t('auth.sessionExpires')} {sessionInfo.session_end_time}</div>
-                <div className={`font-mono ${sessionInfo.minutes_remaining < 30 ? 'text-red-400' : 'text-[#D4AF37]'}`}>
-                  {Math.floor(sessionInfo.minutes_remaining / 60)}h {sessionInfo.minutes_remaining % 60}m {t('auth.timeRemaining')}
-                </div>
+                {sessionInfo.has_after_hours_approval ? (
+                  <>
+                    <div className="text-orange-400">{t('auth.approvedSession')}</div>
+                    <div className={`font-mono ${sessionInfo.approval_minutes_remaining < 10 ? 'text-red-400' : 'text-orange-400'}`}>
+                      {sessionInfo.approval_minutes_remaining}m {t('auth.timeRemaining')}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-gray-400">{t('auth.sessionExpires')} {sessionInfo.session_end_time}</div>
+                    <div className={`font-mono ${sessionInfo.minutes_remaining < 30 ? 'text-red-400' : 'text-[#D4AF37]'}`}>
+                      {Math.floor(sessionInfo.minutes_remaining / 60)}h {sessionInfo.minutes_remaining % 60}m {t('auth.timeRemaining')}
+                    </div>
+                  </>
+                )}
               </div>
             )}
             {sessionInfo && sessionInfo.is_admin && (
