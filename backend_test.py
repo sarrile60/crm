@@ -35,13 +35,16 @@ ADMIN_CREDENTIALS = {
     "password": "zTFjPAcs*-(NL-qbj@AP0TcWt*8)nV4f6K(ZcVP_"
 }
 
-class CallbackNotificationTester:
+class DepositManagementTester:
     def __init__(self):
         self.session = requests.Session()
         self.agent_token = None
+        self.supervisor_token = None
         self.admin_token = None
         self.test_results = []
         self.test_lead_id = None
+        self.test_agent_id = None
+        self.test_deposit_id = None
         
     def log_result(self, test_name, success, message, details=None):
         """Log test result"""
@@ -70,13 +73,15 @@ class CallbackNotificationTester:
                 data = response.json()
                 return data.get("token")
             else:
+                print(f"Login failed for {credentials['username']}: {response.status_code} - {response.text}")
                 return None
                 
         except Exception as e:
+            print(f"Login error for {credentials['username']}: {str(e)}")
             return None
     
     def setup_test_environment(self):
-        """Setup test environment by logging in users"""
+        """Setup test environment by logging in all users"""
         print("\n=== Setting Up Test Environment ===")
         
         # Login as admin
@@ -85,6 +90,14 @@ class CallbackNotificationTester:
             self.log_result("Admin Login", True, "Successfully logged in as admin")
         else:
             self.log_result("Admin Login", False, "Failed to login as admin")
+            return False
+        
+        # Login as supervisor
+        self.supervisor_token = self.login_user(SUPERVISOR_CREDENTIALS)
+        if self.supervisor_token:
+            self.log_result("Supervisor Login", True, "Successfully logged in as supervisor (maurizio1)")
+        else:
+            self.log_result("Supervisor Login", False, "Failed to login as supervisor (maurizio1)")
             return False
         
         # Login as agent
@@ -96,6 +109,44 @@ class CallbackNotificationTester:
             return False
         
         return True
+    
+    def get_test_data(self):
+        """Get lead and agent IDs for testing"""
+        print("\n=== Getting Test Data ===")
+        
+        try:
+            # Get leads
+            headers = {"Authorization": f"Bearer {self.supervisor_token}"}
+            leads_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
+            
+            if leads_response.status_code == 200:
+                leads = leads_response.json()
+                if leads:
+                    self.test_lead_id = leads[0]["id"]
+                    self.log_result("Get Lead ID", True, f"Found lead ID: {self.test_lead_id}")
+                else:
+                    self.log_result("Get Lead ID", False, "No leads found")
+                    return False
+            else:
+                self.log_result("Get Lead ID", False, f"Failed to get leads: {leads_response.status_code}")
+                return False
+            
+            # Get agent user ID
+            headers = {"Authorization": f"Bearer {self.agent_token}"}
+            agent_response = self.session.get(f"{CRM_BASE_URL}/auth/me", headers=headers)
+            
+            if agent_response.status_code == 200:
+                agent_info = agent_response.json()
+                self.test_agent_id = agent_info.get("id")
+                self.log_result("Get Agent ID", True, f"Found agent ID: {self.test_agent_id}")
+                return True
+            else:
+                self.log_result("Get Agent ID", False, f"Failed to get agent info: {agent_response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Get Test Data", False, f"Error getting test data: {str(e)}")
+            return False
     
     def create_test_callback_lead(self):
         """Create a test lead with callback status for testing"""
