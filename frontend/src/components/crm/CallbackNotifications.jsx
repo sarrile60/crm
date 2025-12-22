@@ -1154,8 +1154,67 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
               </div>
             )}
 
+            {/* Supervisor Deposit Notifications Section (when agent marks lead as Deposit) */}
+            {currentUser?.role?.toLowerCase() === 'supervisor' && supervisorDepositNotifications.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-blue-600" />
+                  {t('deposits.agentDepositRequests')} ({supervisorDepositNotifications.length})
+                </h3>
+                <div className="space-y-3">
+                  {supervisorDepositNotifications.map((notification) => (
+                    <div 
+                      key={notification.id}
+                      className="border-2 p-4 bg-blue-50 border-blue-300"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-bold text-lg">{notification.lead_name}</span>
+                            <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded">
+                              {notification.deposit_status}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            {t('deposits.agent')}: {notification.agent_name}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {t('common.phone')}: {notification.lead_phone}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {new Date(notification.created_at).toLocaleString()}
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() => {
+                            setShowModal(false);
+                            // Navigate to deposits tab and open create modal with pre-filled data
+                            const event = new CustomEvent('openDepositCreate', { 
+                              detail: { 
+                                lead_id: notification.lead_id,
+                                lead_name: notification.lead_name,
+                                agent_id: notification.agent_id,
+                                agent_name: notification.agent_name,
+                                notification_id: notification.id
+                              } 
+                            });
+                            window.dispatchEvent(event);
+                          }}
+                          size="sm"
+                          className="bg-blue-600 text-white hover:bg-blue-700 rounded-none"
+                        >
+                          <DollarSign className="w-4 h-4 mr-1" />
+                          {t('deposits.createDeposit')}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Empty State */}
-            {pendingCallbacks.length === 0 && reminders.length === 0 && loginRequests.length === 0 && depositNotifications.length === 0 && (
+            {pendingCallbacks.length === 0 && reminders.length === 0 && loginRequests.length === 0 && depositNotifications.length === 0 && supervisorDepositNotifications.length === 0 && (
               <div className="text-center py-12">
                 <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500 text-lg">{t('crm.noNotifications')}</p>
