@@ -84,7 +84,12 @@
     "clearFilters": "Cancella Filtri",
     "filters": "Filtri",
     "complete": "Completa",
-    "info": "Info"
+    "info": "Info",
+    "download": "Scarica",
+    "upload": "Carica",
+    "uploading": "Caricamento...",
+    "on": "il",
+    "review": "Rivedi"
   },
   "auth": {
     "login": "Accedi",
@@ -192,7 +197,15 @@
     "rejectReasonRequired": "Fornisci un motivo per il rifiuto",
     "rejectNoteRequired": "Obbligatorio quando si rifiuta un deposito",
     "newDepositNotification": "Nuovo Deposito in Attesa",
-    "newDepositDesc": "Un nuovo deposito è in attesa della tua approvazione"
+    "newDepositDesc": "Un nuovo deposito è in attesa della tua approvazione",
+    "attachmentUploaded": "Allegato caricato con successo",
+    "uploadError": "Errore durante il caricamento",
+    "downloadError": "Errore durante il download",
+    "notUploaded": "Non caricato",
+    "agentDepositRequests": "Richieste Deposito Agenti",
+    "agentMarkedDeposit": "Nuova Richiesta Deposito",
+    "agentMarkedDepositDesc": "Un agente ha segnato un lead per il deposito",
+    "createDeposit": "Crea Deposito"
   },
   "dashboard": {
     "title": "Dashboard",
