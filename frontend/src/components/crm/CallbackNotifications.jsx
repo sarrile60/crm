@@ -766,16 +766,29 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
               {t('crm.notifications')} ({totalNotifications})
             </DialogTitle>
             <p className="text-sm text-gray-500 mt-2">
-              💡 {t('crm.showOnlyExpiredCallbacks')}
+              💡 {t('crm.notificationsAutoExpire')}
             </p>
           </DialogHeader>
           <div className="space-y-6 max-h-[600px] overflow-y-auto">
             {/* Overdue Callbacks Section */}
             <div>
-              <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
-                <Phone className="w-5 h-5 text-red-600" />
-                {t('crm.expiredCallbacks')} ({pendingCallbacks.length})
-              </h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-bold text-black flex items-center gap-2">
+                  <Phone className="w-5 h-5 text-red-600" />
+                  {t('crm.expiredCallbacks')} ({pendingCallbacks.length})
+                </h3>
+                {pendingCallbacks.length > 0 && (
+                  <Button
+                    onClick={handleClearAllCallbacks}
+                    variant="outline"
+                    size="sm"
+                    className="text-red-600 border-red-300 hover:bg-red-50 rounded-none"
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" />
+                    {t('crm.clearAll')}
+                  </Button>
+                )}
+              </div>
               {pendingCallbacks.length === 0 ? (
                 <p className="text-center text-gray-500 py-4 bg-gray-50 border border-gray-200">
                   {t('crm.noExpiredCallbacks')}
