@@ -25,6 +25,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const [totalNotifications, setTotalNotifications] = useState(0);
   const [urgentCallbackQueue, setUrgentCallbackQueue] = useState([]);
   const [dismissedCallbacks, setDismissedCallbacks] = useState({});
+  const [supervisorDepositNotifications, setSupervisorDepositNotifications] = useState([]);
   
   // Helper to get proper locale for date formatting
   const getLocale = () => {
