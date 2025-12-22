@@ -168,6 +168,18 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     };
   }, [currentUser?.role, t]);
 
+  // Separate useEffect for supervisor deposit notifications (when agent marks lead as Deposit)
+  useEffect(() => {
+    if (currentUser?.role?.toLowerCase() !== 'supervisor') return;
+    
+    fetchSupervisorDepositNotifications();
+    const supervisorDepositInterval = setInterval(fetchSupervisorDepositNotifications, 10000);
+    
+    return () => {
+      clearInterval(supervisorDepositInterval);
+    };
+  }, [currentUser?.role]);
+
   // Clean up old "called" markers - if callback_date changed, the marker should be cleared
   const cleanupCalledCallbacks = (leads) => {
     const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
