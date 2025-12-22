@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Phone, Clock, UserCheck, UserX, LogIn } from 'lucide-react';
+import { Bell, Phone, Clock, UserCheck, UserX, LogIn, X, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { toast } from 'sonner';
@@ -8,6 +8,9 @@ import { useTranslation } from 'react-i18next';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// 24 hours in milliseconds for auto-expiry
+const NOTIFICATION_EXPIRY_MS = 24 * 60 * 60 * 1000;
 
 const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const { t, i18n } = useTranslation();
@@ -20,6 +23,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const [snoozeData, setSnoozeData] = useState({});
   const [totalNotifications, setTotalNotifications] = useState(0);
   const [urgentCallbackQueue, setUrgentCallbackQueue] = useState([]);
+  const [dismissedCallbacks, setDismissedCallbacks] = useState({});
   
   // Helper to get proper locale for date formatting
   const getLocale = () => {
@@ -30,6 +34,23 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
            lang === 'fr' ? 'fr-FR' :
            lang === 'es' ? 'es-ES' : 'en-GB';
   };
+
+  // Load dismissed callbacks from localStorage on mount
+  useEffect(() => {
+    const dismissed = JSON.parse(localStorage.getItem('dismissed_callbacks') || '{}');
+    // Clean up expired dismissals (older than 24 hours)
+    const now = Date.now();
+    const cleaned = {};
+    Object.keys(dismissed).forEach(key => {
+      if (now - dismissed[key].dismissed_at < NOTIFICATION_EXPIRY_MS) {
+        cleaned[key] = dismissed[key];
+      }
+    });
+    if (Object.keys(cleaned).length !== Object.keys(dismissed).length) {
+      localStorage.setItem('dismissed_callbacks', JSON.stringify(cleaned));
+    }
+    setDismissedCallbacks(cleaned);
+  }, []);
 
   // Process queue - show next callback popup when current one is closed
   // Track which callbacks have been shown to prevent duplicates
