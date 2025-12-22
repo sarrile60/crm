@@ -144,6 +144,20 @@ const DepositsManager = ({ currentUser }) => {
         amount: parseFloat(newDeposit.amount)
       }, { headers });
       
+      // Mark the notification as processed if this was from a notification click
+      if (prefilledNotificationId) {
+        try {
+          await axios.put(
+            `${API}/crm/supervisor/deposit-notifications/${prefilledNotificationId}/processed`,
+            {},
+            { headers }
+          );
+        } catch (notifError) {
+          console.error('Error marking notification as processed:', notifError);
+        }
+        setPrefilledNotificationId(null);
+      }
+      
       toast.success(t('deposits.created'));
       setShowCreateModal(false);
       setNewDeposit({
