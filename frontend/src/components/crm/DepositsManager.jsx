@@ -147,10 +147,40 @@ const DepositsManager = ({ currentUser }) => {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
       
-      await axios.post(`${API}/crm/deposits`, {
+      // Create the deposit first
+      const depositRes = await axios.post(`${API}/crm/deposits`, {
         ...newDeposit,
         amount: parseFloat(newDeposit.amount)
       }, { headers });
+      
+      const depositId = depositRes.data.id;
+      
+      // Upload attachments for IBAN deposits
+      if (newDeposit.payment_type === 'IBAN' && depositId) {
+        const attachmentTypes = ['id_front', 'id_back', 'proof_of_residence', 'selfie_with_id'];
+        
+        for (const type of attachmentTypes) {
+          if (attachmentFiles[type]) {
+            try {
+              const formData = new FormData();
+              formData.append('file', attachmentFiles[type]);
+              
+              await axios.post(
+                `${API}/crm/deposits/${depositId}/attachments/${type}`,
+                formData,
+                {
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                  }
+                }
+              );
+            } catch (uploadError) {
+              console.error(`Error uploading ${type}:`, uploadError);
+            }
+          }
+        }
+      }
       
       // Mark the notification as processed if this was from a notification click
       if (prefilledNotificationId) {
