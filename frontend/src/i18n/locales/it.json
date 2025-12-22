@@ -96,6 +96,7 @@
     "loginError": "Credenziali non valide",
     "sessionExpires": "La sessione scade alle",
     "timeRemaining": "rimanenti",
+    "approvedSession": "⚠️ Accesso fuori orario approvato",
     "crmPortal": "Portale CRM",
     "accessClientManagement": "Accedi al sistema di gestione clienti",
     "adminNoExpiry": "Admin - Nessuna scadenza sessione"
