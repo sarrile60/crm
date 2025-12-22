@@ -185,6 +185,57 @@ const DepositsManager = ({ currentUser }) => {
     setShowDetailModal(true);
   };
 
+  // Handle file upload for IBAN deposits
+  const handleFileUpload = async (depositId, attachmentType, file) => {
+    if (!file) return;
+    
+    setUploading(prev => ({ ...prev, [attachmentType]: true }));
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      await axios.post(
+        `${API}/crm/deposits/${depositId}/attachments/${attachmentType}`,
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+      
+      toast.success(t('deposits.attachmentUploaded'));
+      // Refresh deposit details
+      const res = await axios.get(`${API}/crm/deposits/${depositId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSelectedDeposit(res.data);
+      fetchDeposits();
+    } catch (error) {
+      console.error('Error uploading attachment:', error);
+      toast.error(error.response?.data?.detail || t('deposits.uploadError'));
+    } finally {
+      setUploading(prev => ({ ...prev, [attachmentType]: false }));
+    }
+  };
+
+  // Download/view attachment
+  const handleDownloadAttachment = async (depositId, attachmentType) => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const url = `${API}/crm/deposits/${depositId}/attachments/${attachmentType}/download`;
+      
+      // Open in new tab for viewing
+      window.open(`${url}?token=${token}`, '_blank');
+    } catch (error) {
+      console.error('Error downloading attachment:', error);
+      toast.error(t('deposits.downloadError'));
+    }
+  };
+
   const getStatusBadge = (status) => {
     switch (status) {
       case 'pending':
