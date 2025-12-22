@@ -826,6 +826,10 @@ const ChatWidget = ({ currentUser }) => {
             {/* Conversations */}
             {conversations
               .filter(conv => {
+                // Hide system chats from agents - only supervisors and admins should see them
+                if (conv.is_system_chat && currentUser?.role?.toLowerCase() === 'agent') {
+                  return false;
+                }
                 if (!conversationFilter.trim()) return true;
                 const name = getConversationName(conv).toLowerCase();
                 return name.includes(conversationFilter.toLowerCase());
