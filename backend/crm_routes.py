@@ -502,8 +502,9 @@ async def create_team(team_data: TeamCreate, current_user: dict = Depends(get_cu
 
 @crm_router.get("/teams")
 async def get_teams(current_user: dict = Depends(get_current_user)):
-    """Get all teams"""
-    teams = await db.teams.find({"is_active": True}, {"_id": 0}).to_list(1000)
+    """Get all teams (including archived for admins to manage)"""
+    # Return all teams (both active and archived) so admin can manage them
+    teams = await db.teams.find({}, {"_id": 0}).to_list(1000)
     return teams
 
 @crm_router.get("/teams/{team_id}")
@@ -513,6 +514,75 @@ async def get_team(team_id: str, current_user: dict = Depends(get_current_user))
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
     return team
+
+@crm_router.put("/teams/{team_id}/archive", dependencies=[Depends(require_role(["admin"]))])
+async def archive_team(team_id: str, current_user: dict = Depends(get_current_user)):
+    """Archive a team (soft delete)"""
+    team = await db.teams.find_one({"id": team_id})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    if team.get("archived"):
+        raise HTTPException(status_code=400, detail="Team is already archived")
+    
+    # Check if team has active members
+    active_members = await db.crm_users.count_documents({"team_id": team_id, "is_active": True})
+    if active_members > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot archive team with {active_members} active member(s). Please reassign or deactivate members first."
+        )
+    
+    await db.teams.update_one(
+        {"id": team_id},
+        {"$set": {"archived": True, "archived_at": datetime.now(timezone.utc), "is_active": False}}
+    )
+    
+    return {"success": True, "message": "Team archived successfully"}
+
+@crm_router.put("/teams/{team_id}/restore", dependencies=[Depends(require_role(["admin"]))])
+async def restore_team(team_id: str, current_user: dict = Depends(get_current_user)):
+    """Restore an archived team"""
+    team = await db.teams.find_one({"id": team_id})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    if not team.get("archived"):
+        raise HTTPException(status_code=400, detail="Team is not archived")
+    
+    await db.teams.update_one(
+        {"id": team_id},
+        {"$set": {"archived": False, "is_active": True}, "$unset": {"archived_at": ""}}
+    )
+    
+    return {"success": True, "message": "Team restored successfully"}
+
+@crm_router.delete("/teams/{team_id}", dependencies=[Depends(require_role(["admin"]))])
+async def delete_team(team_id: str, current_user: dict = Depends(get_current_user)):
+    """Permanently delete an archived team"""
+    team = await db.teams.find_one({"id": team_id})
+    if not team:
+        raise HTTPException(status_code=404, detail="Team not found")
+    
+    # Only allow deleting archived teams
+    if not team.get("archived"):
+        raise HTTPException(
+            status_code=400, 
+            detail="Team must be archived before it can be deleted. Archive the team first."
+        )
+    
+    # Check if team has any members (even inactive)
+    members_count = await db.crm_users.count_documents({"team_id": team_id})
+    if members_count > 0:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot delete team with {members_count} member(s). Please remove all members first."
+        )
+    
+    # Delete the team
+    await db.teams.delete_one({"id": team_id})
+    
+    return {"success": True, "message": "Team permanently deleted"}
 
 # ==================== CUSTOM STATUS ROUTES ====================
 
