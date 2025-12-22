@@ -1062,8 +1062,56 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
               </div>
             )}
 
+            {/* Deposit Notifications Section (Admin Only) */}
+            {currentUser?.role?.toLowerCase() === 'admin' && depositNotifications.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-green-600" />
+                  {t('deposits.pendingApproval')} ({depositNotifications.length})
+                </h3>
+                <div className="space-y-3">
+                  {depositNotifications.map((notification) => (
+                    <div 
+                      key={notification.id}
+                      className="border-2 p-4 bg-green-50 border-green-300"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-bold text-lg">{notification.lead_name}</span>
+                            <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded">
+                              {notification.payment_type}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            {t('deposits.agent')}: {notification.agent_name}
+                          </p>
+                          <p className="text-2xl font-bold text-green-600 mt-1">
+                            {notification.amount?.toLocaleString()} EUR
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() => {
+                            setShowModal(false);
+                            window.location.hash = '#depositApprovals';
+                            // Trigger tab change
+                            const event = new CustomEvent('changeTab', { detail: 'depositApprovals' });
+                            window.dispatchEvent(event);
+                          }}
+                          size="sm"
+                          className="bg-green-600 text-white hover:bg-green-700 rounded-none"
+                        >
+                          {t('common.review')}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Empty State */}
-            {pendingCallbacks.length === 0 && reminders.length === 0 && loginRequests.length === 0 && (
+            {pendingCallbacks.length === 0 && reminders.length === 0 && loginRequests.length === 0 && depositNotifications.length === 0 && (
               <div className="text-center py-12">
                 <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500 text-lg">{t('crm.noNotifications')}</p>
