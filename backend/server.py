@@ -386,6 +386,7 @@ app.include_router(api_router)
 app.include_router(crm_router)
 app.include_router(admin_router)
 app.include_router(chat_router)
+app.include_router(deposit_router, prefix="/api/crm")
 
 # CORS Configuration (Restricted for Production)
 cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://teamalerts.preview.emergentagent.com').split(',')
