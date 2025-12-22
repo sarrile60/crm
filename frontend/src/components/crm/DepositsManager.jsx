@@ -40,6 +40,14 @@ const DepositsManager = ({ currentUser }) => {
     notes: ''
   });
 
+  // Attachment files for IBAN deposits
+  const [attachmentFiles, setAttachmentFiles] = useState({
+    id_front: null,
+    id_back: null,
+    proof_of_residence: null,
+    selfie_with_id: null
+  });
+
   const role = currentUser?.role?.toLowerCase();
   const isSupervisor = role === 'supervisor';
   const isAdmin = role === 'admin';
