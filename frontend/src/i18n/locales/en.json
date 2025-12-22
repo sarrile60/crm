@@ -96,6 +96,7 @@
     "loginError": "Invalid credentials",
     "sessionExpires": "Session expires at",
     "timeRemaining": "remaining",
+    "approvedSession": "⚠️ After-hours approved",
     "crmPortal": "CRM Portal",
     "accessClientManagement": "Access the client management system",
     "adminNoExpiry": "Admin - No session expiry"
