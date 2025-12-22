@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Archive, RotateCcw, Eye, EyeOff } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -14,23 +13,12 @@ const API = `${BACKEND_URL}/api`;
 const SettingsPanel = () => {
   const { t } = useTranslation();
   const [statuses, setStatuses] = useState([]);
-  const [teams, setTeams] = useState([]);
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
-  const [showArchivedTeams, setShowArchivedTeams] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [teamToDelete, setTeamToDelete] = useState(null);
   const [newStatus, setNewStatus] = useState({
     name: '',
     color: '#3B82F6',
     order: 0
-  });
-  const [newTeam, setNewTeam] = useState({
-    name: '',
-    description: '',
-    supervisor_id: ''
   });
 
   useEffect(() => {
