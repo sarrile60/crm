@@ -404,11 +404,10 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   };
 
   const handleSaveEdit = async () => {
-    // Validate callback date for callback statuses
+    // Validate callback date for callback statuses (NOT for Deposit statuses)
     const requiresCallback = editData.status === 'Callback' || 
                             editData.status === 'Potential Callback' || 
-                            editData.status === 'Pharos in progress' ||
-                            editData.status?.startsWith('Deposit');
+                            editData.status === 'Pharos in progress';
     
     if (requiresCallback && !editData.callback_date) {
       toast.error(t('crm.mustSetDateTimeForStatus'));
