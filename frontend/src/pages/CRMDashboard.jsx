@@ -156,6 +156,20 @@ const CRMDashboard = () => {
     setCallbackLead(lead);
   };
 
+  // Listen for openDepositCreate event from notifications
+  useEffect(() => {
+    const handleOpenDepositCreate = (event) => {
+      // First switch to deposits tab
+      setActiveTab('deposits');
+      // The DepositsManager component will handle the event and open the modal
+    };
+
+    window.addEventListener('openDepositCreate', handleOpenDepositCreate);
+    return () => {
+      window.removeEventListener('openDepositCreate', handleOpenDepositCreate);
+    };
+  }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
