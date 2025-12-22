@@ -946,8 +946,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                   
                   {((editData.status || selectedLead.status) === 'Callback' || 
                     (editData.status || selectedLead.status) === 'Potential Callback' || 
-                    (editData.status || selectedLead.status) === 'Pharos in progress' ||
-                    (editData.status || selectedLead.status)?.startsWith('Deposit')) && (
+                    (editData.status || selectedLead.status) === 'Pharos in progress') && (
                     <>
                       <div className="bg-yellow-50 border-2 border-yellow-400 p-3">
                         <p className="text-sm font-semibold text-black mb-1">⚠️ {t('crm.callbackDepositRequired')}</p>
