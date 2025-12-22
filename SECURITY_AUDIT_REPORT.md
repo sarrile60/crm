@@ -1,7 +1,7 @@
 # 🔒 COMPLETE TECHNICAL SECURITY AUDIT REPORT
 ## 1 LAW SOLICITORS CRM System
 **Generated:** November 23, 2025  
-**System:** https://teamalerts.preview.emergentagent.com
+**System:** https://deposit-manager-9.preview.emergentagent.com
 
 ---
 
@@ -155,10 +155,10 @@ Any attacker can:
 ```
 Risk Level: CRITICAL (10/10)
 Accessible Files:
-✓ https://teamalerts.preview.emergentagent.com/backend/.env
-✓ https://teamalerts.preview.emergentagent.com/backend/server.py
-✓ https://teamalerts.preview.emergentagent.com/backend/auth_utils.py
-✓ https://teamalerts.preview.emergentagent.com/backend/crm_routes.py
+✓ https://deposit-manager-9.preview.emergentagent.com/backend/.env
+✓ https://deposit-manager-9.preview.emergentagent.com/backend/server.py
+✓ https://deposit-manager-9.preview.emergentagent.com/backend/auth_utils.py
+✓ https://deposit-manager-9.preview.emergentagent.com/backend/crm_routes.py
 
 Exposed Information:
 - JWT secret key
@@ -442,7 +442,7 @@ Filtering:
 
 ### Public Landing Page Structure
 ```
-URL: https://teamalerts.preview.emergentagent.com/
+URL: https://deposit-manager-9.preview.emergentagent.com/
 Technology: React SPA
 
 Components:
@@ -606,7 +606,7 @@ class LeadCreate(BaseModel):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://teamalerts.preview.emergentagent.com",
+        "https://deposit-manager-9.preview.emergentagent.com",
         "https://yourdomain.com"
     ],  # Specific domains only
     allow_credentials=True,
