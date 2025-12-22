@@ -125,15 +125,18 @@ test_plan:
 
   - task: "New Lead Deposit Notification"
     implemented: true
-    working: needs_testing
+    working: true
     file: "crm_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: pending
         agent: "main"
         comment: "Backend fix implemented in create_lead endpoint (lines 1097-1123). Need E2E test to verify supervisor receives notification when agent creates NEW lead with Deposit status."
+      - working: true
+        agent: "testing"
+        comment: "✅ E2E TEST PASSED: New Lead Deposit Notification system working correctly. Agent (agente) successfully created lead 'Test Deposit Lead' with Deposit 1 status. Supervisor (maurizio1) received notification in notification bell with 'Agent Deposit Requests (5)' section showing the new lead with agent name, phone, timestamp, and 'Create Deposit' button. Backend notification creation (lines 1097-1123) and frontend notification display (CallbackNotifications.jsx lines 340-368) both functioning properly."
 
 agent_communication:
   - agent: "testing"
