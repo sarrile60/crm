@@ -399,6 +399,46 @@ const SettingsPanel = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Delete Team Confirmation Modal */}
+      {showDeleteConfirm && teamToDelete && (
+        <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+          <DialogContent className="max-w-md bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-red-600">{t('teams.confirmDeleteTitle')}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="bg-red-50 border-2 border-red-200 p-4">
+                <p className="text-sm text-red-800">
+                  {t('teams.confirmDeleteMessage', { teamName: teamToDelete.name })}
+                </p>
+                <p className="text-xs text-red-600 mt-2 font-semibold">
+                  {t('teams.deleteWarning')}
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setTeamToDelete(null);
+                  }} 
+                  variant="outline"
+                  className="flex-1 rounded-none"
+                >
+                  {t('common.cancel')}
+                </Button>
+                <Button 
+                  onClick={handleDeleteTeam} 
+                  className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  {t('teams.deletePermanently')}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
