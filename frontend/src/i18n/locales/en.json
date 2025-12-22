@@ -89,7 +89,8 @@
     "upload": "Upload",
     "uploading": "Uploading...",
     "on": "on",
-    "review": "Review"
+    "review": "Review",
+    "view": "View"
   },
   "auth": {
     "login": "Login",

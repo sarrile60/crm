@@ -89,7 +89,8 @@
     "upload": "Carica",
     "uploading": "Caricamento...",
     "on": "il",
-    "review": "Rivedi"
+    "review": "Rivedi",
+    "view": "Visualizza"
   },
   "auth": {
     "login": "Accedi",
