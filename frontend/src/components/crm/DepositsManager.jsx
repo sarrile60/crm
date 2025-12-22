@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   DollarSign, Plus, Eye, Upload, Check, X, Clock, 
-  CreditCard, Bitcoin, FileText, User, Users, Building
+  CreditCard, Bitcoin, FileText, User, Users, Building, Download, Image
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -23,6 +23,8 @@ const DepositsManager = ({ currentUser }) => {
   const [leads, setLeads] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [uploading, setUploading] = useState({});
+  const [prefilledNotificationId, setPrefilledNotificationId] = useState(null);
   
   // Create deposit form state
   const [newDeposit, setNewDeposit] = useState({
@@ -42,6 +44,26 @@ const DepositsManager = ({ currentUser }) => {
   const isSupervisor = role === 'supervisor';
   const isAdmin = role === 'admin';
   const isAgent = role === 'agent';
+
+  // Listen for openDepositCreate event from notification
+  useEffect(() => {
+    const handleOpenDepositCreate = (event) => {
+      const { lead_id, lead_name, agent_id, agent_name, notification_id } = event.detail;
+      // Pre-fill the deposit form
+      setNewDeposit(prev => ({
+        ...prev,
+        lead_id: lead_id || '',
+        agent_id: agent_id || ''
+      }));
+      setPrefilledNotificationId(notification_id);
+      setShowCreateModal(true);
+    };
+
+    window.addEventListener('openDepositCreate', handleOpenDepositCreate);
+    return () => {
+      window.removeEventListener('openDepositCreate', handleOpenDepositCreate);
+    };
+  }, []);
 
   // Fetch deposits
   const fetchDeposits = useCallback(async () => {
