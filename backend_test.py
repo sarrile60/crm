@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend Testing Suite for Callback Notification Dismiss and Clear All Functionality
-Tests the backend endpoints that support the callback notification system
+Backend Testing Suite for Deposit Management System
+Tests the complete deposit workflow: creation, approval, and notifications
 """
 
 import requests
@@ -22,6 +22,11 @@ logger = logging.getLogger(__name__)
 # Test credentials from review request
 AGENT_CREDENTIALS = {
     "username": "agente",
+    "password": "12345"
+}
+
+SUPERVISOR_CREDENTIALS = {
+    "username": "maurizio1",
     "password": "12345"
 }
 
