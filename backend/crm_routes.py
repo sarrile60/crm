@@ -1244,6 +1244,62 @@ async def update_heartbeat(current_user: dict = Depends(get_current_user)):
     return {"success": True, "last_active": now.isoformat()}
 
 
+# ==================== SUPERVISOR DEPOSIT NOTIFICATIONS ====================
+
+@crm_router.get("/supervisor/deposit-notifications")
+async def get_supervisor_deposit_notifications(current_user: dict = Depends(get_current_user)):
+    """Get deposit notifications for supervisor - when agent marks lead as Deposit"""
+    role = current_user.get("role", "").lower()
+    
+    if role not in ["supervisor", "admin"]:
+        return {"notifications": [], "unread_count": 0}
+    
+    # For supervisor, get notifications where they are the supervisor
+    # For admin, get all unprocessed notifications
+    if role == "admin":
+        query = {"processed": False}
+    else:
+        query = {"supervisor_id": current_user["id"], "processed": False}
+    
+    notifications = await db.supervisor_deposit_notifications.find(
+        query,
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    
+    unread_count = len([n for n in notifications if not n.get("read")])
+    
+    return {
+        "notifications": notifications,
+        "unread_count": unread_count
+    }
+
+
+@crm_router.put("/supervisor/deposit-notifications/{notification_id}/read")
+async def mark_supervisor_deposit_notification_read(
+    notification_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Mark a supervisor deposit notification as read"""
+    await db.supervisor_deposit_notifications.update_one(
+        {"id": notification_id},
+        {"$set": {"read": True}}
+    )
+    return {"success": True}
+
+
+@crm_router.put("/supervisor/deposit-notifications/{notification_id}/processed")
+async def mark_supervisor_deposit_notification_processed(
+    notification_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Mark notification as processed (supervisor created the deposit)"""
+    await db.supervisor_deposit_notifications.update_one(
+        {"id": notification_id},
+        {"$set": {"processed": True, "processed_at": datetime.now(timezone.utc)}}
+    )
+    return {"success": True}
+
+
 @crm_router.get("/team-members-status")
 async def get_team_members_status(current_user: dict = Depends(get_current_user)):
     """Get real-time status of team members - for supervisors/admins to monitor agent activity"""
