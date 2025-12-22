@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Phone, Clock, UserCheck, UserX, LogIn, X, Trash2 } from 'lucide-react';
+import { Bell, Phone, Clock, UserCheck, UserX, LogIn, X, Trash2, DollarSign } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { toast } from 'sonner';
@@ -17,6 +17,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const [reminders, setReminders] = useState([]);
   const [pendingCallbacks, setPendingCallbacks] = useState([]);
   const [loginRequests, setLoginRequests] = useState([]);
+  const [depositNotifications, setDepositNotifications] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [urgentCallback, setUrgentCallback] = useState(null);
   const [showUrgentModal, setShowUrgentModal] = useState(false);
