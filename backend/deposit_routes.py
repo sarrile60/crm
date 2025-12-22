@@ -5,24 +5,49 @@ Deposit Management Routes
 - Admin approves/rejects deposits with live notifications
 """
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Header
 from typing import Optional, List
 from datetime import datetime, timezone
 from uuid import uuid4
 import os
 import shutil
 from pydantic import BaseModel
-
-from auth import get_current_user
+import jwt
 
 deposit_router = APIRouter(prefix="/deposits", tags=["Deposits"])
 
 # Initialize db reference (will be set from server.py)
 db = None
+JWT_SECRET = os.environ.get("JWT_SECRET", "your-secret-key-here")
 
 def init_deposit_routes(database):
     global db
     db = database
+
+
+async def get_current_user(authorization: Optional[str] = Header(None)):
+    """Get current user from JWT token"""
+    if not authorization:
+        raise HTTPException(status_code=401, detail="No authorization header")
+    
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        user_id = payload.get("user_id")
+        
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        user = await db.crm_users.find_one({"id": user_id}, {"_id": 0, "password": 0})
+        
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+        
+        return user
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
 
 # ==================== MODELS ====================
