@@ -272,6 +272,11 @@ const ChatWidget = ({ currentUser }) => {
         fetchConversations();
       }
       
+      // Mark initial poll as complete (subsequent polls can play sounds)
+      if (isInitialPoll.current) {
+        isInitialPoll.current = false;
+      }
+      
       // Update read status for messages we sent (live "seen" updates)
       if (response.data.read_updates && response.data.read_updates.length > 0) {
         setMessages(prev => prev.map(msg => {
