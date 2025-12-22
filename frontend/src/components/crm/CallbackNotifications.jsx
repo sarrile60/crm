@@ -293,15 +293,15 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     }
   };
 
-  const updateTotalNotifications = (remindersCount, callbacksCount, loginRequestsCount = 0, depositCount = 0) => {
-    setTotalNotifications(remindersCount + callbacksCount + loginRequestsCount + depositCount);
+  const updateTotalNotifications = (remindersCount, callbacksCount, loginRequestsCount = 0, depositCount = 0, supervisorDepositCount = 0) => {
+    setTotalNotifications(remindersCount + callbacksCount + loginRequestsCount + depositCount + supervisorDepositCount);
   };
   
   // Update total notifications whenever any notification type changes
   useEffect(() => {
-    const total = reminders.length + pendingCallbacks.length + loginRequests.length + depositNotifications.length;
+    const total = reminders.length + pendingCallbacks.length + loginRequests.length + depositNotifications.length + supervisorDepositNotifications.length;
     setTotalNotifications(total);
-  }, [reminders.length, pendingCallbacks.length, loginRequests.length, depositNotifications.length]);
+  }, [reminders.length, pendingCallbacks.length, loginRequests.length, depositNotifications.length, supervisorDepositNotifications.length]);
 
   // Fetch deposit notifications for admin
   const fetchDepositNotifications = async () => {
