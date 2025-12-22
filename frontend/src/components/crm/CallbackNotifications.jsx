@@ -969,7 +969,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                               </p>
                               {lead.callback_notes && (
                                 <p className="text-gray-600 text-xs italic">
-                                  "{lead.callback_notes}"
+                                  &quot;{lead.callback_notes}&quot;
                                 </p>
                               )}
                             </div>
