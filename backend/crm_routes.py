@@ -683,15 +683,44 @@ async def update_lead(lead_id: str, update_data: LeadUpdate, current_user: dict 
     update_dict["updated_at"] = datetime.now(timezone.utc)
     
     # Log status change
-    if "status" in update_dict and update_dict["status"] != lead.get("status"):
+    old_status = lead.get("status")
+    new_status = update_dict.get("status")
+    
+    if "status" in update_dict and new_status != old_status:
         activity = ActivityLog(
             lead_id=lead_id,
             user_id=current_user["id"],
             user_name=current_user["full_name"],
             action="status_changed",
-            details=f"Status changed from {lead.get('status')} to {update_dict['status']}"
+            details=f"Status changed from {old_status} to {new_status}"
         )
         await db.activity_logs.insert_one(activity.dict())
+        
+        # Notify supervisor when agent changes status to Deposit
+        deposit_statuses = ['Deposit 1', 'Deposit 2', 'Deposit 3', 'Deposit 4', 'Deposit 5']
+        if new_status in deposit_statuses and current_user.get("role", "").lower() == "agent":
+            # Find the agent's team and supervisor
+            agent = await db.crm_users.find_one({"id": current_user["id"]})
+            if agent and agent.get("team_id"):
+                team = await db.teams.find_one({"id": agent["team_id"]})
+                if team and team.get("supervisor_id"):
+                    # Create notification for supervisor
+                    deposit_notification = {
+                        "id": str(uuid4()),
+                        "type": "lead_deposit_status",
+                        "lead_id": lead_id,
+                        "lead_name": lead.get("fullName", "Unknown"),
+                        "lead_phone": lead.get("phone", ""),
+                        "agent_id": current_user["id"],
+                        "agent_name": current_user.get("full_name", "Unknown"),
+                        "supervisor_id": team["supervisor_id"],
+                        "team_id": agent["team_id"],
+                        "deposit_status": new_status,
+                        "created_at": datetime.now(timezone.utc),
+                        "read": False,
+                        "processed": False  # Supervisor hasn't created deposit yet
+                    }
+                    await db.supervisor_deposit_notifications.insert_one(deposit_notification)
     
     # Create callback reminder if status is callback
     if update_dict.get("status") == "callback" and update_dict.get("callback_date"):
