@@ -147,6 +147,8 @@ const ChatWidget = ({ currentUser }) => {
 
   // Track which message IDs we've already seen to prevent duplicate sounds
   const seenMessageIds = useRef(new Set());
+  // Track if this is the initial poll (should not play sound)
+  const isInitialPoll = useRef(true);
   
   // Fetch messages for selected conversation
   // onlyMarkReadIfVisible parameter controls whether to mark as read
