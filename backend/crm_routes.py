@@ -1094,6 +1094,34 @@ async def create_crm_lead(lead_data: dict, current_user: dict = Depends(get_curr
             }
         )
         
+        # Notify supervisor if lead is created with Deposit status by an agent
+        new_status = lead.get("status", "")
+        deposit_statuses = ['Deposit 1', 'Deposit 2', 'Deposit 3', 'Deposit']
+        
+        if new_status in deposit_statuses and current_user.get("role", "").lower() == "agent":
+            # Find the agent's team and supervisor
+            agent = await db.crm_users.find_one({"id": current_user["id"]})
+            if agent and agent.get("team_id"):
+                team = await db.teams.find_one({"id": agent["team_id"]})
+                if team and team.get("supervisor_id"):
+                    # Create notification for supervisor
+                    deposit_notification = {
+                        "id": str(uuid.uuid4()),
+                        "type": "lead_deposit_status",
+                        "lead_id": lead_id,
+                        "lead_name": lead.get("fullName", "Unknown"),
+                        "lead_phone": lead.get("phone", ""),
+                        "agent_id": current_user["id"],
+                        "agent_name": current_user.get("full_name", "Unknown"),
+                        "supervisor_id": team["supervisor_id"],
+                        "team_id": agent["team_id"],
+                        "deposit_status": new_status,
+                        "created_at": datetime.now(timezone.utc),
+                        "read": False,
+                        "processed": False
+                    }
+                    await db.supervisor_deposit_notifications.insert_one(deposit_notification)
+        
         return {"success": True, "lead_id": lead_id, "message": "Lead created successfully"}
         
     except HTTPException:
