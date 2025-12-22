@@ -529,7 +529,7 @@ async def get_attachment(
     attachment_type: str,
     current_user: dict = Depends(get_current_user)
 ):
-    """Get attachment file path"""
+    """Get attachment file metadata"""
     deposit = await db.deposits.find_one({"id": deposit_id})
     
     if not deposit:
@@ -554,3 +554,55 @@ async def get_attachment(
         raise HTTPException(status_code=404, detail="Attachment not found")
     
     return attachment
+
+
+@deposit_router.get("/{deposit_id}/attachments/{attachment_type}/download")
+async def download_attachment(
+    deposit_id: str,
+    attachment_type: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Download attachment file as FileResponse"""
+    valid_types = ["id_front", "id_back", "proof_of_residence", "selfie_with_id"]
+    
+    if attachment_type not in valid_types:
+        raise HTTPException(status_code=400, detail=f"Invalid attachment type")
+    
+    deposit = await db.deposits.find_one({"id": deposit_id})
+    
+    if not deposit:
+        raise HTTPException(status_code=404, detail="Deposit not found")
+    
+    role = current_user.get("role", "").lower()
+    
+    # Check access
+    if role == "admin":
+        pass
+    elif role == "supervisor":
+        team_ids = await get_user_team_ids(current_user["id"])
+        if deposit.get("team_id") and deposit["team_id"] not in team_ids:
+            raise HTTPException(status_code=403, detail="Access denied")
+    else:
+        if deposit["agent_id"] != current_user["id"]:
+            raise HTTPException(status_code=403, detail="Access denied")
+    
+    attachment = deposit.get("attachments", {}).get(attachment_type)
+    
+    if not attachment or not attachment.get("path"):
+        raise HTTPException(status_code=404, detail="Attachment not found")
+    
+    file_path = attachment["path"]
+    
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found on server")
+    
+    # Determine media type
+    media_type, _ = mimetypes.guess_type(file_path)
+    if not media_type:
+        media_type = "application/octet-stream"
+    
+    return FileResponse(
+        path=file_path,
+        media_type=media_type,
+        filename=attachment.get("filename", f"{attachment_type}.file")
+    )
