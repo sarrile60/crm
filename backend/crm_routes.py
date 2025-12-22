@@ -547,7 +547,9 @@ async def restore_team(team_id: str, current_user: dict = Depends(get_current_us
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
     
-    if not team.get("archived"):
+    # Check both archived flag and archived_at timestamp
+    is_archived = team.get("archived") or team.get("archived_at") is not None
+    if not is_archived:
         raise HTTPException(status_code=400, detail="Team is not archived")
     
     await db.teams.update_one(
