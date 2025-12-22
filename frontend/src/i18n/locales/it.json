@@ -205,7 +205,9 @@
     "agentDepositRequests": "Richieste Deposito Agenti",
     "agentMarkedDeposit": "Nuova Richiesta Deposito",
     "agentMarkedDepositDesc": "Un agente ha segnato un lead per il deposito",
-    "createDeposit": "Crea Deposito"
+    "createDeposit": "Crea Deposito",
+    "depositInfo": "Stato Deposito Selezionato",
+    "supervisorWillBeNotified": "Il tuo supervisore sarà notificato di questa richiesta di deposito e gestirà i prossimi passi."
   },
   "dashboard": {
     "title": "Dashboard",

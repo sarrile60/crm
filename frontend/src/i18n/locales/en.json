@@ -205,7 +205,9 @@
     "agentDepositRequests": "Agent Deposit Requests",
     "agentMarkedDeposit": "New Deposit Request",
     "agentMarkedDepositDesc": "An agent has marked a lead for deposit",
-    "createDeposit": "Create Deposit"
+    "createDeposit": "Create Deposit",
+    "depositInfo": "Deposit Status Selected",
+    "supervisorWillBeNotified": "Your supervisor will be notified about this deposit request and will handle the next steps."
   },
   "dashboard": {
     "title": "Dashboard",
