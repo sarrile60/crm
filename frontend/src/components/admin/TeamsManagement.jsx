@@ -436,7 +436,7 @@ const TeamsManagement = () => {
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
-                          {!team.archived_at && (
+                          {!team.archived_at ? (
                             <>
                               <Button
                                 onClick={() => openEditModal(team)}
@@ -449,10 +449,29 @@ const TeamsManagement = () => {
                               <Button
                                 onClick={() => openArchiveModal(team)}
                                 size="sm"
-                                className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                                className="bg-orange-500 text-white hover:bg-orange-600 rounded-none"
                                 title={t('teams.archiveTeam')}
                               >
                                 <Archive className="w-4 h-4" />
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                onClick={() => handleRestoreTeam(team)}
+                                size="sm"
+                                className="bg-green-600 text-white hover:bg-green-700 rounded-none"
+                                title={t('teams.restore')}
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                onClick={() => openDeleteModal(team)}
+                                size="sm"
+                                className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                                title={t('teams.deletePermanently')}
+                              >
+                                <Trash2 className="w-4 h-4" />
                               </Button>
                             </>
                           )}
