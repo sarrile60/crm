@@ -601,7 +601,19 @@
     "createNewTeam": "Create New Team",
     "teamNamePlaceholder": "Ex. Team North",
     "descriptionOptional": "Description (optional)",
-    "noSupervisor": "No supervisor"
+    "noSupervisor": "No supervisor",
+    "active": "Active",
+    "archive": "Archive",
+    "restore": "Restore",
+    "deletePermanently": "Delete Permanently",
+    "teamArchived": "Team archived successfully",
+    "teamRestored": "Team restored successfully",
+    "teamDeleted": "Team permanently deleted",
+    "errorRestoringTeam": "Error restoring team",
+    "errorDeletingTeam": "Error deleting team",
+    "confirmDeleteTitle": "Delete Team Permanently?",
+    "confirmDeleteMessage": "Are you sure you want to permanently delete the team \"{{teamName}}\"?",
+    "deleteWarning": "This action cannot be undone. All team data will be lost forever."
   },
   "visibility": {
     "title": "Data Visibility",
