@@ -564,8 +564,9 @@ async def delete_team(team_id: str, current_user: dict = Depends(get_current_use
     if not team:
         raise HTTPException(status_code=404, detail="Team not found")
     
-    # Only allow deleting archived teams
-    if not team.get("archived"):
+    # Only allow deleting archived teams (check both archived flag and archived_at timestamp)
+    is_archived = team.get("archived") or team.get("archived_at") is not None
+    if not is_archived:
         raise HTTPException(
             status_code=400, 
             detail="Team must be archived before it can be deleted. Archive the team first."
