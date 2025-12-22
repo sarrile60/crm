@@ -118,12 +118,22 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Deposit Creation API"
-    - "Role-Based Deposit Listing"
-    - "Admin Approval Workflow"
+    - "New Lead Deposit Notification E2E"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
+
+  - task: "New Lead Deposit Notification"
+    implemented: true
+    working: needs_testing
+    file: "crm_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: pending
+        agent: "main"
+        comment: "Backend fix implemented in create_lead endpoint (lines 1097-1123). Need E2E test to verify supervisor receives notification when agent creates NEW lead with Deposit status."
 
 agent_communication:
   - agent: "testing"
