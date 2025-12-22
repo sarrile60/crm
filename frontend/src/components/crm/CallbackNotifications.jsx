@@ -222,6 +222,9 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       // Get callbacks that have been marked as "called"
       const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
       
+      // Get dismissed callbacks
+      const dismissed = JSON.parse(localStorage.getItem('dismissed_callbacks') || '{}');
+      
       // Filter leads - ONLY show OVERDUE callbacks (scaduto)
       const now = new Date();
       const pending = allLeads.filter(lead => {
@@ -241,7 +244,19 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
           return false;
         }
         
+        // Skip if this callback has been dismissed by the user
+        const dismissKey = `${lead.id}_${lead.callback_date}`;
+        if (dismissed[dismissKey]) {
+          return false;
+        }
+        
         const callbackTime = new Date(lead.callback_date);
+        
+        // Auto-expire: Skip callbacks older than 24 hours
+        const timeSinceCallback = now - callbackTime;
+        if (timeSinceCallback > NOTIFICATION_EXPIRY_MS) {
+          return false;
+        }
         
         // ONLY show callbacks that are OVERDUE (past the callback time)
         // When agent changes callback time to future, it disappears automatically
