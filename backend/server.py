@@ -25,6 +25,7 @@ db = client[os.environ['DB_NAME']]
 # Initialize databases
 init_crm_db(db)
 init_admin_db(db)
+init_deposit_routes(db)
 
 # Initialize audit logging
 from audit_utils import init_audit_db
