@@ -174,6 +174,21 @@ const CRMDashboard = () => {
     };
   }, []);
 
+  // Listen for changeTab event (from notification Review button)
+  useEffect(() => {
+    const handleChangeTab = (event) => {
+      const tabName = event.detail;
+      if (tabName) {
+        setActiveTab(tabName);
+      }
+    };
+
+    window.addEventListener('changeTab', handleChangeTab);
+    return () => {
+      window.removeEventListener('changeTab', handleChangeTab);
+    };
+  }, []);
+
   // Clear pending deposit data when tab changes away from deposits
   useEffect(() => {
     if (activeTab !== 'deposits') {
