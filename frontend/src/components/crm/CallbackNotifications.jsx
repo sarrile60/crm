@@ -584,6 +584,47 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     setShowUrgentModal(false);
   };
 
+  // Dismiss a single callback notification
+  const handleDismissCallback = (lead) => {
+    const dismissKey = `${lead.id}_${lead.callback_date}`;
+    const dismissed = JSON.parse(localStorage.getItem('dismissed_callbacks') || '{}');
+    
+    dismissed[dismissKey] = {
+      dismissed_at: Date.now(),
+      lead_name: lead.fullName
+    };
+    
+    localStorage.setItem('dismissed_callbacks', JSON.stringify(dismissed));
+    setDismissedCallbacks(dismissed);
+    
+    // Remove from pending callbacks immediately
+    setPendingCallbacks(prev => prev.filter(l => l.id !== lead.id || l.callback_date !== lead.callback_date));
+    
+    toast.success(t('crm.callbackDismissed'));
+  };
+
+  // Clear all callback notifications
+  const handleClearAllCallbacks = () => {
+    const dismissed = JSON.parse(localStorage.getItem('dismissed_callbacks') || '{}');
+    
+    // Add all current pending callbacks to dismissed list
+    pendingCallbacks.forEach(lead => {
+      const dismissKey = `${lead.id}_${lead.callback_date}`;
+      dismissed[dismissKey] = {
+        dismissed_at: Date.now(),
+        lead_name: lead.fullName
+      };
+    });
+    
+    localStorage.setItem('dismissed_callbacks', JSON.stringify(dismissed));
+    setDismissedCallbacks(dismissed);
+    
+    // Clear pending callbacks
+    setPendingCallbacks([]);
+    
+    toast.success(t('crm.allCallbacksCleared'));
+  };
+
   const handleCompleteReminder = async (reminderId) => {
     try {
       const token = localStorage.getItem('crmToken');
