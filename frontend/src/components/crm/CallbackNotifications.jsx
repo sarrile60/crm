@@ -322,6 +322,38 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     }
   };
 
+  // Fetch supervisor deposit notifications (when agent marks lead as Deposit)
+  const [supervisorDepositNotifications, setSupervisorDepositNotifications] = useState([]);
+  
+  const fetchSupervisorDepositNotifications = async () => {
+    if (currentUser?.role?.toLowerCase() !== 'supervisor') return;
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      if (!token) return;
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.get(`${API}/crm/supervisor/deposit-notifications`, { headers });
+      
+      const notifications = res.data.notifications || [];
+      
+      // Check for new notifications and play sound
+      if (notifications.length > supervisorDepositNotifications.length && supervisorDepositNotifications.length > 0) {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleQUINYDOxqdnEg4wfs+/mVsVEy191cSaYR8PNXbQwJhgHxU3ctHAmWMhFTlwz7+YYiEVPW3Ov5ZdHRM/a86+lFoaET1r0L+XXB0TQGnQvpVaGhFBaNC9k1kYD0NnzryRVhYNRWfNu49UFA1HZ8y6jFESDkhn');
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+        
+        toast.info('📋 ' + t('deposits.agentMarkedDeposit'), {
+          description: t('deposits.agentMarkedDepositDesc'),
+          duration: 8000
+        });
+      }
+      
+      setSupervisorDepositNotifications(notifications);
+    } catch (error) {
+      console.error('Error fetching supervisor deposit notifications:', error);
+    }
+  };
+
   // Helper to refresh login requests after approve/deny
   const refreshLoginRequests = async () => {
     try {
