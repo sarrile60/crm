@@ -764,13 +764,21 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                         <Phone className="w-5 h-5 mr-2" />
                         {t('crm.callNow')}
                       </Button>
-                      {!maxPostponesReached && (
+                      {!maxPostponesReached ? (
                         <Button
                           onClick={() => handleSnooze(urgentCallback)}
                           className="flex-1 bg-orange-500 text-white hover:bg-orange-600 rounded-none text-lg py-6 font-bold"
                         >
                           <Clock className="w-5 h-5 mr-2" />
                           {t('crm.later')}
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => setShowUrgentModal(false)}
+                          variant="outline"
+                          className="flex-1 border-2 border-gray-400 text-gray-700 hover:bg-gray-100 rounded-none text-lg py-6 font-bold"
+                        >
+                          {t('common.close')}
                         </Button>
                       )}
                     </div>
