@@ -815,9 +815,18 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                     return (
                       <div 
                         key={lead.id} 
-                        className="border-2 p-4 bg-red-50 border-red-300"
+                        className="border-2 p-4 bg-red-50 border-red-300 relative"
                       >
-                        <div className="flex items-start justify-between gap-4">
+                        {/* Dismiss button */}
+                        <button
+                          onClick={() => handleDismissCallback(lead)}
+                          className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded transition-colors"
+                          title={t('crm.dismissNotification')}
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                        
+                        <div className="flex items-start justify-between gap-4 pr-6">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
                               <p className="font-bold text-black text-lg">{lead.fullName}</p>
