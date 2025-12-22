@@ -88,6 +88,52 @@ const SettingsPanel = () => {
     }
   };
 
+  // Archive a team (soft delete)
+  const handleArchiveTeam = async (teamId) => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.put(`${API}/crm/teams/${teamId}/archive`, {}, { headers });
+      toast.success(t('teams.teamArchived'));
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('teams.errorArchivingTeam'));
+    }
+  };
+
+  // Restore an archived team
+  const handleRestoreTeam = async (teamId) => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.put(`${API}/crm/teams/${teamId}/restore`, {}, { headers });
+      toast.success(t('teams.teamRestored'));
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('teams.errorRestoringTeam'));
+    }
+  };
+
+  // Permanently delete a team (only archived teams can be deleted)
+  const handleDeleteTeam = async () => {
+    if (!teamToDelete) return;
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.delete(`${API}/crm/teams/${teamToDelete.id}`, { headers });
+      toast.success(t('teams.teamDeleted'));
+      setShowDeleteConfirm(false);
+      setTeamToDelete(null);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('teams.errorDeletingTeam'));
+    }
+  };
+
   const handleDeleteStatus = async (statusId) => {
     if (!window.confirm(t('settings.confirmDeleteStatus'))) return;
 
