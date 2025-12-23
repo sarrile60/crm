@@ -428,7 +428,8 @@ async def get_realtime_stats(current_user: dict = Depends(get_current_user)):
     if role != "admin":
         raise HTTPException(status_code=403, detail="Only admin can access analytics")
     
-    now = datetime.now(timezone.utc)
+    # Use naive datetime for MongoDB comparison (DB stores naive datetimes)
+    now = datetime.now()
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     
     # Today's stats
@@ -442,7 +443,7 @@ async def get_realtime_stats(current_user: dict = Depends(get_current_user)):
     
     today_revenue = sum(d.get("amount", 0) for d in today_deposits if d.get("status") == "approved")
     
-    # Active users (last 5 minutes)
+    # Active users (last 5 minutes) - use naive datetime
     active_threshold = now - timedelta(minutes=5)
     active_users = await db.crm_users.count_documents({
         "last_active": {"$gte": active_threshold},
@@ -453,7 +454,7 @@ async def get_realtime_stats(current_user: dict = Depends(get_current_user)):
     pending_deposits = await db.deposits.count_documents({"status": "pending"})
     pending_callbacks = await db.callback_reminders.count_documents({
         "is_completed": False,
-        "callback_date": {"$lte": now}
+        "callback_date": {"$lte": now.isoformat()}
     })
     
     return {
