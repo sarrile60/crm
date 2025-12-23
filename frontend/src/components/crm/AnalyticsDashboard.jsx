@@ -58,6 +58,8 @@ const AnalyticsDashboard = ({ currentUser }) => {
   const [depositsLoading, setDepositsLoading] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [depositDateFrom, setDepositDateFrom] = useState('');
+  const [depositDateTo, setDepositDateTo] = useState('');
 
   const fetchAnalytics = useCallback(async () => {
     setLoading(true);
