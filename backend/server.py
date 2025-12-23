@@ -393,6 +393,7 @@ app.include_router(admin_router)
 app.include_router(chat_router)
 app.include_router(deposit_router, prefix="/api/crm")
 app.include_router(analytics_router, prefix="/api/crm")
+app.include_router(finance_router, prefix="/api/crm")
 
 # CORS Configuration (Restricted for Production)
 cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://crm-workflow-13.preview.emergentagent.com').split(',')
