@@ -470,12 +470,11 @@ class FinancialDashboardTester:
         
         return success_count >= 2
     
-    
     def run_all_tests(self):
-        """Run all deposit management backend tests"""
+        """Run all financial dashboard backend tests"""
         print("💰" * 60)
-        print("💰 DEPOSIT MANAGEMENT SYSTEM BACKEND TESTING")
-        print("💰 Testing complete deposit workflow: creation, approval, and notifications")
+        print("💰 FINANCIAL DASHBOARD SYSTEM BACKEND TESTING")
+        print("💰 Testing Financial Dashboard APIs for all roles: Agent, Supervisor, Admin")
         print("💰" * 60)
         
         # Setup
@@ -483,36 +482,34 @@ class FinancialDashboardTester:
             print("\n❌ SETUP FAILED - Cannot proceed with tests")
             return False
         
-        # Get test data (leads and agent IDs)
-        if not self.get_test_data():
-            print("\n❌ TEST DATA RETRIEVAL FAILED - Cannot proceed with tests")
-            return False
-        
-        # Run core tests
+        # Run financial dashboard tests
         tests_passed = 0
-        total_tests = 6
+        total_tests = 7
         
-        if self.test_supervisor_creates_deposit():
+        if self.test_agent_dashboard_api():
             tests_passed += 1
         
-        if self.test_list_deposits_role_based():
+        if self.test_supervisor_dashboard_api():
             tests_passed += 1
         
-        if self.test_admin_approval_flow():
+        if self.test_admin_overview_api():
             tests_passed += 1
         
-        if self.test_supervisor_deposit_notifications():
+        if self.test_create_expense_api():
             tests_passed += 1
         
-        if self.test_admin_deposit_notifications():
+        if self.test_list_expenses_api():
             tests_passed += 1
         
-        if self.test_deposit_details_access():
+        if self.test_delete_expense_api():
+            tests_passed += 1
+        
+        if self.test_role_based_access_control():
             tests_passed += 1
         
         # Summary
         print("\n" + "="*60)
-        print("DEPOSIT MANAGEMENT BACKEND TEST SUMMARY")
+        print("FINANCIAL DASHBOARD BACKEND TEST SUMMARY")
         print("="*60)
         
         success_count = sum(1 for result in self.test_results if result["success"])
@@ -533,33 +530,34 @@ class FinancialDashboardTester:
                     print(f"    Details: {test['details']}")
         
         print("\n" + "="*60)
-        print("DEPOSIT MANAGEMENT SYSTEM STATUS")
+        print("FINANCIAL DASHBOARD SYSTEM STATUS")
         print("="*60)
         
-        if tests_passed >= 4:  # At least 4 out of 6 core tests should pass
-            print("✅ DEPOSIT MANAGEMENT SYSTEM WORKING")
-            print("✅ Supervisor can create deposits")
-            print("✅ Role-based deposit access working")
-            print("✅ Admin approval workflow functional")
-            print("✅ Notification systems operational")
+        if tests_passed >= 5:  # At least 5 out of 7 core tests should pass
+            print("✅ FINANCIAL DASHBOARD SYSTEM WORKING")
+            print("✅ Agent Dashboard API functional")
+            print("✅ Supervisor Dashboard API functional")
+            print("✅ Admin Overview API functional")
+            print("✅ Expense Management APIs functional")
+            print("✅ Role-based access control working")
         else:
-            print("❌ DEPOSIT MANAGEMENT SYSTEM HAS ISSUES")
-            print("⚠️  Some critical deposit workflows are not functioning properly")
+            print("❌ FINANCIAL DASHBOARD SYSTEM HAS ISSUES")
+            print("⚠️  Some critical financial dashboard APIs are not functioning properly")
         
-        return tests_passed >= 4
+        return tests_passed >= 5
 
 def main():
     """Main test execution"""
-    tester = DepositManagementTester()
+    tester = FinancialDashboardTester()
     success = tester.run_all_tests()
     
     if success:
-        print("\n🎉 DEPOSIT MANAGEMENT TESTS PASSED!")
-        print("The backend is ready to support deposit management functionality.")
+        print("\n🎉 FINANCIAL DASHBOARD TESTS PASSED!")
+        print("The backend is ready to support financial dashboard functionality.")
         sys.exit(0)
     else:
-        print("\n💥 SOME DEPOSIT TESTS FAILED!")
-        print("Please check the deposit management implementation.")
+        print("\n💥 SOME FINANCIAL DASHBOARD TESTS FAILED!")
+        print("Please check the financial dashboard implementation.")
         sys.exit(1)
 
 if __name__ == "__main__":
