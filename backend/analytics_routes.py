@@ -109,7 +109,7 @@ async def get_analytics_overview(
     
     leads_by_status = defaultdict(int)
     for lead in all_leads:
-        status = lead.get("status", "Unknown")
+        status = lead.get("status") or "New"
         leads_by_status[status] += 1
     
     leads_by_status_list = [{"status": k, "count": v} for k, v in sorted(leads_by_status.items(), key=lambda x: x[1], reverse=True)]
@@ -117,12 +117,15 @@ async def get_analytics_overview(
     # Leads by source
     leads_by_source = defaultdict(int)
     for lead in all_leads:
-        source = lead.get("source", "Unknown")
+        source = lead.get("source") or "No Source"
         # Simplify source
         if "Website" in source or "website" in source:
             source = "Website"
         elif "CRM" in source:
             source = "CRM"
+        elif "Legacy" in source:
+            source = "Legacy"
+        elif "Referral" in source:
         elif "Referral" in source:
             source = "Referral"
         leads_by_source[source] += 1
