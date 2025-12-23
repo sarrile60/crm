@@ -105,7 +105,7 @@ const TeamRevenue = ({ currentUser }) => {
 
   useEffect(() => {
     fetchRevenueStats();
-  }, []);
+  }, [dateFrom, dateTo, fetchRevenueStats]);
 
   const handleApplyFilters = () => {
     fetchRevenueStats();
