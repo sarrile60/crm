@@ -472,8 +472,10 @@ const CRMDashboard = () => {
             onDepositCreated={() => setPendingDepositData(null)}
           />
         )}
+        {activeTab === 'earnings' && (currentUser?.role === 'agent' || currentUser?.role === 'supervisor') && <FinancialDashboard currentUser={currentUser} />}
         {activeTab === 'depositApprovals' && currentUser?.role === 'admin' && <DepositApprovals currentUser={currentUser} />}
         {activeTab === 'analytics' && currentUser?.role === 'admin' && <AnalyticsDashboard currentUser={currentUser} />}
+        {activeTab === 'finance' && currentUser?.role === 'admin' && <FinancialDashboard currentUser={currentUser} />}
         {activeTab === 'revenue' && (currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && <TeamRevenue currentUser={currentUser} />}
         {activeTab === 'team' && (currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && <TeamMembers currentUser={currentUser} />}
         {/* Users tab moved to Administration Panel */}
