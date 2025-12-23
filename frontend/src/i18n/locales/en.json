@@ -93,7 +93,10 @@
     "uploading": "Uploading...",
     "on": "on",
     "review": "Review",
-    "view": "View"
+    "view": "View",
+    "from": "From",
+    "to": "To",
+    "quickFilters": "Quick Filters"
   },
   "auth": {
     "login": "Login",
