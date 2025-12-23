@@ -60,6 +60,7 @@ const AnalyticsDashboard = ({ currentUser }) => {
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [depositDateFrom, setDepositDateFrom] = useState('');
   const [depositDateTo, setDepositDateTo] = useState('');
+  const [activeQuickFilter, setActiveQuickFilter] = useState('all'); // Track active quick filter
 
   const fetchAnalytics = useCallback(async () => {
     setLoading(true);
