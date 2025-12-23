@@ -688,14 +688,20 @@ const AnalyticsDashboard = ({ currentUser }) => {
                 <Input
                   type="date"
                   value={depositDateFrom}
-                  onChange={(e) => setDepositDateFrom(e.target.value)}
+                  onChange={(e) => {
+                    setDepositDateFrom(e.target.value);
+                    setActiveQuickFilter('custom');
+                  }}
                   className="w-36"
                 />
                 <span className="text-gray-400">-</span>
                 <Input
                   type="date"
                   value={depositDateTo}
-                  onChange={(e) => setDepositDateTo(e.target.value)}
+                  onChange={(e) => {
+                    setDepositDateTo(e.target.value);
+                    setActiveQuickFilter('custom');
+                  }}
                   className="w-36"
                 />
               </div>
