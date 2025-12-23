@@ -625,19 +625,20 @@ const AnalyticsDashboard = ({ currentUser }) => {
                 <Calendar className="w-4 h-4 text-gray-500" />
                 <div className="flex gap-1">
                   <Button
-                    variant={depositDateFrom === new Date().toISOString().split('T')[0] && depositDateTo === new Date().toISOString().split('T')[0] ? 'default' : 'outline'}
+                    variant={activeQuickFilter === 'today' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => {
                       const today = new Date().toISOString().split('T')[0];
                       setDepositDateFrom(today);
                       setDepositDateTo(today);
+                      setActiveQuickFilter('today');
                     }}
-                    className={depositDateFrom === new Date().toISOString().split('T')[0] && depositDateTo === new Date().toISOString().split('T')[0] ? 'bg-[#D4AF37] text-black hover:bg-[#C5A028]' : ''}
+                    className={activeQuickFilter === 'today' ? 'bg-[#D4AF37] text-black hover:bg-[#C5A028]' : ''}
                   >
                     {t('analytics.period.today')}
                   </Button>
                   <Button
-                    variant="outline"
+                    variant={activeQuickFilter === 'week' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => {
                       const today = new Date();
@@ -645,12 +646,14 @@ const AnalyticsDashboard = ({ currentUser }) => {
                       weekAgo.setDate(today.getDate() - 7);
                       setDepositDateFrom(weekAgo.toISOString().split('T')[0]);
                       setDepositDateTo(today.toISOString().split('T')[0]);
+                      setActiveQuickFilter('week');
                     }}
+                    className={activeQuickFilter === 'week' ? 'bg-[#D4AF37] text-black hover:bg-[#C5A028]' : ''}
                   >
                     {t('analytics.period.week')}
                   </Button>
                   <Button
-                    variant="outline"
+                    variant={activeQuickFilter === 'month' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => {
                       const today = new Date();
@@ -658,17 +661,21 @@ const AnalyticsDashboard = ({ currentUser }) => {
                       monthAgo.setDate(today.getDate() - 30);
                       setDepositDateFrom(monthAgo.toISOString().split('T')[0]);
                       setDepositDateTo(today.toISOString().split('T')[0]);
+                      setActiveQuickFilter('month');
                     }}
+                    className={activeQuickFilter === 'month' ? 'bg-[#D4AF37] text-black hover:bg-[#C5A028]' : ''}
                   >
                     {t('analytics.period.month')}
                   </Button>
                   <Button
-                    variant="outline"
+                    variant={activeQuickFilter === 'all' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => {
                       setDepositDateFrom('');
                       setDepositDateTo('');
+                      setActiveQuickFilter('all');
                     }}
+                    className={activeQuickFilter === 'all' ? 'bg-[#D4AF37] text-black hover:bg-[#C5A028]' : ''}
                   >
                     {t('common.all')}
                   </Button>
