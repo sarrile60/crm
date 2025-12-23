@@ -33,6 +33,10 @@ const FinancialDashboard = ({ currentUser }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showTiers, setShowTiers] = useState(false);
   
+  // Deposit History Filters (Agent/Supervisor)
+  const [depositStatusFilter, setDepositStatusFilter] = useState('all');
+  const [depositSearchQuery, setDepositSearchQuery] = useState('');
+  
   // Admin Filters
   const [teams, setTeams] = useState([]);
   const [agents, setAgents] = useState([]);
