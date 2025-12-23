@@ -47,6 +47,9 @@ const FinancialDashboard = ({ currentUser }) => {
   const [agents, setAgents] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState('all');
   const [selectedAgent, setSelectedAgent] = useState('all');
+  const [adminQuickFilter, setAdminQuickFilter] = useState('month'); // Default to current month
+  const [adminDateFrom, setAdminDateFrom] = useState('');
+  const [adminDateTo, setAdminDateTo] = useState('');
   
   // Expense Management States (Admin only)
   const [showExpenseModal, setShowExpenseModal] = useState(false);
