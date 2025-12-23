@@ -4,7 +4,7 @@ import {
   BarChart3, TrendingUp, TrendingDown, Users, DollarSign, 
   FileText, Calendar, RefreshCw, Filter, ArrowUpRight, 
   ArrowDownRight, Clock, CheckCircle, XCircle, AlertCircle,
-  PieChart as PieChartIcon, Activity
+  PieChart as PieChartIcon, Activity, Eye, ChevronDown, User
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -51,6 +51,13 @@ const AnalyticsDashboard = ({ currentUser }) => {
   const [period, setPeriod] = useState('month');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
+  
+  // Deposits detail states
+  const [showDepositsDetail, setShowDepositsDetail] = useState(false);
+  const [depositsDetail, setDepositsDetail] = useState(null);
+  const [depositsLoading, setDepositsLoading] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
 
   const fetchAnalytics = useCallback(async () => {
     setLoading(true);
@@ -81,9 +88,44 @@ const AnalyticsDashboard = ({ currentUser }) => {
     }
   }, [period, dateFrom, dateTo, t]);
 
+  const fetchDepositsDetail = useCallback(async () => {
+    setDepositsLoading(true);
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      const params = new URLSearchParams();
+      params.append('period', period);
+      if (period === 'custom' && dateFrom && dateTo) {
+        params.append('date_from', new Date(dateFrom).toISOString());
+        params.append('date_to', new Date(dateTo).toISOString());
+      }
+      if (selectedAgent && selectedAgent !== 'all') {
+        params.append('agent_id', selectedAgent);
+      }
+      if (selectedStatus && selectedStatus !== 'all') {
+        params.append('status', selectedStatus);
+      }
+      
+      const res = await axios.get(`${API}/crm/analytics/deposits/detail?${params.toString()}`, { headers });
+      setDepositsDetail(res.data);
+    } catch (error) {
+      console.error('Error fetching deposits detail:', error);
+      toast.error(t('common.error'));
+    } finally {
+      setDepositsLoading(false);
+    }
+  }, [period, dateFrom, dateTo, selectedAgent, selectedStatus, t]);
+
   useEffect(() => {
     fetchAnalytics();
   }, []);
+
+  useEffect(() => {
+    if (showDepositsDetail) {
+      fetchDepositsDetail();
+    }
+  }, [showDepositsDetail, selectedAgent, selectedStatus]);
 
   // Auto-refresh realtime data every 30 seconds
   useEffect(() => {
@@ -103,6 +145,9 @@ const AnalyticsDashboard = ({ currentUser }) => {
 
   const handleApplyFilters = () => {
     fetchAnalytics();
+    if (showDepositsDetail) {
+      fetchDepositsDetail();
+    }
   };
 
   const formatCurrency = (amount) => {
