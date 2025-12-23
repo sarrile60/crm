@@ -318,7 +318,105 @@ async def get_analytics_overview(
             "over_time": deposits_over_time_list
         },
         "agents": agent_performance[:20],  # Top 20 agents
-        "teams": team_performance
+        "teams": team_performance,
+        "available_agents": [{"id": a["id"], "name": a.get("full_name", "Unknown"), "role": a.get("role")} for a in agents]
+    }
+
+
+@analytics_router.get("/deposits/detail")
+async def get_deposits_detail(
+    period: str = "month",
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    agent_id: Optional[str] = None,
+    status: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Get detailed deposits list with filtering
+    Shows each deposit with agent info, lead info, amount, date/time, status
+    """
+    role = current_user.get("role", "").lower()
+    
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Only admin can access analytics")
+    
+    start_date, end_date = get_date_range(period, date_from, date_to)
+    
+    # Build query
+    query = {
+        "created_at": {"$gte": start_date, "$lte": end_date}
+    }
+    
+    if agent_id:
+        query["agent_id"] = agent_id
+    
+    if status:
+        query["status"] = status
+    
+    # Get deposits
+    deposits = await db.deposits.find(query, {"_id": 0}).to_list(1000)
+    
+    # Enrich with lead and agent info
+    detailed_deposits = []
+    for deposit in deposits:
+        # Get lead info
+        lead = None
+        if deposit.get("lead_id"):
+            lead = await db.leads.find_one({"id": deposit["lead_id"]}, {"_id": 0, "full_name": 1, "email": 1, "phone": 1})
+        
+        # Format timestamps
+        created_at = deposit.get("created_at")
+        approved_at = deposit.get("approved_at")
+        
+        if isinstance(created_at, str):
+            created_at = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+        if isinstance(approved_at, str):
+            approved_at = datetime.fromisoformat(approved_at.replace('Z', '+00:00'))
+        
+        detailed_deposits.append({
+            "id": deposit.get("id"),
+            "lead_name": lead.get("full_name") if lead else deposit.get("lead_name", "Unknown"),
+            "lead_email": lead.get("email") if lead else None,
+            "lead_phone": lead.get("phone") if lead else None,
+            "agent_id": deposit.get("agent_id"),
+            "agent_name": deposit.get("agent_name", "Unknown"),
+            "amount": deposit.get("amount", 0),
+            "currency": deposit.get("currency", "EUR"),
+            "payment_type": deposit.get("payment_type", "Unknown"),
+            "status": deposit.get("status", "pending"),
+            "created_at": created_at.isoformat() if created_at else None,
+            "created_date": created_at.strftime("%d %b %Y") if created_at else None,
+            "created_time": created_at.strftime("%H:%M") if created_at else None,
+            "approved_at": approved_at.isoformat() if approved_at else None,
+            "approved_date": approved_at.strftime("%d %b %Y") if approved_at else None,
+            "approved_time": approved_at.strftime("%H:%M") if approved_at else None,
+            "approved_by": deposit.get("approved_by"),
+            "notes": deposit.get("notes", "")
+        })
+    
+    # Sort by created_at descending (most recent first)
+    detailed_deposits.sort(key=lambda x: x["created_at"] or "", reverse=True)
+    
+    # Calculate totals
+    total_amount = sum(d["amount"] for d in detailed_deposits)
+    approved_amount = sum(d["amount"] for d in detailed_deposits if d["status"] == "approved")
+    
+    # Get available agents for filter
+    agents = await db.crm_users.find(
+        {"role": {"$in": ["agent", "supervisor"]}, "deleted_at": None},
+        {"_id": 0, "id": 1, "full_name": 1, "role": 1}
+    ).to_list(500)
+    
+    return {
+        "deposits": detailed_deposits,
+        "total_count": len(detailed_deposits),
+        "total_amount": total_amount,
+        "approved_amount": approved_amount,
+        "filters": {
+            "agents": [{"id": a["id"], "name": a["full_name"], "role": a["role"]} for a in agents],
+            "statuses": ["pending", "approved", "rejected"]
+        }
     }
 
 
