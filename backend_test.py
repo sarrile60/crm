@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend Testing Suite for Deposit Management System
-Tests the complete deposit workflow: creation, approval, and notifications
+Backend Testing Suite for Financial Dashboard System
+Tests the complete financial dashboard APIs for all roles: Agent, Supervisor, Admin
 """
 
 import requests
@@ -15,6 +15,7 @@ import logging
 # Configuration
 BASE_URL = "https://profit-pulse-136.preview.emergentagent.com/api"
 CRM_BASE_URL = f"{BASE_URL}/crm"
+FINANCE_BASE_URL = f"{CRM_BASE_URL}/finance"
 
 # Setup logging
 logger = logging.getLogger(__name__)
