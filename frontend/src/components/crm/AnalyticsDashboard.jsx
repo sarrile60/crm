@@ -618,7 +618,30 @@ const AnalyticsDashboard = ({ currentUser }) => {
         {showDepositsDetail && (
           <div className="border-t p-6">
             {/* Filters */}
-            <div className="flex flex-wrap gap-4 mb-6 pb-4 border-b">
+            <div className="flex flex-wrap gap-4 mb-6 pb-4 border-b items-end">
+              {/* Date Range Filters */}
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-gray-500" />
+                <Label>{t('analytics.dateFrom')}:</Label>
+                <Input
+                  type="date"
+                  value={depositDateFrom}
+                  onChange={(e) => setDepositDateFrom(e.target.value)}
+                  className="w-40"
+                />
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Label>{t('analytics.dateTo')}:</Label>
+                <Input
+                  type="date"
+                  value={depositDateTo}
+                  onChange={(e) => setDepositDateTo(e.target.value)}
+                  className="w-40"
+                />
+              </div>
+              
+              {/* Agent Filter */}
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-gray-500" />
                 <Label>{t('analytics.filterByAgent')}:</Label>
@@ -637,6 +660,7 @@ const AnalyticsDashboard = ({ currentUser }) => {
                 </Select>
               </div>
               
+              {/* Status Filter */}
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-gray-500" />
                 <Label>{t('common.status')}:</Label>
@@ -652,6 +676,23 @@ const AnalyticsDashboard = ({ currentUser }) => {
                   </SelectContent>
                 </Select>
               </div>
+              
+              {/* Clear Filters Button */}
+              {(depositDateFrom || depositDateTo || selectedAgent !== 'all' || selectedStatus !== 'all') && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setDepositDateFrom('');
+                    setDepositDateTo('');
+                    setSelectedAgent('all');
+                    setSelectedStatus('all');
+                  }}
+                  className="text-gray-500"
+                >
+                  {t('common.clearFilters')}
+                </Button>
+              )}
               
               {depositsDetail && (
                 <div className="ml-auto flex items-center gap-4 text-sm">
