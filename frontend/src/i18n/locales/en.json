@@ -201,7 +201,9 @@
     "errorCreatingExpense": "Error creating expense",
     "confirmDeleteExpense": "Are you sure you want to delete this expense?",
     "expenseDeleted": "Expense deleted successfully",
-    "errorDeletingExpense": "Error deleting expense"
+    "errorDeletingExpense": "Error deleting expense",
+    "minAmount": "Min Amount",
+    "maxAmount": "Max Amount"
   },
   "analytics": {
     "title": "Analytics Dashboard",
