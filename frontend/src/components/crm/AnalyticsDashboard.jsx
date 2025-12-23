@@ -223,7 +223,7 @@ const AnalyticsDashboard = ({ currentUser }) => {
                 key={p}
                 variant={period === p ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => { setPeriod(p); setTimeout(fetchAnalytics, 100); }}
+                onClick={() => setPeriod(p)}
                 className={period === p ? 'bg-[#D4AF37] text-black' : ''}
               >
                 {t(`analytics.period.${p}`)}
