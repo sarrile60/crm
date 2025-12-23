@@ -312,7 +312,7 @@ const TeamRevenue = ({ currentUser }) => {
                 }`}
               >
                 <div className="text-sm font-medium text-gray-600 mb-1 capitalize">
-                  {t(`deposits.status.${item.status}`) || item.status}
+                  {t(`deposits.${item.status}`, item.status)}
                 </div>
                 <div className="text-2xl font-bold">
                   {formatCurrency(item.revenue, stats?.currency)}
