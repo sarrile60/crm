@@ -117,7 +117,8 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Revenue Dashboard Feature"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -136,6 +137,18 @@ test_plan:
       - working: true
         agent: "testing"
         comment: "✅ E2E TEST PASSED: New Lead Deposit Notification system working correctly. Agent (agente) successfully created lead 'Test Deposit Lead' with Deposit 1 status. Supervisor (maurizio1) received notification in notification bell with 'Agent Deposit Requests (5)' section showing the new lead with agent name, phone, timestamp, and 'Create Deposit' button. Backend notification creation (lines 1097-1123) and frontend notification display (CallbackNotifications.jsx lines 340-368) both functioning properly."
+
+  - task: "Revenue Dashboard with Filters"
+    implemented: true
+    working: needs_testing
+    file: "deposit_routes.py, TeamRevenue.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: pending
+        agent: "main"
+        comment: "Implemented revenue statistics API in deposit_routes.py and TeamRevenue.jsx component. Features: total revenue from approved deposits, breakdown by team/agent/payment type/status, filters for date range, team, agent, payment type. Accessible to both supervisors and admins."
 
 agent_communication:
   - agent: "testing"
