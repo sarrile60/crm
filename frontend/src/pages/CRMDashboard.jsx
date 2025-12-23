@@ -290,8 +290,22 @@ const CRMDashboard = () => {
             <DollarSign className="w-4 h-4 inline mr-2" />
             {t('nav.deposits')}
           </button>
-          {/* Team tab for supervisors */}
-          {currentUser?.role === 'supervisor' && (
+          {/* Revenue tab for supervisors and admins */}
+          {(currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
+            <button
+              onClick={() => setActiveTab('revenue')}
+              className={`px-4 py-2 font-semibold transition-all ${
+                activeTab === 'revenue'
+                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
+                  : 'text-gray-600 hover:text-black'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4 inline mr-2" />
+              {t('nav.revenue')}
+            </button>
+          )}
+          {/* Team tab for supervisors and admins */}
+          {(currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
             <button
               onClick={() => setActiveTab('team')}
               className={`px-4 py-2 font-semibold transition-all ${
