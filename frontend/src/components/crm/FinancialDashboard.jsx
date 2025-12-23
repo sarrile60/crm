@@ -794,6 +794,188 @@ const FinancialDashboard = ({ currentUser }) => {
             </div>
           </div>
         </div>
+
+        {/* Expense Management Section */}
+        <div className="bg-white border-2 border-gray-200 p-6 rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold flex items-center gap-2">
+              <Receipt className="w-5 h-5 text-[#D4AF37]" />
+              {t('finance.expenseManagement')}
+            </h3>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setShowExpenseModal(true)}
+                className="bg-[#D4AF37] text-black hover:bg-[#C5A028]"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                {t('finance.addExpense')}
+              </Button>
+              <Button 
+                onClick={() => setShowExpensesList(!showExpensesList)}
+                variant="outline"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                {showExpensesList ? t('finance.hideExpenses') : t('finance.viewAllExpenses')}
+              </Button>
+            </div>
+          </div>
+
+          {/* Expense List */}
+          {showExpensesList && (
+            <div className="border-t pt-4">
+              {expensesLoading ? (
+                <div className="flex justify-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#D4AF37]"></div>
+                </div>
+              ) : expensesList.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="p-3 text-left">{t('common.date')}</th>
+                        <th className="p-3 text-left">{t('common.type')}</th>
+                        <th className="p-3 text-left">{t('common.description')}</th>
+                        <th className="p-3 text-left">{t('finance.paidBy')}</th>
+                        <th className="p-3 text-right">{t('common.amount')}</th>
+                        <th className="p-3 text-center">{t('common.actions')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {expensesList.map((expense, idx) => (
+                        <tr key={expense.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                          <td className="p-3 text-sm">
+                            {expense.date ? new Date(expense.date).toLocaleDateString('en-GB') : '-'}
+                          </td>
+                          <td className="p-3">
+                            <span className={`px-2 py-1 rounded text-xs ${
+                              expense.type === 'Rent' ? 'bg-blue-100 text-blue-800' :
+                              expense.type === 'Salaries' ? 'bg-purple-100 text-purple-800' :
+                              expense.type === 'Marketing' ? 'bg-green-100 text-green-800' :
+                              expense.type === 'Equipment' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {expense.type}
+                            </span>
+                          </td>
+                          <td className="p-3 text-sm text-gray-600">{expense.description || '-'}</td>
+                          <td className="p-3 text-sm">{expense.paid_by || '-'}</td>
+                          <td className="p-3 text-right font-semibold text-red-600">
+                            {formatCurrency(expense.amount)}
+                          </td>
+                          <td className="p-3 text-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteExpense(expense.id)}
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-4">{t('finance.noExpensesRecorded')}</p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Add Expense Modal */}
+        {showExpenseModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold">{t('finance.addExpense')}</h3>
+                <button onClick={() => setShowExpenseModal(false)} className="text-gray-500 hover:text-gray-700">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleCreateExpense} className="space-y-4">
+                <div>
+                  <Label>{t('common.type')} *</Label>
+                  <Select 
+                    value={newExpense.expense_type} 
+                    onValueChange={(v) => setNewExpense({...newExpense, expense_type: v})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('finance.selectType')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {EXPENSE_TYPES.map(type => (
+                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label>{t('common.amount')} (€) *</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={newExpense.amount}
+                    onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
+                    placeholder="0.00"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label>{t('common.date')} *</Label>
+                  <Input
+                    type="date"
+                    value={newExpense.date}
+                    onChange={(e) => setNewExpense({...newExpense, date: e.target.value})}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label>{t('common.description')}</Label>
+                  <Input
+                    type="text"
+                    value={newExpense.description}
+                    onChange={(e) => setNewExpense({...newExpense, description: e.target.value})}
+                    placeholder={t('finance.expenseDescriptionPlaceholder')}
+                  />
+                </div>
+
+                <div>
+                  <Label>{t('finance.paidBy')}</Label>
+                  <Input
+                    type="text"
+                    value={newExpense.paid_by}
+                    onChange={(e) => setNewExpense({...newExpense, paid_by: e.target.value})}
+                    placeholder={t('finance.paidByPlaceholder')}
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowExpenseModal(false)}
+                    className="flex-1"
+                  >
+                    {t('common.cancel')}
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028]"
+                  >
+                    {t('finance.addExpense')}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
