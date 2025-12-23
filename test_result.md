@@ -155,15 +155,18 @@ test_plan:
 
   - task: "Analytics Dashboard"
     implemented: true
-    working: needs_testing
+    working: true
     file: "analytics_routes.py, AnalyticsDashboard.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: pending
         agent: "main"
         comment: "Implemented comprehensive analytics dashboard for admin. Features: time period selectors (today/week/month/year/custom), real-time stats bar, summary cards (leads, conversion rate, revenue, approval rate), line/bar/pie charts for leads over time, deposits over time, leads by status/source, deposits by type, team performance table, top agents table."
+      - working: true
+        agent: "testing"
+        comment: "✅ ANALYTICS DASHBOARD E2E TEST PASSED - Comprehensive testing completed successfully. Admin access verified: Analytics tab visible only for admin users. Time period selectors fully functional: Today, This Week, This Month, This Year, and Custom (with date inputs) all working correctly. Real-time stats bar present with blue gradient background showing Today's Leads (0), Today's Revenue (0,00 €), Active Users (1), and Pending Deposits badge (0). Summary cards displaying correctly: Total Leads (15), Conversion Rate (46.7%), Total Revenue (58.800,00 €), Approval Rate (100%) with percentage change indicators. Charts rendering properly: 'Leads Over Time' area chart, 'Deposits Over Time' bar chart, and 3 pie charts ('Leads by Status', 'Leads by Source', 'Deposits by Payment Type'). Tables functional: 'Team Performance' table with all columns (Team, Members, Leads, Conversions, Conversion Rate, Revenue) and 'Top Performing Agents' table with all columns (Agent, Role, Leads Assigned, Converted, Conversion Rate, Activities, Revenue). Refresh functionality working correctly with loading indicators. No errors detected during comprehensive testing. Minor: Real-time stats labels show generic text instead of localized translations, but core functionality works perfectly."
 
 agent_communication:
   - agent: "testing"
