@@ -389,44 +389,166 @@ const FinancialDashboard = ({ currentUser }) => {
               <FileText className="w-5 h-5 text-[#D4AF37]" />
               {t('finance.depositHistory')}
             </h3>
-            <div className="flex items-center gap-3">
-              <Input
-                type="text"
-                placeholder={t('common.searchPlaceholder')}
-                value={depositSearchQuery}
-                onChange={(e) => setDepositSearchQuery(e.target.value)}
-                className="w-48"
-              />
-              <Select value={depositStatusFilter} onValueChange={setDepositStatusFilter}>
-                <SelectTrigger className="w-36">
-                  <SelectValue placeholder={t('common.status')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('common.all')}</SelectItem>
-                  <SelectItem value="approved">{t('finance.approved')}</SelectItem>
-                  <SelectItem value="pending">{t('finance.pending')}</SelectItem>
-                  <SelectItem value="rejected">{t('finance.rejected')}</SelectItem>
-                </SelectContent>
-              </Select>
-              {(depositStatusFilter !== 'all' || depositSearchQuery) && (
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => { setDepositStatusFilter('all'); setDepositSearchQuery(''); }}
-                  className="text-[#D4AF37]"
-                >
-                  {t('common.clearFilters')}
-                </Button>
-              )}
-            </div>
           </div>
+          
+          {/* Filter Row 1: Quick Date Filters */}
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="text-sm text-gray-600 font-medium">{t('common.quickFilters')}:</span>
+            {[
+              { key: 'all', label: t('common.all') },
+              { key: 'today', label: t('analytics.period.today') },
+              { key: 'week', label: t('analytics.period.week') },
+              { key: 'month', label: t('analytics.period.month') }
+            ].map(filter => (
+              <Button
+                key={filter.key}
+                variant={activeQuickDateFilter === filter.key ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setActiveQuickDateFilter(filter.key);
+                  const now = new Date();
+                  if (filter.key === 'all') {
+                    setDepositDateFrom('');
+                    setDepositDateTo('');
+                  } else if (filter.key === 'today') {
+                    const today = now.toISOString().split('T')[0];
+                    setDepositDateFrom(today);
+                    setDepositDateTo(today);
+                  } else if (filter.key === 'week') {
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    setDepositDateFrom(weekAgo.toISOString().split('T')[0]);
+                    setDepositDateTo(now.toISOString().split('T')[0]);
+                  } else if (filter.key === 'month') {
+                    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    setDepositDateFrom(monthAgo.toISOString().split('T')[0]);
+                    setDepositDateTo(now.toISOString().split('T')[0]);
+                  }
+                }}
+                className={activeQuickDateFilter === filter.key ? 'bg-[#D4AF37] text-black hover:bg-[#C5A028]' : ''}
+              >
+                {filter.label}
+              </Button>
+            ))}
+          </div>
+          
+          {/* Filter Row 2: Date Range, Status, Search */}
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <Label className="text-sm text-gray-600">{t('common.from')}:</Label>
+              <Input
+                type="date"
+                value={depositDateFrom}
+                onChange={(e) => { setDepositDateFrom(e.target.value); setActiveQuickDateFilter('custom'); }}
+                className="w-40"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Label className="text-sm text-gray-600">{t('common.to')}:</Label>
+              <Input
+                type="date"
+                value={depositDateTo}
+                onChange={(e) => { setDepositDateTo(e.target.value); setActiveQuickDateFilter('custom'); }}
+                className="w-40"
+              />
+            </div>
+            <Select value={depositStatusFilter} onValueChange={setDepositStatusFilter}>
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder={t('common.status')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
+                <SelectItem value="approved">{t('finance.approved')}</SelectItem>
+                <SelectItem value="pending">{t('finance.pending')}</SelectItem>
+                <SelectItem value="rejected">{t('finance.rejected')}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              type="text"
+              placeholder={t('common.searchPlaceholder')}
+              value={depositSearchQuery}
+              onChange={(e) => setDepositSearchQuery(e.target.value)}
+              className="w-48"
+            />
+          </div>
+          
+          {/* Filter Row 3: Amount Range */}
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <Label className="text-sm text-gray-600">{t('finance.minAmount')}:</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={depositAmountMin}
+                onChange={(e) => setDepositAmountMin(e.target.value)}
+                className="w-28"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Label className="text-sm text-gray-600">{t('finance.maxAmount')}:</Label>
+              <Input
+                type="number"
+                placeholder="∞"
+                value={depositAmountMax}
+                onChange={(e) => setDepositAmountMax(e.target.value)}
+                className="w-28"
+              />
+            </div>
+            {(depositStatusFilter !== 'all' || depositSearchQuery || depositDateFrom || depositDateTo || depositAmountMin || depositAmountMax) && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => { 
+                  setDepositStatusFilter('all'); 
+                  setDepositSearchQuery(''); 
+                  setDepositDateFrom('');
+                  setDepositDateTo('');
+                  setDepositAmountMin('');
+                  setDepositAmountMax('');
+                  setActiveQuickDateFilter('all');
+                }}
+                className="text-[#D4AF37] hover:text-[#C5A028]"
+              >
+                <X className="w-4 h-4 mr-1" />
+                {t('common.clearFilters')}
+              </Button>
+            )}
+          </div>
+          
           {(() => {
-            // Filter deposits
+            // Filter deposits with all criteria
             const filteredDeposits = (data?.deposit_history || []).filter(dep => {
+              // Status filter
               const matchesStatus = depositStatusFilter === 'all' || dep.status === depositStatusFilter;
+              
+              // Search filter
               const matchesSearch = !depositSearchQuery || 
                 dep.client_name?.toLowerCase().includes(depositSearchQuery.toLowerCase());
-              return matchesStatus && matchesSearch;
+              
+              // Date range filter
+              let matchesDateRange = true;
+              if (depositDateFrom || depositDateTo) {
+                const depDate = dep.date ? new Date(dep.date) : null;
+                if (depDate) {
+                  if (depositDateFrom) {
+                    const fromDate = new Date(depositDateFrom);
+                    fromDate.setHours(0, 0, 0, 0);
+                    if (depDate < fromDate) matchesDateRange = false;
+                  }
+                  if (depositDateTo) {
+                    const toDate = new Date(depositDateTo);
+                    toDate.setHours(23, 59, 59, 999);
+                    if (depDate > toDate) matchesDateRange = false;
+                  }
+                }
+              }
+              
+              // Amount range filter
+              let matchesAmount = true;
+              const amount = dep.amount || 0;
+              if (depositAmountMin && amount < parseFloat(depositAmountMin)) matchesAmount = false;
+              if (depositAmountMax && amount > parseFloat(depositAmountMax)) matchesAmount = false;
+              
+              return matchesStatus && matchesSearch && matchesDateRange && matchesAmount;
             });
             
             // Calculate totals
