@@ -106,6 +106,12 @@ const FinancialDashboard = ({ currentUser }) => {
         endpoint = `/crm/finance/supervisor/dashboard`;
       } else if (role === 'admin') {
         endpoint = `/crm/finance/admin/overview`;
+        
+        // If using date range filters, override month/year
+        if (adminDateFrom && adminDateTo) {
+          queryParams = `date_from=${adminDateFrom}T00:00:00&date_to=${adminDateTo}T23:59:59`;
+        }
+        
         // Add admin filters
         if (selectedTeam && selectedTeam !== 'all') {
           queryParams += `&team_id=${selectedTeam}`;
@@ -123,11 +129,11 @@ const FinancialDashboard = ({ currentUser }) => {
     } finally {
       setLoading(false);
     }
-  }, [role, selectedMonth, selectedYear, selectedTeam, selectedAgent, t]);
+  }, [role, selectedMonth, selectedYear, selectedTeam, selectedAgent, adminDateFrom, adminDateTo, t]);
 
   useEffect(() => {
     fetchFinancialData();
-  }, [selectedMonth, selectedYear, selectedTeam, selectedAgent, fetchFinancialData]);
+  }, [selectedMonth, selectedYear, selectedTeam, selectedAgent, adminDateFrom, adminDateTo, fetchFinancialData]);
 
   // Fetch expenses list (Admin only)
   const fetchExpenses = useCallback(async () => {
