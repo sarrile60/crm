@@ -115,7 +115,7 @@ const FinancialDashboard = ({ currentUser }) => {
 
   useEffect(() => {
     fetchFinancialData();
-  }, [selectedMonth, selectedYear]);
+  }, [selectedMonth, selectedYear, selectedTeam, selectedAgent, fetchFinancialData]);
 
   // Fetch expenses list (Admin only)
   const fetchExpenses = useCallback(async () => {
