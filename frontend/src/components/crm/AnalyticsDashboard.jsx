@@ -135,7 +135,7 @@ const AnalyticsDashboard = ({ currentUser }) => {
 
   useEffect(() => {
     fetchAnalytics();
-  }, []);
+  }, [period, fetchAnalytics]);
 
   useEffect(() => {
     if (showDepositsDetail) {
