@@ -27,6 +27,9 @@ const TeamRevenue = ({ currentUser }) => {
   const [stats, setStats] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
   
+  // Quick date filter state
+  const [activeQuickFilter, setActiveQuickFilter] = useState('all');
+  
   // Filter states
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
@@ -37,6 +40,38 @@ const TeamRevenue = ({ currentUser }) => {
   // Available filter options
   const [availableTeams, setAvailableTeams] = useState([]);
   const [availableAgents, setAvailableAgents] = useState([]);
+
+  // Quick date filter helper
+  const applyQuickDateFilter = useCallback((filterKey) => {
+    setActiveQuickFilter(filterKey);
+    const now = new Date();
+    
+    if (filterKey === 'all') {
+      setDateFrom('');
+      setDateTo('');
+    } else if (filterKey === 'today') {
+      const today = now.toISOString().split('T')[0];
+      setDateFrom(today);
+      setDateTo(today);
+    } else if (filterKey === 'week') {
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      setDateFrom(weekAgo.toISOString().split('T')[0]);
+      setDateTo(now.toISOString().split('T')[0]);
+    } else if (filterKey === 'month') {
+      const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      setDateFrom(monthAgo.toISOString().split('T')[0]);
+      setDateTo(now.toISOString().split('T')[0]);
+    } else if (filterKey === 'lastMonth') {
+      const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+      setDateFrom(firstDayLastMonth.toISOString().split('T')[0]);
+      setDateTo(lastDayLastMonth.toISOString().split('T')[0]);
+    } else if (filterKey === 'year') {
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+      setDateFrom(startOfYear.toISOString().split('T')[0]);
+      setDateTo(now.toISOString().split('T')[0]);
+    }
+  }, []);
 
   const fetchRevenueStats = useCallback(async () => {
     setLoading(true);
