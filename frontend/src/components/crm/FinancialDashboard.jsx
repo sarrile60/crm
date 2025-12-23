@@ -33,6 +33,12 @@ const FinancialDashboard = ({ currentUser }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showTiers, setShowTiers] = useState(false);
   
+  // Admin Filters
+  const [teams, setTeams] = useState([]);
+  const [agents, setAgents] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState('all');
+  const [selectedAgent, setSelectedAgent] = useState('all');
+  
   // Expense Management States (Admin only)
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showExpensesList, setShowExpensesList] = useState(false);
@@ -47,6 +53,31 @@ const FinancialDashboard = ({ currentUser }) => {
   });
 
   const role = currentUser?.role?.toLowerCase();
+
+  // Fetch teams and agents for admin filters
+  useEffect(() => {
+    const fetchFiltersData = async () => {
+      if (role !== 'admin') return;
+      
+      try {
+        const token = localStorage.getItem('crmToken');
+        const headers = { Authorization: `Bearer ${token}` };
+        
+        // Fetch teams
+        const teamsRes = await axios.get(`${API}/crm/teams`, { headers });
+        setTeams(teamsRes.data || []);
+        
+        // Fetch all agents
+        const usersRes = await axios.get(`${API}/crm/users`, { headers });
+        const allAgents = (usersRes.data || []).filter(u => u.role === 'agent' && !u.deleted_at);
+        setAgents(allAgents);
+      } catch (error) {
+        console.error('Error fetching filter data:', error);
+      }
+    };
+    
+    fetchFiltersData();
+  }, [role]);
 
   const fetchFinancialData = useCallback(async () => {
     setLoading(true);
