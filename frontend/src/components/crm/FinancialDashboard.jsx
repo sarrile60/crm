@@ -694,7 +694,7 @@ const FinancialDashboard = ({ currentUser }) => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {[2024, 2025, 2026].map(y => (
+                    {years.map(y => (
                       <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
                     ))}
                   </SelectContent>
