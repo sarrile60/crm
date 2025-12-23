@@ -481,7 +481,7 @@ const FinancialDashboard = ({ currentUser }) => {
                   </tbody>
                   <tfoot className="bg-[#1a1a2e] text-white font-bold">
                     <tr>
-                      <td className="p-3" colSpan="2">{t('common.total')} ({filteredDeposits.length} {t('deposits.deposits')})</td>
+                      <td className="p-3" colSpan="2">{t('common.total')} ({filteredDeposits.length} {filteredDeposits.length === 1 ? 'deposit' : 'deposits'})</td>
                       <td className="p-3 text-right">{formatCurrency(totalAmount)}</td>
                       <td className="p-3"></td>
                       <td className="p-3 text-right">
