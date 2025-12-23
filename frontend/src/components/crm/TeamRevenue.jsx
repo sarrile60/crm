@@ -235,7 +235,7 @@ const TeamRevenue = ({ currentUser }) => {
               <Input
                 type="date"
                 value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
+                onChange={(e) => { setDateFrom(e.target.value); setActiveQuickFilter('custom'); }}
                 className="border-gray-300"
               />
             </div>
@@ -249,7 +249,7 @@ const TeamRevenue = ({ currentUser }) => {
               <Input
                 type="date"
                 value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
+                onChange={(e) => { setDateTo(e.target.value); setActiveQuickFilter('custom'); }}
                 className="border-gray-300"
               />
             </div>
