@@ -130,7 +130,7 @@ const AnalyticsDashboard = ({ currentUser }) => {
     } finally {
       setDepositsLoading(false);
     }
-  }, [period, dateFrom, dateTo, selectedAgent, selectedStatus, t]);
+  }, [period, dateFrom, dateTo, depositDateFrom, depositDateTo, selectedAgent, selectedStatus, t]);
 
   useEffect(() => {
     fetchAnalytics();
@@ -140,7 +140,7 @@ const AnalyticsDashboard = ({ currentUser }) => {
     if (showDepositsDetail) {
       fetchDepositsDetail();
     }
-  }, [showDepositsDetail, selectedAgent, selectedStatus]);
+  }, [showDepositsDetail, selectedAgent, selectedStatus, depositDateFrom, depositDateTo]);
 
   // Auto-refresh realtime data every 30 seconds
   useEffect(() => {
