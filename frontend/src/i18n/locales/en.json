@@ -288,6 +288,8 @@
     "deposits": "deposits",
     "revenue": "Revenue",
     "share": "Share",
+    "lastMonth": "Last Month",
+    "showing": "Showing",
     "noData": "No Revenue Data",
     "noDataDescription": "No approved deposits found for the selected filters."
   },
