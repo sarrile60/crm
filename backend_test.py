@@ -36,16 +36,14 @@ ADMIN_CREDENTIALS = {
     "password": "zTFjPAcs*-(NL-qbj@AP0TcWt*8)nV4f6K(ZcVP_"
 }
 
-class DepositManagementTester:
+class FinancialDashboardTester:
     def __init__(self):
         self.session = requests.Session()
         self.agent_token = None
         self.supervisor_token = None
         self.admin_token = None
         self.test_results = []
-        self.test_lead_id = None
-        self.test_agent_id = None
-        self.test_deposit_id = None
+        self.test_expense_id = None
         
     def log_result(self, test_name, success, message, details=None):
         """Log test result"""
