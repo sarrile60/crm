@@ -77,6 +77,87 @@ const FinancialDashboard = ({ currentUser }) => {
     fetchFinancialData();
   }, [selectedMonth, selectedYear]);
 
+  // Fetch expenses list (Admin only)
+  const fetchExpenses = useCallback(async () => {
+    if (role !== 'admin') return;
+    setExpensesLoading(true);
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.get(`${API}/crm/finance/expenses?month=${selectedMonth}&year=${selectedYear}`, { headers });
+      setExpensesList(res.data.expenses || []);
+    } catch (error) {
+      console.error('Error fetching expenses:', error);
+    } finally {
+      setExpensesLoading(false);
+    }
+  }, [role, selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    if (showExpensesList) {
+      fetchExpenses();
+    }
+  }, [showExpensesList, selectedMonth, selectedYear, fetchExpenses]);
+
+  // Create new expense (Admin only)
+  const handleCreateExpense = async (e) => {
+    e.preventDefault();
+    if (!newExpense.expense_type || !newExpense.amount || !newExpense.date) {
+      toast.error(t('common.fillAllFields'));
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('crmToken');
+      const formData = new FormData();
+      formData.append('expense_type', newExpense.expense_type);
+      formData.append('amount', parseFloat(newExpense.amount));
+      formData.append('date', newExpense.date);
+      formData.append('description', newExpense.description);
+      formData.append('paid_by', newExpense.paid_by);
+
+      await axios.post(`${API}/crm/finance/expenses`, formData, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      toast.success(t('finance.expenseCreated'));
+      setShowExpenseModal(false);
+      setNewExpense({
+        expense_type: '',
+        amount: '',
+        date: new Date().toISOString().split('T')[0],
+        description: '',
+        paid_by: ''
+      });
+      fetchFinancialData();
+      if (showExpensesList) fetchExpenses();
+    } catch (error) {
+      console.error('Error creating expense:', error);
+      toast.error(t('finance.errorCreatingExpense'));
+    }
+  };
+
+  // Delete expense (Admin only)
+  const handleDeleteExpense = async (expenseId) => {
+    if (!window.confirm(t('finance.confirmDeleteExpense'))) return;
+
+    try {
+      const token = localStorage.getItem('crmToken');
+      await axios.delete(`${API}/crm/finance/expenses/${expenseId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(t('finance.expenseDeleted'));
+      fetchFinancialData();
+      fetchExpenses();
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+      toast.error(t('finance.errorDeletingExpense'));
+    }
+  };
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('it-IT', {
       style: 'currency',
