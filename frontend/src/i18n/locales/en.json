@@ -168,7 +168,20 @@
     "activities": "Activities",
     "count": "Count",
     "noData": "No Analytics Data",
-    "noDataDescription": "No data found for the selected time period."
+    "noDataDescription": "No data found for the selected time period.",
+    "depositsDetail": "Deposits Detail",
+    "depositsDetailDesc": "View all deposits with agent info, dates, and amounts",
+    "filterByAgent": "Filter by Agent",
+    "client": "Client",
+    "paymentType": "Payment Type",
+    "createdAt": "Created",
+    "approvedAt": "Approved",
+    "statusPending": "Pending",
+    "statusApproved": "Approved",
+    "statusRejected": "Rejected",
+    "approvedTotal": "Approved Total",
+    "deposits": "deposits",
+    "noDepositsFound": "No deposits found for the selected filters"
   },
   "revenue": {
     "title": "Revenue Dashboard",
