@@ -126,7 +126,6 @@ async def get_analytics_overview(
         elif "Legacy" in source:
             source = "Legacy"
         elif "Referral" in source:
-        elif "Referral" in source:
             source = "Referral"
         leads_by_source[source] += 1
     
