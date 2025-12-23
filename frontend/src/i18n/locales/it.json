@@ -172,6 +172,8 @@
     "depositsDetail": "Dettaglio Depositi",
     "depositsDetailDesc": "Visualizza tutti i depositi con info agente, date e importi",
     "filterByAgent": "Filtra per Agente",
+    "dateFrom": "Da",
+    "dateTo": "A",
     "client": "Cliente",
     "paymentType": "Tipo Pagamento",
     "createdAt": "Creato",
