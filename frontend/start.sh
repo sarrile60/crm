@@ -10,17 +10,15 @@ if [ ! -f "build/index.html" ]; then
     echo "$(date): Build directory missing or incomplete. Running yarn build..."
     yarn build
 else
-    echo "$(date): Build directory exists, starting server..."
+    echo "$(date): Build directory exists."
 fi
 
-# Ensure serve.json exists
-if [ ! -f "serve.json" ]; then
-    echo '{"rewrites":[{"source":"/**","destination":"/index.html"}],"headers":[{"source":"**/*.@(js|css)","headers":[{"key":"Cache-Control","value":"public, max-age=31536000, immutable"}]}]}' > serve.json
-fi
-
+# Ensure serve.json exists in build folder (critical fix!)
 if [ ! -f "build/serve.json" ]; then
-    cp serve.json build/
+    echo "$(date): Creating serve.json in build folder..."
+    echo '{"rewrites":[{"source":"/**","destination":"/index.html"}],"headers":[{"source":"**/*.@(js|css)","headers":[{"key":"Cache-Control","value":"public, max-age=31536000, immutable"}]}]}' > build/serve.json
 fi
 
 echo "$(date): Starting frontend server..."
-exec serve -s build -l 3000 --config serve.json
+# Use serve.json from build folder directly (FIXED!)
+exec serve -s build -l 3000
