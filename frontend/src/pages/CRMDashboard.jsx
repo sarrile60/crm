@@ -362,6 +362,20 @@ const CRMDashboard = () => {
               {t('nav.analytics')}
             </button>
           )}
+          {/* Finance for Admin */}
+          {currentUser?.role === 'admin' && (
+            <button
+              onClick={() => setActiveTab('finance')}
+              className={`px-4 py-2 font-semibold transition-all ${
+                activeTab === 'finance'
+                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
+                  : 'text-gray-600 hover:text-black'
+              }`}
+            >
+              <Wallet className="w-4 h-4 inline mr-2" />
+              {t('nav.finance')}
+            </button>
+          )}
           {/* Users tab moved to Administration Panel */}
           {currentUser?.role === 'admin' && (
             <button
