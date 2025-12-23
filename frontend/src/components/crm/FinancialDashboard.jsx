@@ -379,59 +379,125 @@ const FinancialDashboard = ({ currentUser }) => {
 
         {/* Deposit History */}
         <div className="bg-white border-2 border-gray-200 p-6 rounded-lg">
-          <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#D4AF37]" />
-            {t('finance.depositHistory')}
-          </h3>
-          {data?.deposit_history?.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="p-3 text-left">{t('common.date')}</th>
-                    <th className="p-3 text-left">{t('finance.client')}</th>
-                    <th className="p-3 text-right">{t('common.amount')}</th>
-                    <th className="p-3 text-center">{t('common.status')}</th>
-                    <th className="p-3 text-right">{t('finance.commission')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.deposit_history.map((dep, idx) => (
-                    <tr key={dep.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="p-3 text-sm">
-                        {dep.date ? new Date(dep.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
-                      </td>
-                      <td className="p-3">{dep.client_name}</td>
-                      <td className="p-3 text-right font-semibold">{formatCurrency(dep.amount)}</td>
-                      <td className="p-3 text-center">
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          dep.status === 'approved' ? 'bg-green-100 text-green-800' :
-                          dep.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {dep.status === 'approved' && <CheckCircle className="w-3 h-3 inline mr-1" />}
-                          {dep.status === 'pending' && <Clock className="w-3 h-3 inline mr-1" />}
-                          {dep.status === 'rejected' && <XCircle className="w-3 h-3 inline mr-1" />}
-                          {dep.status}
-                        </span>
-                      </td>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <h3 className="text-lg font-bold flex items-center gap-2">
+              <FileText className="w-5 h-5 text-[#D4AF37]" />
+              {t('finance.depositHistory')}
+            </h3>
+            <div className="flex items-center gap-3">
+              <Input
+                type="text"
+                placeholder={t('common.searchPlaceholder')}
+                value={depositSearchQuery}
+                onChange={(e) => setDepositSearchQuery(e.target.value)}
+                className="w-48"
+              />
+              <Select value={depositStatusFilter} onValueChange={setDepositStatusFilter}>
+                <SelectTrigger className="w-36">
+                  <SelectValue placeholder={t('common.status')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('common.all')}</SelectItem>
+                  <SelectItem value="approved">{t('finance.approved')}</SelectItem>
+                  <SelectItem value="pending">{t('finance.pending')}</SelectItem>
+                  <SelectItem value="rejected">{t('finance.rejected')}</SelectItem>
+                </SelectContent>
+              </Select>
+              {(depositStatusFilter !== 'all' || depositSearchQuery) && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => { setDepositStatusFilter('all'); setDepositSearchQuery(''); }}
+                  className="text-[#D4AF37]"
+                >
+                  {t('common.clearFilters')}
+                </Button>
+              )}
+            </div>
+          </div>
+          {(() => {
+            // Filter deposits
+            const filteredDeposits = (data?.deposit_history || []).filter(dep => {
+              const matchesStatus = depositStatusFilter === 'all' || dep.status === depositStatusFilter;
+              const matchesSearch = !depositSearchQuery || 
+                dep.client_name?.toLowerCase().includes(depositSearchQuery.toLowerCase());
+              return matchesStatus && matchesSearch;
+            });
+            
+            // Calculate totals
+            const totalAmount = filteredDeposits.reduce((sum, dep) => sum + (dep.amount || 0), 0);
+            const totalCommission = filteredDeposits.reduce((sum, dep) => {
+              if (dep.status === 'approved') return sum + (dep.commission_earned || 0);
+              return sum;
+            }, 0);
+            const totalPendingCommission = filteredDeposits.reduce((sum, dep) => {
+              if (dep.status === 'pending') return sum + (dep.pending_commission || 0);
+              return sum;
+            }, 0);
+
+            return filteredDeposits.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="p-3 text-left">{t('common.date')} & {t('common.time')}</th>
+                      <th className="p-3 text-left">{t('finance.client')}</th>
+                      <th className="p-3 text-right">{t('common.amount')}</th>
+                      <th className="p-3 text-center">{t('common.status')}</th>
+                      <th className="p-3 text-right">{t('finance.commission')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredDeposits.map((dep, idx) => (
+                      <tr key={dep.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="p-3 text-sm">
+                          {formatDateTime(dep.date)}
+                        </td>
+                        <td className="p-3">{dep.client_name}</td>
+                        <td className="p-3 text-right font-semibold">{formatCurrency(dep.amount)}</td>
+                        <td className="p-3 text-center">
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            dep.status === 'approved' ? 'bg-green-100 text-green-800' :
+                            dep.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {dep.status === 'approved' && <CheckCircle className="w-3 h-3 inline mr-1" />}
+                            {dep.status === 'pending' && <Clock className="w-3 h-3 inline mr-1" />}
+                            {dep.status === 'rejected' && <XCircle className="w-3 h-3 inline mr-1" />}
+                            {dep.status}
+                          </span>
+                        </td>
+                        <td className="p-3 text-right">
+                          {dep.status === 'approved' ? (
+                            <span className="text-green-600 font-semibold">{formatCurrency(dep.commission_earned)}</span>
+                          ) : dep.status === 'pending' ? (
+                            <span className="text-yellow-600 text-sm">~{formatCurrency(dep.pending_commission)}</span>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot className="bg-[#1a1a2e] text-white font-bold">
+                    <tr>
+                      <td className="p-3" colSpan="2">{t('common.total')} ({filteredDeposits.length} {t('deposits.deposits')})</td>
+                      <td className="p-3 text-right">{formatCurrency(totalAmount)}</td>
+                      <td className="p-3"></td>
                       <td className="p-3 text-right">
-                        {dep.status === 'approved' ? (
-                          <span className="text-green-600 font-semibold">{formatCurrency(dep.commission_earned)}</span>
-                        ) : dep.status === 'pending' ? (
-                          <span className="text-yellow-600 text-sm">~{formatCurrency(dep.pending_commission)}</span>
-                        ) : (
-                          <span className="text-gray-400">-</span>
+                        <span className="text-green-400">{formatCurrency(totalCommission)}</span>
+                        {totalPendingCommission > 0 && (
+                          <span className="text-yellow-400 text-sm ml-2">(+~{formatCurrency(totalPendingCommission)})</span>
                         )}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-gray-500 text-center py-8">{t('finance.noDeposits')}</p>
-          )}
+                  </tfoot>
+                </table>
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-8">{t('finance.noDeposits')}</p>
+            );
+          })()}
         </div>
       </div>
     );
