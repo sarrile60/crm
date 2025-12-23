@@ -118,7 +118,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Revenue Dashboard Feature"
+    - "Analytics Dashboard Feature"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -151,7 +151,19 @@ test_plan:
         comment: "Implemented revenue statistics API in deposit_routes.py and TeamRevenue.jsx component. Features: total revenue from approved deposits, breakdown by team/agent/payment type/status, filters for date range, team, agent, payment type. Accessible to both supervisors and admins."
       - working: true
         agent: "testing"
-        comment: "✅ REVENUE DASHBOARD FULLY FUNCTIONAL - Comprehensive E2E testing completed successfully. SUPERVISOR ACCESS: Revenue tab visible, dashboard loads with Total Revenue (€56,300), Approved Deposits (4), Average Deposit (€14,075), Deposits by Status, Revenue by Team, Revenue by Agent sections all working. FILTERS: All filter components functional (From/To Date, Team, Agent, Payment Type dropdowns), Clear Filters and Apply Filters buttons working correctly. ADMIN ACCESS: Both Revenue and Team tabs visible, admin sees higher total revenue (€58,800 vs €56,300) indicating proper role-based data access - admin sees ALL teams while supervisor sees only their team data. Currency formatting correct (EUR with European formatting). All UI components rendering properly with no errors detected."
+        comment: "✅ E2E TEST PASSED: Revenue Dashboard fully functional for both supervisor and admin. Shows total revenue, deposits breakdown, filters working correctly."
+
+  - task: "Analytics Dashboard"
+    implemented: true
+    working: needs_testing
+    file: "analytics_routes.py, AnalyticsDashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: pending
+        agent: "main"
+        comment: "Implemented comprehensive analytics dashboard for admin. Features: time period selectors (today/week/month/year/custom), real-time stats bar, summary cards (leads, conversion rate, revenue, approval rate), line/bar/pie charts for leads over time, deposits over time, leads by status/source, deposits by type, team performance table, top agents table."
 
 agent_communication:
   - agent: "testing"
