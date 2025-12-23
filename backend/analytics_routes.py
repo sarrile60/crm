@@ -48,12 +48,13 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
 
 def get_date_range(period: str, date_from: Optional[str] = None, date_to: Optional[str] = None):
     """Get date range based on period or custom dates"""
-    now = datetime.now(timezone.utc)
+    # Use naive datetime for MongoDB compatibility (dates are stored without timezone)
+    now = datetime.utcnow()
     
     if period == "custom" and date_from and date_to:
         try:
-            start = datetime.fromisoformat(date_from.replace('Z', '+00:00'))
-            end = datetime.fromisoformat(date_to.replace('Z', '+00:00'))
+            start = datetime.fromisoformat(date_from.replace('Z', '+00:00').replace('+00:00', ''))
+            end = datetime.fromisoformat(date_to.replace('Z', '+00:00').replace('+00:00', ''))
             return start, end
         except:
             pass
