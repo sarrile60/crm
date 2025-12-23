@@ -795,48 +795,187 @@ const FinancialDashboard = ({ currentUser }) => {
 
         {/* Team Deposits */}
         <div className="bg-white border-2 border-gray-200 p-6 rounded-lg">
-          <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#D4AF37]" />
-            {t('finance.teamDeposits')}
-          </h3>
-          {data?.team_deposits?.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="p-3 text-left">{t('common.date')}</th>
-                    <th className="p-3 text-left">{t('finance.agent')}</th>
-                    <th className="p-3 text-left">{t('finance.client')}</th>
-                    <th className="p-3 text-right">{t('common.amount')}</th>
-                    <th className="p-3 text-center">{t('common.status')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.team_deposits.slice(0, 10).map((dep, idx) => (
-                    <tr key={dep.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="p-3 text-sm">
-                        {dep.date ? new Date(dep.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '-'}
-                      </td>
-                      <td className="p-3">{dep.agent_name}</td>
-                      <td className="p-3">{dep.client_name}</td>
-                      <td className="p-3 text-right font-semibold">{formatCurrency(dep.amount)}</td>
-                      <td className="p-3 text-center">
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          dep.status === 'approved' ? 'bg-green-100 text-green-800' :
-                          dep.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {dep.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <h3 className="text-lg font-bold flex items-center gap-2">
+              <FileText className="w-5 h-5 text-[#D4AF37]" />
+              {t('finance.teamDeposits')}
+            </h3>
+          </div>
+          
+          {/* Quick Date Filters for Team Deposits */}
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="text-sm text-gray-600 font-medium">{t('common.quickFilters')}:</span>
+            {[
+              { key: 'all', label: t('common.all') },
+              { key: 'today', label: t('analytics.period.today') },
+              { key: 'week', label: t('analytics.period.week') },
+              { key: 'month', label: t('analytics.period.month') }
+            ].map(filter => (
+              <Button
+                key={filter.key}
+                variant={activeQuickDateFilter === filter.key ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setActiveQuickDateFilter(filter.key);
+                  const now = new Date();
+                  if (filter.key === 'all') {
+                    setDepositDateFrom('');
+                    setDepositDateTo('');
+                  } else if (filter.key === 'today') {
+                    const today = now.toISOString().split('T')[0];
+                    setDepositDateFrom(today);
+                    setDepositDateTo(today);
+                  } else if (filter.key === 'week') {
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    setDepositDateFrom(weekAgo.toISOString().split('T')[0]);
+                    setDepositDateTo(now.toISOString().split('T')[0]);
+                  } else if (filter.key === 'month') {
+                    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    setDepositDateFrom(monthAgo.toISOString().split('T')[0]);
+                    setDepositDateTo(now.toISOString().split('T')[0]);
+                  }
+                }}
+                className={activeQuickDateFilter === filter.key ? 'bg-[#D4AF37] text-black hover:bg-[#C5A028]' : ''}
+              >
+                {filter.label}
+              </Button>
+            ))}
+          </div>
+          
+          {/* Filter Row: Date Range, Status, Search */}
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <Label className="text-sm text-gray-600">{t('common.from')}:</Label>
+              <Input
+                type="date"
+                value={depositDateFrom}
+                onChange={(e) => { setDepositDateFrom(e.target.value); setActiveQuickDateFilter('custom'); }}
+                className="w-40"
+              />
             </div>
-          ) : (
-            <p className="text-gray-500 text-center py-8">{t('finance.noTeamDeposits')}</p>
-          )}
+            <div className="flex items-center gap-2">
+              <Label className="text-sm text-gray-600">{t('common.to')}:</Label>
+              <Input
+                type="date"
+                value={depositDateTo}
+                onChange={(e) => { setDepositDateTo(e.target.value); setActiveQuickDateFilter('custom'); }}
+                className="w-40"
+              />
+            </div>
+            <Select value={depositStatusFilter} onValueChange={setDepositStatusFilter}>
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder={t('common.status')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
+                <SelectItem value="approved">{t('finance.approved')}</SelectItem>
+                <SelectItem value="pending">{t('finance.pending')}</SelectItem>
+                <SelectItem value="rejected">{t('finance.rejected')}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              type="text"
+              placeholder={t('common.searchPlaceholder')}
+              value={depositSearchQuery}
+              onChange={(e) => setDepositSearchQuery(e.target.value)}
+              className="w-48"
+            />
+            {(depositStatusFilter !== 'all' || depositSearchQuery || depositDateFrom || depositDateTo) && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => { 
+                  setDepositStatusFilter('all'); 
+                  setDepositSearchQuery(''); 
+                  setDepositDateFrom('');
+                  setDepositDateTo('');
+                  setActiveQuickDateFilter('all');
+                }}
+                className="text-[#D4AF37] hover:text-[#C5A028]"
+              >
+                <X className="w-4 h-4 mr-1" />
+                {t('common.clearFilters')}
+              </Button>
+            )}
+          </div>
+          
+          {(() => {
+            // Filter team deposits
+            const filteredTeamDeposits = (data?.team_deposits || []).filter(dep => {
+              const matchesStatus = depositStatusFilter === 'all' || dep.status === depositStatusFilter;
+              const matchesSearch = !depositSearchQuery || 
+                dep.client_name?.toLowerCase().includes(depositSearchQuery.toLowerCase()) ||
+                dep.agent_name?.toLowerCase().includes(depositSearchQuery.toLowerCase());
+              
+              let matchesDateRange = true;
+              if (depositDateFrom || depositDateTo) {
+                const depDate = dep.date ? new Date(dep.date) : null;
+                if (depDate) {
+                  if (depositDateFrom) {
+                    const fromDate = new Date(depositDateFrom);
+                    fromDate.setHours(0, 0, 0, 0);
+                    if (depDate < fromDate) matchesDateRange = false;
+                  }
+                  if (depositDateTo) {
+                    const toDate = new Date(depositDateTo);
+                    toDate.setHours(23, 59, 59, 999);
+                    if (depDate > toDate) matchesDateRange = false;
+                  }
+                }
+              }
+              
+              return matchesStatus && matchesSearch && matchesDateRange;
+            });
+            
+            // Calculate totals
+            const totalAmount = filteredTeamDeposits.reduce((sum, dep) => sum + (dep.amount || 0), 0);
+            
+            return filteredTeamDeposits.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="p-3 text-left">{t('common.date')} & {t('common.time')}</th>
+                      <th className="p-3 text-left">{t('finance.agent')}</th>
+                      <th className="p-3 text-left">{t('finance.client')}</th>
+                      <th className="p-3 text-right">{t('common.amount')}</th>
+                      <th className="p-3 text-center">{t('common.status')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredTeamDeposits.map((dep, idx) => (
+                      <tr key={dep.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="p-3 text-sm">
+                          {formatDateTime(dep.date)}
+                        </td>
+                        <td className="p-3">{dep.agent_name}</td>
+                        <td className="p-3">{dep.client_name}</td>
+                        <td className="p-3 text-right font-semibold">{formatCurrency(dep.amount)}</td>
+                        <td className="p-3 text-center">
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            dep.status === 'approved' ? 'bg-green-100 text-green-800' :
+                            dep.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {dep.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot className="bg-[#1a1a2e] text-white font-bold">
+                    <tr>
+                      <td className="p-3" colSpan="3">{t('common.total')} ({filteredTeamDeposits.length} {filteredTeamDeposits.length === 1 ? 'deposit' : 'deposits'})</td>
+                      <td className="p-3 text-right">{formatCurrency(totalAmount)}</td>
+                      <td className="p-3"></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-8">{t('finance.noTeamDeposits')}</p>
+            );
+          })()}
         </div>
       </div>
     );
