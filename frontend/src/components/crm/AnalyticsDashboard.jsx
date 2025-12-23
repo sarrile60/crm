@@ -584,6 +584,157 @@ const AnalyticsDashboard = ({ currentUser }) => {
         </div>
       )}
 
+      {/* Deposits Detail Section */}
+      <div className="bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
+        <button
+          onClick={() => setShowDepositsDetail(!showDepositsDetail)}
+          className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <DollarSign className="w-6 h-6 text-[#D4AF37]" />
+            <div className="text-left">
+              <h3 className="text-lg font-bold">{t('analytics.depositsDetail')}</h3>
+              <p className="text-sm text-gray-500">{t('analytics.depositsDetailDesc')}</p>
+            </div>
+          </div>
+          <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${showDepositsDetail ? 'rotate-180' : ''}`} />
+        </button>
+        
+        {showDepositsDetail && (
+          <div className="border-t p-6">
+            {/* Filters */}
+            <div className="flex flex-wrap gap-4 mb-6 pb-4 border-b">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-gray-500" />
+                <Label>{t('analytics.filterByAgent')}:</Label>
+                <Select value={selectedAgent} onValueChange={setSelectedAgent}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder={t('common.all')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('common.all')}</SelectItem>
+                    {data?.available_agents?.map(agent => (
+                      <SelectItem key={agent.id} value={agent.id}>
+                        {agent.name} ({agent.role})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-gray-500" />
+                <Label>{t('common.status')}:</Label>
+                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <SelectTrigger className="w-36">
+                    <SelectValue placeholder={t('common.all')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('common.all')}</SelectItem>
+                    <SelectItem value="pending">{t('analytics.statusPending')}</SelectItem>
+                    <SelectItem value="approved">{t('analytics.statusApproved')}</SelectItem>
+                    <SelectItem value="rejected">{t('analytics.statusRejected')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {depositsDetail && (
+                <div className="ml-auto flex items-center gap-4 text-sm">
+                  <span className="text-gray-500">
+                    {t('common.total')}: <strong>{depositsDetail.total_count}</strong> {t('analytics.deposits')}
+                  </span>
+                  <span className="text-green-600 font-semibold">
+                    {t('analytics.approvedTotal')}: {formatCurrency(depositsDetail.approved_amount)}
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            {/* Deposits Table */}
+            {depositsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D4AF37]"></div>
+              </div>
+            ) : depositsDetail?.deposits?.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="p-3 text-left font-semibold">{t('analytics.client')}</th>
+                      <th className="p-3 text-left font-semibold">{t('analytics.agent')}</th>
+                      <th className="p-3 text-right font-semibold">{t('common.amount')}</th>
+                      <th className="p-3 text-center font-semibold">{t('analytics.paymentType')}</th>
+                      <th className="p-3 text-center font-semibold">{t('common.status')}</th>
+                      <th className="p-3 text-center font-semibold">{t('analytics.createdAt')}</th>
+                      <th className="p-3 text-center font-semibold">{t('analytics.approvedAt')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {depositsDetail.deposits.map((deposit, idx) => (
+                      <tr key={deposit.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="p-3">
+                          <div className="font-medium">{deposit.lead_name}</div>
+                          {deposit.lead_email && (
+                            <div className="text-xs text-gray-500">{deposit.lead_email}</div>
+                          )}
+                        </td>
+                        <td className="p-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-[#D4AF37] text-black flex items-center justify-center text-xs font-bold">
+                              {deposit.agent_name?.charAt(0) || '?'}
+                            </div>
+                            <span className="text-sm">{deposit.agent_name}</span>
+                          </div>
+                        </td>
+                        <td className="p-3 text-right font-semibold text-green-600">
+                          {formatCurrency(deposit.amount)}
+                        </td>
+                        <td className="p-3 text-center">
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            deposit.payment_type === 'IBAN' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'
+                          }`}>
+                            {deposit.payment_type}
+                          </span>
+                        </td>
+                        <td className="p-3 text-center">
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            deposit.status === 'approved' ? 'bg-green-100 text-green-800' :
+                            deposit.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {deposit.status === 'approved' ? '✓ ' : deposit.status === 'rejected' ? '✗ ' : '⏳ '}
+                            {deposit.status}
+                          </span>
+                        </td>
+                        <td className="p-3 text-center">
+                          <div className="text-sm">{deposit.created_date}</div>
+                          <div className="text-xs text-gray-500">{deposit.created_time}</div>
+                        </td>
+                        <td className="p-3 text-center">
+                          {deposit.approved_date ? (
+                            <>
+                              <div className="text-sm text-green-600">{deposit.approved_date}</div>
+                              <div className="text-xs text-gray-500">{deposit.approved_time}</div>
+                            </>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-12 text-gray-500">
+                <DollarSign className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                <p>{t('analytics.noDepositsFound')}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* No Data Message */}
       {data && data.summary?.total_leads === 0 && (
         <div className="bg-white border-2 border-gray-200 p-12 text-center rounded-lg">
