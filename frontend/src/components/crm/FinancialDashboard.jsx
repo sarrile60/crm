@@ -36,6 +36,11 @@ const FinancialDashboard = ({ currentUser }) => {
   // Deposit History Filters (Agent/Supervisor)
   const [depositStatusFilter, setDepositStatusFilter] = useState('all');
   const [depositSearchQuery, setDepositSearchQuery] = useState('');
+  const [depositDateFrom, setDepositDateFrom] = useState('');
+  const [depositDateTo, setDepositDateTo] = useState('');
+  const [depositAmountMin, setDepositAmountMin] = useState('');
+  const [depositAmountMax, setDepositAmountMax] = useState('');
+  const [activeQuickDateFilter, setActiveQuickDateFilter] = useState('all');
   
   // Admin Filters
   const [teams, setTeams] = useState([]);
