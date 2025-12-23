@@ -3,22 +3,52 @@ set -e
 
 cd /app/frontend
 
-echo "$(date): Frontend startup script running..."
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [FRONTEND] $1"
+}
 
-# Check if build directory exists and has index.html
+log "Starting frontend service..."
+
+# Failsafe 1: Ensure serve.json exists in root
+if [ ! -f "serve.json" ]; then
+    log "Creating serve.json in root..."
+    cat > serve.json << 'SERVEJSON'
+{
+  "rewrites": [{ "source": "/**", "destination": "/index.html" }],
+  "headers": [{ "source": "**/*.@(js|css)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }]
+}
+SERVEJSON
+fi
+
+# Failsafe 2: Ensure public/serve.json exists (for future builds)
+if [ ! -f "public/serve.json" ]; then
+    log "Creating serve.json in public folder..."
+    cp serve.json public/serve.json
+fi
+
+# Failsafe 3: Check if build directory exists and is valid
 if [ ! -f "build/index.html" ]; then
-    echo "$(date): Build directory missing or incomplete. Running yarn build..."
+    log "Build directory missing or invalid. Rebuilding..."
     yarn build
-else
-    echo "$(date): Build directory exists."
+    log "Build complete."
 fi
 
-# Ensure serve.json exists in build folder (critical fix!)
-if [ ! -f "build/serve.json" ]; then
-    echo "$(date): Creating serve.json in build folder..."
-    echo '{"rewrites":[{"source":"/**","destination":"/index.html"}],"headers":[{"source":"**/*.@(js|css)","headers":[{"key":"Cache-Control","value":"public, max-age=31536000, immutable"}]}]}' > build/serve.json
+# Failsafe 4: ALWAYS ensure serve.json is in build folder before starting
+log "Ensuring serve.json in build folder..."
+cp serve.json build/serve.json 2>/dev/null || cat > build/serve.json << 'SERVEJSON'
+{
+  "rewrites": [{ "source": "/**", "destination": "/index.html" }],
+  "headers": [{ "source": "**/*.@(js|css)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }]
+}
+SERVEJSON
+
+# Verify all required files exist
+if [ ! -f "build/index.html" ] || [ ! -f "build/serve.json" ]; then
+    log "ERROR: Required files missing after all failsafes!"
+    exit 1
 fi
 
-echo "$(date): Starting frontend server..."
-# Use serve.json from build folder directly (FIXED!)
+log "All checks passed. Starting serve..."
+
+# Start serve WITHOUT --config flag (it auto-detects build/serve.json)
 exec serve -s build -l 3000
