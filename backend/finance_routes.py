@@ -527,6 +527,8 @@ async def delete_expense(
 async def get_admin_financial_overview(
     month: Optional[int] = None,
     year: Optional[int] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
     team_id: Optional[str] = None,
     agent_id: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
@@ -535,13 +537,22 @@ async def get_admin_financial_overview(
     Get complete financial overview for admin
     Shows: Total deposits, commissions, salaries, expenses, profit/loss
     Supports filtering by team and/or agent
+    Supports date_from/date_to OR month/year
     """
     role = current_user.get("role", "").lower()
     
     if role != "admin":
         raise HTTPException(status_code=403, detail="Only admin can access financial overview")
     
-    start_date, end_date = get_month_date_range(year, month)
+    # Use date range if provided, otherwise use month/year
+    if date_from and date_to:
+        try:
+            start_date = datetime.fromisoformat(date_from.replace('Z', ''))
+            end_date = datetime.fromisoformat(date_to.replace('Z', ''))
+        except:
+            start_date, end_date = get_month_date_range(year, month)
+    else:
+        start_date, end_date = get_month_date_range(year, month)
     
     # Build deposit query with optional filters
     deposit_query = {
@@ -559,7 +570,7 @@ async def get_admin_financial_overview(
             team_member_ids = team.get("members", [])
             deposit_query["created_by"] = {"$in": team_member_ids}
     
-    # Get all deposits for the month with filters
+    # Get all deposits for the period with filters
     all_deposits = await db.deposits.find(deposit_query, {"_id": 0}).to_list(10000)
     
     approved_deposits = [d for d in all_deposits if d.get("status") == "approved"]
