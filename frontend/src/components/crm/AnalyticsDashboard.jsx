@@ -771,11 +771,13 @@ const AnalyticsDashboard = ({ currentUser }) => {
             </div>
             
             {/* Deposits Table */}
-            {depositsLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D4AF37]"></div>
-              </div>
-            ) : depositsDetail?.deposits?.length > 0 ? (
+            <div className="min-h-[300px] relative">
+              {depositsLoading && (
+                <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D4AF37]"></div>
+                </div>
+              )}
+              {depositsDetail?.deposits?.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-100">
