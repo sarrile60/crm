@@ -606,3 +606,194 @@ async def download_attachment(
         media_type=media_type,
         filename=attachment.get("filename", f"{attachment_type}.file")
     )
+
+
+# ==================== REVENUE STATISTICS ====================
+
+@deposit_router.get("/stats/revenue")
+async def get_revenue_statistics(
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    team_id: Optional[str] = None,
+    agent_id: Optional[str] = None,
+    payment_type: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Get revenue statistics from APPROVED deposits only.
+    Grouped by team, agent, and payment type.
+    
+    Filters:
+    - date_from: Start date (ISO format)
+    - date_to: End date (ISO format)
+    - team_id: Filter by specific team
+    - agent_id: Filter by specific agent
+    - payment_type: Filter by IBAN or Crypto
+    """
+    role = current_user.get("role", "").lower()
+    
+    if role not in ["admin", "supervisor"]:
+        raise HTTPException(status_code=403, detail="Only admins and supervisors can view revenue statistics")
+    
+    # Build query - only approved deposits
+    query = {"status": "approved"}
+    
+    # Date filters
+    if date_from:
+        try:
+            from_date = datetime.fromisoformat(date_from.replace('Z', '+00:00'))
+            query["approved_at"] = {"$gte": from_date}
+        except:
+            pass
+    
+    if date_to:
+        try:
+            to_date = datetime.fromisoformat(date_to.replace('Z', '+00:00'))
+            if "approved_at" in query:
+                query["approved_at"]["$lte"] = to_date
+            else:
+                query["approved_at"] = {"$lte": to_date}
+        except:
+            pass
+    
+    # Team filter
+    if team_id:
+        query["team_id"] = team_id
+    elif role == "supervisor":
+        # Supervisor can only see their teams' revenue
+        team_ids = await get_user_team_ids(current_user["id"])
+        if team_ids:
+            query["team_id"] = {"$in": team_ids}
+        else:
+            return {
+                "total_revenue": 0,
+                "total_deposits": 0,
+                "by_team": [],
+                "by_agent": [],
+                "by_payment_type": [],
+                "by_status": []
+            }
+    
+    # Agent filter
+    if agent_id:
+        query["agent_id"] = agent_id
+    
+    # Payment type filter
+    if payment_type:
+        query["payment_type"] = payment_type
+    
+    # Get all matching deposits
+    deposits = await db.deposits.find(query, {"_id": 0}).to_list(10000)
+    
+    # Calculate totals
+    total_revenue = sum(d.get("amount", 0) for d in deposits)
+    total_deposits = len(deposits)
+    
+    # Group by team
+    team_revenue = {}
+    for d in deposits:
+        tid = d.get("team_id", "unknown")
+        if tid not in team_revenue:
+            team_revenue[tid] = {"team_id": tid, "team_name": "", "revenue": 0, "count": 0}
+        team_revenue[tid]["revenue"] += d.get("amount", 0)
+        team_revenue[tid]["count"] += 1
+    
+    # Get team names
+    if team_revenue:
+        team_ids_to_fetch = [tid for tid in team_revenue.keys() if tid != "unknown"]
+        if team_ids_to_fetch:
+            teams = await db.teams.find({"id": {"$in": team_ids_to_fetch}}, {"_id": 0}).to_list(100)
+            team_names = {t["id"]: t.get("name", "Unknown Team") for t in teams}
+            for tid in team_revenue:
+                team_revenue[tid]["team_name"] = team_names.get(tid, "Unknown Team")
+    
+    by_team = sorted(team_revenue.values(), key=lambda x: x["revenue"], reverse=True)
+    
+    # Group by agent
+    agent_revenue = {}
+    for d in deposits:
+        aid = d.get("agent_id", "unknown")
+        if aid not in agent_revenue:
+            agent_revenue[aid] = {
+                "agent_id": aid, 
+                "agent_name": d.get("agent_name", "Unknown"),
+                "team_id": d.get("team_id"),
+                "revenue": 0, 
+                "count": 0
+            }
+        agent_revenue[aid]["revenue"] += d.get("amount", 0)
+        agent_revenue[aid]["count"] += 1
+    
+    by_agent = sorted(agent_revenue.values(), key=lambda x: x["revenue"], reverse=True)
+    
+    # Group by payment type
+    payment_type_revenue = {}
+    for d in deposits:
+        pt = d.get("payment_type", "Unknown")
+        if pt not in payment_type_revenue:
+            payment_type_revenue[pt] = {"payment_type": pt, "revenue": 0, "count": 0}
+        payment_type_revenue[pt]["revenue"] += d.get("amount", 0)
+        payment_type_revenue[pt]["count"] += 1
+    
+    by_payment_type = list(payment_type_revenue.values())
+    
+    # Get status breakdown (for context - all deposits, not just approved)
+    status_query = {k: v for k, v in query.items() if k != "status"}
+    all_deposits = await db.deposits.find(status_query, {"_id": 0, "status": 1, "amount": 1}).to_list(10000)
+    
+    status_breakdown = {}
+    for d in all_deposits:
+        status = d.get("status", "unknown")
+        if status not in status_breakdown:
+            status_breakdown[status] = {"status": status, "revenue": 0, "count": 0}
+        status_breakdown[status]["revenue"] += d.get("amount", 0)
+        status_breakdown[status]["count"] += 1
+    
+    by_status = list(status_breakdown.values())
+    
+    # Get available teams and agents for filters
+    available_teams = []
+    available_agents = []
+    
+    if role == "admin":
+        # Admin can filter by all teams
+        all_teams = await db.teams.find(
+            {"$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]},
+            {"_id": 0, "id": 1, "name": 1}
+        ).to_list(100)
+        available_teams = [{"id": t["id"], "name": t["name"]} for t in all_teams]
+        
+        # All agents
+        all_agents = await db.crm_users.find(
+            {"role": {"$in": ["agent", "supervisor"]}, "deleted_at": None},
+            {"_id": 0, "id": 1, "full_name": 1, "team_id": 1}
+        ).to_list(500)
+        available_agents = [{"id": a["id"], "name": a["full_name"], "team_id": a.get("team_id")} for a in all_agents]
+    else:
+        # Supervisor sees only their teams
+        team_ids = await get_user_team_ids(current_user["id"])
+        if team_ids:
+            sup_teams = await db.teams.find({"id": {"$in": team_ids}}, {"_id": 0, "id": 1, "name": 1}).to_list(100)
+            available_teams = [{"id": t["id"], "name": t["name"]} for t in sup_teams]
+            
+            # Agents in those teams
+            team_agents = await db.crm_users.find(
+                {"team_id": {"$in": team_ids}, "deleted_at": None},
+                {"_id": 0, "id": 1, "full_name": 1, "team_id": 1}
+            ).to_list(500)
+            available_agents = [{"id": a["id"], "name": a["full_name"], "team_id": a.get("team_id")} for a in team_agents]
+    
+    return {
+        "total_revenue": total_revenue,
+        "total_deposits": total_deposits,
+        "currency": "EUR",
+        "by_team": by_team,
+        "by_agent": by_agent,
+        "by_payment_type": by_payment_type,
+        "by_status": by_status,
+        "filters": {
+            "teams": available_teams,
+            "agents": available_agents,
+            "payment_types": ["IBAN", "Crypto"]
+        }
+    }
