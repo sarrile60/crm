@@ -429,7 +429,8 @@ const CRMDashboard = () => {
           />
         )}
         {activeTab === 'depositApprovals' && currentUser?.role === 'admin' && <DepositApprovals currentUser={currentUser} />}
-        {activeTab === 'team' && currentUser?.role === 'supervisor' && <TeamMembers currentUser={currentUser} />}
+        {activeTab === 'revenue' && (currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && <TeamRevenue currentUser={currentUser} />}
+        {activeTab === 'team' && (currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && <TeamMembers currentUser={currentUser} />}
         {/* Users tab moved to Administration Panel */}
         {activeTab === 'settings' && <SettingsPanel />}
       </main>
