@@ -182,7 +182,21 @@
     "totalExpenses": "Total Expenses",
     "depositsSummary": "Deposits Summary",
     "approved": "Approved",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "expenseManagement": "Expense Management",
+    "addExpense": "Add Expense",
+    "viewAllExpenses": "View All Expenses",
+    "hideExpenses": "Hide Expenses",
+    "noExpensesRecorded": "No expenses recorded for this period",
+    "selectType": "Select expense type",
+    "paidBy": "Paid By",
+    "paidByPlaceholder": "e.g., Company Card, Cash",
+    "expenseDescriptionPlaceholder": "Brief description of the expense...",
+    "expenseCreated": "Expense created successfully",
+    "errorCreatingExpense": "Error creating expense",
+    "confirmDeleteExpense": "Are you sure you want to delete this expense?",
+    "expenseDeleted": "Expense deleted successfully",
+    "errorDeletingExpense": "Error deleting expense"
   },
   "analytics": {
     "title": "Analytics Dashboard",
