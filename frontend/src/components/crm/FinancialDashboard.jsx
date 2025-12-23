@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { 
   DollarSign, TrendingUp, Wallet, Calendar, RefreshCw, 
   ArrowUpRight, Target, Users, Receipt, PieChart as PieChartIcon,
-  ChevronDown, FileText, CheckCircle, Clock, XCircle
+  ChevronDown, FileText, CheckCircle, Clock, XCircle, Plus, Trash2, X
 } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import {
   Select,
   SelectContent,
@@ -21,6 +23,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const COLORS = ['#D4AF37', '#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
+const EXPENSE_TYPES = ['Rent', 'Utilities', 'Equipment', 'Supplies', 'Marketing', 'Salaries', 'Other'];
 
 const FinancialDashboard = ({ currentUser }) => {
   const { t } = useTranslation();
@@ -29,6 +32,19 @@ const FinancialDashboard = ({ currentUser }) => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [showTiers, setShowTiers] = useState(false);
+  
+  // Expense Management States (Admin only)
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [showExpensesList, setShowExpensesList] = useState(false);
+  const [expensesList, setExpensesList] = useState([]);
+  const [expensesLoading, setExpensesLoading] = useState(false);
+  const [newExpense, setNewExpense] = useState({
+    expense_type: '',
+    amount: '',
+    date: new Date().toISOString().split('T')[0],
+    description: '',
+    paid_by: ''
+  });
 
   const role = currentUser?.role?.toLowerCase();
 
