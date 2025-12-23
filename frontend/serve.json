@@ -1,44 +1,13 @@
 {
+  "rewrites": [
+    { "source": "/**", "destination": "/index.html" }
+  ],
   "headers": [
     {
-      "source": "index.html",
+      "source": "**/*.@(js|css)",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        },
-        {
-          "key": "Pragma",
-          "value": "no-cache"
-        },
-        {
-          "key": "Expires",
-          "value": "0"
-        }
-      ]
-    },
-    {
-      "source": "static/**",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "**/*.json",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     }
-  ],
-  "rewrites": [
-    { "source": "!(static/**|*.json|api/**)", "destination": "/index.html" }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false
+  ]
 }
