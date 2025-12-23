@@ -209,6 +209,20 @@ const FinancialDashboard = ({ currentUser }) => {
     }).format(amount || 0);
   };
 
+  const formatDateTime = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
+
   const months = [
     { value: 1, label: 'January' },
     { value: 2, label: 'February' },
