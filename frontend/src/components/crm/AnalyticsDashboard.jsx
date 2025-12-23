@@ -97,11 +97,24 @@ const AnalyticsDashboard = ({ currentUser }) => {
       const headers = { Authorization: `Bearer ${token}` };
       
       const params = new URLSearchParams();
-      params.append('period', period);
-      if (period === 'custom' && dateFrom && dateTo) {
-        params.append('date_from', new Date(dateFrom).toISOString());
-        params.append('date_to', new Date(dateTo).toISOString());
+      
+      // Use deposit-specific date filters if set, otherwise use global period
+      if (depositDateFrom || depositDateTo) {
+        params.append('period', 'custom');
+        if (depositDateFrom) {
+          params.append('date_from', new Date(depositDateFrom).toISOString());
+        }
+        if (depositDateTo) {
+          params.append('date_to', new Date(depositDateTo).toISOString());
+        }
+      } else {
+        params.append('period', period);
+        if (period === 'custom' && dateFrom && dateTo) {
+          params.append('date_from', new Date(dateFrom).toISOString());
+          params.append('date_to', new Date(dateTo).toISOString());
+        }
       }
+      
       if (selectedAgent && selectedAgent !== 'all') {
         params.append('agent_id', selectedAgent);
       }
