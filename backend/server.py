@@ -14,6 +14,7 @@ from chat_routes import router as chat_router
 from admin_routes import admin_router, init_admin_db
 from deposit_routes import deposit_router, init_deposit_routes
 from analytics_routes import analytics_router, init_analytics_routes
+from finance_routes import finance_router, init_finance_routes
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -28,6 +29,7 @@ init_crm_db(db)
 init_admin_db(db)
 init_deposit_routes(db)
 init_analytics_routes(db)
+init_finance_routes(db)
 
 # Initialize audit logging
 from audit_utils import init_audit_db
