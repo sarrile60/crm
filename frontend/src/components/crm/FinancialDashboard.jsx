@@ -86,15 +86,24 @@ const FinancialDashboard = ({ currentUser }) => {
       const headers = { Authorization: `Bearer ${token}` };
       
       let endpoint = '';
+      let queryParams = `month=${selectedMonth}&year=${selectedYear}`;
+      
       if (role === 'agent') {
         endpoint = `/crm/finance/agent/dashboard`;
       } else if (role === 'supervisor') {
         endpoint = `/crm/finance/supervisor/dashboard`;
       } else if (role === 'admin') {
         endpoint = `/crm/finance/admin/overview`;
+        // Add admin filters
+        if (selectedTeam && selectedTeam !== 'all') {
+          queryParams += `&team_id=${selectedTeam}`;
+        }
+        if (selectedAgent && selectedAgent !== 'all') {
+          queryParams += `&agent_id=${selectedAgent}`;
+        }
       }
       
-      const res = await axios.get(`${API}${endpoint}?month=${selectedMonth}&year=${selectedYear}`, { headers });
+      const res = await axios.get(`${API}${endpoint}?${queryParams}`, { headers });
       setData(res.data);
     } catch (error) {
       console.error('Error fetching financial data:', error);
@@ -102,7 +111,7 @@ const FinancialDashboard = ({ currentUser }) => {
     } finally {
       setLoading(false);
     }
-  }, [role, selectedMonth, selectedYear, t]);
+  }, [role, selectedMonth, selectedYear, selectedTeam, selectedAgent, t]);
 
   useEffect(() => {
     fetchFinancialData();
