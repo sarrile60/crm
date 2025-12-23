@@ -168,7 +168,20 @@
     "activities": "Attività",
     "count": "Conteggio",
     "noData": "Nessun Dato Statistiche",
-    "noDataDescription": "Nessun dato trovato per il periodo selezionato."
+    "noDataDescription": "Nessun dato trovato per il periodo selezionato.",
+    "depositsDetail": "Dettaglio Depositi",
+    "depositsDetailDesc": "Visualizza tutti i depositi con info agente, date e importi",
+    "filterByAgent": "Filtra per Agente",
+    "client": "Cliente",
+    "paymentType": "Tipo Pagamento",
+    "createdAt": "Creato",
+    "approvedAt": "Approvato",
+    "statusPending": "In Attesa",
+    "statusApproved": "Approvato",
+    "statusRejected": "Rifiutato",
+    "approvedTotal": "Totale Approvato",
+    "deposits": "depositi",
+    "noDepositsFound": "Nessun deposito trovato per i filtri selezionati"
   },
   "revenue": {
     "title": "Dashboard Ricavi",
