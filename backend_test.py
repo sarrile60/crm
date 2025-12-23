@@ -109,387 +109,366 @@ class FinancialDashboardTester:
         
         return True
     
-    def get_test_data(self):
-        """Get lead and agent IDs for testing"""
-        print("\n=== Getting Test Data ===")
+    def test_agent_dashboard_api(self):
+        """Test Agent Dashboard API: GET /api/crm/finance/agent/dashboard"""
+        print("\n=== Testing Agent Dashboard API ===")
+        
+        if not self.agent_token:
+            self.log_result("Agent Dashboard API", False, "No agent token available")
+            return False
         
         try:
-            # Get leads
-            headers = {"Authorization": f"Bearer {self.supervisor_token}"}
-            leads_response = self.session.get(f"{CRM_BASE_URL}/leads", headers=headers)
-            
-            if leads_response.status_code == 200:
-                leads = leads_response.json()
-                if leads:
-                    self.test_lead_id = leads[0]["id"]
-                    self.log_result("Get Lead ID", True, f"Found lead ID: {self.test_lead_id}")
-                else:
-                    self.log_result("Get Lead ID", False, "No leads found")
-                    return False
-            else:
-                self.log_result("Get Lead ID", False, f"Failed to get leads: {leads_response.status_code}")
-                return False
-            
-            # Get agent user ID
             headers = {"Authorization": f"Bearer {self.agent_token}"}
-            agent_response = self.session.get(f"{CRM_BASE_URL}/auth/me", headers=headers)
+            response = self.session.get(
+                f"{FINANCE_BASE_URL}/agent/dashboard?month=12&year=2025",
+                headers=headers
+            )
             
-            if agent_response.status_code == 200:
-                agent_info = agent_response.json()
-                self.test_agent_id = agent_info.get("id")
-                self.log_result("Get Agent ID", True, f"Found agent ID: {self.test_agent_id}")
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Verify required fields
+                required_fields = ["period", "summary", "deposit_history", "commission_tiers"]
+                summary_fields = ["base_salary", "commission_rate", "commission_earned", "total_earnings"]
+                
+                missing_fields = []
+                for field in required_fields:
+                    if field not in data:
+                        missing_fields.append(field)
+                
+                for field in summary_fields:
+                    if field not in data.get("summary", {}):
+                        missing_fields.append(f"summary.{field}")
+                
+                if missing_fields:
+                    self.log_result(
+                        "Agent Dashboard API", 
+                        False, 
+                        f"Missing required fields: {missing_fields}"
+                    )
+                    return False
+                
+                self.log_result(
+                    "Agent Dashboard API", 
+                    True, 
+                    f"Agent dashboard loaded successfully",
+                    f"Base Salary: €{data['summary']['base_salary']}, Commission Rate: {data['summary']['commission_rate']}, Total Earnings: €{data['summary']['total_earnings']}"
+                )
                 return True
             else:
-                self.log_result("Get Agent ID", False, f"Failed to get agent info: {agent_response.status_code}")
+                self.log_result("Agent Dashboard API", False, f"Failed: {response.status_code}", response.text)
                 return False
                 
         except Exception as e:
-            self.log_result("Get Test Data", False, f"Error getting test data: {str(e)}")
+            self.log_result("Agent Dashboard API", False, f"Error: {str(e)}")
             return False
     
-    
-    def test_supervisor_creates_deposit(self):
-        """Test supervisor creating a deposit"""
-        print("\n=== Testing Supervisor Creates Deposit ===")
+    def test_supervisor_dashboard_api(self):
+        """Test Supervisor Dashboard API: GET /api/crm/finance/supervisor/dashboard"""
+        print("\n=== Testing Supervisor Dashboard API ===")
         
-        if not self.supervisor_token or not self.test_lead_id or not self.test_agent_id:
-            self.log_result("Create Deposit", False, "Missing required data (tokens or IDs)")
+        if not self.supervisor_token:
+            self.log_result("Supervisor Dashboard API", False, "No supervisor token available")
             return False
         
         try:
-            headers = {
-                "Authorization": f"Bearer {self.supervisor_token}",
-                "Content-Type": "application/json"
-            }
+            headers = {"Authorization": f"Bearer {self.supervisor_token}"}
+            response = self.session.get(
+                f"{FINANCE_BASE_URL}/supervisor/dashboard?month=12&year=2025",
+                headers=headers
+            )
             
-            # Create IBAN deposit
-            deposit_data = {
-                "lead_id": self.test_lead_id,
-                "agent_id": self.test_agent_id,
-                "payment_type": "IBAN",
-                "amount": 5000,
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Verify required fields
+                required_fields = ["period", "summary", "team_deposits", "agents_performance"]
+                summary_fields = ["base_salary", "team_approved_volume", "commission_earned", "total_earnings"]
+                
+                missing_fields = []
+                for field in required_fields:
+                    if field not in data:
+                        missing_fields.append(field)
+                
+                for field in summary_fields:
+                    if field not in data.get("summary", {}):
+                        missing_fields.append(f"summary.{field}")
+                
+                if missing_fields:
+                    self.log_result(
+                        "Supervisor Dashboard API", 
+                        False, 
+                        f"Missing required fields: {missing_fields}"
+                    )
+                    return False
+                
+                self.log_result(
+                    "Supervisor Dashboard API", 
+                    True, 
+                    f"Supervisor dashboard loaded successfully",
+                    f"Base Salary: €{data['summary']['base_salary']}, Team Volume: €{data['summary']['team_approved_volume']}, Commission: €{data['summary']['commission_earned']}"
+                )
+                return True
+            else:
+                self.log_result("Supervisor Dashboard API", False, f"Failed: {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Supervisor Dashboard API", False, f"Error: {str(e)}")
+            return False
+    
+    def test_admin_overview_api(self):
+        """Test Admin Overview API: GET /api/crm/finance/admin/overview"""
+        print("\n=== Testing Admin Overview API ===")
+        
+        if not self.admin_token:
+            self.log_result("Admin Overview API", False, "No admin token available")
+            return False
+        
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(
+                f"{FINANCE_BASE_URL}/admin/overview?month=12&year=2025",
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Verify required fields
+                required_sections = ["period", "deposits", "staff", "salaries", "commissions", "expenses", "profit_loss"]
+                
+                missing_sections = []
+                for section in required_sections:
+                    if section not in data:
+                        missing_sections.append(section)
+                
+                if missing_sections:
+                    self.log_result(
+                        "Admin Overview API", 
+                        False, 
+                        f"Missing required sections: {missing_sections}"
+                    )
+                    return False
+                
+                # Check specific fields
+                deposits = data.get("deposits", {})
+                profit_loss = data.get("profit_loss", {})
+                
+                self.log_result(
+                    "Admin Overview API", 
+                    True, 
+                    f"Admin overview loaded successfully",
+                    f"Total Revenue: €{profit_loss.get('total_revenue', 0)}, Net Profit: €{profit_loss.get('net_profit', 0)}, Approved Deposits: {deposits.get('approved_count', 0)}"
+                )
+                return True
+            else:
+                self.log_result("Admin Overview API", False, f"Failed: {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Overview API", False, f"Error: {str(e)}")
+            return False
+    
+    def test_create_expense_api(self):
+        """Test Create Expense API: POST /api/crm/finance/expenses"""
+        print("\n=== Testing Create Expense API ===")
+        
+        if not self.admin_token:
+            self.log_result("Create Expense API", False, "No admin token available")
+            return False
+        
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            
+            # Create expense data
+            expense_data = {
+                "expense_type": "Marketing",
+                "amount": 500,
                 "currency": "EUR",
-                "iban": "IT60X0542811101000000123456",
-                "bank_name": "Test Bank",
-                "notes": "Test deposit for backend testing"
+                "date": "2025-12-23",
+                "description": "Test marketing expense for backend testing",
+                "paid_by": "Admin Test"
             }
             
             response = self.session.post(
-                f"{CRM_BASE_URL}/deposits",
-                json=deposit_data,
+                f"{FINANCE_BASE_URL}/expenses",
+                data=expense_data,
                 headers=headers
             )
             
             if response.status_code == 200:
                 result = response.json()
-                deposit = result.get("deposit")
-                if deposit:
-                    self.test_deposit_id = deposit.get("id")
+                expense_id = result.get("expense_id")
+                
+                if expense_id:
+                    self.test_expense_id = expense_id
                     self.log_result(
-                        "Create Deposit", 
+                        "Create Expense API", 
                         True, 
-                        f"Successfully created deposit",
-                        f"Deposit ID: {self.test_deposit_id}, Amount: €{deposit.get('amount')}, Type: {deposit.get('payment_type')}"
+                        f"Expense created successfully",
+                        f"Expense ID: {expense_id}, Type: Marketing, Amount: €500"
                     )
                     return True
                 else:
-                    self.log_result("Create Deposit", False, "No deposit data in response")
+                    self.log_result("Create Expense API", False, "No expense ID in response")
                     return False
             else:
-                self.log_result("Create Deposit", False, f"Failed to create deposit: {response.status_code}", response.text)
+                self.log_result("Create Expense API", False, f"Failed: {response.status_code}", response.text)
                 return False
                 
         except Exception as e:
-            self.log_result("Create Deposit", False, f"Error creating deposit: {str(e)}")
+            self.log_result("Create Expense API", False, f"Error: {str(e)}")
             return False
     
-    def test_list_deposits_role_based(self):
-        """Test listing deposits with role-based filtering"""
-        print("\n=== Testing Role-Based Deposit Listing ===")
-        
-        # Test as supervisor
-        try:
-            headers = {"Authorization": f"Bearer {self.supervisor_token}"}
-            response = self.session.get(f"{CRM_BASE_URL}/deposits", headers=headers)
-            
-            if response.status_code == 200:
-                supervisor_deposits = response.json()
-                self.log_result(
-                    "Supervisor List Deposits", 
-                    True, 
-                    f"Supervisor can see {len(supervisor_deposits)} deposits"
-                )
-            else:
-                self.log_result("Supervisor List Deposits", False, f"Failed: {response.status_code}")
-                
-        except Exception as e:
-            self.log_result("Supervisor List Deposits", False, f"Error: {str(e)}")
-        
-        # Test as agent
-        try:
-            headers = {"Authorization": f"Bearer {self.agent_token}"}
-            response = self.session.get(f"{CRM_BASE_URL}/deposits", headers=headers)
-            
-            if response.status_code == 200:
-                agent_deposits = response.json()
-                self.log_result(
-                    "Agent List Deposits", 
-                    True, 
-                    f"Agent can see {len(agent_deposits)} deposits (should only see assigned ones)"
-                )
-            else:
-                self.log_result("Agent List Deposits", False, f"Failed: {response.status_code}")
-                
-        except Exception as e:
-            self.log_result("Agent List Deposits", False, f"Error: {str(e)}")
-        
-        # Test as admin
-        try:
-            headers = {"Authorization": f"Bearer {self.admin_token}"}
-            response = self.session.get(f"{CRM_BASE_URL}/deposits", headers=headers)
-            
-            if response.status_code == 200:
-                admin_deposits = response.json()
-                self.log_result(
-                    "Admin List Deposits", 
-                    True, 
-                    f"Admin can see {len(admin_deposits)} deposits (should see all)"
-                )
-                return True
-            else:
-                self.log_result("Admin List Deposits", False, f"Failed: {response.status_code}")
-                return False
-                
-        except Exception as e:
-            self.log_result("Admin List Deposits", False, f"Error: {str(e)}")
-            return False
-    
-    def test_admin_approval_flow(self):
-        """Test admin approval workflow"""
-        print("\n=== Testing Admin Approval Flow ===")
-        
-        if not self.admin_token or not self.test_deposit_id:
-            self.log_result("Admin Approval", False, "Missing admin token or deposit ID")
-            return False
-        
-        try:
-            headers = {
-                "Authorization": f"Bearer {self.admin_token}",
-                "Content-Type": "application/json"
-            }
-            
-            # First, get pending deposits
-            pending_response = self.session.get(
-                f"{CRM_BASE_URL}/deposits?status=pending",
-                headers=headers
-            )
-            
-            if pending_response.status_code == 200:
-                pending_deposits = pending_response.json()
-                self.log_result(
-                    "Get Pending Deposits", 
-                    True, 
-                    f"Found {len(pending_deposits)} pending deposits"
-                )
-            else:
-                self.log_result("Get Pending Deposits", False, f"Failed: {pending_response.status_code}")
-                return False
-            
-            # Approve the test deposit
-            approval_data = {
-                "admin_notes": "Approved for testing - backend test suite"
-            }
-            
-            approve_response = self.session.put(
-                f"{CRM_BASE_URL}/deposits/{self.test_deposit_id}/approve",
-                json=approval_data,
-                headers=headers
-            )
-            
-            if approve_response.status_code == 200:
-                self.log_result(
-                    "Approve Deposit", 
-                    True, 
-                    f"Successfully approved deposit {self.test_deposit_id}"
-                )
-                
-                # Verify status changed
-                get_response = self.session.get(
-                    f"{CRM_BASE_URL}/deposits/{self.test_deposit_id}",
-                    headers=headers
-                )
-                
-                if get_response.status_code == 200:
-                    deposit = get_response.json()
-                    if deposit.get("status") == "approved":
-                        self.log_result(
-                            "Verify Approval Status", 
-                            True, 
-                            f"Deposit status correctly changed to 'approved'"
-                        )
-                        return True
-                    else:
-                        self.log_result("Verify Approval Status", False, f"Status is '{deposit.get('status')}', expected 'approved'")
-                        return False
-                else:
-                    self.log_result("Verify Approval Status", False, f"Failed to get deposit: {get_response.status_code}")
-                    return False
-            else:
-                self.log_result("Approve Deposit", False, f"Failed to approve: {approve_response.status_code}", approve_response.text)
-                return False
-                
-        except Exception as e:
-            self.log_result("Admin Approval", False, f"Error in approval flow: {str(e)}")
-            return False
-    
-    def test_supervisor_deposit_notifications(self):
-        """Test supervisor deposit notifications endpoint"""
-        print("\n=== Testing Supervisor Deposit Notifications ===")
-        
-        if not self.supervisor_token:
-            self.log_result("Supervisor Notifications", False, "No supervisor token available")
-            return False
-        
-        try:
-            headers = {"Authorization": f"Bearer {self.supervisor_token}"}
-            response = self.session.get(
-                f"{CRM_BASE_URL}/supervisor/deposit-notifications",
-                headers=headers
-            )
-            
-            if response.status_code == 200:
-                notifications = response.json()
-                notification_list = notifications.get("notifications", [])
-                unread_count = notifications.get("unread_count", 0)
-                
-                self.log_result(
-                    "Supervisor Notifications", 
-                    True, 
-                    f"Retrieved supervisor notifications",
-                    f"Total: {len(notification_list)}, Unread: {unread_count}"
-                )
-                return True
-            else:
-                self.log_result("Supervisor Notifications", False, f"Failed: {response.status_code}", response.text)
-                return False
-                
-        except Exception as e:
-            self.log_result("Supervisor Notifications", False, f"Error: {str(e)}")
-            return False
-    
-    def test_admin_deposit_notifications(self):
-        """Test admin deposit notifications endpoint"""
-        print("\n=== Testing Admin Deposit Notifications ===")
+    def test_list_expenses_api(self):
+        """Test List Expenses API: GET /api/crm/finance/expenses"""
+        print("\n=== Testing List Expenses API ===")
         
         if not self.admin_token:
-            self.log_result("Admin Notifications", False, "No admin token available")
+            self.log_result("List Expenses API", False, "No admin token available")
             return False
         
         try:
             headers = {"Authorization": f"Bearer {self.admin_token}"}
             response = self.session.get(
-                f"{CRM_BASE_URL}/deposits/notifications",
+                f"{FINANCE_BASE_URL}/expenses?month=12&year=2025",
                 headers=headers
             )
             
             if response.status_code == 200:
-                notifications = response.json()
-                notification_list = notifications.get("notifications", [])
-                unread_count = notifications.get("unread_count", 0)
+                data = response.json()
+                
+                # Verify required fields
+                required_fields = ["period", "total_expenses", "expenses_by_type", "expense_types", "expenses"]
+                
+                missing_fields = []
+                for field in required_fields:
+                    if field not in data:
+                        missing_fields.append(field)
+                
+                if missing_fields:
+                    self.log_result(
+                        "List Expenses API", 
+                        False, 
+                        f"Missing required fields: {missing_fields}"
+                    )
+                    return False
+                
+                expenses = data.get("expenses", [])
+                total_expenses = data.get("total_expenses", 0)
                 
                 self.log_result(
-                    "Admin Notifications", 
+                    "List Expenses API", 
                     True, 
-                    f"Retrieved admin deposit notifications",
-                    f"Total: {len(notification_list)}, Unread: {unread_count}"
+                    f"Expenses list retrieved successfully",
+                    f"Total Expenses: €{total_expenses}, Count: {len(expenses)}"
                 )
                 return True
             else:
-                self.log_result("Admin Notifications", False, f"Failed: {response.status_code}", response.text)
+                self.log_result("List Expenses API", False, f"Failed: {response.status_code}", response.text)
                 return False
                 
         except Exception as e:
-            self.log_result("Admin Notifications", False, f"Error: {str(e)}")
+            self.log_result("List Expenses API", False, f"Error: {str(e)}")
             return False
     
-    def test_deposit_details_access(self):
-        """Test accessing deposit details with different roles"""
-        print("\n=== Testing Deposit Details Access ===")
+    def test_delete_expense_api(self):
+        """Test Delete Expense API: DELETE /api/crm/finance/expenses/{expense_id}"""
+        print("\n=== Testing Delete Expense API ===")
         
-        if not self.test_deposit_id:
-            self.log_result("Deposit Details Access", False, "No test deposit ID available")
+        if not self.admin_token:
+            self.log_result("Delete Expense API", False, "No admin token available")
             return False
+        
+        if not self.test_expense_id:
+            self.log_result("Delete Expense API", False, "No test expense ID available")
+            return False
+        
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.delete(
+                f"{FINANCE_BASE_URL}/expenses/{self.test_expense_id}",
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                message = result.get("message", "")
+                
+                self.log_result(
+                    "Delete Expense API", 
+                    True, 
+                    f"Expense deleted successfully",
+                    f"Message: {message}"
+                )
+                return True
+            else:
+                self.log_result("Delete Expense API", False, f"Failed: {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Delete Expense API", False, f"Error: {str(e)}")
+            return False
+    
+    def test_role_based_access_control(self):
+        """Test role-based access control for financial endpoints"""
+        print("\n=== Testing Role-Based Access Control ===")
         
         success_count = 0
         
-        # Test as admin
-        try:
-            headers = {"Authorization": f"Bearer {self.admin_token}"}
-            response = self.session.get(
-                f"{CRM_BASE_URL}/deposits/{self.test_deposit_id}",
-                headers=headers
-            )
-            
-            if response.status_code == 200:
-                deposit = response.json()
-                self.log_result(
-                    "Admin Access Deposit Details", 
-                    True, 
-                    f"Admin can access deposit details",
-                    f"Status: {deposit.get('status')}, Amount: €{deposit.get('amount')}"
-                )
-                success_count += 1
-            else:
-                self.log_result("Admin Access Deposit Details", False, f"Failed: {response.status_code}")
-                
-        except Exception as e:
-            self.log_result("Admin Access Deposit Details", False, f"Error: {str(e)}")
-        
-        # Test as supervisor
-        try:
-            headers = {"Authorization": f"Bearer {self.supervisor_token}"}
-            response = self.session.get(
-                f"{CRM_BASE_URL}/deposits/{self.test_deposit_id}",
-                headers=headers
-            )
-            
-            if response.status_code == 200:
-                deposit = response.json()
-                self.log_result(
-                    "Supervisor Access Deposit Details", 
-                    True, 
-                    f"Supervisor can access deposit details"
-                )
-                success_count += 1
-            else:
-                self.log_result("Supervisor Access Deposit Details", False, f"Failed: {response.status_code}")
-                
-        except Exception as e:
-            self.log_result("Supervisor Access Deposit Details", False, f"Error: {str(e)}")
-        
-        # Test as agent
+        # Test agent accessing supervisor dashboard (should fail)
         try:
             headers = {"Authorization": f"Bearer {self.agent_token}"}
-            response = self.session.get(
-                f"{CRM_BASE_URL}/deposits/{self.test_deposit_id}",
-                headers=headers
-            )
+            response = self.session.get(f"{FINANCE_BASE_URL}/supervisor/dashboard", headers=headers)
             
-            if response.status_code == 200:
-                deposit = response.json()
+            if response.status_code == 403:
                 self.log_result(
-                    "Agent Access Deposit Details", 
+                    "Agent Access Control", 
                     True, 
-                    f"Agent can access assigned deposit details"
+                    "Agent correctly denied access to supervisor dashboard"
                 )
                 success_count += 1
             else:
-                self.log_result("Agent Access Deposit Details", False, f"Failed: {response.status_code}")
-                
+                self.log_result("Agent Access Control", False, f"Agent should not access supervisor dashboard: {response.status_code}")
         except Exception as e:
-            self.log_result("Agent Access Deposit Details", False, f"Error: {str(e)}")
+            self.log_result("Agent Access Control", False, f"Error: {str(e)}")
         
-        return success_count >= 2  # At least 2 out of 3 should work
+        # Test supervisor accessing admin overview (should fail)
+        try:
+            headers = {"Authorization": f"Bearer {self.supervisor_token}"}
+            response = self.session.get(f"{FINANCE_BASE_URL}/admin/overview", headers=headers)
+            
+            if response.status_code == 403:
+                self.log_result(
+                    "Supervisor Access Control", 
+                    True, 
+                    "Supervisor correctly denied access to admin overview"
+                )
+                success_count += 1
+            else:
+                self.log_result("Supervisor Access Control", False, f"Supervisor should not access admin overview: {response.status_code}")
+        except Exception as e:
+            self.log_result("Supervisor Access Control", False, f"Error: {str(e)}")
+        
+        # Test agent accessing expense management (should fail)
+        try:
+            headers = {"Authorization": f"Bearer {self.agent_token}"}
+            response = self.session.get(f"{FINANCE_BASE_URL}/expenses", headers=headers)
+            
+            if response.status_code == 403:
+                self.log_result(
+                    "Agent Expense Access Control", 
+                    True, 
+                    "Agent correctly denied access to expense management"
+                )
+                success_count += 1
+            else:
+                self.log_result("Agent Expense Access Control", False, f"Agent should not access expenses: {response.status_code}")
+        except Exception as e:
+            self.log_result("Agent Expense Access Control", False, f"Error: {str(e)}")
+        
+        return success_count >= 2
     
     
     def run_all_tests(self):
