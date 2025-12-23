@@ -527,11 +527,14 @@ async def delete_expense(
 async def get_admin_financial_overview(
     month: Optional[int] = None,
     year: Optional[int] = None,
+    team_id: Optional[str] = None,
+    agent_id: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
     """
     Get complete financial overview for admin
     Shows: Total deposits, commissions, salaries, expenses, profit/loss
+    Supports filtering by team and/or agent
     """
     role = current_user.get("role", "").lower()
     
@@ -540,10 +543,24 @@ async def get_admin_financial_overview(
     
     start_date, end_date = get_month_date_range(year, month)
     
-    # Get all deposits for the month
-    all_deposits = await db.deposits.find({
+    # Build deposit query with optional filters
+    deposit_query = {
         "created_at": {"$gte": start_date, "$lte": end_date}
-    }, {"_id": 0}).to_list(10000)
+    }
+    
+    # If filtering by agent
+    if agent_id:
+        deposit_query["created_by"] = agent_id
+    
+    # If filtering by team (get all agents in that team)
+    if team_id and not agent_id:
+        team = await db.teams.find_one({"id": team_id}, {"_id": 0})
+        if team:
+            team_member_ids = team.get("members", [])
+            deposit_query["created_by"] = {"$in": team_member_ids}
+    
+    # Get all deposits for the month with filters
+    all_deposits = await db.deposits.find(deposit_query, {"_id": 0}).to_list(10000)
     
     approved_deposits = [d for d in all_deposits if d.get("status") == "approved"]
     pending_deposits = [d for d in all_deposits if d.get("status") == "pending"]
