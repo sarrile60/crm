@@ -173,6 +173,44 @@ const TeamRevenue = ({ currentUser }) => {
         </div>
       </div>
 
+      {/* Quick Date Filters */}
+      <div className="bg-white border-2 border-gray-200 p-4 rounded-lg">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-[#D4AF37]" />
+            {t('common.quickFilters')}:
+          </span>
+          {[
+            { key: 'all', label: t('common.all') },
+            { key: 'today', label: t('analytics.period.today') },
+            { key: 'week', label: t('analytics.period.week') },
+            { key: 'month', label: t('analytics.period.month') },
+            { key: 'lastMonth', label: t('revenue.lastMonth') },
+            { key: 'year', label: t('analytics.period.year') }
+          ].map(filter => (
+            <Button
+              key={filter.key}
+              variant={activeQuickFilter === filter.key ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => applyQuickDateFilter(filter.key)}
+              className={activeQuickFilter === filter.key ? 'bg-[#D4AF37] text-black hover:bg-[#C5A028]' : ''}
+            >
+              {filter.label}
+            </Button>
+          ))}
+          
+          {/* Show current date range if custom or any filter is active */}
+          {(dateFrom || dateTo) && (
+            <span className="text-sm text-gray-500 ml-4 flex items-center gap-2">
+              <span className="font-medium">{t('revenue.showing')}:</span>
+              {dateFrom && new Date(dateFrom).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+              {dateFrom && dateTo && ' - '}
+              {dateTo && new Date(dateTo).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+            </span>
+          )}
+        </div>
+      </div>
+
       {/* Filters Panel */}
       {showFilters && (
         <div className="bg-white border-2 border-gray-200 p-6 space-y-4">
