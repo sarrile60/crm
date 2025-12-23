@@ -292,6 +292,20 @@ const CRMDashboard = () => {
             <DollarSign className="w-4 h-4 inline mr-2" />
             {t('nav.deposits')}
           </button>
+          {/* Earnings tab for agents and supervisors */}
+          {(currentUser?.role === 'agent' || currentUser?.role === 'supervisor') && (
+            <button
+              onClick={() => setActiveTab('earnings')}
+              className={`px-4 py-2 font-semibold transition-all ${
+                activeTab === 'earnings'
+                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
+                  : 'text-gray-600 hover:text-black'
+              }`}
+            >
+              <Wallet className="w-4 h-4 inline mr-2" />
+              {t('nav.earnings')}
+            </button>
+          )}
           {/* Revenue tab for supervisors and admins */}
           {(currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
             <button
