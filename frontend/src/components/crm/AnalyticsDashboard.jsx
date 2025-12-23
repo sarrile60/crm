@@ -619,38 +619,88 @@ const AnalyticsDashboard = ({ currentUser }) => {
           <div className="border-t p-6">
             {/* Filters */}
             <div className="flex flex-wrap gap-4 mb-6 pb-4 border-b items-end">
-              {/* Date Range Filters */}
+              {/* Quick Date Filters */}
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-gray-500" />
-                <Label>{t('analytics.dateFrom')}:</Label>
+                <div className="flex gap-1">
+                  <Button
+                    variant={depositDateFrom === new Date().toISOString().split('T')[0] && depositDateTo === new Date().toISOString().split('T')[0] ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      const today = new Date().toISOString().split('T')[0];
+                      setDepositDateFrom(today);
+                      setDepositDateTo(today);
+                    }}
+                    className={depositDateFrom === new Date().toISOString().split('T')[0] && depositDateTo === new Date().toISOString().split('T')[0] ? 'bg-[#D4AF37] text-black hover:bg-[#C5A028]' : ''}
+                  >
+                    {t('analytics.period.today')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const today = new Date();
+                      const weekAgo = new Date(today);
+                      weekAgo.setDate(today.getDate() - 7);
+                      setDepositDateFrom(weekAgo.toISOString().split('T')[0]);
+                      setDepositDateTo(today.toISOString().split('T')[0]);
+                    }}
+                  >
+                    {t('analytics.period.week')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const today = new Date();
+                      const monthAgo = new Date(today);
+                      monthAgo.setDate(today.getDate() - 30);
+                      setDepositDateFrom(monthAgo.toISOString().split('T')[0]);
+                      setDepositDateTo(today.toISOString().split('T')[0]);
+                    }}
+                  >
+                    {t('analytics.period.month')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setDepositDateFrom('');
+                      setDepositDateTo('');
+                    }}
+                  >
+                    {t('common.all')}
+                  </Button>
+                </div>
+              </div>
+              
+              {/* Custom Date Range */}
+              <div className="flex items-center gap-2 border-l pl-4">
+                <Label className="text-gray-500">{t('analytics.customRange')}:</Label>
                 <Input
                   type="date"
                   value={depositDateFrom}
                   onChange={(e) => setDepositDateFrom(e.target.value)}
-                  className="w-40"
+                  className="w-36"
                 />
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Label>{t('analytics.dateTo')}:</Label>
+                <span className="text-gray-400">-</span>
                 <Input
                   type="date"
                   value={depositDateTo}
                   onChange={(e) => setDepositDateTo(e.target.value)}
-                  className="w-40"
+                  className="w-36"
                 />
               </div>
               
               {/* Agent Filter */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 border-l pl-4">
                 <User className="w-4 h-4 text-gray-500" />
-                <Label>{t('analytics.filterByAgent')}:</Label>
                 <Select value={selectedAgent} onValueChange={setSelectedAgent}>
-                  <SelectTrigger className="w-48">
+                  <SelectTrigger className="w-44">
                     <SelectValue placeholder={t('common.all')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{t('common.all')}</SelectItem>
+                    <SelectItem value="all">{t('common.all')} {t('analytics.agents')}</SelectItem>
                     {data?.available_agents?.map(agent => (
                       <SelectItem key={agent.id} value={agent.id}>
                         {agent.name} ({agent.role})
