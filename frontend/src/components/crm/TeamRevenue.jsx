@@ -117,8 +117,7 @@ const TeamRevenue = ({ currentUser }) => {
     setSelectedTeam('all');
     setSelectedAgent('all');
     setSelectedPaymentType('all');
-    // Fetch with cleared filters
-    setTimeout(() => fetchRevenueStats(), 100);
+    setActiveQuickFilter('all');
   };
 
   const formatCurrency = (amount, currency = 'EUR') => {
