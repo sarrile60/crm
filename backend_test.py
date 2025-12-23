@@ -13,7 +13,7 @@ import time
 import logging
 
 # Configuration
-BASE_URL = "https://crm-workflow-13.preview.emergentagent.com/api"
+BASE_URL = "https://profit-pulse-136.preview.emergentagent.com/api"
 CRM_BASE_URL = f"{BASE_URL}/crm"
 
 # Setup logging
