@@ -118,6 +118,7 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Analytics Time Period Filters"
     - "Agent Earnings Dashboard Improvements"
   stuck_tasks: []
   test_all: false
