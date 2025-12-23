@@ -1016,37 +1016,108 @@ const FinancialDashboard = ({ currentUser }) => {
                 <DollarSign className="w-8 h-8 text-[#D4AF37]" />
                 <div>
                   <h1 className="text-2xl font-bold">{t('finance.financialOverview')}</h1>
-                  <p className="text-gray-300 text-sm">{data?.period?.month_name}</p>
+                  <p className="text-gray-300 text-sm">
+                    {adminDateFrom && adminDateTo 
+                      ? `${new Date(adminDateFrom).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} - ${new Date(adminDateTo).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}`
+                      : data?.period?.month_name
+                    }
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Select value={selectedMonth.toString()} onValueChange={(v) => setSelectedMonth(parseInt(v))}>
-                  <SelectTrigger className="w-36 bg-white/10 border-white/20 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {months.map(m => (
-                      <SelectItem key={m.value} value={m.value.toString()}>{m.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={selectedYear.toString()} onValueChange={(v) => setSelectedYear(parseInt(v))}>
-                  <SelectTrigger className="w-24 bg-white/10 border-white/20 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {years.map(y => (
-                      <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
                 <Button onClick={fetchFinancialData} className="bg-[#D4AF37] text-black hover:bg-[#C5A028]">
                   <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                 </Button>
               </div>
             </div>
             
-            {/* Filters Row */}
+            {/* Quick Date Filters Row */}
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/10">
+              <Calendar className="w-4 h-4 text-[#D4AF37]" />
+              <span className="text-sm text-gray-300">{t('common.quickFilters')}:</span>
+              {[
+                { key: 'today', label: t('analytics.period.today') },
+                { key: 'week', label: t('analytics.period.week') },
+                { key: 'month', label: t('analytics.period.month') },
+                { key: 'lastMonth', label: t('revenue.lastMonth') },
+                { key: 'year', label: t('analytics.period.year') }
+              ].map(filter => (
+                <Button
+                  key={filter.key}
+                  variant={adminQuickFilter === filter.key ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => {
+                    setAdminQuickFilter(filter.key);
+                    const now = new Date();
+                    
+                    if (filter.key === 'today') {
+                      const today = now.toISOString().split('T')[0];
+                      setAdminDateFrom(today);
+                      setAdminDateTo(today);
+                    } else if (filter.key === 'week') {
+                      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                      setAdminDateFrom(weekAgo.toISOString().split('T')[0]);
+                      setAdminDateTo(now.toISOString().split('T')[0]);
+                    } else if (filter.key === 'month') {
+                      const firstDayMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                      setAdminDateFrom(firstDayMonth.toISOString().split('T')[0]);
+                      setAdminDateTo(now.toISOString().split('T')[0]);
+                    } else if (filter.key === 'lastMonth') {
+                      const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                      const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                      setAdminDateFrom(firstDayLastMonth.toISOString().split('T')[0]);
+                      setAdminDateTo(lastDayLastMonth.toISOString().split('T')[0]);
+                    } else if (filter.key === 'year') {
+                      const startOfYear = new Date(now.getFullYear(), 0, 1);
+                      setAdminDateFrom(startOfYear.toISOString().split('T')[0]);
+                      setAdminDateTo(now.toISOString().split('T')[0]);
+                    }
+                  }}
+                  className={adminQuickFilter === filter.key 
+                    ? 'bg-[#D4AF37] text-black hover:bg-[#C5A028]' 
+                    : 'border-white/30 text-white hover:bg-white/10'}
+                >
+                  {filter.label}
+                </Button>
+              ))}
+              
+              {/* Custom date inputs */}
+              <div className="flex items-center gap-2 ml-2">
+                <Input
+                  type="date"
+                  value={adminDateFrom}
+                  onChange={(e) => { setAdminDateFrom(e.target.value); setAdminQuickFilter('custom'); }}
+                  className="w-36 h-8 bg-white/10 border-white/20 text-white text-sm"
+                />
+                <span className="text-gray-400">-</span>
+                <Input
+                  type="date"
+                  value={adminDateTo}
+                  onChange={(e) => { setAdminDateTo(e.target.value); setAdminQuickFilter('custom'); }}
+                  className="w-36 h-8 bg-white/10 border-white/20 text-white text-sm"
+                />
+              </div>
+              
+              {(adminDateFrom || adminDateTo) && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => { 
+                    setAdminDateFrom(''); 
+                    setAdminDateTo(''); 
+                    setAdminQuickFilter('month');
+                    setSelectedMonth(new Date().getMonth() + 1);
+                    setSelectedYear(new Date().getFullYear());
+                  }}
+                  className="text-[#D4AF37] hover:text-[#C5A028] hover:bg-white/10"
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  {t('common.clearFilters')}
+                </Button>
+              )}
+            </div>
+            
+            {/* Team/Agent Filters Row */}
             <div className="flex items-center gap-3 pt-2 border-t border-white/10">
               <span className="text-sm text-gray-300">{t('common.filters')}:</span>
               <Select value={selectedTeam} onValueChange={(v) => { setSelectedTeam(v); setSelectedAgent('all'); }}>
