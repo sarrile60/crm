@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Scale, Users, TrendingUp, AlertCircle, LogOut, Settings, FileText, Bell, Shield, DollarSign, BarChart3, PieChart } from 'lucide-react';
+import { Scale, Users, TrendingUp, AlertCircle, LogOut, Settings, FileText, Bell, Shield, DollarSign, BarChart3, PieChart, Wallet } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -15,6 +15,7 @@ import DepositsManager from '../components/crm/DepositsManager';
 import DepositApprovals from '../components/crm/DepositApprovals';
 import TeamRevenue from '../components/crm/TeamRevenue';
 import AnalyticsDashboard from '../components/crm/AnalyticsDashboard';
+import FinancialDashboard from '../components/crm/FinancialDashboard';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
