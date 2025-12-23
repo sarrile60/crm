@@ -302,11 +302,11 @@ const AnalyticsDashboard = ({ currentUser }) => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="date" 
-                  tickFormatter={(value) => new Date(value).toLocaleDateString('it-IT', { month: 'short', day: 'numeric' })}
+                  tickFormatter={(value) => new Date(value).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}
                 />
                 <YAxis />
                 <Tooltip 
-                  labelFormatter={(value) => new Date(value).toLocaleDateString('it-IT')}
+                  labelFormatter={(value) => new Date(value).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 />
                 <Area type="monotone" dataKey="count" stroke="#D4AF37" fill="#D4AF37" fillOpacity={0.3} name={t('analytics.leads')} />
               </AreaChart>
@@ -326,12 +326,12 @@ const AnalyticsDashboard = ({ currentUser }) => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="date" 
-                  tickFormatter={(value) => new Date(value).toLocaleDateString('it-IT', { month: 'short', day: 'numeric' })}
+                  tickFormatter={(value) => new Date(value).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}
                 />
                 <YAxis yAxisId="left" orientation="left" stroke="#4F46E5" />
                 <YAxis yAxisId="right" orientation="right" stroke="#10B981" />
                 <Tooltip 
-                  labelFormatter={(value) => new Date(value).toLocaleDateString('it-IT')}
+                  labelFormatter={(value) => new Date(value).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                   formatter={(value, name) => [name === 'amount' ? formatCurrency(value) : value, name === 'amount' ? t('analytics.revenue') : t('analytics.count')]}
                 />
                 <Bar yAxisId="left" dataKey="count" fill="#4F46E5" name={t('analytics.count')} />
