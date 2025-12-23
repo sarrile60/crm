@@ -639,42 +639,89 @@ const FinancialDashboard = ({ currentUser }) => {
       color: COLORS[idx % COLORS.length]
     })) || [];
 
+    // Filter agents by selected team
+    const filteredAgents = selectedTeam === 'all' 
+      ? agents 
+      : agents.filter(a => {
+          const team = teams.find(t => t.id === selectedTeam);
+          return team?.members?.includes(a.id);
+        });
+
     return (
       <div className="space-y-6">
         {/* Header */}
         <div className="bg-gradient-to-r from-[#1a1a2e] to-[#2d2d44] text-white p-6 border-2 border-[#D4AF37]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <DollarSign className="w-8 h-8 text-[#D4AF37]" />
-              <div>
-                <h1 className="text-2xl font-bold">{t('finance.financialOverview')}</h1>
-                <p className="text-gray-300 text-sm">{data?.period?.month_name}</p>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <DollarSign className="w-8 h-8 text-[#D4AF37]" />
+                <div>
+                  <h1 className="text-2xl font-bold">{t('finance.financialOverview')}</h1>
+                  <p className="text-gray-300 text-sm">{data?.period?.month_name}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Select value={selectedMonth.toString()} onValueChange={(v) => setSelectedMonth(parseInt(v))}>
+                  <SelectTrigger className="w-36 bg-white/10 border-white/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map(m => (
+                      <SelectItem key={m.value} value={m.value.toString()}>{m.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={selectedYear.toString()} onValueChange={(v) => setSelectedYear(parseInt(v))}>
+                  <SelectTrigger className="w-24 bg-white/10 border-white/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[2024, 2025, 2026].map(y => (
+                      <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button onClick={fetchFinancialData} className="bg-[#D4AF37] text-black hover:bg-[#C5A028]">
+                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                </Button>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Select value={selectedMonth.toString()} onValueChange={(v) => setSelectedMonth(parseInt(v))}>
-                <SelectTrigger className="w-36 bg-white/10 border-white/20 text-white">
-                  <SelectValue />
+            
+            {/* Filters Row */}
+            <div className="flex items-center gap-3 pt-2 border-t border-white/10">
+              <span className="text-sm text-gray-300">{t('common.filters')}:</span>
+              <Select value={selectedTeam} onValueChange={(v) => { setSelectedTeam(v); setSelectedAgent('all'); }}>
+                <SelectTrigger className="w-44 bg-white/10 border-white/20 text-white">
+                  <SelectValue placeholder={t('common.allTeams')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {months.map(m => (
-                    <SelectItem key={m.value} value={m.value.toString()}>{m.label}</SelectItem>
+                  <SelectItem value="all">{t('common.allTeams')}</SelectItem>
+                  {teams.map(team => (
+                    <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <Select value={selectedYear.toString()} onValueChange={(v) => setSelectedYear(parseInt(v))}>
-                <SelectTrigger className="w-24 bg-white/10 border-white/20 text-white">
-                  <SelectValue />
+              <Select value={selectedAgent} onValueChange={(v) => setSelectedAgent(v)}>
+                <SelectTrigger className="w-44 bg-white/10 border-white/20 text-white">
+                  <SelectValue placeholder={t('common.allAgents')} />
                 </SelectTrigger>
                 <SelectContent>
-                  {[2024, 2025, 2026].map(y => (
-                    <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                  <SelectItem value="all">{t('common.allAgents')}</SelectItem>
+                  {filteredAgents.map(agent => (
+                    <SelectItem key={agent.id} value={agent.id}>{agent.full_name || agent.username}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <Button onClick={fetchFinancialData} className="bg-[#D4AF37] text-black hover:bg-[#C5A028]">
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              </Button>
+              {(selectedTeam !== 'all' || selectedAgent !== 'all') && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => { setSelectedTeam('all'); setSelectedAgent('all'); }}
+                  className="text-[#D4AF37] hover:text-[#C5A028] hover:bg-white/10"
+                >
+                  {t('common.clearFilters')}
+                </Button>
+              )}
             </div>
           </div>
         </div>
