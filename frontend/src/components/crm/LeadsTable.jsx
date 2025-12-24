@@ -446,7 +446,16 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      await axios.put(`${API}/crm/leads/${selectedLead.id}`, editData, { headers });
+      // Clean up empty callback fields to avoid backend validation issues
+      const cleanedData = { ...editData };
+      if (!cleanedData.callback_date) {
+        delete cleanedData.callback_date;
+      }
+      if (!cleanedData.callback_notes) {
+        delete cleanedData.callback_notes;
+      }
+
+      await axios.put(`${API}/crm/leads/${selectedLead.id}`, cleanedData, { headers });
       
       // Clear the old alert flag so new callbacks can trigger alerts
       localStorage.removeItem(`callback_alerted_${selectedLead.id}`);
