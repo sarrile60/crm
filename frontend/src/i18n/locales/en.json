@@ -756,7 +756,19 @@
       "supervisor": "Supervisor",
       "manager": "Manager",
       "agent": "Agent"
-    }
+    },
+    "sipExtension": "Phone Extension",
+    "sipExtensionPlaceholder": "e.g. 101, 102, 103",
+    "sipExtensionHelp": "FreePBX SIP extension for click-to-call feature"
+  },
+  "call": {
+    "call": "Call",
+    "clickToCall": "Click to Call",
+    "initiatedSuccess": "Call initiated! Your phone will ring in a moment.",
+    "initiatedError": "Failed to initiate call",
+    "systemError": "Call system error. Please try again.",
+    "noExtension": "Your phone extension is not configured. Please contact your administrator.",
+    "noPhoneNumber": "This lead has no phone number"
   },
   "teams": {
     "title": "Teams Management",
