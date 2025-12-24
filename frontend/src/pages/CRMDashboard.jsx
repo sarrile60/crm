@@ -377,6 +377,20 @@ const CRMDashboard = () => {
               {t('nav.finance')}
             </button>
           )}
+          {/* Commission Settings for Admin */}
+          {currentUser?.role === 'admin' && (
+            <button
+              onClick={() => setActiveTab('commissionSettings')}
+              className={`px-4 py-2 font-semibold transition-all ${
+                activeTab === 'commissionSettings'
+                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
+                  : 'text-gray-600 hover:text-black'
+              }`}
+            >
+              <Sliders className="w-4 h-4 inline mr-2" />
+              {t('nav.commissionSettings')}
+            </button>
+          )}
           {/* Users tab moved to Administration Panel */}
           {currentUser?.role === 'admin' && (
             <button
