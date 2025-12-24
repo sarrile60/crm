@@ -16,6 +16,7 @@ import DepositApprovals from '../components/crm/DepositApprovals';
 import TeamRevenue from '../components/crm/TeamRevenue';
 import AnalyticsDashboard from '../components/crm/AnalyticsDashboard';
 import FinancialDashboard from '../components/crm/FinancialDashboard';
+import CommissionSettings from '../components/crm/CommissionSettings';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
