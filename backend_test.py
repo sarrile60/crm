@@ -811,6 +811,7 @@ def main():
     if success:
         print("\n🎉 FINANCIAL DASHBOARD TESTS PASSED!")
         print("The backend is ready to support financial dashboard functionality.")
+        print("✅ Commission Settings API fully functional")
         sys.exit(0)
     else:
         print("\n💥 SOME FINANCIAL DASHBOARD TESTS FAILED!")
