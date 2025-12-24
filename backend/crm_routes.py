@@ -1070,6 +1070,172 @@ async def create_crm_lead(lead_data: dict, current_user: dict = Depends(get_curr
         # Auto-assign to creator's team and user
         if current_user.get("team_id"):
             lead["team_id"] = current_user["team_id"]
+
+
+# ==================== CLICK-TO-CALL (FreePBX AMI Integration) ====================
+
+import socket
+from pydantic import BaseModel as PydanticBaseModel
+
+class MakeCallRequest(PydanticBaseModel):
+    lead_id: str
+
+@crm_router.post("/make-call")
+async def make_call(request: MakeCallRequest, current_user: dict = Depends(get_current_user)):
+    """
+    Initiate a click-to-call via FreePBX AMI.
+    Security: Agent never sees the phone number - it's retrieved server-side.
+    """
+    # Get agent's SIP extension from their profile
+    agent = await db.crm_users.find_one({"id": current_user["id"]}, {"_id": 0})
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    
+    agent_extension = agent.get("sip_extension")
+    if not agent_extension:
+        raise HTTPException(status_code=400, detail="SIP extension not configured. Please contact your administrator.")
+    
+    # Get lead's phone number (server-side only - never exposed to frontend)
+    lead = await db.leads.find_one({"id": request.lead_id}, {"_id": 0})
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    
+    client_number = lead.get("phone")
+    if not client_number:
+        raise HTTPException(status_code=400, detail="Lead has no phone number")
+    
+    # Clean the phone number (remove spaces, dashes, etc.)
+    clean_number = ''.join(filter(str.isdigit, client_number))
+    
+    # Add Italy country code if not present
+    if not clean_number.startswith('39') and len(clean_number) <= 10:
+        clean_number = '39' + clean_number
+    
+    # Get AMI credentials from environment
+    ami_host = os.environ.get('AMI_HOST', '194.32.79.101')
+    ami_port = int(os.environ.get('AMI_PORT', '5038'))
+    ami_user = os.environ.get('AMI_USER', 'crm_dialer')
+    ami_pass = os.environ.get('AMI_PASS', 'yo123mama')
+    
+    try:
+        # Connect to FreePBX AMI
+        result = await initiate_ami_call(
+            ami_host=ami_host,
+            ami_port=ami_port,
+            ami_user=ami_user,
+            ami_pass=ami_pass,
+            agent_extension=agent_extension,
+            client_number=clean_number
+        )
+        
+        if result["success"]:
+            # Log the call initiation (without exposing phone number)
+            activity = ActivityLog(
+                lead_id=request.lead_id,
+                user_id=current_user["id"],
+                user_name=current_user.get("full_name", "Unknown"),
+                action="call_initiated",
+                details=f"Call initiated to lead from extension {agent_extension}"
+            )
+            await db.activity_logs.insert_one(activity.dict())
+            
+            return {"success": True, "message": "Call initiated. Your phone will ring shortly."}
+        else:
+            logging.error(f"AMI call failed: {result.get('error')}")
+            raise HTTPException(status_code=500, detail=f"Failed to initiate call: {result.get('error')}")
+            
+    except Exception as e:
+        logging.error(f"Click-to-call error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Call system error: {str(e)}")
+
+
+async def initiate_ami_call(ami_host: str, ami_port: int, ami_user: str, ami_pass: str, 
+                            agent_extension: str, client_number: str) -> dict:
+    """
+    Connect to FreePBX AMI and initiate an outbound call.
+    The call flow: Agent's phone rings first, then connects to client.
+    """
+    import asyncio
+    
+    try:
+        # Create socket connection
+        reader, writer = await asyncio.wait_for(
+            asyncio.open_connection(ami_host, ami_port),
+            timeout=10.0
+        )
+        
+        # Read initial banner
+        banner = await asyncio.wait_for(reader.readline(), timeout=5.0)
+        logging.info(f"AMI Banner: {banner.decode().strip()}")
+        
+        # Send Login command
+        login_cmd = f"Action: Login\r\nUsername: {ami_user}\r\nSecret: {ami_pass}\r\n\r\n"
+        writer.write(login_cmd.encode())
+        await writer.drain()
+        
+        # Read login response
+        login_response = ""
+        while True:
+            line = await asyncio.wait_for(reader.readline(), timeout=5.0)
+            login_response += line.decode()
+            if line == b"\r\n":
+                break
+        
+        if "Authentication accepted" not in login_response and "Success" not in login_response:
+            writer.close()
+            await writer.wait_closed()
+            return {"success": False, "error": "AMI authentication failed"}
+        
+        logging.info("AMI authentication successful")
+        
+        # Send Originate command to initiate the call
+        # This will ring the agent's phone first, then connect to the client
+        originate_cmd = (
+            f"Action: Originate\r\n"
+            f"Channel: Local/s@crm-originate-call\r\n"
+            f"Exten: s\r\n"
+            f"Context: crm-originate-call\r\n"
+            f"Priority: 1\r\n"
+            f"Variable: ARG1={agent_extension}\r\n"
+            f"Variable: ARG2={client_number}\r\n"
+            f"CallerID: CRM Outbound <{agent_extension}>\r\n"
+            f"Async: true\r\n"
+            f"\r\n"
+        )
+        writer.write(originate_cmd.encode())
+        await writer.drain()
+        
+        # Read originate response
+        originate_response = ""
+        while True:
+            line = await asyncio.wait_for(reader.readline(), timeout=5.0)
+            originate_response += line.decode()
+            if line == b"\r\n":
+                break
+        
+        logging.info(f"AMI Originate response: {originate_response}")
+        
+        # Send Logoff command
+        logoff_cmd = "Action: Logoff\r\n\r\n"
+        writer.write(logoff_cmd.encode())
+        await writer.drain()
+        
+        # Close connection
+        writer.close()
+        await writer.wait_closed()
+        
+        if "Error" in originate_response:
+            return {"success": False, "error": originate_response}
+        
+        return {"success": True}
+        
+    except asyncio.TimeoutError:
+        return {"success": False, "error": "Connection to phone system timed out"}
+    except ConnectionRefusedError:
+        return {"success": False, "error": "Phone system connection refused"}
+    except Exception as e:
+        logging.error(f"AMI connection error: {str(e)}")
+        return {"success": False, "error": str(e)}
         
         lead["assigned_to"] = current_user["id"]
         lead["assigned_to_name"] = current_user["full_name"]
