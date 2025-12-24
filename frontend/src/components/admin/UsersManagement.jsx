@@ -302,7 +302,8 @@ const UsersManagement = () => {
       role: 'agent',
       team_ids: [],
       default_team_id: '',
-      is_system_user: false
+      is_system_user: false,
+      sip_extension: ''
     });
   };
 
