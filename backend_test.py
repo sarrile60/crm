@@ -471,6 +471,247 @@ class FinancialDashboardTester:
         
         return success_count >= 2
     
+    def test_get_commission_settings_api(self):
+        """Test GET /api/crm/finance/settings/commission - Get current commission settings"""
+        print("\n=== Testing Get Commission Settings API ===")
+        
+        if not self.admin_token:
+            self.log_result("Get Commission Settings API", False, "No admin token available")
+            return False
+        
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            response = self.session.get(
+                f"{FINANCE_BASE_URL}/settings/commission",
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Verify required fields
+                required_fields = ["agent_tiers", "supervisor_tiers", "agent_base_salary", "supervisor_base_salary"]
+                
+                missing_fields = []
+                for field in required_fields:
+                    if field not in data:
+                        missing_fields.append(field)
+                
+                if missing_fields:
+                    self.log_result(
+                        "Get Commission Settings API", 
+                        False, 
+                        f"Missing required fields: {missing_fields}"
+                    )
+                    return False
+                
+                # Store original settings for later restoration
+                self.original_commission_settings = data
+                
+                # Verify default values
+                agent_base = data.get("agent_base_salary", 0)
+                supervisor_base = data.get("supervisor_base_salary", 0)
+                agent_tiers = data.get("agent_tiers", [])
+                supervisor_tiers = data.get("supervisor_tiers", [])
+                
+                self.log_result(
+                    "Get Commission Settings API", 
+                    True, 
+                    f"Commission settings retrieved successfully",
+                    f"Agent Base: €{agent_base}, Supervisor Base: €{supervisor_base}, Agent Tiers: {len(agent_tiers)}, Supervisor Tiers: {len(supervisor_tiers)}"
+                )
+                return True
+            else:
+                self.log_result("Get Commission Settings API", False, f"Failed: {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Get Commission Settings API", False, f"Error: {str(e)}")
+            return False
+    
+    def test_update_commission_settings_api(self):
+        """Test PUT /api/crm/finance/settings/commission - Update commission settings"""
+        print("\n=== Testing Update Commission Settings API ===")
+        
+        if not self.admin_token:
+            self.log_result("Update Commission Settings API", False, "No admin token available")
+            return False
+        
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}", "Content-Type": "application/json"}
+            
+            # Test updating base salaries
+            update_data = {
+                "agent_base_salary": 700,
+                "supervisor_base_salary": 1300
+            }
+            
+            response = self.session.put(
+                f"{FINANCE_BASE_URL}/settings/commission",
+                json=update_data,
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                
+                # Verify the update was successful
+                if "settings" in result:
+                    settings = result["settings"]
+                    if (settings.get("agent_base_salary") == 700 and 
+                        settings.get("supervisor_base_salary") == 1300):
+                        
+                        self.log_result(
+                            "Update Commission Settings API", 
+                            True, 
+                            f"Commission settings updated successfully",
+                            f"Agent Base: €{settings['agent_base_salary']}, Supervisor Base: €{settings['supervisor_base_salary']}"
+                        )
+                        return True
+                    else:
+                        self.log_result("Update Commission Settings API", False, "Settings not updated correctly")
+                        return False
+                else:
+                    self.log_result("Update Commission Settings API", False, "No settings in response")
+                    return False
+            else:
+                self.log_result("Update Commission Settings API", False, f"Failed: {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Update Commission Settings API", False, f"Error: {str(e)}")
+            return False
+    
+    def test_reset_commission_settings_api(self):
+        """Test POST /api/crm/finance/settings/commission/reset - Reset to defaults"""
+        print("\n=== Testing Reset Commission Settings API ===")
+        
+        if not self.admin_token:
+            self.log_result("Reset Commission Settings API", False, "No admin token available")
+            return False
+        
+        try:
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            
+            response = self.session.post(
+                f"{FINANCE_BASE_URL}/settings/commission/reset",
+                headers=headers
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                
+                # Verify the reset was successful
+                if "settings" in result:
+                    settings = result["settings"]
+                    
+                    # Check if values are back to defaults (600 for agent, 1200 for supervisor)
+                    agent_base = settings.get("agent_base_salary", 0)
+                    supervisor_base = settings.get("supervisor_base_salary", 0)
+                    
+                    if agent_base == 600 and supervisor_base == 1200:
+                        self.log_result(
+                            "Reset Commission Settings API", 
+                            True, 
+                            f"Commission settings reset to defaults successfully",
+                            f"Agent Base: €{agent_base}, Supervisor Base: €{supervisor_base}"
+                        )
+                        return True
+                    else:
+                        self.log_result(
+                            "Reset Commission Settings API", 
+                            False, 
+                            f"Settings not reset to expected defaults. Agent: €{agent_base}, Supervisor: €{supervisor_base}"
+                        )
+                        return False
+                else:
+                    self.log_result("Reset Commission Settings API", False, "No settings in response")
+                    return False
+            else:
+                self.log_result("Reset Commission Settings API", False, f"Failed: {response.status_code}", response.text)
+                return False
+                
+        except Exception as e:
+            self.log_result("Reset Commission Settings API", False, f"Error: {str(e)}")
+            return False
+    
+    def test_commission_settings_access_control(self):
+        """Test that non-admin users cannot access commission settings endpoints"""
+        print("\n=== Testing Commission Settings Access Control ===")
+        
+        success_count = 0
+        
+        # Test agent accessing commission settings (should fail)
+        try:
+            headers = {"Authorization": f"Bearer {self.agent_token}"}
+            response = self.session.get(f"{FINANCE_BASE_URL}/settings/commission", headers=headers)
+            
+            if response.status_code == 403:
+                self.log_result(
+                    "Agent Commission Settings Access Control", 
+                    True, 
+                    "Agent correctly denied access to commission settings"
+                )
+                success_count += 1
+            else:
+                self.log_result("Agent Commission Settings Access Control", False, f"Agent should not access commission settings: {response.status_code}")
+        except Exception as e:
+            self.log_result("Agent Commission Settings Access Control", False, f"Error: {str(e)}")
+        
+        # Test supervisor accessing commission settings (should fail)
+        try:
+            headers = {"Authorization": f"Bearer {self.supervisor_token}"}
+            response = self.session.get(f"{FINANCE_BASE_URL}/settings/commission", headers=headers)
+            
+            if response.status_code == 403:
+                self.log_result(
+                    "Supervisor Commission Settings Access Control", 
+                    True, 
+                    "Supervisor correctly denied access to commission settings"
+                )
+                success_count += 1
+            else:
+                self.log_result("Supervisor Commission Settings Access Control", False, f"Supervisor should not access commission settings: {response.status_code}")
+        except Exception as e:
+            self.log_result("Supervisor Commission Settings Access Control", False, f"Error: {str(e)}")
+        
+        # Test agent trying to update commission settings (should fail)
+        try:
+            headers = {"Authorization": f"Bearer {self.agent_token}", "Content-Type": "application/json"}
+            update_data = {"agent_base_salary": 800}
+            response = self.session.put(f"{FINANCE_BASE_URL}/settings/commission", json=update_data, headers=headers)
+            
+            if response.status_code == 403:
+                self.log_result(
+                    "Agent Commission Update Access Control", 
+                    True, 
+                    "Agent correctly denied access to update commission settings"
+                )
+                success_count += 1
+            else:
+                self.log_result("Agent Commission Update Access Control", False, f"Agent should not update commission settings: {response.status_code}")
+        except Exception as e:
+            self.log_result("Agent Commission Update Access Control", False, f"Error: {str(e)}")
+        
+        # Test supervisor trying to reset commission settings (should fail)
+        try:
+            headers = {"Authorization": f"Bearer {self.supervisor_token}"}
+            response = self.session.post(f"{FINANCE_BASE_URL}/settings/commission/reset", headers=headers)
+            
+            if response.status_code == 403:
+                self.log_result(
+                    "Supervisor Commission Reset Access Control", 
+                    True, 
+                    "Supervisor correctly denied access to reset commission settings"
+                )
+                success_count += 1
+            else:
+                self.log_result("Supervisor Commission Reset Access Control", False, f"Supervisor should not reset commission settings: {response.status_code}")
+        except Exception as e:
+            self.log_result("Supervisor Commission Reset Access Control", False, f"Error: {str(e)}")
+        
+        return success_count >= 3
+    
     def run_all_tests(self):
         """Run all financial dashboard backend tests"""
         print("💰" * 60)
