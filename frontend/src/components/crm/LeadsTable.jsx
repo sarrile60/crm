@@ -74,6 +74,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [leadToDelete, setLeadToDelete] = useState(null);
+  const [isCallingLead, setIsCallingLead] = useState(false);
 
   useEffect(() => {
     fetchData();
