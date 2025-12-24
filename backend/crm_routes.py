@@ -1652,6 +1652,14 @@ async def initiate_ami_call(ami_host: str, ami_port: int, ami_user: str, ami_pas
             f"Async: true\r\n"
             f"\r\n"
         )
+        
+        # Log the EXACT command being sent
+        logging.info(f"========== AMI ORIGINATE COMMAND ==========")
+        logging.info(f"Agent Extension (ARG1): {agent_extension}")
+        logging.info(f"Client Number (ARG2): {client_number}")
+        logging.info(f"Full Command:\n{originate_cmd}")
+        logging.info(f"============================================")
+        
         writer.write(originate_cmd.encode())
         await writer.drain()
         
