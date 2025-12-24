@@ -1,6 +1,18 @@
 # Test Results
 
 backend:
+  - task: "Commission Settings API"
+    implemented: true
+    working: pending
+    file: "finance_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: pending
+        agent: "main"
+        comment: "Implemented editable commission tiers. GET /api/crm/finance/settings/commission returns current settings, PUT updates them, POST /reset resets to defaults. All commission calculations now use database values."
+
   - task: "Deposit Creation API"
     implemented: true
     working: true
