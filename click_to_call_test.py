@@ -175,12 +175,22 @@ class ClickToCallTester:
                 if result.get("success"):
                     # Get the user to verify sip_extension was saved
                     get_response = self.session.get(
-                        f"{ADMIN_BASE_URL}/users/{self.agent_user_id}",
+                        f"{ADMIN_BASE_URL}/users",
                         headers=headers
                     )
                     
                     if get_response.status_code == 200:
-                        user_data = get_response.json()
+                        users_list = get_response.json()
+                        user_data = None
+                        for user in users_list:
+                            if user.get("id") == self.agent_user_id:
+                                user_data = user
+                                break
+                        
+                        if not user_data:
+                            self.log_result("User SIP Extension Update", False, "User not found in users list")
+                            return False
+                            
                         saved_extension = user_data.get("sip_extension")
                         
                         if saved_extension == "101":
