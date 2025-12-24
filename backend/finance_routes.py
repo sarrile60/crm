@@ -124,9 +124,12 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
 
-def get_commission_rate(total_volume: float, role: str) -> tuple:
-    """Get commission rate based on volume and role"""
-    tiers = AGENT_COMMISSION_TIERS if role == "agent" else SUPERVISOR_COMMISSION_TIERS
+async def get_commission_rate_async(total_volume: float, role: str) -> tuple:
+    """Get commission rate based on volume and role (fetches from database)"""
+    if role == "agent":
+        tiers = await get_agent_commission_tiers()
+    else:
+        tiers = await get_supervisor_commission_tiers()
     
     for min_vol, max_vol, rate in tiers:
         if min_vol <= total_volume <= max_vol:
