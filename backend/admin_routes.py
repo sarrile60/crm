@@ -391,6 +391,8 @@ async def update_user_admin(user_id: str, user_data: dict, current_user: dict = 
         update_fields["default_team_id"] = user_data["default_team_id"]
     if "is_system_user" in user_data:
         update_fields["is_system_user"] = user_data["is_system_user"]
+    if "sip_extension" in user_data:
+        update_fields["sip_extension"] = user_data["sip_extension"]
     
     update_fields["updated_at"] = datetime.now(timezone.utc)
     
