@@ -515,7 +515,19 @@
       "supervisor": "Supervisore",
       "manager": "Manager",
       "agent": "Agente"
-    }
+    },
+    "sipExtension": "Interno Telefonico",
+    "sipExtensionPlaceholder": "es. 101, 102, 103",
+    "sipExtensionHelp": "Interno SIP FreePBX per la funzione click-to-call"
+  },
+  "call": {
+    "call": "Chiama",
+    "clickToCall": "Clicca per Chiamare",
+    "initiatedSuccess": "Chiamata avviata! Il tuo telefono squillerà tra poco.",
+    "initiatedError": "Impossibile avviare la chiamata",
+    "systemError": "Errore del sistema telefonico. Riprova.",
+    "noExtension": "Il tuo interno telefonico non è configurato. Contatta l'amministratore.",
+    "noPhoneNumber": "Questo lead non ha un numero di telefono"
   },
   "teams": {
     "title": "Gestione Team",
