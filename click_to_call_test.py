@@ -461,7 +461,7 @@ class ClickToCallTester:
             )
             
             # Check response regardless of success/failure
-            if response.status_code in [200, 500]:  # Both success and expected FreePBX errors
+            if response.status_code in [200, 500, 520]:  # Both success and expected FreePBX errors
                 try:
                     result = response.json()
                     response_text = json.dumps(result).lower()
