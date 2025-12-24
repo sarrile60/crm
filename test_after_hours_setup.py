@@ -7,7 +7,7 @@ import requests
 import json
 
 # Configuration
-BASE_URL = "https://profit-pulse-136.preview.emergentagent.com/api"
+BASE_URL = "https://finance-suite-9.preview.emergentagent.com/api"
 
 # Admin credentials
 ADMIN_CREDENTIALS = {
