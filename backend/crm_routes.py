@@ -1506,3 +1506,4 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
         "won": won,
         "pending_callbacks": pending_callbacks
     }
+
