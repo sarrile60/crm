@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Scale, Users, TrendingUp, AlertCircle, LogOut, Settings, FileText, Bell, Shield, DollarSign, BarChart3, PieChart, Wallet } from 'lucide-react';
+import { Scale, Users, TrendingUp, AlertCircle, LogOut, Settings, FileText, Bell, Shield, DollarSign, BarChart3, PieChart, Wallet, Sliders } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import axios from 'axios';
