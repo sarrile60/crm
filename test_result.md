@@ -262,6 +262,18 @@ test_plan:
         agent: "testing"
         comment: "✅ DEPOSIT HISTORY FILTERS FULLY FUNCTIONAL - Comprehensive E2E testing completed successfully for both Agent and Supervisor earnings dashboards. AGENT DEPOSIT HISTORY FILTERS: All requested filter elements verified and working: Quick Filters row with All/Today/This Week/This Month buttons (proper gold highlighting when selected), Date pickers (From/To) with auto-fill functionality, Search input field, Min/Max Amount inputs, Clear Filters button (appears when filters active). Filter functionality tested: This Week auto-fills correct date range (2025-12-16 to 2025-12-23), Today sets same date for from/to, All clears all filters, manual date entry working, amount filtering functional. Total row exists and updates with filtered results. SUPERVISOR TEAM DEPOSITS FILTERS: Team Deposits section exists with identical filter functionality: Quick Filters (All/Today/This Week/This Month), Date pickers (From/To), Status dropdown, Search input, Clear Filters button working. Filters work the same as agent view with proper date auto-fill and clearing functionality. Total row shows filtered totals correctly. Minor: Status dropdown implementation differs between agent and supervisor views but core functionality intact. All requested test scenarios completed successfully - deposit history filters ready for production use."
 
+  - task: "Admin Lead Edit Functionality"
+    implemented: true
+    working: true
+    file: "LeadsTable.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ ADMIN LEAD EDIT FUNCTIONALITY FULLY FUNCTIONAL - Comprehensive E2E testing completed successfully with 100% pass rate (4/4 test scenarios from review request). ADMIN FULL EDIT ACCESS: Successfully logged in as admin (admin_f87450ce5d66) and accessed Leads tab. Edit modal shows 'Edit Lead (Full Access)' title with '🔑 Administrator Edit Mode' banner and description 'You can edit all lead information including client details'. All 8 client detail fields verified as editable: Full Name, Email, Phone, Scammer Company, Amount Lost, Case Details, Status, Priority. ADMIN EDIT FUNCTIONALITY: Successfully modified Full Name field from 'Giorgio Varischi' to 'Test Admin Edit', Save Changes button functional, data persistence working. NON-ADMIN EDIT ACCESS: Agent (agente/12345) login successful, edit modal shows 'Edit Lead' title (NO 'Full Access'), NO admin banner or administrator indicators visible. AGENT CANNOT EDIT CLIENT DETAILS: All 6 client detail fields (Full Name, Email, Phone, Company, Amount, Case Details) correctly hidden from agent view. Only Status and Priority dropdowns available to agent as expected. Role-based access control working perfectly - admin has complete edit access while agent access properly restricted to status/priority only. Admin Lead Edit functionality ready for production use."
+
 agent_communication:
   - agent: "testing"
     message: "✅ DEPOSIT MANAGEMENT BACKEND FULLY FUNCTIONAL - All 6 core backend endpoints tested successfully with 100% pass rate. Authentication working for all roles (admin, supervisor, agent). Deposit creation, role-based listing, admin approval workflow, and notification systems all operational. Backend is ready for production use."
