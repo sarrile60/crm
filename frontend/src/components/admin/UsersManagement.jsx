@@ -138,7 +138,8 @@ const UsersManagement = () => {
         role: formData.role,
         team_ids: formData.team_ids,
         default_team_id: formData.default_team_id || null,
-        is_system_user: formData.is_system_user
+        is_system_user: formData.is_system_user,
+        sip_extension: formData.sip_extension || null
       };
 
       await axios.put(`${API}/admin/users/${selectedUser.id}`, updateData, { headers });
