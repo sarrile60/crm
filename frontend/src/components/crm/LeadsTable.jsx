@@ -419,6 +419,19 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   };
 
   const handleSaveEdit = async () => {
+    // Validate admin-required fields
+    if (currentUser.role === 'admin') {
+      if (!editData.fullName || !editData.email || !editData.phone || !editData.scammerCompany || !editData.amountLost || !editData.caseDetails) {
+        toast.error(t('common.fillAllFields'));
+        return;
+      }
+      // Validate email format
+      if (!editData.email.includes('@')) {
+        toast.error(t('crm.invalidEmailFormat'));
+        return;
+      }
+    }
+
     // Validate callback date for callback statuses (NOT for Deposit statuses)
     const requiresCallback = editData.status === 'Callback' || 
                             editData.status === 'Potential Callback' || 
