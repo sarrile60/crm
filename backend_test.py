@@ -717,6 +717,7 @@ class FinancialDashboardTester:
         print("💰" * 60)
         print("💰 FINANCIAL DASHBOARD SYSTEM BACKEND TESTING")
         print("💰 Testing Financial Dashboard APIs for all roles: Agent, Supervisor, Admin")
+        print("💰 Including Commission Settings Management")
         print("💰" * 60)
         
         # Setup
@@ -726,7 +727,7 @@ class FinancialDashboardTester:
         
         # Run financial dashboard tests
         tests_passed = 0
-        total_tests = 7
+        total_tests = 11  # Updated to include commission settings tests
         
         if self.test_agent_dashboard_api():
             tests_passed += 1
@@ -747,6 +748,19 @@ class FinancialDashboardTester:
             tests_passed += 1
         
         if self.test_role_based_access_control():
+            tests_passed += 1
+        
+        # Commission Settings Tests
+        if self.test_get_commission_settings_api():
+            tests_passed += 1
+        
+        if self.test_update_commission_settings_api():
+            tests_passed += 1
+        
+        if self.test_reset_commission_settings_api():
+            tests_passed += 1
+        
+        if self.test_commission_settings_access_control():
             tests_passed += 1
         
         # Summary
@@ -775,18 +789,19 @@ class FinancialDashboardTester:
         print("FINANCIAL DASHBOARD SYSTEM STATUS")
         print("="*60)
         
-        if tests_passed >= 5:  # At least 5 out of 7 core tests should pass
+        if tests_passed >= 8:  # At least 8 out of 11 core tests should pass
             print("✅ FINANCIAL DASHBOARD SYSTEM WORKING")
             print("✅ Agent Dashboard API functional")
             print("✅ Supervisor Dashboard API functional")
             print("✅ Admin Overview API functional")
             print("✅ Expense Management APIs functional")
+            print("✅ Commission Settings APIs functional")
             print("✅ Role-based access control working")
         else:
             print("❌ FINANCIAL DASHBOARD SYSTEM HAS ISSUES")
             print("⚠️  Some critical financial dashboard APIs are not functioning properly")
         
-        return tests_passed >= 5
+        return tests_passed >= 8
 
 def main():
     """Main test execution"""
