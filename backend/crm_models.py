@@ -107,6 +107,12 @@ class LeadEnhanced(BaseModel):
     last_contacted: Optional[datetime] = None
 
 class LeadUpdate(BaseModel):
+    fullName: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    scammerCompany: Optional[str] = None
+    amountLost: Optional[str] = None
+    caseDetails: Optional[str] = None
     status: Optional[str] = None
     priority: Optional[str] = None
     assigned_to: Optional[str] = None
