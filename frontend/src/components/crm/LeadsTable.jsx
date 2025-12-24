@@ -547,6 +547,34 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
     }
   };
 
+  // Click-to-Call function - initiates call via FreePBX
+  const handleMakeCall = async (leadId) => {
+    if (isCallingLead) return; // Prevent double-clicks
+    
+    setIsCallingLead(true);
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { 
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+
+      const response = await axios.post(`${API}/crm/make-call`, { lead_id: leadId }, { headers });
+      
+      if (response.data.success) {
+        toast.success(t('call.initiatedSuccess'));
+      } else {
+        toast.error(response.data.message || t('call.initiatedError'));
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.detail || t('call.systemError');
+      toast.error(errorMessage);
+    } finally {
+      setIsCallingLead(false);
+    }
+  };
+
   const formatPhoneForCall = (phone) => {
     // Remove spaces and special chars, keep only digits
     const cleanPhone = phone.replace(/[^0-9x]/g, '');
