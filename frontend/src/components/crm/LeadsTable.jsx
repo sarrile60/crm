@@ -884,6 +884,23 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
               <div className="flex items-center justify-between">
                 <DialogTitle className="text-2xl font-bold text-black">{t('crm.leadDetails')}</DialogTitle>
                 <div className="flex gap-2">
+                  {/* Click-to-Call Button - Only shown if lead has phone */}
+                  {selectedLead.phone && (
+                    <Button
+                      onClick={() => handleMakeCall(selectedLead.id)}
+                      disabled={isCallingLead}
+                      size="sm"
+                      className="bg-green-600 text-white hover:bg-green-700 rounded-none disabled:opacity-50"
+                      title={t('call.clickToCall')}
+                    >
+                      {isCallingLead ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Phone className="w-4 h-4" />
+                      )}
+                      <span className="ml-1">{t('call.call')}</span>
+                    </Button>
+                  )}
                   <Button
                     onClick={() => navigateLead(-1)}
                     disabled={currentLeadIndex === 0}
