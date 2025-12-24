@@ -677,9 +677,9 @@ class FinancialDashboardTester:
         
         # Test agent trying to update commission settings (should fail)
         try:
-            headers = {"Authorization": f"Bearer {self.agent_token}", "Content-Type": "application/json"}
-            update_data = {"agent_base_salary": 800}
-            response = self.session.put(f"{FINANCE_BASE_URL}/settings/commission", json=update_data, headers=headers)
+            headers = {"Authorization": f"Bearer {self.agent_token}"}
+            params = {"agent_base_salary": 800}
+            response = self.session.put(f"{FINANCE_BASE_URL}/settings/commission", params=params, headers=headers)
             
             if response.status_code == 403:
                 self.log_result(
