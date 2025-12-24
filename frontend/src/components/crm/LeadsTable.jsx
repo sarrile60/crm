@@ -345,12 +345,28 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
 
   const handleEdit = (lead) => {
     setSelectedLead(lead);
-    setEditData({
-      status: lead.status,
-      priority: lead.priority,
-      callback_date: lead.callback_date || '',
-      callback_notes: lead.callback_notes || ''
-    });
+    // For admin, include all editable fields
+    if (currentUser.role === 'admin') {
+      setEditData({
+        fullName: lead.fullName || '',
+        email: lead.email || '',
+        phone: lead.phone || '',
+        scammerCompany: lead.scammerCompany || '',
+        amountLost: lead.amountLost || '',
+        caseDetails: lead.caseDetails || '',
+        status: lead.status,
+        priority: lead.priority,
+        callback_date: lead.callback_date || '',
+        callback_notes: lead.callback_notes || ''
+      });
+    } else {
+      setEditData({
+        status: lead.status,
+        priority: lead.priority,
+        callback_date: lead.callback_date || '',
+        callback_notes: lead.callback_notes || ''
+      });
+    }
     setShowEditModal(true);
   };
 
