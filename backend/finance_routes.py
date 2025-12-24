@@ -310,6 +310,10 @@ async def get_supervisor_financial_dashboard(
     # Get supervisor's team IDs
     team_ids = await get_user_team_ids(user_id)
     
+    # Get base salaries from database
+    salaries = await get_base_salaries()
+    supervisor_base_salary = salaries["supervisor"]
+    
     if not team_ids:
         return {
             "period": {
@@ -318,10 +322,10 @@ async def get_supervisor_financial_dashboard(
                 "month_name": start_date.strftime("%B %Y")
             },
             "summary": {
-                "base_salary": SUPERVISOR_BASE_SALARY,
+                "base_salary": supervisor_base_salary,
                 "commission_rate": "1%",
                 "commission_earned": 0,
-                "total_earnings": SUPERVISOR_BASE_SALARY,
+                "total_earnings": supervisor_base_salary,
                 "team_approved_volume": 0,
                 "team_pending_volume": 0,
                 "pending_commission": 0
@@ -347,15 +351,15 @@ async def get_supervisor_financial_dashboard(
     team_approved_volume = sum(d.get("amount", 0) for d in approved_deposits)
     team_pending_volume = sum(d.get("amount", 0) for d in pending_deposits)
     
-    # Get commission rate based on TEAM volume
-    commission_rate, rate_label = get_commission_rate(team_approved_volume, "supervisor")
+    # Get commission rate based on TEAM volume (from database)
+    commission_rate, rate_label = await get_commission_rate_async(team_approved_volume, "supervisor")
     
     # Calculate supervisor's commission
     commission_earned = team_approved_volume * commission_rate
     pending_commission = team_pending_volume * commission_rate
     
     # Total earnings
-    base_salary = SUPERVISOR_BASE_SALARY
+    base_salary = supervisor_base_salary
     total_earnings = base_salary + commission_earned
     
     # Get all team deposits for the month
