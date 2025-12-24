@@ -3,15 +3,18 @@
 backend:
   - task: "Commission Settings API"
     implemented: true
-    working: pending
+    working: true
     file: "finance_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: pending
         agent: "main"
         comment: "Implemented editable commission tiers. GET /api/crm/finance/settings/commission returns current settings, PUT updates them, POST /reset resets to defaults. All commission calculations now use database values."
+      - working: true
+        agent: "testing"
+        comment: "✅ COMMISSION SETTINGS API FULLY FUNCTIONAL - Comprehensive backend testing completed with 100% success rate (4/4 commission settings tests passed). GET /api/crm/finance/settings/commission correctly returns current settings with agent_tiers (11 tiers), supervisor_tiers (7 tiers), agent_base_salary (€600), supervisor_base_salary (€1200). PUT /api/crm/finance/settings/commission successfully updates base salaries using query parameters (agent_base_salary=700, supervisor_base_salary=1300) with proper persistence verification. POST /api/crm/finance/settings/commission/reset correctly resets to default values (agent: €600, supervisor: €1200). Access control working perfectly - agents and supervisors correctly denied access (403 Forbidden) to all commission settings endpoints. All test scenarios from review request completed successfully. Commission Settings API ready for production use."
 
   - task: "Deposit Creation API"
     implemented: true
