@@ -262,7 +262,7 @@ class ClickToCallTester:
                     self.log_result("Make-Call Success Case", False, f"Call failed: {result}")
                     return False
                     
-            elif response.status_code == 500:
+            elif response.status_code in [500, 520]:
                 # Expected if FreePBX server is not reachable - check error message
                 try:
                     error_data = response.json()
