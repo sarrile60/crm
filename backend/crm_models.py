@@ -32,6 +32,7 @@ class User(BaseModel):
     full_name: str
     role: UserRole
     team_id: Optional[str] = None
+    sip_extension: Optional[str] = None  # FreePBX SIP extension for click-to-call
     is_active: bool = True
     deleted_at: Optional[datetime] = None  # Soft-delete timestamp
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -44,6 +45,7 @@ class UserCreate(BaseModel):
     password: str
     role: UserRole
     team_id: Optional[str] = None
+    sip_extension: Optional[str] = None  # FreePBX SIP extension
 
 class UserLogin(BaseModel):
     username: str
@@ -56,6 +58,7 @@ class UserUpdate(BaseModel):
     role: Optional[UserRole] = None
     team_id: Optional[str] = None
     is_active: Optional[bool] = None
+    sip_extension: Optional[str] = None  # FreePBX SIP extension
 
 # Team Models
 class Team(BaseModel):
