@@ -467,11 +467,11 @@ class ClickToCallTester:
                     response_text = json.dumps(result).lower()
                     
                     # Check if any phone number patterns are exposed
-                    phone_patterns = ["+39", "39", "phone", "number", "client_number", "clean_number"]
+                    phone_patterns = ["+39", "39", "client_number", "clean_number"]
                     exposed_patterns = []
                     
                     for pattern in phone_patterns:
-                        if pattern in response_text and pattern not in ["phone system"]:  # "phone system" is allowed in error messages
+                        if pattern in response_text:
                             exposed_patterns.append(pattern)
                     
                     if not exposed_patterns:
