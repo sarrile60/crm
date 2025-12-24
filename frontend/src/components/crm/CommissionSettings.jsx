@@ -44,11 +44,11 @@ const CommissionSettings = ({ currentUser }) => {
       setSupervisorBaseSalary(res.data.supervisor_base_salary || 1200);
     } catch (error) {
       console.error('Error fetching commission settings:', error);
-      toast.error(t('commission.errorLoading'));
+      toast.error('Error loading commission settings');
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     fetchSettings();
