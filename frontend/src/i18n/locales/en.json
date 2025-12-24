@@ -132,7 +132,8 @@
     "revenue": "Revenue",
     "analytics": "Analytics",
     "earnings": "Earnings",
-    "finance": "Finance"
+    "finance": "Finance",
+    "commissionSettings": "Commission Settings"
   },
   "finance": {
     "myEarnings": "My Earnings",
