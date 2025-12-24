@@ -44,6 +44,7 @@ class FinancialDashboardTester:
         self.admin_token = None
         self.test_results = []
         self.test_expense_id = None
+        self.original_commission_settings = None
         
     def log_result(self, test_name, success, message, details=None):
         """Log test result"""
