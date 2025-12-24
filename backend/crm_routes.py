@@ -753,6 +753,14 @@ async def update_lead(lead_id: str, update_data: LeadUpdate, current_user: dict 
         raise HTTPException(status_code=403, detail=f"Access denied: {permission_result.reason}")
     
     update_dict = {k: v for k, v in update_data.dict().items() if v is not None}
+    
+    # Only admins can edit client details (fullName, email, phone, etc.)
+    admin_only_fields = ['fullName', 'email', 'phone', 'scammerCompany', 'amountLost', 'caseDetails']
+    if current_user.get("role", "").lower() != "admin":
+        for field in admin_only_fields:
+            if field in update_dict:
+                del update_dict[field]
+    
     update_dict["updated_at"] = datetime.now(timezone.utc)
     
     # Log status change
