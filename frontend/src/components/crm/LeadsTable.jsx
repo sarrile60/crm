@@ -1113,37 +1113,103 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       {/* Edit Modal */}
       {showEditModal && selectedLead && (
         <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-          <DialogContent className="max-w-lg bg-white">
+          <DialogContent className="max-w-2xl bg-white max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">{t('leads.editLead')}</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">
+                {currentUser.role === 'admin' ? t('leads.editLeadFull') : t('leads.editLead')}
+              </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-black mb-2">{t('common.status')}</label>
-                <Select value={editData.status} onValueChange={(value) => setEditData({ ...editData, status: value })}>
-                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    {statuses.map(status => (
-                      <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-black mb-2">{t('leads.priority')}</label>
-                <Select value={editData.priority} onValueChange={(value) => setEditData({ ...editData, priority: value })}>
-                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="low">{t('leads.low')}</SelectItem>
-                    <SelectItem value="medium">{t('leads.medium')}</SelectItem>
-                    <SelectItem value="high">{t('leads.high')}</SelectItem>
-                    <SelectItem value="urgent">{t('leads.urgent')}</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Admin-only editable fields */}
+              {currentUser.role === 'admin' && (
+                <>
+                  <div className="bg-amber-50 border-l-4 border-[#D4AF37] p-3 mb-4">
+                    <p className="text-sm font-semibold text-black">🔑 {t('leads.adminEditMode')}</p>
+                    <p className="text-xs text-gray-600">{t('leads.adminEditModeDesc')}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-black mb-2">{t('leads.fullName')} *</label>
+                      <Input
+                        value={editData.fullName}
+                        onChange={(e) => setEditData({ ...editData, fullName: e.target.value })}
+                        className="bg-white border-gray-300 rounded-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-black mb-2">{t('common.email')} *</label>
+                      <Input
+                        type="email"
+                        value={editData.email}
+                        onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+                        className="bg-white border-gray-300 rounded-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-black mb-2">{t('common.phone')} *</label>
+                      <Input
+                        value={editData.phone}
+                        onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
+                        className="bg-white border-gray-300 rounded-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-black mb-2">{t('crm.scammerCompany')} *</label>
+                      <Input
+                        value={editData.scammerCompany}
+                        onChange={(e) => setEditData({ ...editData, scammerCompany: e.target.value })}
+                        className="bg-white border-gray-300 rounded-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-black mb-2">{t('crm.amountLost')} (€) *</label>
+                      <Input
+                        value={editData.amountLost}
+                        onChange={(e) => setEditData({ ...editData, amountLost: e.target.value })}
+                        className="bg-white border-gray-300 rounded-none"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-black mb-2">{t('crm.caseDetails')} *</label>
+                    <Textarea
+                      value={editData.caseDetails}
+                      onChange={(e) => setEditData({ ...editData, caseDetails: e.target.value })}
+                      className="bg-white border-gray-300 rounded-none"
+                      rows={3}
+                    />
+                  </div>
+                  <hr className="border-gray-200 my-4" />
+                </>
+              )}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-black mb-2">{t('common.status')}</label>
+                  <Select value={editData.status} onValueChange={(value) => setEditData({ ...editData, status: value })}>
+                    <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      {statuses.map(status => (
+                        <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-black mb-2">{t('leads.priority')}</label>
+                  <Select value={editData.priority} onValueChange={(value) => setEditData({ ...editData, priority: value })}>
+                    <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="low">{t('leads.low')}</SelectItem>
+                      <SelectItem value="medium">{t('leads.medium')}</SelectItem>
+                      <SelectItem value="high">{t('leads.high')}</SelectItem>
+                      <SelectItem value="urgent">{t('leads.urgent')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               {(editData.status === 'Callback' || editData.status === 'Potential Callback' || editData.status === 'Pharos in progress') && (
                 <>
