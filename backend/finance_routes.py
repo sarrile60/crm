@@ -204,15 +204,16 @@ async def get_agent_financial_dashboard(
     total_approved_volume = sum(d.get("amount", 0) for d in approved_deposits)
     total_pending_volume = sum(d.get("amount", 0) for d in pending_deposits)
     
-    # Get commission rate based on approved volume
-    commission_rate, rate_label = get_commission_rate(total_approved_volume, "agent")
+    # Get commission rate based on approved volume (from database)
+    commission_rate, rate_label = await get_commission_rate_async(total_approved_volume, "agent")
     
     # Calculate commissions
     commission_earned = total_approved_volume * commission_rate
     pending_commission = total_pending_volume * commission_rate  # Estimated
     
-    # Total earnings
-    base_salary = AGENT_BASE_SALARY
+    # Total earnings (base salary from database)
+    salaries = await get_base_salaries()
+    base_salary = salaries["agent"]
     total_earnings = base_salary + commission_earned
     
     # Get all deposits for history (approved, pending, rejected)
@@ -238,12 +239,13 @@ async def get_agent_financial_dashboard(
     # Sort by date descending
     deposit_history.sort(key=lambda x: x["date"] if x["date"] else "", reverse=True)
     
-    # Get next tier info
+    # Get next tier info (from database tiers)
+    agent_tiers = await get_agent_commission_tiers()
     next_tier_info = None
-    for i, (min_vol, max_vol, rate) in enumerate(AGENT_COMMISSION_TIERS):
+    for i, (min_vol, max_vol, rate) in enumerate(agent_tiers):
         if min_vol <= total_approved_volume <= max_vol:
-            if i < len(AGENT_COMMISSION_TIERS) - 1:
-                next_min, next_max, next_rate = AGENT_COMMISSION_TIERS[i + 1]
+            if i < len(agent_tiers) - 1:
+                next_min, next_max, next_rate = agent_tiers[i + 1]
                 next_tier_info = {
                     "current_tier": f"{int(rate * 100)}%",
                     "next_tier": f"{int(next_rate * 100)}%",
@@ -251,6 +253,16 @@ async def get_agent_financial_dashboard(
                     "next_tier_threshold": next_min
                 }
             break
+    
+    # Get commission tiers for display (from database)
+    settings = await get_commission_settings()
+    display_tiers = []
+    for tier in settings.get("agent_tiers", DEFAULT_AGENT_COMMISSION_TIERS):
+        if tier["max_amount"]:
+            range_str = f"€{tier['min_amount']:,} - €{tier['max_amount']:,}"
+        else:
+            range_str = f"€{tier['min_amount']:,}+"
+        display_tiers.append({"range": range_str.replace(",", "."), "rate": f"{tier['rate']}%"})
     
     return {
         "period": {
@@ -271,19 +283,7 @@ async def get_agent_financial_dashboard(
         },
         "next_tier": next_tier_info,
         "deposit_history": deposit_history,
-        "commission_tiers": [
-            {"range": "€0 - €19,999", "rate": "10%"},
-            {"range": "€20,000 - €29,999", "rate": "14%"},
-            {"range": "€30,000 - €49,999", "rate": "15%"},
-            {"range": "€50,000 - €74,999", "rate": "16%"},
-            {"range": "€75,000 - €99,999", "rate": "17%"},
-            {"range": "€100,000 - €149,999", "rate": "18%"},
-            {"range": "€150,000 - €249,999", "rate": "19%"},
-            {"range": "€250,000 - €499,999", "rate": "20%"},
-            {"range": "€500,000 - €749,999", "rate": "22%"},
-            {"range": "€750,000 - €999,999", "rate": "25%"},
-            {"range": "€1,000,000+", "rate": "30%"}
-        ]
+        "commission_tiers": display_tiers
     }
 
 
