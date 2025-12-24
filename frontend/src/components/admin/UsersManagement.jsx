@@ -687,6 +687,16 @@ const UsersManagement = () => {
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <label className="block text-sm font-semibold text-black mb-2">{t('users.sipExtension')}</label>
+              <Input
+                value={formData.sip_extension}
+                onChange={(e) => setFormData({ ...formData, sip_extension: e.target.value })}
+                placeholder={t('users.sipExtensionPlaceholder')}
+                className="bg-white border-gray-300 rounded-none"
+              />
+              <p className="text-xs text-gray-500 mt-1">{t('users.sipExtensionHelp')}</p>
+            </div>
             <div className="flex items-center gap-2">
               <Checkbox
                 id="is_system_user"
