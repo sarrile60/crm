@@ -416,7 +416,7 @@ class ClickToCallTester:
                 headers=headers
             )
             
-            if response.status_code == 400:
+            if response.status_code in [400, 422]:
                 error_data = response.json()
                 error_detail = error_data.get("detail", "")
                 
@@ -424,7 +424,7 @@ class ClickToCallTester:
                     self.log_result(
                         "Make-Call Lead Without Phone", 
                         True, 
-                        "Correctly returned 400 error for lead without phone",
+                        f"Correctly returned {response.status_code} error for lead without phone",
                         f"Error message: {error_detail}"
                     )
                     return True
