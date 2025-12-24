@@ -387,7 +387,7 @@ class ClickToCallTester:
                 }
                 
                 response = self.session.post(
-                    f"{CRM_BASE_URL}/leads",
+                    f"{CRM_BASE_URL}/leads/create",
                     json=lead_data,
                     headers=headers
                 )
