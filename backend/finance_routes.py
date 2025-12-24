@@ -407,11 +407,13 @@ async def get_supervisor_financial_dashboard(
     agents_performance.sort(key=lambda x: x["approved_volume"], reverse=True)
     
     # Next tier info
+    # Get next tier info (from database)
+    supervisor_tiers = await get_supervisor_commission_tiers()
     next_tier_info = None
-    for i, (min_vol, max_vol, rate) in enumerate(SUPERVISOR_COMMISSION_TIERS):
+    for i, (min_vol, max_vol, rate) in enumerate(supervisor_tiers):
         if min_vol <= team_approved_volume <= max_vol:
-            if i < len(SUPERVISOR_COMMISSION_TIERS) - 1:
-                next_min, next_max, next_rate = SUPERVISOR_COMMISSION_TIERS[i + 1]
+            if i < len(supervisor_tiers) - 1:
+                next_min, next_max, next_rate = supervisor_tiers[i + 1]
                 next_tier_info = {
                     "current_tier": f"{int(rate * 100)}%",
                     "next_tier": f"{int(next_rate * 100)}%",
@@ -419,6 +421,16 @@ async def get_supervisor_financial_dashboard(
                     "next_tier_threshold": next_min
                 }
             break
+    
+    # Get commission tiers for display (from database)
+    settings = await get_commission_settings()
+    display_tiers = []
+    for tier in settings.get("supervisor_tiers", DEFAULT_SUPERVISOR_COMMISSION_TIERS):
+        if tier["max_amount"]:
+            range_str = f"€{tier['min_amount']:,} - €{tier['max_amount']:,}"
+        else:
+            range_str = f"€{tier['min_amount']:,}+"
+        display_tiers.append({"range": range_str.replace(",", "."), "rate": f"{tier['rate']}%"})
     
     return {
         "period": {
@@ -440,15 +452,7 @@ async def get_supervisor_financial_dashboard(
         "next_tier": next_tier_info,
         "team_deposits": team_deposits,
         "agents_performance": agents_performance,
-        "commission_tiers": [
-            {"range": "€0 - €29,999", "rate": "1%"},
-            {"range": "€30,000 - €49,999", "rate": "2%"},
-            {"range": "€50,000 - €79,999", "rate": "3%"},
-            {"range": "€80,000 - €119,999", "rate": "4%"},
-            {"range": "€120,000 - €159,999", "rate": "5%"},
-            {"range": "€160,000 - €199,999", "rate": "6%"},
-            {"range": "€200,000+", "rate": "7%"}
-        ]
+        "commission_tiers": display_tiers
     }
 
 
