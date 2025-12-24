@@ -381,12 +381,27 @@ const FinancialDashboard = ({ currentUser }) => {
           </button>
           {showTiers && (
             <div className="p-4 border-t grid grid-cols-2 md:grid-cols-4 gap-2">
-              {data?.commission_tiers?.map((tier, idx) => (
-                <div key={idx} className="p-3 bg-gray-50 rounded text-center">
-                  <div className="text-sm text-gray-600">{tier.range}</div>
-                  <div className="text-lg font-bold text-[#D4AF37]">{tier.rate}</div>
-                </div>
-              ))}
+              {data?.commission_tiers?.map((tier, idx) => {
+                const isCurrentTier = tier.rate === data?.summary?.commission_rate;
+                return (
+                  <div 
+                    key={idx} 
+                    className={`p-3 rounded text-center relative ${
+                      isCurrentTier 
+                        ? 'bg-[#D4AF37] text-black ring-2 ring-[#D4AF37] ring-offset-2' 
+                        : 'bg-gray-50'
+                    }`}
+                  >
+                    {isCurrentTier && (
+                      <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+                        {t('finance.currentTier')}
+                      </span>
+                    )}
+                    <div className={`text-sm ${isCurrentTier ? 'text-black/70' : 'text-gray-600'}`}>{tier.range}</div>
+                    <div className={`text-lg font-bold ${isCurrentTier ? 'text-black' : 'text-[#D4AF37]'}`}>{tier.rate}</div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
