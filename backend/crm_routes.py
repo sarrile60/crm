@@ -1522,22 +1522,32 @@ async def make_call(request: MakeCallRequest, current_user: dict = Depends(get_c
     Initiate a click-to-call via FreePBX AMI.
     Security: Agent never sees the phone number - it's retrieved server-side.
     """
+    logging.info(f"=== CLICK-TO-CALL REQUEST ===")
+    logging.info(f"User: {current_user.get('username')} (ID: {current_user.get('id')})")
+    logging.info(f"Lead ID: {request.lead_id}")
+    
     # Get agent's SIP extension from their profile
     agent = await db.crm_users.find_one({"id": current_user["id"]}, {"_id": 0})
     if not agent:
+        logging.error(f"Agent not found for user ID: {current_user['id']}")
         raise HTTPException(status_code=404, detail="Agent not found")
     
     agent_extension = agent.get("sip_extension")
+    logging.info(f"Agent Extension: {agent_extension}")
+    
     if not agent_extension:
+        logging.error(f"No SIP extension configured for user: {current_user.get('username')}")
         raise HTTPException(status_code=400, detail="SIP extension not configured. Please contact your administrator.")
     
     # Get lead's phone number (server-side only - never exposed to frontend)
     lead = await db.leads.find_one({"id": request.lead_id}, {"_id": 0})
     if not lead:
+        logging.error(f"Lead not found: {request.lead_id}")
         raise HTTPException(status_code=404, detail="Lead not found")
     
     client_number = lead.get("phone")
     if not client_number:
+        logging.error(f"Lead has no phone number: {request.lead_id}")
         raise HTTPException(status_code=400, detail="Lead has no phone number")
     
     # Clean the phone number (remove spaces, dashes, etc.)
@@ -1547,11 +1557,15 @@ async def make_call(request: MakeCallRequest, current_user: dict = Depends(get_c
     if not clean_number.startswith('39') and len(clean_number) <= 10:
         clean_number = '39' + clean_number
     
+    logging.info(f"Client Number (cleaned): {clean_number}")
+    
     # Get AMI credentials from environment
     ami_host = os.environ.get('AMI_HOST', '194.32.79.101')
     ami_port = int(os.environ.get('AMI_PORT', '5038'))
     ami_user = os.environ.get('AMI_USER', 'crm_dialer')
     ami_pass = os.environ.get('AMI_PASS', 'yo123mama')
+    
+    logging.info(f"AMI Host: {ami_host}:{ami_port}, User: {ami_user}")
     
     try:
         # Connect to FreePBX AMI
