@@ -278,7 +278,8 @@ const UsersManagement = () => {
       role: user.role,
       team_ids: user.team_ids || (user.team_id ? [user.team_id] : []),
       default_team_id: user.default_team_id || user.team_id || '',
-      is_system_user: user.is_system_user || false
+      is_system_user: user.is_system_user || false,
+      sip_extension: user.sip_extension || ''
     });
     setShowEditModal(true);
   };
