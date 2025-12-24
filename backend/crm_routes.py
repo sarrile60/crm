@@ -1650,23 +1650,20 @@ async def initiate_ami_call(ami_host: str, ami_port: int, ami_user: str, ami_pas
         # This will ring the agent's phone first, then connect to the client
         originate_cmd = (
             f"Action: Originate\r\n"
-            f"Channel: Local/s@crm-originate-call\r\n"
-            f"Exten: s\r\n"
-            f"Context: crm-originate-call\r\n"
-            f"Priority: 1\r\n"
+            f"Channel: Local/s@crm-originate-call/n\r\n"
             f"Variable: ARG1={agent_extension}\r\n"
             f"Variable: ARG2={client_number}\r\n"
-            f"CallerID: CRM Outbound <{agent_extension}>\r\n"
+            f"CallerID: CRM Call\r\n"
             f"Async: true\r\n"
             f"\r\n"
         )
         
         # Log the EXACT command being sent
-        logging.info(f"========== AMI ORIGINATE COMMAND ==========")
-        logging.info(f"Agent Extension (ARG1): {agent_extension}")
-        logging.info(f"Client Number (ARG2): {client_number}")
-        logging.info(f"Full Command:\n{originate_cmd}")
-        logging.info(f"============================================")
+        print(f"========== AMI ORIGINATE COMMAND ==========")
+        print(f"Agent Extension (ARG1): {agent_extension}")
+        print(f"Client Number (ARG2): {client_number}")
+        print(f"Full Command:\n{originate_cmd}")
+        print(f"============================================")
         
         writer.write(originate_cmd.encode())
         await writer.drain()
