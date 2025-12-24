@@ -86,6 +86,18 @@ backend:
         comment: "✅ All three user roles (admin, supervisor, agent) can authenticate successfully. JWT tokens working properly."
 
 frontend:
+  - task: "Commission Settings UI"
+    implemented: true
+    working: pending
+    file: "CommissionSettings.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: pending
+        agent: "main"
+        comment: "Implemented admin-only Commission Settings page. Features: View/Edit base salaries for agents and supervisors, View/Edit/Add/Delete commission tiers for both roles, Reset to defaults button, Save functionality. Tab visible only to admin users."
+
   - task: "Deposit Management UI"
     implemented: true
     working: true
