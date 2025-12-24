@@ -538,17 +538,17 @@ class FinancialDashboardTester:
             return False
         
         try:
-            headers = {"Authorization": f"Bearer {self.admin_token}", "Content-Type": "application/json"}
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
             
-            # Test updating base salaries
-            update_data = {
+            # Test updating base salaries using query parameters
+            params = {
                 "agent_base_salary": 700,
                 "supervisor_base_salary": 1300
             }
             
             response = self.session.put(
                 f"{FINANCE_BASE_URL}/settings/commission",
-                json=update_data,
+                params=params,
                 headers=headers
             )
             
