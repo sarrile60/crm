@@ -69,7 +69,8 @@ async def get_commission_settings():
             "updated_at": datetime.utcnow()
         }
         await db.commission_settings.insert_one(settings)
-        del settings["_id"] if "_id" in settings else None
+        if "_id" in settings:
+            del settings["_id"]
     
     return settings
 
