@@ -1647,22 +1647,25 @@ async def initiate_ami_call(ami_host: str, ami_port: int, ami_user: str, ami_pas
         logging.info("AMI authentication successful")
         
         # Send Originate command to initiate the call
-        # This will ring the agent's phone first, then connect to the client
+        # This calls the agent's phone directly, then dials client when agent answers
         originate_cmd = (
             f"Action: Originate\r\n"
-            f"Channel: Local/s@crm-originate-call/n\r\n"
-            f"Variable: ARG1={agent_extension}\r\n"
-            f"Variable: ARG2={client_number}\r\n"
-            f"CallerID: CRM Call\r\n"
+            f"Channel: PJSIP/{agent_extension}\r\n"
+            f"Context: from-internal\r\n"
+            f"Exten: {client_number}\r\n"
+            f"Priority: 1\r\n"
+            f"CallerID: CRM Call <9999>\r\n"
             f"Async: true\r\n"
             f"\r\n"
         )
         
         # Log the EXACT command being sent
         print(f"========== AMI ORIGINATE COMMAND ==========")
-        print(f"Agent Extension (ARG1): {agent_extension}")
-        print(f"Client Number (ARG2): {client_number}")
-        print(f"Full Command:\n{originate_cmd}")
+        print(f"Agent Extension: {agent_extension}")
+        print(f"Client Number: {client_number}")
+        print(f"Channel: PJSIP/{agent_extension}")
+        print(f"Context: from-internal")
+        print(f"Exten: {client_number}")
         print(f"============================================")
         
         writer.write(originate_cmd.encode())
