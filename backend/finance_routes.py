@@ -643,9 +643,14 @@ async def get_admin_financial_overview(
     agents = await db.crm_users.count_documents({"role": "agent", "deleted_at": None})
     supervisors = await db.crm_users.count_documents({"role": "supervisor", "deleted_at": None})
     
+    # Get base salaries from database
+    salaries = await get_base_salaries()
+    agent_base_salary = salaries["agent"]
+    supervisor_base_salary = salaries["supervisor"]
+    
     # Calculate total salaries
-    total_agent_salaries = agents * AGENT_BASE_SALARY
-    total_supervisor_salaries = supervisors * SUPERVISOR_BASE_SALARY
+    total_agent_salaries = agents * agent_base_salary
+    total_supervisor_salaries = supervisors * supervisor_base_salary
     total_salaries = total_agent_salaries + total_supervisor_salaries
     
     # Calculate total commissions paid
@@ -656,7 +661,7 @@ async def get_admin_financial_overview(
     for agent in agent_list:
         agent_deposits = [d for d in approved_deposits if d.get("agent_id") == agent["id"]]
         agent_volume = sum(d.get("amount", 0) for d in agent_deposits)
-        rate, _ = get_commission_rate(agent_volume, "agent")
+        rate, _ = await get_commission_rate_async(agent_volume, "agent")
         total_agent_commissions += agent_volume * rate
     
     # For supervisors: sum of each supervisor's commission based on team volume
@@ -667,7 +672,7 @@ async def get_admin_financial_overview(
         team_ids = await get_user_team_ids(supervisor["id"])
         team_deposits = [d for d in approved_deposits if d.get("team_id") in team_ids]
         team_volume = sum(d.get("amount", 0) for d in team_deposits)
-        rate, _ = get_commission_rate(team_volume, "supervisor")
+        rate, _ = await get_commission_rate_async(team_volume, "supervisor")
         total_supervisor_commissions += team_volume * rate
     
     total_commissions = total_agent_commissions + total_supervisor_commissions
