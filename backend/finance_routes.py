@@ -735,3 +735,217 @@ async def get_admin_financial_overview(
             "profit_margin": round((net_profit / total_approved * 100) if total_approved > 0 else 0, 1)
         }
     }
+
+
+
+# ==================== COMMISSION SETTINGS MANAGEMENT (ADMIN ONLY) ====================
+
+@finance_router.get("/settings/commission")
+async def get_commission_config(current_user: dict = Depends(get_current_user)):
+    """Get current commission settings (Admin only)"""
+    role = current_user.get("role", "").lower()
+    
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Only admin can view commission settings")
+    
+    settings = await get_commission_settings()
+    return settings
+
+
+@finance_router.put("/settings/commission")
+async def update_commission_config(
+    agent_tiers: List[dict] = None,
+    supervisor_tiers: List[dict] = None,
+    agent_base_salary: float = None,
+    supervisor_base_salary: float = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """Update commission settings (Admin only)"""
+    role = current_user.get("role", "").lower()
+    
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Only admin can update commission settings")
+    
+    # Get current settings
+    settings = await get_commission_settings()
+    
+    # Build update object
+    update_data = {"updated_at": datetime.utcnow()}
+    
+    if agent_tiers is not None:
+        # Validate tiers
+        for tier in agent_tiers:
+            if "min_amount" not in tier or "rate" not in tier:
+                raise HTTPException(status_code=400, detail="Each tier must have min_amount and rate")
+        update_data["agent_tiers"] = agent_tiers
+    
+    if supervisor_tiers is not None:
+        for tier in supervisor_tiers:
+            if "min_amount" not in tier or "rate" not in tier:
+                raise HTTPException(status_code=400, detail="Each tier must have min_amount and rate")
+        update_data["supervisor_tiers"] = supervisor_tiers
+    
+    if agent_base_salary is not None:
+        if agent_base_salary < 0:
+            raise HTTPException(status_code=400, detail="Base salary cannot be negative")
+        update_data["agent_base_salary"] = agent_base_salary
+    
+    if supervisor_base_salary is not None:
+        if supervisor_base_salary < 0:
+            raise HTTPException(status_code=400, detail="Base salary cannot be negative")
+        update_data["supervisor_base_salary"] = supervisor_base_salary
+    
+    # Update in database
+    await db.commission_settings.update_one(
+        {"type": "commission_config"},
+        {"$set": update_data}
+    )
+    
+    # Return updated settings
+    updated_settings = await get_commission_settings()
+    return {"message": "Commission settings updated successfully", "settings": updated_settings}
+
+
+@finance_router.post("/settings/commission/agent-tier")
+async def add_agent_tier(
+    min_amount: float,
+    max_amount: float = None,
+    rate: float = 10,
+    current_user: dict = Depends(get_current_user)
+):
+    """Add a new agent commission tier (Admin only)"""
+    role = current_user.get("role", "").lower()
+    
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Only admin can modify commission tiers")
+    
+    if rate < 0 or rate > 100:
+        raise HTTPException(status_code=400, detail="Rate must be between 0 and 100")
+    
+    settings = await get_commission_settings()
+    tiers = settings.get("agent_tiers", [])
+    
+    # Add new tier
+    new_tier = {"min_amount": min_amount, "max_amount": max_amount, "rate": rate}
+    tiers.append(new_tier)
+    
+    # Sort by min_amount
+    tiers.sort(key=lambda x: x["min_amount"])
+    
+    # Update in database
+    await db.commission_settings.update_one(
+        {"type": "commission_config"},
+        {"$set": {"agent_tiers": tiers, "updated_at": datetime.utcnow()}}
+    )
+    
+    return {"message": "Agent tier added successfully", "tiers": tiers}
+
+
+@finance_router.delete("/settings/commission/agent-tier/{tier_index}")
+async def delete_agent_tier(
+    tier_index: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """Delete an agent commission tier (Admin only)"""
+    role = current_user.get("role", "").lower()
+    
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Only admin can modify commission tiers")
+    
+    settings = await get_commission_settings()
+    tiers = settings.get("agent_tiers", [])
+    
+    if tier_index < 0 or tier_index >= len(tiers):
+        raise HTTPException(status_code=404, detail="Tier index not found")
+    
+    # Remove tier
+    removed = tiers.pop(tier_index)
+    
+    # Update in database
+    await db.commission_settings.update_one(
+        {"type": "commission_config"},
+        {"$set": {"agent_tiers": tiers, "updated_at": datetime.utcnow()}}
+    )
+    
+    return {"message": "Agent tier deleted successfully", "removed": removed, "tiers": tiers}
+
+
+@finance_router.post("/settings/commission/supervisor-tier")
+async def add_supervisor_tier(
+    min_amount: float,
+    max_amount: float = None,
+    rate: float = 1,
+    current_user: dict = Depends(get_current_user)
+):
+    """Add a new supervisor commission tier (Admin only)"""
+    role = current_user.get("role", "").lower()
+    
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Only admin can modify commission tiers")
+    
+    if rate < 0 or rate > 100:
+        raise HTTPException(status_code=400, detail="Rate must be between 0 and 100")
+    
+    settings = await get_commission_settings()
+    tiers = settings.get("supervisor_tiers", [])
+    
+    # Add new tier
+    new_tier = {"min_amount": min_amount, "max_amount": max_amount, "rate": rate}
+    tiers.append(new_tier)
+    
+    # Sort by min_amount
+    tiers.sort(key=lambda x: x["min_amount"])
+    
+    # Update in database
+    await db.commission_settings.update_one(
+        {"type": "commission_config"},
+        {"$set": {"supervisor_tiers": tiers, "updated_at": datetime.utcnow()}}
+    )
+    
+    return {"message": "Supervisor tier added successfully", "tiers": tiers}
+
+
+@finance_router.delete("/settings/commission/supervisor-tier/{tier_index}")
+async def delete_supervisor_tier(
+    tier_index: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """Delete a supervisor commission tier (Admin only)"""
+    role = current_user.get("role", "").lower()
+    
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Only admin can modify commission tiers")
+    
+    settings = await get_commission_settings()
+    tiers = settings.get("supervisor_tiers", [])
+    
+    if tier_index < 0 or tier_index >= len(tiers):
+        raise HTTPException(status_code=404, detail="Tier index not found")
+    
+    # Remove tier
+    removed = tiers.pop(tier_index)
+    
+    # Update in database
+    await db.commission_settings.update_one(
+        {"type": "commission_config"},
+        {"$set": {"supervisor_tiers": tiers, "updated_at": datetime.utcnow()}}
+    )
+    
+    return {"message": "Supervisor tier deleted successfully", "removed": removed, "tiers": tiers}
+
+
+@finance_router.post("/settings/commission/reset")
+async def reset_commission_settings(current_user: dict = Depends(get_current_user)):
+    """Reset commission settings to defaults (Admin only)"""
+    role = current_user.get("role", "").lower()
+    
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Only admin can reset commission settings")
+    
+    # Delete existing and recreate with defaults
+    await db.commission_settings.delete_many({"type": "commission_config"})
+    
+    # Get new defaults
+    settings = await get_commission_settings()
+    
+    return {"message": "Commission settings reset to defaults", "settings": settings}
