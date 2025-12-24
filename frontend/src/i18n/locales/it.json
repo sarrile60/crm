@@ -125,7 +125,10 @@
     "deposits": "Depositi",
     "depositApprovals": "Approvazione Depositi",
     "revenue": "Ricavi",
-    "analytics": "Statistiche"
+    "analytics": "Statistiche",
+    "earnings": "Guadagni",
+    "finance": "Finanza",
+    "commissionSettings": "Impostazioni Commissioni"
   },
   "analytics": {
     "title": "Dashboard Statistiche",
