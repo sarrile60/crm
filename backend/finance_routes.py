@@ -17,39 +17,86 @@ finance_router = APIRouter(prefix="/finance", tags=["Finance"])
 db = None
 JWT_SECRET = os.environ.get("JWT_SECRET", "your-secret-key-here")
 
-# Commission Tiers Configuration
-AGENT_COMMISSION_TIERS = [
-    (0, 19999, 0.10),           # 0 - 19,999 = 10%
-    (20000, 29999, 0.14),       # 20,000 - 29,999 = 14%
-    (30000, 49999, 0.15),       # 30,000 - 49,999 = 15%
-    (50000, 74999, 0.16),       # 50,000 - 74,999 = 16%
-    (75000, 99999, 0.17),       # 75,000 - 99,999 = 17%
-    (100000, 149999, 0.18),     # 100,000 - 149,999 = 18%
-    (150000, 249999, 0.19),     # 150,000 - 249,999 = 19%
-    (250000, 499999, 0.20),     # 250,000 - 499,999 = 20%
-    (500000, 749999, 0.22),     # 500,000 - 749,999 = 22%
-    (750000, 999999, 0.25),     # 750,000 - 999,999 = 25%
-    (1000000, float('inf'), 0.30),  # 1,000,000+ = 30%
+# Default Commission Tiers (used if database is empty)
+DEFAULT_AGENT_COMMISSION_TIERS = [
+    {"min_amount": 0, "max_amount": 19999, "rate": 10},
+    {"min_amount": 20000, "max_amount": 29999, "rate": 14},
+    {"min_amount": 30000, "max_amount": 49999, "rate": 15},
+    {"min_amount": 50000, "max_amount": 74999, "rate": 16},
+    {"min_amount": 75000, "max_amount": 99999, "rate": 17},
+    {"min_amount": 100000, "max_amount": 149999, "rate": 18},
+    {"min_amount": 150000, "max_amount": 249999, "rate": 19},
+    {"min_amount": 250000, "max_amount": 499999, "rate": 20},
+    {"min_amount": 500000, "max_amount": 749999, "rate": 22},
+    {"min_amount": 750000, "max_amount": 999999, "rate": 25},
+    {"min_amount": 1000000, "max_amount": None, "rate": 30},
 ]
 
-SUPERVISOR_COMMISSION_TIERS = [
-    (0, 29999, 0.01),           # 0 - 29,999 = 1%
-    (30000, 49999, 0.02),       # 30,000 - 49,999 = 2%
-    (50000, 79999, 0.03),       # 50,000 - 79,999 = 3%
-    (80000, 119999, 0.04),      # 80,000 - 119,999 = 4%
-    (120000, 159999, 0.05),     # 120,000 - 159,999 = 5%
-    (160000, 199999, 0.06),     # 160,000 - 199,999 = 6%
-    (200000, float('inf'), 0.07),   # 200,000+ = 7%
+DEFAULT_SUPERVISOR_COMMISSION_TIERS = [
+    {"min_amount": 0, "max_amount": 29999, "rate": 1},
+    {"min_amount": 30000, "max_amount": 49999, "rate": 2},
+    {"min_amount": 50000, "max_amount": 79999, "rate": 3},
+    {"min_amount": 80000, "max_amount": 119999, "rate": 4},
+    {"min_amount": 120000, "max_amount": 159999, "rate": 5},
+    {"min_amount": 160000, "max_amount": 199999, "rate": 6},
+    {"min_amount": 200000, "max_amount": None, "rate": 7},
 ]
 
-# Base Salaries
-AGENT_BASE_SALARY = 600
-SUPERVISOR_BASE_SALARY = 1200
+# Default Base Salaries
+DEFAULT_AGENT_BASE_SALARY = 600
+DEFAULT_SUPERVISOR_BASE_SALARY = 1200
 
 
 def init_finance_routes(database):
     global db
     db = database
+
+
+async def get_commission_settings():
+    """Get commission settings from database, or create defaults if not exist"""
+    settings = await db.commission_settings.find_one({"type": "commission_config"}, {"_id": 0})
+    
+    if not settings:
+        # Create default settings
+        settings = {
+            "id": str(uuid.uuid4()),
+            "type": "commission_config",
+            "agent_tiers": DEFAULT_AGENT_COMMISSION_TIERS,
+            "supervisor_tiers": DEFAULT_SUPERVISOR_COMMISSION_TIERS,
+            "agent_base_salary": DEFAULT_AGENT_BASE_SALARY,
+            "supervisor_base_salary": DEFAULT_SUPERVISOR_BASE_SALARY,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        await db.commission_settings.insert_one(settings)
+        del settings["_id"] if "_id" in settings else None
+    
+    return settings
+
+
+async def get_agent_commission_tiers():
+    """Get agent commission tiers from database"""
+    settings = await get_commission_settings()
+    tiers = settings.get("agent_tiers", DEFAULT_AGENT_COMMISSION_TIERS)
+    # Convert to tuple format for calculation
+    return [(t["min_amount"], t["max_amount"] if t["max_amount"] else float('inf'), t["rate"] / 100) for t in tiers]
+
+
+async def get_supervisor_commission_tiers():
+    """Get supervisor commission tiers from database"""
+    settings = await get_commission_settings()
+    tiers = settings.get("supervisor_tiers", DEFAULT_SUPERVISOR_COMMISSION_TIERS)
+    # Convert to tuple format for calculation
+    return [(t["min_amount"], t["max_amount"] if t["max_amount"] else float('inf'), t["rate"] / 100) for t in tiers]
+
+
+async def get_base_salaries():
+    """Get base salaries from database"""
+    settings = await get_commission_settings()
+    return {
+        "agent": settings.get("agent_base_salary", DEFAULT_AGENT_BASE_SALARY),
+        "supervisor": settings.get("supervisor_base_salary", DEFAULT_SUPERVISOR_BASE_SALARY)
+    }
 
 
 async def get_current_user(authorization: Optional[str] = Header(None)):
