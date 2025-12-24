@@ -91,15 +91,18 @@ backend:
 frontend:
   - task: "Commission Settings UI"
     implemented: true
-    working: pending
+    working: true
     file: "CommissionSettings.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: pending
         agent: "main"
         comment: "Implemented admin-only Commission Settings page. Features: View/Edit base salaries for agents and supervisors, View/Edit/Add/Delete commission tiers for both roles, Reset to defaults button, Save functionality. Tab visible only to admin users."
+      - working: true
+        agent: "testing"
+        comment: "✅ COMMISSION SETTINGS UI FULLY FUNCTIONAL - Comprehensive E2E testing completed successfully with 100% pass rate (6/6 test scenarios). ADMIN ACCESS VERIFIED: Successfully logged in as admin (admin_f87450ce5d66) and Commission Settings tab is visible only for admin users. PAGE CONTENT VERIFICATION: Header shows 'Commission Settings' title with subtitle 'Configure commission tiers and base salaries for agents and supervisors', Reset to Defaults and Save buttons present, Base Salaries section displays Agent Base Salary (€600) and Supervisor Base Salary (€1200) inputs correctly. COMMISSION TIERS SECTIONS: Agent Commission Tiers table exists with columns (Min Amount €, Max Amount €, Rate %, Actions), 7 agent tiers displayed with editable input fields, Add Tier button present, delete (trash) icons visible for each tier. Supervisor Commission Tiers table exists with same structure, 7 supervisor tiers displayed and editable, Add Tier button functional. EDIT FUNCTIONALITY: Successfully changed Agent Base Salary from 600 to 650, Save button clicked and success toast notification appeared, value persistence verified after page refresh. NON-ADMIN ACCESS CONTROL: Agent (agente/12345) login successful but Commission Settings tab correctly NOT visible, Supervisor (maurizio1/12345) login successful but Commission Settings tab correctly NOT visible. All review request test scenarios completed successfully. Commission Settings UI ready for production use."
 
   - task: "Deposit Management UI"
     implemented: true
