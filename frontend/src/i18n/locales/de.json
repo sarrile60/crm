@@ -691,7 +691,8 @@
     "legalInfo": "Rechtliche Informationen",
     "companyType": "Typ: Gesellschaft mit beschränkter Haftung",
     "established": "Gegründet: 9. September 2021",
-    "sicCode": "SIC-Code: 69102 – Rechtsanwälte"
+    "sicCode": "SIC-Code: 69102 – Rechtsanwälte",
+    "availableInForm": "im Formular verfügbar"
   },
   "footer": {
     "contacts": "Kontakte",
