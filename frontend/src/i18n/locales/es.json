@@ -691,7 +691,8 @@
     "legalInfo": "Información legal",
     "companyType": "Tipo: Sociedad de responsabilidad limitada",
     "established": "Establecida: 9 de septiembre de 2021",
-    "sicCode": "Código SIC: 69102 – Abogados"
+    "sicCode": "Código SIC: 69102 – Abogados",
+    "availableInForm": "disponible en el formulario"
   },
   "footer": {
     "contacts": "Contactos",
