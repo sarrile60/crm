@@ -983,7 +983,7 @@ const Home = () => {
                 </div>
                 <div className="flex items-center gap-2 text-gray-300">
                   <Phone className="w-5 h-5 text-[#D4AF37]" />
-                  <span>+44 (disponibile nel form)</span>
+                  <span>+44 ({t('home.availableInForm')})</span>
                 </div>
               </div>
             </div>
