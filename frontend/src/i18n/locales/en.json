@@ -1121,7 +1121,8 @@
     "legalInfo": "Legal Information",
     "companyType": "Type: Private Limited Company",
     "established": "Established: September 9, 2021",
-    "sicCode": "SIC Code: 69102 \u2013 Solicitors"
+    "sicCode": "SIC Code: 69102 \u2013 Solicitors",
+    "availableInForm": "available in form"
   },
   "footer": {
     "contacts": "Contacts",
