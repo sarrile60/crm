@@ -924,6 +924,8 @@
     "leadsExportedSuccess": "Lead esportati con successo",
     "selectCSVFile": "Seleziona un file CSV",
     "leadsImportedSuccess": "{{count}} lead importati con successo",
+    "importingLeads": "Importazione di {{total}} lead in corso...",
+    "leadsImportFailed": "{{count}} lead non importati",
     "errorImportingCSV": "Errore nell'importazione del CSV",
     "statusUpdated": "Stato aggiornato",
     "errorUpdatingStatus": "Errore aggiornamento stato",
