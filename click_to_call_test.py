@@ -13,7 +13,7 @@ import time
 import logging
 
 # Configuration
-BASE_URL = "https://finance-suite-9.preview.emergentagent.com/api"
+BASE_URL = "https://leads-ui-upgrade.preview.emergentagent.com/api"
 CRM_BASE_URL = f"{BASE_URL}/crm"
 ADMIN_BASE_URL = f"{BASE_URL}/admin"
 

@@ -1,156 +1,202 @@
 <analysis>**original_problem_statement:**
-The user's initial goal was to build a full-stack CRM for their law firm, 1 LAW SOLICITORS. The primary, non-negotiable requirement was to create a comprehensive, GUI-driven administration panel to make the entire system configurable without needing future code edits. The project is in Phase 3, which focuses on full internationalization (i18n) of the application into English, Italian, German, French, and Spanish.
+The user's initial request was for a Deposit Management System. Over time, this evolved into a full-fledged CRM including a Revenue Dashboard, Admin Analytics, and a comprehensive Financial Dashboard.
 
-A new major feature was requested and implemented: a real-time internal chat system for communication between Admins, Supervisors, and Agents, complete with notifications, sound, file sharing, and other modern chat features.
+In this session, the user's primary requests were:
+1.  **Editable Commission Tiers**: Complete the feature to allow admins to edit agent and supervisor commission tiers through a GUI.
+2.  **Infinite Reload Bug**: Fix a critical bug causing the Commission Settings page to reload infinitely.
+3.  **Remove Watermark**: Remove the Made with Emergent watermark from the application.
+4.  **Admin Lead Editing**: Enhance the lead editing functionality to allow administrators to edit all fields of a lead, not just status and priority.
+5.  **Click-to-Call Integration**: Implement a Click-to-Call feature using the user's FreePBX server. This involved creating backend API endpoints to connect to the FreePBX AMI, updating the frontend to include a Call button on leads, and adding a SIP Extension field for users in the admin panel. The majority of the work on this feature involved extensive debugging of network, firewall, and FreePBX configuration issues.
+6.  **Frontend Stability**: Address a recurring Web server returned an unknown error and other preview availability issues.
+7.  **Translation Fixes**: Fix a hardcoded string on the homepage and translate it into all five available languages.
+8.  **CSV/Excel Import Refactor**: Fix multiple issues with the lead import functionality, including rate limiting, duplicate handling, character encoding, and finally adding support for Excel (.xlsx) files.
+9.  **Leads Page Major Refactor (Latest Request)**: The user's final and most detailed request is a complete overhaul of the Leads list page to address significant performance, UI, and UX issues.
 
-**PRODUCT REQUIREMENTS:**
--   **GUI-First Design:** All configuration MUST be managed through a user-friendly admin GUI.
--   **Internationalization (i18n):** The entire application must be translatable via the Admin Panel into EN, IT, DE, FR, and ES.
--   **Internal Chat System:**
-    -   Live communication between roles (Admin, Supervisor, Agent).
-    -   Live notifications with sound.
-    -   Message read receipts and user is typing indicators.
-    -   Image/file sharing with image zoom-on-click.
-    -   Message search functionality.
-    -   Indefinite message history retention.
--   **UI Integrity:** All UI elements (icons, dates, times) must render correctly and respect locale settings.
+**PRODUCT REQUIREMENTS (Leads Page Refactor):**
+*   **Primary Goal:** Refactor the Leads list into a dense, performant, modern CRM view, similar to EspoCRM, eliminating layout bugs and performance lag with large datasets (5k-50k leads).
+*   **Layout:**
+    *   Use a consistent container (max-width or full-width) with proper padding.
+    *   Implement a **sticky toolbar** with title, search, filters (Status, Priority, etc.), and actions (Create, Import, Export).
+    *   The table must be in a container with  and a **sticky header row**.
+*   **Performance:**
+    *   Implement **server-side pagination** (e.g.,  & ). The current API is not paginated.
+    *   Implement a **virtualized list** (e.g.,  or ).
+    *   Use **debounced search** (~300ms) with cancellation of in-flight requests.
+    *   Optimize rendering with memoized components and stable keys.
+*   **Backend API:**
+    *   Create or adjust a  endpoint to support pagination, searching, filtering, and sorting.
+    *   The API should return a payload like .
+    *   Ensure database indexes exist on filterable and sortable fields.
+*   **UI/UX:**
+    *   Use a fixed table layout with defined column widths and text truncation ().
+    *   Display pagination info like 1–200 / 5,140 with prev/next buttons and a page size dropdown.
+    *   Support row interactions: single click to open details, checkbox for bulk actions (Assign, Change Status, Delete).
+*   **Responsive Design:**
+    *   Desktop: Full table view.
+    *   Mobile: Switch to a card list view.
+*   **Color/Branding:**
+    *   **CRITICAL:** Do NOT change the existing color palette, theme, or branding. Reuse all existing tokens and styles. The focus is on layout and performance, not a visual redesign.
 
-**User's preferred language**: English
+**User's preferred language**: English and Albanian.
 
 **what currently exists?**
-The application is a full-stack CRM with a React frontend, FastAPI backend, and MongoDB database. A massive effort has been undertaken to translate the application into five languages, fixing dozens of components. A new, full-featured chat system has been built from scratch, including backend routes for real-time polling and a frontend widget integrated into the CRM and Admin panels. Numerous UI/UX bugs have been fixed, including inconsistent flag icons and a problematic time input component, which was completely rebuilt to be more user-friendly.
+The application is a full-stack CRM with a Deposit Management System, Revenue Dashboard, Analytics Dashboard, and a Financial Dashboard. The major features implemented in this session include a fully functional and tested admin GUI for editing commission tiers, enhanced lead editing capabilities for administrators, and a Click-to-Call integration with the user's external FreePBX server. The lead import functionality has been significantly improved to handle bulk imports, different file formats (CSV/XLSX), and various data validation issues. However, the main Leads list page suffers from major performance and UI/UX issues, which is the focus of the next task.
 
 **Last working item**:
--   Last item agent was working: The user reported that the  component (the bell icon dropdown) and its pop-up modal are not translating, showing hardcoded Italian text and using an Italian-specific date format regardless of the selected language. The agent has located the file () and identified the hardcoded strings and locale settings.
--   Status: IN PROGRESS
+-   Last item agent was working: The agent was at the very beginning of the Leads Page Major Refactor task. The work involved analyzing the existing  (1600+ lines) and the corresponding backend endpoint  to plan the refactor. No code has been written for this task yet.
+-   Status: NOT STARTED
 -   Agent Testing Done: N
--   Which testing method agent to use? Frontend testing agent. The test must verify that both the notifications dropdown and the callback pop-up modal are fully translated in all five languages. Capturing screenshots of the pop-up in a non-Italian language (like German) is essential.
+-   Which testing method agent to use? both. The backend requires testing for the new paginated API. The frontend requires extensive testing with the  to verify performance with large datasets, UI correctness, and responsiveness as per the detailed user requirements.
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Translate  (P0)
--   Issue 2: Verify  Icon Fix (P2)
+-   Issue 1: Leads Page Major Refactor (P0)
 
 Issues Detail:
--   **Issue 1: Translate **
-    -   **Attempted fixes:** None yet. The agent has only identified the file and the specific hardcoded strings and locales.
+-   **Issue 1: Leads Page Major Refactor**
+    -   **Description:** The user has provided a detailed set of requirements to completely overhaul the  component and its corresponding backend API. The current implementation is slow, buggy, and not scalable for large datasets.
     -   **Next debug checklist:**
-        1.  In , import the  hook.
-        2.  Identify all hardcoded Italian strings (e.g., , , ).
-        3.  Create new translation keys (e.g., , , ).
-        4.  Add the new keys and their translations to all five language files: , , , , .
-        5.  Replace the hardcoded strings with the  function.
-        6.  Find the hardcoded  locale used for date/time formatting and replace it with the dynamic  property to respect the user's language choice.
-    -   **Why fix this issue and what will be achieved with the fix?** To resolve the last known untranslated component reported by the user and move closer to the goal of 100% i18n coverage.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** Y (This is another instance of the same incomplete translation problem found across the app).
-    -   **Should Test frontend/backend/both after fix?** Frontend
-    -   **Blocked on other issue:** None
--   **Issue 2: Verify  Icon Fix**
-    -   **Description:** An icon was rendering as a ? and was fixed in a previous session.
-    -   **Attempted fixes:** The correct icon mapping was added to the component.
-    -   **Next debug checklist:** This has not been explicitly verified by the user. It should be included as a minor check in the next user verification step.
-    -   **Status:** USER VERIFICATION PENDING
+        1.  **Backend:** Modify the  function in  to support server-side pagination, searching, filtering, and sorting as per the user's required API contract.
+        2.  **Backend:** Add necessary database indexes to the  collection for fields like , , , and  to ensure query performance.
+        3.  **Frontend:** Create a new, reusable, and optimized Table component.
+        4.  **Frontend:** Implement the new Leads page using the new Table component, incorporating a sticky toolbar, sticky table headers, and server-side pagination logic.
+        5.  **Frontend:** Implement virtualization ( or similar) to ensure smooth scrolling with large page sizes.
+        6.  **Frontend:** Ensure the new layout is responsive, switching to a card view on mobile.
+        7.  **Frontend:** Implement debounced search and filtering.
+    -   **Why fix this issue and what will be achieved with the fix?** This is the user's top priority. Fixing it will resolve major performance bottlenecks and UI/UX frustrations, making the core feature of the CRM professional and scalable.
+    -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Frontend (Screenshot tool)
+    -   **Should Test frontend/backend/both after fix?** Both
+    -   **Blocked on other issue:** None
 
 **In progress Task List**:
--   Task 1: Complete Application-Wide Translation (P0)
-
-Task Detail:
--   **Task 1: Complete Application-Wide Translation**
-    -   **Where to resume:** Resume by rewriting  to be fully translatable.
-    -   **What will be achieved with this?** This will fix the last major untranslated component reported by the user, significantly improving the application's multilingual capabilities.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** Frontend
+-   **Task 1: Leads Page Major Refactor**
+    -   **Where to resume:** Start by modifying the backend endpoint  in  to implement server-side pagination.
+    -   **What will be achieved with this?** A professional, performant, and scalable lead management interface.
+    -   **Status:** NOT STARTED
+    -   **Should Test frontend/backend/both after fix?** Both
     -   **Blocked on something:** None
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   (P0) After fixing , perform a final, exhaustive global search across the entire  directory for any remaining hardcoded English or Italian text. This is critical to break the cycle of reactive fixes and ensure 100% coverage, especially in newly added components like .
-    -   (P1) Conduct a final, full-system regression test using the frontend testing agent. This test should cover all major pages (Dashboard, Admin Panel, Leads, Home) in multiple languages (e.g., German, Spanish) to confirm that the extensive changes have not introduced new bugs.
+    -   (P1) Add Italian translations for the expense management UI in .
 -   **Future Tasks:**
-    -   (P2) Add a client video testimonials section to the  page (a de-prioritized user request).
+    -   (P2) Add a client video testimonials section to the  page.
+    -   (P3) Refactor other large components like ,  into smaller, more manageable child components.
+    -   (P3) The new reusable Table component created for the Leads refactor should be used to refactor other tables in the app (e.g., Deposits, Revenue).
 
 **Completed work in this session**
--   **Massive Internationalization (i18n) Overhaul:**
-    -   Translated , , , , , , and .
-    -   Fixed an issue in  where the user's role in the header was not being translated.
--   **New Feature: Chat System (Phase 1)**
-    -   **Backend:** Implemented  with endpoints for real-time message polling, sending messages, creating conversations, and listing users. Fixed critical bugs related to database connections and JWT authentication.
-    -   **Frontend:** Created , a comprehensive chat component with a user list, conversation view, message input, and image-handling capabilities.
-    -   **Features:** Real-time polling, user list, image attachments with a zoom-on-click modal, and a notification sound.
--   **UI/UX Bug Fixes:**
-    -   **Language Flags:** Replaced unreliable emoji flags with robust SVG icons from the  library, ensuring they render correctly on all systems.
-    -   **Session Time Input:** Completely rebuilt the time input in . The new component now supports two-digit zero-padding, custom increment/decrement buttons, and reliable manual text input, resolving multiple user complaints.
+-   **Editable Commission Tiers (DONE):** Implemented the full backend and frontend for an admin GUI to manage agent and supervisor commission tiers. Tested with both backend and frontend testing agents.
+-   **Admin Lead Editing (DONE):** Implemented functionality for admins to edit all fields of a lead, including client details, which was previously restricted.
+-   **Click-to-Call Integration (DONE):** Implemented a feature to initiate calls from the CRM via the user's FreePBX server. This included backend AMI integration, frontend UI changes, and extensive network/firewall debugging with the user.
+-   **Lead Import Overhaul (DONE):** Fixed numerous bugs in the CSV import feature, including adding support for Excel files, implementing a bulk import endpoint to avoid rate-limiting, and improving data cleaning and validation.
+-   **Bug Fix: Infinite Reload (FIXED):** Resolved an infinite render loop in  caused by an incorrect  dependency.
+-   **Bug Fix: Corrupted Lead Data (FIXED):** Investigated and deleted corrupted leads that were created due to an import bug.
+-   **UI/UX Fixes (DONE):**
+    -   Removed the Made with Emergent watermark.
+    -   Fixed a hardcoded string on the home page and added translations for it across all 5 languages.
+    -   Changed the Amount Lost field in the lead edit form from a dropdown to a text input as requested.
+-   **Stability (FIXED):** Resolved multiple instances of Web server returned an unknown error and preview unavailability by rebuilding and restarting services.
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1: FreePBX Dialplan Configuration**
+    -   **Debug checklist:** The user reported that when  (extension 1003) makes a call, the call originates from 's extension (1004). The agent proved the CRM sends the correct extension () to the FreePBX AMI. The issue lies within the user's  dialplan context on their FreePBX server. The user needs to inspect  on their server.
+    -   **Why to solve this issue and what will be achieved with this?** This is the final step to make the Click-to-Call feature work as intended for all users.
+    -   **Should Test frontend/backend/both after fix:** Backend (API call verification)
+    -   **Is recurring issue?** Y
+
+**Known issue recurrence from previous fork**
+-   **Issue recurrence in previous fork:** Frontend service crashing (Web server returned an unknown error).
+-   **Recurrence count:** High (recurred multiple times this session).
+-   **Status:** RESOLVED. The issue was consistently resolved by rebuilding the frontend (yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.) and restarting the  service. This suggests a stale build cache issue rather than the file deletion problem from the previous fork. The  script from the previous fork appears to be working correctly, but manual rebuilds are sometimes necessary after significant changes.
 
 **Code Architecture**
-
+sip_extensionLeadUpdate
 
 **Key Technical Concepts**
--   **Internationalization (i18n):** Heavy use of  (, , ).
--   **Chat Architecture:** A long-polling mechanism simulates real-time communication between the frontend () and the backend ().
--   **SVG Icons vs. Emojis:** Replaced inconsistent flag emojis with a CSS-based SVG icon library () for better cross-platform rendering.
--   **Controlled Components:** Rebuilt a simple form input into a fully controlled React component with local state to handle complex validation and formatting requirements for the session time editor.
--   **FastAPI Authentication:** Corrected the chat backend to use the application's existing JWT-based authentication pattern ( from ) instead of an incorrect session-based approach.
+-   **FreePBX AMI Integration:** Connecting to the Asterisk Manager Interface to originate calls programmatically. Involved debugging network connectivity, firewalls (iptables, ), and AMI authentication.
+-   **Server-Side Operations:** The new requirement for the Leads page mandates a shift from client-side rendering to server-side pagination, filtering, and sorting to handle large datasets.
+-   **UI Performance Optimization:** The user explicitly requested virtualization ( or ) and other React best practices (memoization, debouncing) to fix performance lag.
+-   **File Parsing:** Implemented robust client-side parsing for both CSV and Excel (.xlsx) files using  and .
+-   **Dynamic IP Handling:** The agent and user dealt with the ephemeral nature of the preview server's IP address, requiring updates to the user's FreePBX firewall rules.
 
 **key DB schema**
--   **crm_users**: The definitive collection for user data. It was discovered that this collection, not , holds the user records. A  field was missing for most users, requiring a logic change in the chat API.
--   **conversations**: New collection to store metadata for each chat conversation.
--   **messages**: New collection to store individual chat messages, including text and image URLs.
+-   **crm_users:**  (field added)
+
+**changes in tech stack**
+-   ** (sheetjs):** Added to the frontend to support parsing  Excel files for the lead import feature.
 
 **All files of reference**
--   **/app/frontend/src/components/crm/CallbackNotifications.jsx** (The file that needs to be fixed now)
--   **/app/frontend/src/components/chat/ChatWidget.jsx** (The new chat component)
--   **/app/backend/chat_routes.py** (The new chat backend)
--   **/app/frontend/src/components/admin/SessionSettings.jsx** (Reference for the recently fixed time input)
--   **/app/frontend/src/components/admin/LanguageSettings.jsx** (Reference for the flag icon fix)
--   **/app/frontend/src/i18n/locales/** (All translation files)
+-    (Target for refactor)
+-    (Needs API update for pagination)
+-    (Where SIP extension is managed)
+-    (Completed feature)
+-    (Models for users and leads)
+-    (Watermark removal)
+-   The 5 translation files under 
+
+**Areas that need refactoring**:
+-   ****: This is the highest priority. The user has explicitly requested a ground-up refactor of this 1600+ line component to fix performance, UI bugs, and UX. A new, reusable  component should be created as part of this effort.
+-   , : These remain large components that would benefit from being broken down into smaller, reusable child components in the future.
+
+**key api endpoints**
+-   : **NEEDS REFACTOR**. Must be updated to support server-side pagination, filtering, searching, and sorting.
+-   : **(New)** Imports a list of leads from a CSV or Excel file in a single transaction.
+-   : **(New)** Initiates a click-to-call request via the FreePBX AMI.
+-   : Modified to allow admins to update all lead fields.
+-   , : Endpoints to manage commission tiers, now fully implemented and tested.
 
 **Critical Info for New Agent**
--   **The Final Translation Push:** The current task is to fix . Immediately after, you must perform one last, exhaustive search of the entire frontend for any remaining hardcoded strings to finally satisfy the user's primary requirement. Pay special attention to the new .
--   **Database and Auth Consistency is Crucial:** The agent spent significant time debugging the chat feature because it initially used the wrong user collection ( instead of ) and the wrong authentication method. All new features must use the database  (from ) and the JWT-based authentication pattern found in .
--   **Frontend Requires Rebuilding:** The frontend is served from a static  directory. **Hot reload is not active.** Any change to frontend code (JS, CSS, or  translation files) requires a full rebuild (yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.) and a supervisor restart (frontend: ERROR (not running)
-frontend: started) to become visible.
+-   **Leads Page Refactor is P0:** Your immediate and primary task is the complete refactor of the Leads page as per the user's extremely detailed instructions. Do not deviate from the requirements, especially the performance aspects (server-side pagination, virtualization) and the constraint of not changing the color scheme.
+-   **Click-to-Call and Dynamic IPs:** The Click-to-Call feature works from the CRM's perspective, but it is highly dependent on the user's external FreePBX configuration. The preview server's IP address is dynamic and changes when the agent sleeps. You will likely need to get the new IP (34.16.56.64) and instruct the user to update their FreePBX firewall () and potentially their AMI config () again.
+-   **User-Side FreePBX Dialplan Issue:** The user has a dialplan misconfiguration on their PBX that causes calls to originate from the wrong extension. You have already proven the CRM sends the correct data. If the user brings it up again, gently remind them the issue is in their  context in  and offer to look at the config if they provide it.
 
-**documents and test_reports created in this job**
--    (Contains results from the frontend testing agent)
+**documents and test reports created in this job**
+-    (updated for commission settings and lead editing tests)
 
 **Last 10 User Messages and any pending HUMAN messages**
--   User reports the notification sector () is showing in Italian and is not translating properly. (CURRENT ISSUE)
--   User asks for image attachments in the chat to zoom when clicked. (Completed)
--   User reports that no users appear in the chat list. (Completed)
--   User provides detailed requirements for the new chat feature. (Completed)
--   User requests a new chatbox feature. (Completed)
--   User reports being unable to manually type values into the session time input. (Completed)
--   User reports being unable to change time values at all with the new input fields. (Completed)
--   User reports that the session time input shows single-digit minutes (e.g., ) and requests two digits (). (Completed)
--   User reports that language flags are not rendering, showing country codes instead (e.g., IT). (Completed)
--   User reports that the information text in the Language settings is not translated. (Completed)
+1.  **User:** Requests a major refactor of the Leads list page for performance and UI/UX, providing a very detailed specification document. (Status: **PENDING - THIS IS THE NEXT TASK**)
+2.  **User:** Reports that importing leads fails for a 209-lead file and that the Amount Lost field should be a text input, not a dropdown. (Status: **Completed**)
+3.  **User:** Reports Invalid credentials error after the agent tried to fix the import. (Status: **Completed**)
+4.  **User:** Reports that the import created garbled/corrupted leads and asks the agent to undo/delete them and fix the root cause. (Status: **Completed**)
+5.  **User:** Reports No valid leads found in CSV file and provides the file, which turned out to be an Excel file. (Status: **Completed**)
+6.  **User:** Reports that clicking  link redirects to the landing page. (Status: **Completed** - was a browser cache issue)
+7.  **User:** Reports the preview is unavailable again and there's a translation issue on the homepage. (Status: **Completed**)
+8.  **User:** Asks for backup server IPs to configure the PBX firewall. (Status: **Completed**)
+9.  **User:** Asks how to view billing history on Emergent. (Status: **Completed** - agent provided instructions)
+10. **User:** Asks for clarification on credit usage and billing history for a free-tier user who has previously purchased credits. (Status: **Completed** - agent provided instructions)
 
 **Project Health Check:**
--   **Broken:**
-    -   The  component is not fully functional from an i18n perspective, breaking the user's core requirement for full translation.
+-   **Broken:** None.
+-   **Mocked:** None.
+-   **Blocked:** The Click-to-Call feature's full end-to-end functionality is blocked on the user's external FreePBX server configuration (firewall for dynamic IPs and dialplan logic).
 
 **3rd Party Integrations**
--   **react-i18next**: For frontend internationalization.
--   **i18next-browser-languagedetector**: For initial browser language detection.
--   **flag-icons**: CSS/SVG library used to display country flags reliably.
+-   **FreePBX:** Via direct TCP connection to the Asterisk Manager Interface (AMI). Not a formal library, but a key integration.
+-   **xlsx (sheetjs):** For parsing Excel files on the frontend.
+-   **react-i18next:** For internationalization.
+-   **i18next-browser-languagedetector:** For language detection.
+-   **victory & d3-shape:** For charts.
 
 **Testing status**
--   Testing agent used after significant changes: YES
+-   Testing agent used after significant changes: YES (for Commission Settings and Admin Lead Edit)
 -   Troubleshoot agent used after agent stuck in loop: NO
 -   Test files created: None
--   Known regressions: None. The main problem is the iterative discovery of untranslated components.
+-   Known regressions: None
 
 **Credentials to test flow:**
 -   **Admin:**
     -   Username: 
     -   Password: 
--   **Supervisor:**
+-   **Supervisor (Primary for testing):**
     -   Username: 
     -   Password: 
+-   **Agent (with SIP extension):**
+    -   Username: 
+    -   Password: 
+    -   SIP Extension: 
 
 **What agent forgot to execute**
--   The agent created the new  and added translation keys but did not perform a specific, final check within that new file to ensure no hardcoded strings were accidentally left behind during development. This should be part of the upcoming final translation audit.</analysis>
+-   The agent has not yet started the implementation of the detailed Leads Page Major Refactor requested by the user.
+-   The pending task from the previous fork to add Italian translations for the expense management UI has still not been addressed.</analysis>
