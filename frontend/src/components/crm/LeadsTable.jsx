@@ -694,12 +694,33 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   }
 
   const canMassUpdate = ['admin', 'supervisor'].includes(currentUser.role);
+  
+  // Calculate pagination info
+  const startRecord = totalLeads === 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+  const endRecord = Math.min(currentPage * pageSize, totalLeads);
+  const totalPages = Math.ceil(totalLeads / pageSize);
+  
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(parseInt(newSize));
+    setCurrentPage(1); // Reset to first page
+  };
+  
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+  
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold text-black">{t('leads.title')}</h2>
-        <div className="flex gap-3">
+    <div className="flex flex-col h-full">
+      {/* Sticky Toolbar */}
+      <div className="sticky top-0 z-10 bg-white border-b-2 border-gray-200 pb-4 mb-4">
+        {/* Title and Action Buttons */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-3xl font-bold text-black">{t('leads.title')}</h2>
+          <div className="flex gap-3">
           {canMassUpdate && selectedLeadIds.length > 0 && (
             <Button onClick={() => setShowMassUpdateModal(true)} className="bg-purple-600 text-white hover:bg-purple-700 rounded-none">
               <Edit className="w-4 h-4 mr-2" />
