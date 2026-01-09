@@ -306,12 +306,33 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
-        let text = e.target.result;
+        const data = e.target.result;
+        let rows = [];
         
-        // Try to fix encoding issues - replace common garbled characters
-        text = text.replace(/[�]/g, '');
+        // Check if it's an Excel file (starts with PK - ZIP header)
+        const arr = new Uint8Array(data);
+        const isExcel = arr[0] === 0x50 && arr[1] === 0x4B;
         
-        const rows = text.split('\n').slice(1); // Skip header
+        if (isExcel) {
+          // Parse Excel file
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          
+          // Skip header row
+          rows = jsonData.slice(1);
+          console.log('Excel rows:', rows.length);
+        } else {
+          // Parse CSV file
+          const text = new TextDecoder('utf-8').decode(data);
+          const lines = text.split('\n').slice(1); // Skip header
+          rows = lines.map(line => {
+            // Handle CSV with potential commas inside quoted fields
+            const cells = line.match(/(".*?"|[^,;]+)(?=\s*[,;]|\s*$)/g) || [];
+            return cells.map(cell => cell.replace(/^"|"$/g, '').trim());
+          });
+        }
         
         const token = localStorage.getItem('crmToken');
         const headers = { 
@@ -319,20 +340,14 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
           'Content-Type': 'application/json'
         };
         
-        // Parse all leads from CSV
+        // Parse all leads
         const leads = [];
         for (const row of rows) {
-          if (!row.trim()) continue;
+          if (!row || row.length === 0) continue;
           
-          // Handle CSV with potential commas inside quoted fields
-          const cells = row.match(/(".*?"|[^,;]+)(?=\s*[,;]|\s*$)/g) || [];
-          const cleanCells = cells.map(cell => 
-            cell.replace(/^"|"$/g, '')
-                .trim()
-                .replace(/[^\x20-\x7E\u00C0-\u00FF\u0100-\u017F]/g, '') // Keep only printable chars
+          const [fullName, email, phone, scammerCompany, amountLost, caseDetails] = row.map(cell => 
+            cell ? String(cell).trim() : ''
           );
-          
-          const [fullName, email, phone, scammerCompany, amountLost, caseDetails] = cleanCells;
           
           // Validate email format
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -341,13 +356,15 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
             leads.push({
               fullName: fullName.substring(0, 100),
               email: email.toLowerCase().trim(),
-              phone: phone.replace(/[^\d+\-\s()]/g, ''),
+              phone: String(phone).replace(/[^\d+\-\s()]/g, ''),
               scammerCompany: (scammerCompany || 'Unknown').substring(0, 100),
               amountLost: (amountLost || 'Unknown').substring(0, 50),
               caseDetails: (caseDetails || 'Imported from CSV').substring(0, 500)
             });
           }
         }
+        
+        console.log('Valid leads to import:', leads.length);
         
         if (leads.length === 0) {
           toast.error(t('crm.noValidLeadsInCSV'));
@@ -376,8 +393,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       }
     };
     
-    // Read as UTF-8 first
-    reader.readAsText(csvFile, 'UTF-8');
+    // Read as ArrayBuffer to detect file type
+    reader.readAsArrayBuffer(csvFile);
   };
 
   const handleEdit = (lead) => {
