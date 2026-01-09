@@ -309,55 +309,58 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         const rows = text.split('\n').slice(1); // Skip header
         
         const token = localStorage.getItem('crmToken');
-        const headers = { Authorization: `Bearer ${token}` };
+        const headers = { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        };
         
-        let imported = 0;
-        let failed = 0;
-        
-        toast.info(t('crm.importingLeads', { total: rows.filter(r => r.trim()).length }));
-        
+        // Parse all leads from CSV
+        const leads = [];
         for (const row of rows) {
           if (!row.trim()) continue;
           
-          const [fullName, email, phone, scammerCompany, amountLost, caseDetails] = row.split(',').map(cell => cell.replace(/^"|"$/g, '').trim());
+          // Handle CSV with potential commas inside quoted fields
+          const cells = row.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
+          const cleanCells = cells.map(cell => cell.replace(/^"|"$/g, '').trim());
           
-          // Skip if missing required fields
-          if (!fullName || !email || !phone) {
-            failed++;
-            continue;
-          }
+          const [fullName, email, phone, scammerCompany, amountLost, caseDetails] = cleanCells;
           
-          try {
-            await axios.post(`${API}/leads/submit`, {
+          if (fullName && email && phone) {
+            leads.push({
               fullName,
               email,
               phone,
               scammerCompany: scammerCompany || 'Unknown',
-              amountLost: amountLost || '0-5000',
+              amountLost: amountLost || 'Unknown',
               caseDetails: caseDetails || 'Imported from CSV'
             });
-            imported++;
-            
-            // Add delay to avoid rate limiting
-            await new Promise(resolve => setTimeout(resolve, 500));
-          } catch (error) {
-            console.error('Error importing row:', error);
-            failed++;
           }
         }
         
-        if (imported > 0) {
-          toast.success(t('crm.leadsImportedSuccess', { count: imported }));
+        if (leads.length === 0) {
+          toast.error(t('crm.noValidLeadsInCSV'));
+          return;
         }
-        if (failed > 0) {
-          toast.warning(t('crm.leadsImportFailed', { count: failed }));
+        
+        toast.info(t('crm.importingLeads', { total: leads.length }));
+        
+        // Send bulk import request
+        const response = await axios.post(`${API}/crm/leads/bulk-import`, { leads }, { headers });
+        
+        if (response.data.imported > 0) {
+          toast.success(t('crm.leadsImportedSuccess', { count: response.data.imported }));
+        }
+        if (response.data.failed > 0) {
+          toast.warning(t('crm.leadsImportFailed', { count: response.data.failed }));
+          console.log('Import errors:', response.data.errors);
         }
         
         setShowImportModal(false);
         setCsvFile(null);
         fetchData();
       } catch (error) {
-        toast.error(t('crm.errorImportingCSV'));
+        console.error('Import error:', error);
+        toast.error(error.response?.data?.detail || t('crm.errorImportingCSV'));
       }
     };
     
