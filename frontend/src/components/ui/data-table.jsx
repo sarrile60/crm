@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { FixedSizeList } from 'react-window';
+import { FixedSizeList as ReactWindowList } from 'react-window';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
 import { Checkbox } from './checkbox';
 import { Skeleton } from './skeleton';
@@ -251,7 +251,7 @@ export function DataTable({
         </Table>
 
         {/* Virtualized Body */}
-        <FixedSizeList
+        <ReactWindowList
           height={containerHeight}
           itemCount={data.length}
           itemSize={rowHeight}
@@ -259,7 +259,7 @@ export function DataTable({
           className="scrollbar-thin"
         >
           {VirtualRow}
-        </FixedSizeList>
+        </ReactWindowList>
       </div>
     </div>
   );
