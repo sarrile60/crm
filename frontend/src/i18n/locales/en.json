@@ -493,6 +493,8 @@
     "leadsImportedSuccess": "{{count}} leads imported successfully",
     "importingLeads": "Importing {{total}} leads...",
     "leadsImportFailed": "{{count}} leads failed to import",
+    "noValidLeadsInCSV": "No valid leads found in CSV file",
+    "enterAmountLost": "Enter amount lost (e.g. €5000)",
     "errorImportingCSV": "Error importing CSV",
     "statusUpdated": "Status updated",
     "errorUpdatingStatus": "Error updating status",
