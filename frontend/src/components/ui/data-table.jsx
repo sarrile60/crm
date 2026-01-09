@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { FixedSizeList as ReactWindowList } from 'react-window';
+import { FixedSizeList as ReactWindowList } from 'react-window/dist/react-window';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
 import { Checkbox } from './checkbox';
 import { Skeleton } from './skeleton';
