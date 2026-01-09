@@ -849,8 +849,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         </div>
       </div>
 
-      {/* Leads Table - Fixed layout with proper container */}
-      <div className="bg-white border-2 border-gray-200 overflow-x-auto">
+      {/* Leads Table - Desktop View */}
+      <div className="hidden md:block bg-white border-2 border-gray-200 overflow-x-auto">
         <table className="w-full table-fixed" style={{ minWidth: '1400px' }}>
           <thead className="bg-black sticky top-0 z-10">
             <tr>
@@ -1016,6 +1016,70 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-3">
+        {filteredLeads.length === 0 ? (
+          <div className="text-center p-8 text-gray-600 bg-white border-2 border-gray-200">
+            {t('leads.noLeadsFound')}
+          </div>
+        ) : (
+          filteredLeads.map((lead) => (
+            <div key={lead.id} className="bg-white border-2 border-gray-200 p-4 rounded-none">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <button
+                    onClick={() => handleViewDetails(lead)}
+                    className="text-lg font-bold text-black hover:text-[#D4AF37] underline mb-1 block"
+                  >
+                    {lead.fullName}
+                  </button>
+                  <div className="text-sm text-gray-600">{formatCreatedDate(lead.created_at)}</div>
+                </div>
+                {canMassUpdate && (
+                  <button onClick={() => toggleLeadSelection(lead.id)} className="text-gray-700 hover:text-[#D4AF37]">
+                    {selectedLeadIds.includes(lead.id) ? (
+                      <CheckSquare className="w-5 h-5" />
+                    ) : (
+                      <Square className="w-5 h-5" />
+                    )}
+                  </button>
+                )}
+              </div>
+              
+              <div className="space-y-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-gray-500" />
+                  <a href={formatPhoneForCall(lead.phone)} className="text-blue-600 hover:text-blue-800 underline text-sm">
+                    {formatPhoneDisplay(lead.phone)}
+                  </a>
+                </div>
+                <div className="text-sm text-gray-700">{lead.email}</div>
+                <div className="flex gap-2 flex-wrap">
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(lead.status)}`}>
+                    {lead.status}
+                  </span>
+                  <span className={`text-xs font-semibold ${getPriorityColor(lead.priority)}`}>
+                    {lead.priority}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  {lead.assigned_to ? users.find(u => u.id === lead.assigned_to)?.full_name : t('crm.notAssigned')}
+                </div>
+              </div>
+              
+              <div className="flex gap-2 pt-3 border-t border-gray-200">
+                <Button onClick={() => handleViewDetails(lead)} size="sm" className="flex-1 bg-blue-600 text-white hover:bg-blue-700 rounded-none">
+                  <Eye className="w-4 h-4 mr-1" /> {t('common.view')}
+                </Button>
+                <Button onClick={() => handleEdit(lead)} size="sm" className="flex-1 bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
+                  <Edit className="w-4 h-4 mr-1" /> {t('common.edit')}
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Detail Modal with Navigation */}
