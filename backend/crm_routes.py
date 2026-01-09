@@ -1702,3 +1702,72 @@ async def initiate_ami_call(ami_host: str, ami_port: int, ami_user: str, ami_pas
     except Exception as e:
         logging.error(f"AMI connection error: {str(e)}")
         return {"success": False, "error": str(e)}
+
+
+# ==================== BULK IMPORT LEADS ====================
+
+class BulkLeadImport(BaseModel):
+    leads: List[dict]
+
+@crm_router.post("/leads/bulk-import")
+async def bulk_import_leads(data: BulkLeadImport, current_user: dict = Depends(get_current_user)):
+    """Bulk import leads from CSV - admin/supervisor only"""
+    if current_user.get("role") not in ["admin", "supervisor"]:
+        raise HTTPException(status_code=403, detail="Only admins and supervisors can bulk import leads")
+    
+    imported = 0
+    failed = 0
+    errors = []
+    
+    for lead_data in data.leads:
+        try:
+            # Check for required fields
+            if not lead_data.get("fullName") or not lead_data.get("email") or not lead_data.get("phone"):
+                failed += 1
+                errors.append(f"Missing required fields for: {lead_data.get('fullName', 'Unknown')}")
+                continue
+            
+            # Check for duplicate
+            existing = await db.leads.find_one({
+                "$or": [
+                    {"email": lead_data.get("email")},
+                    {"phone": lead_data.get("phone")}
+                ]
+            })
+            
+            if existing:
+                failed += 1
+                errors.append(f"Duplicate: {lead_data.get('email')}")
+                continue
+            
+            # Create lead
+            lead = {
+                "id": str(uuid.uuid4()),
+                "fullName": lead_data.get("fullName"),
+                "email": lead_data.get("email"),
+                "phone": lead_data.get("phone"),
+                "scammerCompany": lead_data.get("scammerCompany", "Unknown"),
+                "amountLost": lead_data.get("amountLost", "Unknown"),
+                "caseDetails": lead_data.get("caseDetails", "Imported from CSV"),
+                "status": "New",
+                "priority": "medium",
+                "created_at": datetime.now(timezone.utc),
+                "createdAt": datetime.now(timezone.utc),
+                "assigned_to": None,
+                "assigned_to_name": None,
+                "team_id": current_user.get("team_id")
+            }
+            
+            await db.leads.insert_one(lead)
+            imported += 1
+            
+        except Exception as e:
+            failed += 1
+            errors.append(str(e))
+    
+    return {
+        "success": True,
+        "imported": imported,
+        "failed": failed,
+        "errors": errors[:10]  # Return first 10 errors only
+    }
