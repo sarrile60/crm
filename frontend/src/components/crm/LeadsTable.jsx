@@ -1254,20 +1254,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-black mb-2">{t('crm.amountLost')} *</label>
-                      <Select 
-                        value={editData.amountLost || undefined} 
-                        onValueChange={(value) => setEditData({ ...editData, amountLost: value })}
-                      >
-                        <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                          <SelectValue placeholder={t('crm.selectAmount')} />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white">
-                          <SelectItem value="500-5000">€500 - €5.000</SelectItem>
-                          <SelectItem value="5000-50000">€5.000 - €50.000</SelectItem>
-                          <SelectItem value="50000-500000">€50.000 - €500.000</SelectItem>
-                          <SelectItem value="500000+">€500.000+</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Input
+                        value={editData.amountLost}
+                        onChange={(e) => setEditData({ ...editData, amountLost: e.target.value })}
+                        placeholder={t('crm.enterAmountLost')}
+                        className="bg-white border-gray-300 rounded-none"
+                      />
                     </div>
                   </div>
                   <div>
