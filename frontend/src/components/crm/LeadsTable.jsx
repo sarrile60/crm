@@ -132,8 +132,20 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         axios.get(`${API}/crm/teams`, { headers })
       ]);
       
-      setLeads(leadsRes.data.data || []);
-      setTotal(leadsRes.data.total || 0);
+      // Handle response - check if data is in correct format
+      const leadsData = leadsRes.data;
+      if (Array.isArray(leadsData)) {
+        // Old format: direct array
+        setLeads(leadsData);
+        setTotal(leadsData.length);
+      } else if (leadsData && Array.isArray(leadsData.data)) {
+        // New format: { data, total, limit, offset }
+        setLeads(leadsData.data);
+        setTotal(leadsData.total || 0);
+      } else {
+        setLeads([]);
+        setTotal(0);
+      }
       setUsers(usersRes.data);
       setStatuses(statusesRes.data);
       setTeams(teamsRes.data);
