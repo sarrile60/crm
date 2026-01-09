@@ -28,6 +28,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedLeadIds, setSelectedLeadIds] = useState([]);
   const [showMassUpdateModal, setShowMassUpdateModal] = useState(false);
+  
+  // Pagination state
+  const [totalLeads, setTotalLeads] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(200);
 
   // Handle urgent callback lead - only trigger once, then clear
   useEffect(() => {
@@ -79,7 +84,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
 
   useEffect(() => {
     fetchData();
-  }, [filters]);
+  }, [filters, currentPage, pageSize]);
 
   useEffect(() => {
     setFilteredLeads(leads);
@@ -87,11 +92,18 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      // Build query params only with non-empty values
-      const queryParams = {};
+      // Build query params with pagination
+      const offset = (currentPage - 1) * pageSize;
+      const queryParams = {
+        limit: pageSize,
+        offset: offset,
+        sort: 'created_at',
+        order: 'desc'
+      };
       if (filters.status) queryParams.status = filters.status;
       if (filters.priority) queryParams.priority = filters.priority;
       if (filters.search) queryParams.search = filters.search;
@@ -105,7 +117,10 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
 
       // Handle both old array format and new paginated format
       const leadsData = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
+      const total = leadsRes.data.total || leadsData.length;
+      
       setLeads(leadsData);
+      setTotalLeads(total);
       setUsers(usersRes.data);
       setStatuses(statusesRes.data);
       setTeams(teamsRes.data);
