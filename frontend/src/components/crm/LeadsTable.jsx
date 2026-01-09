@@ -305,7 +305,11 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
-        const text = e.target.result;
+        let text = e.target.result;
+        
+        // Try to fix encoding issues - replace common garbled characters
+        text = text.replace(/[�]/g, '');
+        
         const rows = text.split('\n').slice(1); // Skip header
         
         const token = localStorage.getItem('crmToken');
@@ -320,19 +324,26 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
           if (!row.trim()) continue;
           
           // Handle CSV with potential commas inside quoted fields
-          const cells = row.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
-          const cleanCells = cells.map(cell => cell.replace(/^"|"$/g, '').trim());
+          const cells = row.match(/(".*?"|[^,;]+)(?=\s*[,;]|\s*$)/g) || [];
+          const cleanCells = cells.map(cell => 
+            cell.replace(/^"|"$/g, '')
+                .trim()
+                .replace(/[^\x20-\x7E\u00C0-\u00FF\u0100-\u017F]/g, '') // Keep only printable chars
+          );
           
           const [fullName, email, phone, scammerCompany, amountLost, caseDetails] = cleanCells;
           
-          if (fullName && email && phone) {
+          // Validate email format
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          
+          if (fullName && email && emailRegex.test(email) && phone) {
             leads.push({
-              fullName,
-              email,
-              phone,
-              scammerCompany: scammerCompany || 'Unknown',
-              amountLost: amountLost || 'Unknown',
-              caseDetails: caseDetails || 'Imported from CSV'
+              fullName: fullName.substring(0, 100),
+              email: email.toLowerCase().trim(),
+              phone: phone.replace(/[^\d+\-\s()]/g, ''),
+              scammerCompany: (scammerCompany || 'Unknown').substring(0, 100),
+              amountLost: (amountLost || 'Unknown').substring(0, 50),
+              caseDetails: (caseDetails || 'Imported from CSV').substring(0, 500)
             });
           }
         }
@@ -364,7 +375,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       }
     };
     
-    reader.readAsText(csvFile);
+    // Read as UTF-8 first
+    reader.readAsText(csvFile, 'UTF-8');
   };
 
   const handleEdit = (lead) => {
