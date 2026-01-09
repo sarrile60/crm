@@ -839,13 +839,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         </div>
       </div>
 
-      {/* Leads Table */}
-      <div className="bg-white border-2 border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-black">
+      {/* Leads Table - Fixed layout with proper container */}
+      <div className="bg-white border-2 border-gray-200 overflow-x-auto">
+        <table className="w-full table-fixed" style={{ minWidth: '1400px' }}>
+          <thead className="bg-black sticky top-0 z-10">
             <tr>
               {canMassUpdate && (
-                <th className="text-left text-white p-4 font-semibold w-12">
+                <th className="text-left text-white p-3 font-semibold w-12">
                   <button onClick={toggleSelectAll} className="text-white hover:text-[#D4AF37]">
                     {selectedLeadIds.length === filteredLeads.length && filteredLeads.length > 0 ? (
                       <CheckSquare className="w-5 h-5" />
@@ -855,22 +855,22 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                   </button>
                 </th>
               )}
-              <th className="text-left text-white p-4 font-semibold">{t('common.date')}</th>
-              <th className="text-left text-white p-4 font-semibold">{t('common.name')}</th>
-              <th className="text-left text-white p-4 font-semibold">{t('common.phone')}</th>
-              <th className="text-left text-white p-4 font-semibold">{t('common.email')}</th>
-              <th className="text-left text-white p-4 font-semibold">{t('common.amount')}</th>
-              <th className="text-left text-white p-4 font-semibold">{t('common.status')}</th>
-              <th className="text-left text-white p-4 font-semibold">{t('leads.priority')}</th>
-              <th className="text-left text-white p-4 font-semibold">{t('users.team')}</th>
-              <th className="text-left text-white p-4 font-semibold">{t('leads.assignedTo')}</th>
-              <th className="text-left text-white p-4 font-semibold">{t('common.actions')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '140px' }}>{t('common.date')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '200px' }}>{t('common.name')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '150px' }}>{t('common.phone')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '220px' }}>{t('common.email')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '120px' }}>{t('common.amount')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '160px' }}>{t('common.status')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '120px' }}>{t('leads.priority')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '120px' }}>{t('users.team')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '140px' }}>{t('leads.assignedTo')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '150px' }}>{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {filteredLeads.length === 0 ? (
               <tr>
-                <td colSpan={canMassUpdate ? "10" : "9"} className="text-center p-8 text-gray-600">
+                <td colSpan={canMassUpdate ? "11" : "10"} className="text-center p-8 text-gray-600">
                   {t('leads.noLeadsFound')}
                 </td>
               </tr>
@@ -878,7 +878,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
               filteredLeads.map((lead) => (
                 <tr key={lead.id} className="border-t border-gray-200 hover:bg-gray-50">
                   {canMassUpdate && (
-                    <td className="p-4">
+                    <td className="p-3">
                       <button onClick={() => toggleLeadSelection(lead.id)} className="text-gray-700 hover:text-[#D4AF37]">
                         {selectedLeadIds.includes(lead.id) ? (
                           <CheckSquare className="w-5 h-5" />
@@ -888,13 +888,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                       </button>
                     </td>
                   )}
-                  <td className="p-4 text-gray-700">
+                  <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
                     {formatCreatedDate(lead.created_at)}
                   </td>
-                  <td className="p-4">
+                  <td className="p-3 overflow-hidden text-ellipsis whitespace-nowrap">
                     <button
                       onClick={() => handleViewDetails(lead)}
-                      className="text-black font-semibold hover:text-[#D4AF37] underline"
+                      className="text-black font-semibold hover:text-[#D4AF37] underline text-sm"
                     >
                       {lead.fullName}
                     </button>
