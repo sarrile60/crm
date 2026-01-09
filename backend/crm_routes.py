@@ -637,9 +637,13 @@ async def get_crm_leads(
     team_id: Optional[str] = None,
     priority: Optional[str] = None,
     search: Optional[str] = None,
+    sort: Optional[str] = "created_at",
+    order: Optional[str] = "desc",
+    limit: int = 50,
+    offset: int = 0,
     current_user: dict = Depends(get_current_user)
 ):
-    """Get leads with filters - uses permission engine for data scoping"""
+    """Get leads with filters and pagination - uses permission engine for data scoping"""
     # Get data scope filter from permission engine (GUI-configured)
     scope_filter = await permission_engine.get_data_scope_filter(
         user_id=current_user["id"],
@@ -670,10 +674,19 @@ async def get_crm_leads(
         query["$or"] = [
             {"fullName": {"$regex": search, "$options": "i"}},
             {"email": {"$regex": search, "$options": "i"}},
+            {"phone": {"$regex": search, "$options": "i"}},
             {"scammerCompany": {"$regex": search, "$options": "i"}}
         ]
     
-    leads = await db.leads.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    # Get total count for pagination
+    total = await db.leads.count_documents(query)
+    
+    # Sort direction
+    sort_direction = -1 if order == "desc" else 1
+    sort_field = sort if sort in ["created_at", "fullName", "status", "priority", "email"] else "created_at"
+    
+    # Fetch paginated leads
+    leads = await db.leads.find(query, {"_id": 0}).sort(sort_field, sort_direction).skip(offset).limit(limit).to_list(limit)
     
     # Get visibility rules for current user (GUI-configured, backend-enforced)
     user_team_ids = current_user.get("team_ids", []) or []
@@ -693,7 +706,13 @@ async def get_crm_leads(
         processed_lead = apply_visibility_to_lead(lead, visibility_rules)
         processed_leads.append(processed_lead)
     
-    return processed_leads
+    # Return paginated response
+    return {
+        "data": processed_leads,
+        "total": total,
+        "limit": limit,
+        "offset": offset
+    }
 
 @crm_router.get("/leads/{lead_id}")
 async def get_lead_detail(lead_id: str, current_user: dict = Depends(get_current_user)):
