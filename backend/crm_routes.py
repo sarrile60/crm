@@ -1706,7 +1706,9 @@ async def initiate_ami_call(ami_host: str, ami_port: int, ami_user: str, ami_pas
 
 # ==================== BULK IMPORT LEADS ====================
 
-class BulkLeadImport(BaseModel):
+from pydantic import BaseModel as PydanticBaseModel
+
+class BulkLeadImport(PydanticBaseModel):
     leads: List[dict]
 
 @crm_router.post("/leads/bulk-import")
