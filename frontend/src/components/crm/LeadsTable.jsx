@@ -744,6 +744,47 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
             </>
           )}
         </div>
+        </div>
+
+        {/* Pagination Info and Controls */}
+        <div className="flex items-center justify-between text-sm mb-4">
+          <div className="text-gray-700 font-semibold">
+            {t('common.showing')} {startRecord}–{endRecord} / {totalLeads}
+          </div>
+          <div className="flex items-center gap-3">
+            <label className="text-gray-700 font-semibold">{t('common.rowsPerPage')}:</label>
+            <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
+              <SelectTrigger className="w-[80px] h-8 bg-white border-gray-300 rounded-none">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+                <SelectItem value="200">200</SelectItem>
+                {currentUser.role === 'admin' && <SelectItem value="500">500</SelectItem>}
+              </SelectContent>
+            </Select>
+            <Button 
+              onClick={handlePrevPage} 
+              disabled={currentPage === 1}
+              size="sm"
+              className="h-8 bg-gray-800 text-white hover:bg-black rounded-none disabled:opacity-50"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <span className="text-gray-700 font-semibold min-w-[100px] text-center">
+              {t('common.page')} {currentPage} / {totalPages}
+            </span>
+            <Button 
+              onClick={handleNextPage} 
+              disabled={currentPage >= totalPages}
+              size="sm"
+              className="h-8 bg-gray-800 text-white hover:bg-black rounded-none disabled:opacity-50"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Filters */}
