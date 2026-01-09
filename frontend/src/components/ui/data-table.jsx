@@ -251,7 +251,7 @@ export function DataTable({
         </Table>
 
         {/* Virtualized Body */}
-        <List
+        <FixedSizeList
           height={containerHeight}
           itemCount={data.length}
           itemSize={rowHeight}
@@ -259,7 +259,7 @@ export function DataTable({
           className="scrollbar-thin"
         >
           {VirtualRow}
-        </List>
+        </FixedSizeList>
       </div>
     </div>
   );
