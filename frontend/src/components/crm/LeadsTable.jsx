@@ -899,30 +899,30 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                       {lead.fullName}
                     </button>
                   </td>
-                  <td className="p-4">
+                  <td className="p-3 overflow-hidden text-ellipsis whitespace-nowrap">
                     {/* Phone visibility controlled by backend - respect empty string as "hidden" */}
                     {lead.phone_display !== undefined && lead.phone_display !== null ? (
                       lead.phone_display ? (
                         <a 
                           href={formatPhoneForCall(lead.phone_real || lead.phone)} 
-                          className="text-blue-600 hover:text-blue-800 font-mono underline"
+                          className="text-blue-600 hover:text-blue-800 font-mono underline text-sm"
                           title={t('crm.clickToCall')}
                         >
                           {lead.phone_display}
                         </a>
                       ) : (
-                        <span className="text-gray-400 italic">{t('visibility.hidden')}</span>
+                        <span className="text-gray-400 italic text-sm">{t('visibility.hidden')}</span>
                       )
                     ) : (
                       <a 
                         href={formatPhoneForCall(lead.phone)} 
-                        className="text-blue-600 hover:text-blue-800 font-mono underline"
+                        className="text-blue-600 hover:text-blue-800 font-mono underline text-sm"
                       >
                         {formatPhoneDisplay(lead.phone)}
                       </a>
                     )}
                   </td>
-                  <td className="p-4 text-gray-700">
+                  <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
                     {/* Email visibility controlled by backend */}
                     {lead.email_display !== undefined && lead.email_display !== null ? (
                       lead.email_display || <span className="text-gray-400 italic">{t('visibility.hidden')}</span>
@@ -930,13 +930,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                       lead.email
                     )}
                   </td>
-                  <td className="p-4 text-gray-700">{lead.amountLost}</td>
-                  <td className="p-4">
+                  <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">{lead.amountLost}</td>
+                  <td className="p-3">
                     <Select value={lead.status || undefined} onValueChange={(value) => handleInlineStatusChange(lead.id, value)}>
-                      <SelectTrigger className="w-[180px] bg-white border-gray-300 rounded-none h-8">
+                      <SelectTrigger className="w-full bg-white border-gray-300 rounded-none h-8 text-sm">
                         <SelectValue placeholder={t('leads.selectStatus')}>
                           {lead.status && (
-                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(lead.status)}`}>
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(lead.status)}`}>
                               {lead.status}
                             </span>
                           )}
@@ -945,7 +945,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                       <SelectContent className="bg-white">
                         {statuses.map(status => (
                           <SelectItem key={status.id} value={status.name}>
-                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(status.name)}`}>
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(status.name)}`}>
                               {status.name}
                             </span>
                           </SelectItem>
@@ -953,49 +953,49 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                       </SelectContent>
                     </Select>
                   </td>
-                  <td className="p-4">
-                    <span className={`font-semibold ${getPriorityColor(lead.priority)}`}>
+                  <td className="p-3">
+                    <span className={`font-semibold text-sm ${getPriorityColor(lead.priority)}`}>
                       {lead.priority}
                     </span>
                   </td>
-                  <td className="p-4 text-gray-700">
+                  <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
                     {lead.team_id ? teams.find(t => t.id === lead.team_id)?.name || 'N/A' : t('common.noTeam')}
                   </td>
-                  <td className="p-4 text-gray-700">
+                  <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
                     {lead.assigned_to ? users.find(u => u.id === lead.assigned_to)?.full_name || 'N/A' : t('crm.notAssigned')}
                   </td>
-                  <td className="p-4">
-                    <div className="flex gap-2">
+                  <td className="p-3">
+                    <div className="flex gap-1">
                       <Button
                         onClick={() => handleViewDetails(lead)}
                         size="sm"
-                        className="bg-blue-600 text-white hover:bg-blue-700 rounded-none"
+                        className="bg-blue-600 text-white hover:bg-blue-700 rounded-none h-8 w-8 p-0"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-3.5 h-3.5" />
                       </Button>
                       <Button
                         onClick={() => handleEdit(lead)}
                         size="sm"
-                        className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none"
+                        className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none h-8 w-8 p-0"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Edit className="w-3.5 h-3.5" />
                       </Button>
                       {(currentUser.role === 'admin' || currentUser.role === 'supervisor') && (
                         <>
                           <Button
                             onClick={() => handleAssign(lead)}
                             size="sm"
-                            className="bg-green-600 text-white hover:bg-green-700 rounded-none"
+                            className="bg-green-600 text-white hover:bg-green-700 rounded-none h-8 w-8 p-0"
                           >
-                            <UserPlus className="w-4 h-4" />
+                            <UserPlus className="w-3.5 h-3.5" />
                           </Button>
                           <Button
                             onClick={() => handleDeleteClick(lead)}
                             size="sm"
-                            className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                            className="bg-red-600 text-white hover:bg-red-700 rounded-none h-8 w-8 p-0"
                             title={t('leads.deleteLead')}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </Button>
                         </>
                       )}
