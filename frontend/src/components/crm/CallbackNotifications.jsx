@@ -230,7 +230,8 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       const headers = { Authorization: `Bearer ${token}` };
 
       const leadsRes = await axios.get(`${API}/crm/leads`, { headers });
-      const allLeads = leadsRes.data;
+      // Handle both old array format and new paginated format
+      const allLeads = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
       
       // Clean up old "called" markers
       cleanupCalledCallbacks(allLeads);
