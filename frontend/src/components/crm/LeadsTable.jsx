@@ -52,6 +52,16 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
     priority: '',
     search: ''
   });
+  const [searchInput, setSearchInput] = useState(''); // Separate state for input
+  
+  // Debounce search with 300ms delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters(prev => ({ ...prev, search: searchInput }));
+      setCurrentPage(1); // Reset to first page on search
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
   const [editData, setEditData] = useState({});
   const [massUpdateData, setMassUpdateData] = useState({
     status: '',
@@ -714,9 +724,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full max-w-[1600px] mx-auto">
       {/* Sticky Toolbar */}
-      <div className="sticky top-0 z-10 bg-white border-b-2 border-gray-200 pb-4 mb-4">
+      <div className="sticky top-0 z-20 bg-white pb-4 mb-4">{/* Changed z-10 to z-20 to be above table header */}
         {/* Title and Action Buttons */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-3xl font-bold text-black">{t('leads.title')}</h2>
@@ -796,8 +806,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <Input
                 placeholder={t('leads.searchPlaceholder')}
-                value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10 bg-white border-gray-300 rounded-none"
               />
             </div>
@@ -832,7 +842,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
             </Select>
           </div>
           <div className="flex items-end">
-            <Button onClick={() => setFilters({ status: '', priority: '', search: '' })} className="bg-gray-800 text-white hover:bg-black rounded-none w-full">
+            <Button onClick={() => { setFilters({ status: '', priority: '', search: '' }); setSearchInput(''); setCurrentPage(1); }} className="bg-gray-800 text-white hover:bg-black rounded-none w-full">
               {t('common.clearFilters')}
             </Button>
           </div>
