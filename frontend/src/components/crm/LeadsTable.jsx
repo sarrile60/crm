@@ -103,7 +103,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         axios.get(`${API}/crm/teams`, { headers })
       ]);
 
-      setLeads(leadsRes.data);
+      // Handle both old array format and new paginated format
+      const leadsData = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
+      setLeads(leadsData);
       setUsers(usersRes.data);
       setStatuses(statusesRes.data);
       setTeams(teamsRes.data);
