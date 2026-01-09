@@ -851,7 +851,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
 
       {/* Leads Table - Desktop View */}
       <div className="hidden md:block bg-white border-2 border-gray-200 overflow-x-auto">
-        <table className="w-full table-fixed" style={{ minWidth: '1400px' }}>
+        <table className="w-full table-fixed" style={{ minWidth: '1500px' }}>
           <thead className="bg-black sticky top-0 z-10">
             <tr>
               {canMassUpdate && (
@@ -866,15 +866,15 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 </th>
               )}
               <th className="text-left text-white p-3 font-semibold" style={{ width: '140px' }}>{t('common.date')}</th>
-              <th className="text-left text-white p-3 font-semibold" style={{ width: '200px' }}>{t('common.name')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '180px' }}>{t('common.name')}</th>
               <th className="text-left text-white p-3 font-semibold" style={{ width: '150px' }}>{t('common.phone')}</th>
-              <th className="text-left text-white p-3 font-semibold" style={{ width: '220px' }}>{t('common.email')}</th>
-              <th className="text-left text-white p-3 font-semibold" style={{ width: '120px' }}>{t('common.amount')}</th>
-              <th className="text-left text-white p-3 font-semibold" style={{ width: '160px' }}>{t('common.status')}</th>
-              <th className="text-left text-white p-3 font-semibold" style={{ width: '120px' }}>{t('leads.priority')}</th>
-              <th className="text-left text-white p-3 font-semibold" style={{ width: '120px' }}>{t('users.team')}</th>
-              <th className="text-left text-white p-3 font-semibold" style={{ width: '140px' }}>{t('leads.assignedTo')}</th>
-              <th className="text-left text-white p-3 font-semibold" style={{ width: '150px' }}>{t('common.actions')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '200px' }}>{t('common.email')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '110px' }}>{t('common.amount')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '140px' }}>{t('common.status')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '100px' }}>{t('leads.priority')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '110px' }}>{t('users.team')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '130px' }}>{t('leads.assignedTo')}</th>
+              <th className="text-left text-white p-3 font-semibold" style={{ width: '180px' }}>{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
