@@ -4,6 +4,8 @@ from datetime import datetime, timezone
 import os
 import uuid
 import logging
+import time
+import json
 from crm_models import (
     User, UserCreate, UserLogin, UserUpdate,
     Team, TeamCreate,
@@ -644,6 +646,10 @@ async def get_crm_leads(
     current_user: dict = Depends(get_current_user)
 ):
     """Get leads with filters and pagination - uses permission engine for data scoping"""
+    # Start performance monitoring
+    start_time = time.time()
+    query_start = time.time()
+    
     # Get data scope filter from permission engine (GUI-configured)
     scope_filter = await permission_engine.get_data_scope_filter(
         user_id=current_user["id"],
@@ -678,15 +684,39 @@ async def get_crm_leads(
             {"scammerCompany": {"$regex": search, "$options": "i"}}
         ]
     
-    # Get total count for pagination
+    # Get total count for pagination (use countDocuments for better performance)
+    count_start = time.time()
     total = await db.leads.count_documents(query)
+    count_time = (time.time() - count_start) * 1000
+    logger.info(f"[DB QUERY] count_leads: {count_time:.2f}ms | {total} results")
     
     # Sort direction
     sort_direction = -1 if order == "desc" else 1
     sort_field = sort if sort in ["created_at", "fullName", "status", "priority", "email"] else "created_at"
     
-    # Fetch paginated leads
-    leads = await db.leads.find(query, {"_id": 0}).sort(sort_field, sort_direction).skip(offset).limit(limit).to_list(limit)
+    # Fetch paginated leads - PROJECT ONLY LIST FIELDS
+    query_time_start = time.time()
+    leads = await db.leads.find(
+        query, 
+        {
+            "_id": 0,
+            "id": 1,
+            "fullName": 1,
+            "email": 1,
+            "phone": 1,
+            "status": 1,
+            "priority": 1,
+            "assigned_to": 1,
+            "team_id": 1,
+            "created_at": 1,
+            "amountLost": 1,
+            # Exclude heavy fields
+            "caseDetails": 0,
+            "callback_notes": 0
+        }
+    ).sort(sort_field, sort_direction).skip(offset).limit(limit).to_list(limit)
+    query_time = (time.time() - query_time_start) * 1000
+    logger.info(f"[DB QUERY] fetch_leads: {query_time:.2f}ms | {len(leads)} results")
     
     # Get visibility rules for current user (GUI-configured, backend-enforced)
     user_team_ids = current_user.get("team_ids", []) or []
@@ -705,6 +735,11 @@ async def get_crm_leads(
     for lead in leads:
         processed_lead = apply_visibility_to_lead(lead, visibility_rules)
         processed_leads.append(processed_lead)
+    
+    # Calculate total time and payload size
+    total_time = (time.time() - start_time) * 1000
+    payload_size = len(json.dumps(processed_leads))
+    logger.info(f"[API] GET /crm/leads: {total_time:.2f}ms | {payload_size/1024:.2f}KB payload | {len(processed_leads)} leads")
     
     # Return paginated response
     return {
