@@ -208,12 +208,17 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
     search: ''
   });
   const [searchInput, setSearchInput] = useState(''); // Separate state for input
+  const searchRef = React.useRef(''); // Track actual search to avoid unnecessary updates
   
   // Debounce search with 300ms delay
   useEffect(() => {
     const timer = setTimeout(() => {
-      setFilters(prev => ({ ...prev, search: searchInput }));
-      setCurrentPage(1); // Reset to first page on search
+      // Only update if search actually changed
+      if (searchRef.current !== searchInput) {
+        searchRef.current = searchInput;
+        setFilters(prev => ({ ...prev, search: searchInput }));
+        setCurrentPage(1); // Reset to first page on search
+      }
     }, 300);
     return () => clearTimeout(timer);
   }, [searchInput]);
