@@ -1201,9 +1201,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
               <div className="space-y-2 mb-3">
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-gray-500" />
-                  <a href={formatPhoneForCall(lead.phone)} className="text-blue-600 hover:text-blue-800 underline text-sm">
+                  <span className="text-gray-700 text-sm">
                     {formatPhoneDisplay(lead.phone)}
-                  </a>
+                  </span>
                 </div>
                 <div className="text-sm text-gray-700">{lead.email}</div>
                 <div className="flex gap-2 flex-wrap">
