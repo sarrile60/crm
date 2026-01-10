@@ -45,6 +45,15 @@ The application is a production-ready CRM with robust lead management capabiliti
    - Option 2: Select All Matching (e.g., all 909 leads matching filters)
    - Uses backend endpoint POST /api/crm/leads/select-all for scalable selection
 
+5. **Bug Fixes** (P0) ✅
+   - Fixed Deposits page blank white page (API response format handling)
+   - Fixed Leads page double-loading issue (debounce optimization)
+   - Fixed multiple components to handle paginated API response format:
+     - DepositsManager.jsx
+     - TeamMembers.jsx
+     - SmartDateTimePicker.jsx
+     - CallbackNotifications.jsx
+
 ## API Endpoints
 
 ### Lead Management
