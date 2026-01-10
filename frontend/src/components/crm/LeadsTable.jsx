@@ -447,6 +447,62 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
     }
   };
 
+  // Quick reminder functions
+  const handleOpenReminder = (lead) => {
+    setReminderLead(lead);
+    setReminderDateTime(lead.callback_date || '');
+    setReminderNotes(lead.callback_notes || '');
+    setShowReminderModal(true);
+  };
+
+  const handleSaveReminder = async () => {
+    if (!reminderLead) return;
+    
+    if (!reminderDateTime) {
+      toast.error(t('crm.reminderDateRequired'));
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.put(`${API}/crm/leads/${reminderLead.id}`, {
+        callback_date: reminderDateTime,
+        callback_notes: reminderNotes
+      }, { headers });
+      
+      toast.success(t('crm.reminderSet'));
+      setShowReminderModal(false);
+      setReminderLead(null);
+      setReminderDateTime('');
+      setReminderNotes('');
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('crm.errorSettingReminder'));
+    }
+  };
+
+  const handleClearReminder = async () => {
+    if (!reminderLead) return;
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      await axios.post(`${API}/crm/leads/${reminderLead.id}/clear-callback`, {}, { headers });
+      
+      toast.success(t('crm.reminderCleared'));
+      setShowReminderModal(false);
+      setReminderLead(null);
+      setReminderDateTime('');
+      setReminderNotes('');
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('crm.errorClearingReminder'));
+    }
+  };
+
   const handleExportCSV = async () => {
     try {
       toast.info(t('crm.exportingAllLeads'));
