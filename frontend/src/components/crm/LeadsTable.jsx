@@ -27,6 +27,7 @@ const LeadRow = React.memo(({
   onEdit, 
   onAssign, 
   onDelete,
+  onSetReminder,
   onStatusChange,
   formatCreatedDate, 
   formatPhoneDisplay, 
