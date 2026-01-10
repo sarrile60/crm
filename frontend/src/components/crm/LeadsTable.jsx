@@ -859,6 +859,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
 
   const canMassUpdate = ['admin', 'supervisor'].includes(currentUser.role);
   
+  // Use Set for O(1) lookup performance when checking if lead is selected
+  const selectedIdsSet = useMemo(() => new Set(selectedLeadIds), [selectedLeadIds]);
+  
   // Calculate pagination info
   const startRecord = totalLeads === 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
   const endRecord = Math.min(currentPage * pageSize, totalLeads);
