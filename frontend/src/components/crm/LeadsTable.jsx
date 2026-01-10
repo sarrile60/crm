@@ -1300,34 +1300,18 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
               <div>
                 <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2">{t('crm.updateStatus')}</h3>
                 <div className="bg-gray-50 border-2 border-gray-200 p-4 space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-black mb-2">{t('common.status')}</label>
-                      <Select value={editData.status || selectedLead.status} onValueChange={(value) => setEditData({ ...editData, status: value })}>
-                        <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white">
-                          {statuses.map(status => (
-                            <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-black mb-2">{t('leads.priority')}</label>
-                      <Select value={editData.priority || selectedLead.priority} onValueChange={(value) => setEditData({ ...editData, priority: value })}>
-                        <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white">
-                          <SelectItem value="low">{t('leads.low')}</SelectItem>
-                          <SelectItem value="medium">{t('leads.medium')}</SelectItem>
-                          <SelectItem value="high">{t('leads.high')}</SelectItem>
-                          <SelectItem value="urgent">{t('leads.urgent')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-black mb-2">{t('common.status')}</label>
+                    <Select value={editData.status || selectedLead.status} onValueChange={(value) => setEditData({ ...editData, status: value })}>
+                      <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        {statuses.map(status => (
+                          <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   
                   {((editData.status || selectedLead.status) === 'Callback' || 
