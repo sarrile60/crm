@@ -930,16 +930,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const getPriorityColor = (priority) => {
-    const colors = {
-      low: 'text-gray-600',
-      medium: 'text-blue-600',
-      high: 'text-orange-600',
-      urgent: 'text-red-600'
-    };
-    return colors[priority] || 'text-gray-600';
-  };
-
   if (loading) {
     return <div className="text-center py-12">{t('leads.loadingLeads')}</div>;
   }
