@@ -1170,9 +1170,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                   <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(lead.status)}`}>
                     {lead.status}
                   </span>
-                  <span className={`text-xs font-semibold ${getPriorityColor(lead.priority)}`}>
-                    {lead.priority}
-                  </span>
                 </div>
                 <div className="text-sm text-gray-600">
                   {lead.assigned_to ? users.find(u => u.id === lead.assigned_to)?.full_name : t('crm.notAssigned')}
