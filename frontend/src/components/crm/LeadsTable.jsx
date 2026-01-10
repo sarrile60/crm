@@ -243,6 +243,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [leadToDelete, setLeadToDelete] = useState(null);
   const [isCallingLead, setIsCallingLead] = useState(false);
+  
+  // Quick reminder modal state
+  const [showReminderModal, setShowReminderModal] = useState(false);
+  const [reminderLead, setReminderLead] = useState(null);
+  const [reminderDateTime, setReminderDateTime] = useState('');
+  const [reminderNotes, setReminderNotes] = useState('');
 
   useEffect(() => {
     fetchData();
