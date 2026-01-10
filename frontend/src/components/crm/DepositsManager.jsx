@@ -115,7 +115,9 @@ const DepositsManager = ({ currentUser, pendingDepositData, onDepositCreated }) 
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
       const res = await axios.get(`${API}/crm/leads`, { headers });
-      setLeads(res.data || []);
+      // Handle both old array format and new paginated format
+      const leadsData = Array.isArray(res.data) ? res.data : (res.data.data || []);
+      setLeads(leadsData);
     } catch (error) {
       console.error('Error fetching leads:', error);
     }

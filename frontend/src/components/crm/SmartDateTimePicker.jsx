@@ -39,7 +39,9 @@ const SmartDateTimePicker = ({ value, onChange, currentUser, currentLeadId }) =>
 
       // Fetch all leads assigned to current user with callback dates
       const response = await axios.get(`${API}/crm/leads`, { headers });
-      const userLeads = response.data.filter(lead => 
+      // Handle both old array format and new paginated format
+      const allLeads = Array.isArray(response.data) ? response.data : (response.data.data || []);
+      const userLeads = allLeads.filter(lead => 
         lead.assigned_to === currentUser.id && 
         lead.callback_date &&
         lead.id !== currentLeadId // Exclude current lead being edited

@@ -104,7 +104,8 @@ const TeamMembers = ({ currentUser }) => {
       
       // Fetch all leads and filter by assigned_to
       const leadsRes = await axios.get(`${API}/crm/leads`, { headers });
-      const allLeads = leadsRes.data || [];
+      // Handle both old array format and new paginated format
+      const allLeads = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
       
       // Filter leads assigned to this member
       const agentLeads = allLeads.filter(lead => lead.assigned_to === member.id);
