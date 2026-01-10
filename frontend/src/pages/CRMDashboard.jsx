@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import axios from 'axios';
 import LeadsTable from '../components/crm/LeadsTable';
+import LeadsTableOptimized from '../components/crm/LeadsTableOptimized';
 import UserManagement from '../components/crm/UserManagement';
 import SettingsPanel from '../components/crm/SettingsPanel';
 import CallbackNotifications from '../components/crm/CallbackNotifications';
@@ -479,7 +480,13 @@ const CRMDashboard = () => {
           </div>
         )}
 
-        {activeTab === 'leads' && <LeadsTable currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} />}
+        {activeTab === 'leads' && (
+          process.env.REACT_APP_PERF_MODE === 'true' ? (
+            <LeadsTableOptimized currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} />
+          ) : (
+            <LeadsTable currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} />
+          )
+        )}
         {activeTab === 'deposits' && (
           <DepositsManager 
             currentUser={currentUser} 
