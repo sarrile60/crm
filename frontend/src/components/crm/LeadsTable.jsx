@@ -1185,6 +1185,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                   onEdit={handleEdit}
                   onAssign={handleAssign}
                   onDelete={handleDeleteClick}
+                  onSetReminder={handleOpenReminder}
                   onStatusChange={handleInlineStatusChange}
                   formatCreatedDate={formatCreatedDate}
                   formatPhoneDisplay={formatPhoneDisplay}
