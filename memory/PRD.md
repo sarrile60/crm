@@ -48,11 +48,18 @@ The application is a production-ready CRM with robust lead management capabiliti
 5. **Bug Fixes** (P0) ✅
    - Fixed Deposits page blank white page (API response format handling)
    - Fixed Leads page double-loading issue (debounce optimization)
-   - Fixed multiple components to handle paginated API response format:
-     - DepositsManager.jsx
-     - TeamMembers.jsx
-     - SmartDateTimePicker.jsx
-     - CallbackNotifications.jsx
+   - Fixed multiple components to handle paginated API response format
+   - Removed Priority field from all leads views
+   - Removed clickable phone numbers (tel: links)
+
+6. **Callback Reminder System Overhaul** (P0) ✅
+   - **Queue System**: Multiple callbacks stack properly without glitching
+   - **Call Now clears callback**: Pressing "Call Now" removes callback from backend
+   - **Trigger on ANY callback_date**: Reminders work regardless of lead status
+   - **3rd Postpone**: "Later" replaced with "Remove Callback" (calls backend to clear)
+   - **Quick Reminder Button**: Clock icon in list view to set/edit/clear reminders
+   - **Reminder Modal**: Set date/time and notes for any lead
+   - **Backend endpoint**: POST /api/crm/leads/{lead_id}/clear-callback
 
 ## API Endpoints
 
