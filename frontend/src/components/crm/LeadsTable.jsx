@@ -456,7 +456,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         order: 'desc'
       };
       if (filters.status) queryParams.status = filters.status;
-      if (filters.priority) queryParams.priority = filters.priority;
       if (filters.search) queryParams.search = filters.search;
 
       const response = await axios.get(`${API}/crm/leads`, { headers, params: queryParams });
@@ -468,7 +467,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       }
 
       const csvContent = [
-        [t('crm.createdDate'), t('common.name'), t('common.email'), t('common.phone'), t('crm.scammerCompany'), t('crm.amountLost'), t('common.status'), t('leads.priority'), t('crm.caseDetails')],
+        [t('crm.createdDate'), t('common.name'), t('common.email'), t('common.phone'), t('crm.scammerCompany'), t('crm.amountLost'), t('common.status'), t('crm.caseDetails')],
         ...allLeads.map(lead => [
           formatCreatedDate(lead.created_at),
           lead.fullName || '',
@@ -477,7 +476,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
           lead.scammerCompany || '',
           lead.amountLost || '',
           lead.status || '',
-          lead.priority || '',
           lead.caseDetails || ''
         ])
       ].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
