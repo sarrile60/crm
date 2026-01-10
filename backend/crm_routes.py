@@ -733,9 +733,17 @@ async def get_crm_leads(
         processed_lead = apply_visibility_to_lead(lead, visibility_rules)
         processed_leads.append(processed_lead)
     
-    # Calculate total time and payload size
+    # Calculate total time and log performance
     total_time = (time.time() - start_time) * 1000
-    # Estimate payload size without json.dumps (to avoid serialization issues)
+    payload_size_estimate = len(processed_leads) * 500
+    logger.info(f"[API] GET /crm/leads: {total_time:.2f}ms | ~{payload_size_estimate/1024:.2f}KB payload | {len(processed_leads)} leads")
+    
+    return {
+        "data": processed_leads,
+        "total": total,
+        "limit": limit,
+        "offset": offset
+    }
 
 @crm_router.post("/leads/select-all")
 async def select_all_leads(
