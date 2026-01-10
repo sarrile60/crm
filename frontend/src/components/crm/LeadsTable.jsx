@@ -1282,10 +1282,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                     </span>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">{t('leads.priority')}</label>
-                    <p className={`font-semibold ${getPriorityColor(selectedLead.priority)}`}>{selectedLead.priority}</p>
-                  </div>
-                  <div>
                     <label className="text-sm font-semibold text-gray-600">{t('users.team')}</label>
                     <p className="text-black">{selectedLead.team_id ? teams.find(t => t.id === selectedLead.team_id)?.name || 'N/A' : t('common.noTeam')}</p>
                   </div>
