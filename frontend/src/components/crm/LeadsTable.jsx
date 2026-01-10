@@ -2067,6 +2067,72 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Quick Reminder Modal */}
+      {showReminderModal && reminderLead && (
+        <Dialog open={showReminderModal} onOpenChange={setShowReminderModal}>
+          <DialogContent className="max-w-md bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-black flex items-center gap-2">
+                <Clock className="w-6 h-6 text-orange-500" />
+                {reminderLead.callback_date ? t('crm.editReminder') : t('crm.setReminder')}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="bg-gray-50 border border-gray-200 p-3">
+                <p className="font-semibold text-black">{reminderLead.fullName}</p>
+                <p className="text-sm text-gray-600">{reminderLead.phone}</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">{t('crm.reminderDateTime')}</label>
+                <SmartDateTimePicker
+                  value={reminderDateTime}
+                  onChange={setReminderDateTime}
+                  currentUser={currentUser}
+                  currentLeadId={reminderLead.id}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">{t('crm.reminderNotes')}</label>
+                <Textarea
+                  value={reminderNotes}
+                  onChange={(e) => setReminderNotes(e.target.value)}
+                  placeholder={t('crm.addReminderNotes')}
+                  className="bg-white border-gray-300 rounded-none"
+                  rows={3}
+                />
+              </div>
+              
+              <div className="flex gap-3 pt-4">
+                {reminderLead.callback_date && (
+                  <Button
+                    onClick={handleClearReminder}
+                    className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    {t('crm.clearReminder')}
+                  </Button>
+                )}
+                <Button
+                  onClick={() => setShowReminderModal(false)}
+                  className="flex-1 bg-gray-200 text-black hover:bg-gray-300 rounded-none"
+                >
+                  {t('common.cancel')}
+                </Button>
+                <Button
+                  onClick={handleSaveReminder}
+                  className="flex-1 bg-orange-500 text-white hover:bg-orange-600 rounded-none"
+                >
+                  <Clock className="w-4 h-4 mr-2" />
+                  {t('common.save')}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
