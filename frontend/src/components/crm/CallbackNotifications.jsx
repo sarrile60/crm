@@ -584,37 +584,84 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     }
   };
 
-  const handleCallNow = (lead) => {
-    // Clear snooze data for this lead
-    const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
-    delete snoozeDataFromStorage[lead.id];
-    localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
-    
-    // Mark this callback as "called" - so it won't show popup again
-    // Store the callback_date to track which specific callback time was handled
-    const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
-    calledCallbacks[lead.id] = {
-      callback_date: lead.callback_date,
-      called_at: new Date().toISOString()
-    };
-    localStorage.setItem('called_callbacks', JSON.stringify(calledCallbacks));
-    
-    // Also clear the alert key so it can re-alert if a new callback is set
-    const alertKey = `callback_alerted_${lead.id}_${lead.callback_date}`;
-    localStorage.removeItem(alertKey);
-    
-    // Clear the urgent callback state
-    setUrgentCallback(null);
-    
-    // Remove this lead from the queue if it's still there
-    setUrgentCallbackQueue(prev => prev.filter(l => l.id !== lead.id));
-    
-    // Close the modal first
-    setShowUrgentModal(false);
-    
-    // Call the parent callback to switch to leads tab and open the lead
-    if (onCallbackAlert) {
-      onCallbackAlert(lead);
+  const handleCallNow = async (lead) => {
+    try {
+      // Clear callback from backend
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.post(`${API}/crm/leads/${lead.id}/clear-callback`, {}, { headers });
+      
+      // Clear snooze data for this lead
+      const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
+      delete snoozeDataFromStorage[lead.id];
+      localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
+      
+      // Mark this callback as "called" - so it won't show popup again
+      const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
+      calledCallbacks[lead.id] = {
+        callback_date: lead.callback_date,
+        called_at: new Date().toISOString()
+      };
+      localStorage.setItem('called_callbacks', JSON.stringify(calledCallbacks));
+      
+      // Clear the alert key
+      const alertKey = `callback_alerted_${lead.id}_${lead.callback_date}`;
+      localStorage.removeItem(alertKey);
+      
+      // Clear the urgent callback state
+      setUrgentCallback(null);
+      
+      // Remove this lead from the queue
+      setUrgentCallbackQueue(prev => prev.filter(l => l.id !== lead.id));
+      
+      // Close the modal
+      setShowUrgentModal(false);
+      
+      // Call the parent callback to switch to leads tab and open the lead
+      if (onCallbackAlert) {
+        onCallbackAlert(lead);
+      }
+    } catch (error) {
+      console.error('Error clearing callback:', error);
+      // Still proceed to open the lead even if backend fails
+      setShowUrgentModal(false);
+      if (onCallbackAlert) {
+        onCallbackAlert(lead);
+      }
+    }
+  };
+
+  // Remove callback completely (on 3rd postpone)
+  const handleRemoveCallback = async (lead) => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      await axios.post(`${API}/crm/leads/${lead.id}/clear-callback`, {}, { headers });
+      
+      // Clear all local data for this lead
+      const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
+      delete snoozeDataFromStorage[lead.id];
+      localStorage.setItem('callback_snoozes', JSON.stringify(snoozeDataFromStorage));
+      
+      const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
+      delete calledCallbacks[lead.id];
+      localStorage.setItem('called_callbacks', JSON.stringify(calledCallbacks));
+      
+      const alertKey = `callback_alerted_${lead.id}_${lead.callback_date}`;
+      localStorage.removeItem(alertKey);
+      
+      // Clear state
+      setUrgentCallback(null);
+      setUrgentCallbackQueue(prev => prev.filter(l => l.id !== lead.id));
+      setShowUrgentModal(false);
+      
+      // Refresh pending callbacks list
+      fetchPendingCallbacks();
+      
+      toast.success(t('crm.callbackRemoved'));
+    } catch (error) {
+      console.error('Error removing callback:', error);
+      toast.error(t('crm.errorRemovingCallback'));
     }
   };
 
