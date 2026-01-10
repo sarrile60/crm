@@ -223,6 +223,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
     team_id: '',
     assigned_to: ''
   });
+  const [massActionMode, setMassActionMode] = useState('update'); // 'update' or 'delete'
+  const [showMassDeleteConfirm, setShowMassDeleteConfirm] = useState(false);
+  const [isMassDeleting, setIsMassDeleting] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
