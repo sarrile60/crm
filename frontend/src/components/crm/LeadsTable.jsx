@@ -771,12 +771,53 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   }, []);
 
   const toggleSelectAll = useCallback(() => {
-    if (selectedLeadIds.length === filteredLeads.length) {
+    // If all are selected, deselect all
+    if (selectedLeadIds.length === filteredLeads.length && !allMatchingSelected) {
       setSelectedLeadIds([]);
+      setAllMatchingSelected(false);
+    } else if (allMatchingSelected) {
+      // If "all matching" was selected, clear everything
+      setSelectedLeadIds([]);
+      setAllMatchingSelected(false);
     } else {
-      setSelectedLeadIds(filteredLeads.map(lead => lead.id));
+      // Show modal to choose between current page or all matching
+      setShowSelectAllModal(true);
     }
-  }, [selectedLeadIds.length, filteredLeads]);
+  }, [selectedLeadIds.length, filteredLeads.length, allMatchingSelected]);
+
+  const handleSelectCurrentPage = useCallback(() => {
+    setSelectedLeadIds(filteredLeads.map(lead => lead.id));
+    setAllMatchingSelected(false);
+    setShowSelectAllModal(false);
+  }, [filteredLeads]);
+
+  const handleSelectAllMatching = useCallback(async () => {
+    setIsSelectingAll(true);
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      // Build query params with same filters
+      const queryParams = {};
+      if (filters.status) queryParams.status = filters.status;
+      if (filters.priority) queryParams.priority = filters.priority;
+      if (filters.search) queryParams.search = filters.search;
+
+      const response = await axios.post(`${API}/crm/leads/select-all`, null, { headers, params: queryParams });
+      
+      if (response.data.lead_ids) {
+        setSelectedLeadIds(response.data.lead_ids);
+        setAllMatchingSelected(true);
+        toast.success(t('crm.selectedAllMatching', { count: response.data.count }));
+      }
+    } catch (error) {
+      console.error('Error selecting all leads:', error);
+      toast.error(t('crm.errorSelectingAll'));
+    } finally {
+      setIsSelectingAll(false);
+      setShowSelectAllModal(false);
+    }
+  }, [filters, t]);
 
   const handleMassUpdate = async () => {
     if (selectedLeadIds.length === 0) {
