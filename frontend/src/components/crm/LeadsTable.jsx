@@ -1087,7 +1087,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
               <th className="text-left text-white p-3 font-semibold" style={{ width: '200px' }}>{t('common.email')}</th>
               <th className="text-left text-white p-3 font-semibold" style={{ width: '110px' }}>{t('common.amount')}</th>
               <th className="text-left text-white p-3 font-semibold" style={{ width: '140px' }}>{t('common.status')}</th>
-              <th className="text-left text-white p-3 font-semibold" style={{ width: '100px' }}>{t('leads.priority')}</th>
               <th className="text-left text-white p-3 font-semibold" style={{ width: '110px' }}>{t('users.team')}</th>
               <th className="text-left text-white p-3 font-semibold" style={{ width: '130px' }}>{t('leads.assignedTo')}</th>
               <th className="text-left text-white p-3 font-semibold" style={{ width: '180px' }}>{t('common.actions')}</th>
@@ -1096,7 +1095,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
           <tbody>
             {filteredLeads.length === 0 ? (
               <tr>
-                <td colSpan={canMassUpdate ? "11" : "10"} className="text-center p-8 text-gray-600">
+                <td colSpan={canMassUpdate ? "10" : "9"} className="text-center p-8 text-gray-600">
                   {t('leads.noLeadsFound')}
                 </td>
               </tr>
@@ -1117,7 +1116,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                   formatPhoneDisplay={formatPhoneDisplay}
                   formatPhoneForCall={formatPhoneForCall}
                   getStatusColor={getStatusColor}
-                  getPriorityColor={getPriorityColor}
                   users={users}
                   teams={teams}
                   statuses={statuses}
