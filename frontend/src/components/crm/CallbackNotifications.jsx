@@ -910,11 +910,11 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                         </Button>
                       ) : (
                         <Button
-                          onClick={() => setShowUrgentModal(false)}
-                          variant="outline"
-                          className="flex-1 border-2 border-gray-400 text-gray-700 hover:bg-gray-100 rounded-none text-lg py-6 font-bold"
+                          onClick={() => handleRemoveCallback(urgentCallback)}
+                          className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none text-lg py-6 font-bold"
                         >
-                          {t('common.close')}
+                          <Trash2 className="w-5 h-5 mr-2" />
+                          {t('crm.removeCallback')}
                         </Button>
                       )}
                     </div>
