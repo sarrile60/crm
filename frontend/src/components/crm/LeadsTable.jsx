@@ -448,38 +448,62 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
     }
   };
 
-  const handleExportCSV = () => {
-    if (leads.length === 0) {
-      toast.error(t('crm.noLeadsToExport'));
-      return;
+  const handleExportCSV = async () => {
+    try {
+      toast.info(t('crm.exportingAllLeads'));
+      
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      // Build query params with same filters but NO pagination (fetch all)
+      const queryParams = {
+        limit: 50000, // High limit to get all leads
+        offset: 0,
+        sort: 'created_at',
+        order: 'desc'
+      };
+      if (filters.status) queryParams.status = filters.status;
+      if (filters.priority) queryParams.priority = filters.priority;
+      if (filters.search) queryParams.search = filters.search;
+
+      const response = await axios.get(`${API}/crm/leads`, { headers, params: queryParams });
+      const allLeads = Array.isArray(response.data) ? response.data : (response.data.data || []);
+
+      if (allLeads.length === 0) {
+        toast.error(t('crm.noLeadsToExport'));
+        return;
+      }
+
+      const csvContent = [
+        [t('crm.createdDate'), t('common.name'), t('common.email'), t('common.phone'), t('crm.scammerCompany'), t('crm.amountLost'), t('common.status'), t('leads.priority'), t('crm.caseDetails')],
+        ...allLeads.map(lead => [
+          formatCreatedDate(lead.created_at),
+          lead.fullName || '',
+          lead.email || '',
+          lead.phone || '',
+          lead.scammerCompany || '',
+          lead.amountLost || '',
+          lead.status || '',
+          lead.priority || '',
+          lead.caseDetails || ''
+        ])
+      ].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `leads_export_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success(t('crm.leadsExportedSuccess', { count: allLeads.length }));
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error(t('crm.errorExportingLeads'));
     }
-
-    const csvContent = [
-      [t('crm.createdDate'), t('common.name'), t('common.email'), t('common.phone'), t('crm.scammerCompany'), t('crm.amountLost'), t('common.status'), t('leads.priority'), t('crm.caseDetails')],
-      ...leads.map(lead => [
-        formatCreatedDate(lead.created_at),
-        lead.fullName,
-        lead.email,
-        lead.phone,
-        lead.scammerCompany,
-        lead.amountLost,
-        lead.status,
-        lead.priority,
-        lead.caseDetails
-      ])
-    ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `leads_export_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    toast.success(t('crm.leadsExportedSuccess'));
   };
 
   const handleImportCSV = async () => {
