@@ -779,9 +779,39 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       setShowMassUpdateModal(false);
       setSelectedLeadIds([]);
       setMassUpdateData({ status: '', team_id: '', assigned_to: '' });
+      setMassActionMode('update');
       fetchData();
     } catch (error) {
       toast.error(t('crm.errorMassUpdate'));
+    }
+  };
+
+  const handleMassDelete = async () => {
+    if (selectedLeadIds.length === 0) {
+      toast.error(t('crm.noLeadsSelected'));
+      return;
+    }
+
+    setIsMassDeleting(true);
+    
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const response = await axios.post(`${API}/crm/leads/mass-delete`, {
+        lead_ids: selectedLeadIds
+      }, { headers });
+      
+      toast.success(t('crm.leadsDeletedSuccess', { count: response.data.deleted_count }));
+      setShowMassUpdateModal(false);
+      setShowMassDeleteConfirm(false);
+      setSelectedLeadIds([]);
+      setMassActionMode('update');
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || t('crm.errorMassDelete'));
+    } finally {
+      setIsMassDeleting(false);
     }
   };
 
