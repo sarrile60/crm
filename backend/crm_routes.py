@@ -936,6 +936,43 @@ async def update_lead(lead_id: str, update_data: LeadUpdate, current_user: dict 
     
     return {"success": True}
 
+
+@crm_router.post("/leads/{lead_id}/clear-callback")
+async def clear_lead_callback(lead_id: str, current_user: dict = Depends(get_current_user)):
+    """Clear callback date and notes from a lead - used when agent completes or removes callback"""
+    lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
+    
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    
+    # Clear the callback fields
+    result = await db.leads.update_one(
+        {"id": lead_id},
+        {"$set": {
+            "callback_date": None,
+            "callback_notes": None,
+            "updated_at": datetime.now(timezone.utc)
+        }}
+    )
+    
+    # Also remove any pending callback reminders for this lead
+    await db.callback_reminders.delete_many({"lead_id": lead_id})
+    
+    # Log the activity
+    activity = ActivityLog(
+        lead_id=lead_id,
+        user_id=current_user["id"],
+        user_name=current_user["full_name"],
+        action="callback_cleared",
+        details=f"Callback reminder cleared by {current_user['full_name']}"
+    )
+    await db.activity_logs.insert_one(activity.dict())
+    
+    logger.info(f"[CALLBACK CLEARED] Lead {lead_id} callback cleared by {current_user['full_name']}")
+    
+    return {"success": True, "message": "Callback cleared"}
+
+
 @crm_router.delete("/leads/{lead_id}")
 async def delete_lead(lead_id: str, current_user: dict = Depends(get_current_user)):
     """Delete lead - permission controlled via Admin GUI"""
