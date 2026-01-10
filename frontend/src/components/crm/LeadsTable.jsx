@@ -609,14 +609,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         amountLost: lead.amountLost || '',
         caseDetails: lead.caseDetails || '',
         status: lead.status,
-        priority: lead.priority,
         callback_date: lead.callback_date || '',
         callback_notes: lead.callback_notes || ''
       });
     } else {
       setEditData({
         status: lead.status,
-        priority: lead.priority,
         callback_date: lead.callback_date || '',
         callback_notes: lead.callback_notes || ''
       });
