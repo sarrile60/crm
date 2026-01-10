@@ -13,7 +13,7 @@ import time
 import logging
 
 # Configuration
-BASE_URL = "https://leadhub-32.preview.emergentagent.com/api"
+BASE_URL = "https://deposit-crm.preview.emergentagent.com/api"
 CRM_BASE_URL = f"{BASE_URL}/crm"
 FINANCE_BASE_URL = f"{CRM_BASE_URL}/finance"
 

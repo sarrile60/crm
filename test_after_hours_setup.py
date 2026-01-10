@@ -7,7 +7,7 @@ import requests
 import json
 
 # Configuration
-BASE_URL = "https://leadhub-32.preview.emergentagent.com/api"
+BASE_URL = "https://deposit-crm.preview.emergentagent.com/api"
 
 # Admin credentials
 ADMIN_CREDENTIALS = {

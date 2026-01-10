@@ -396,7 +396,7 @@ app.include_router(analytics_router, prefix="/api/crm")
 app.include_router(finance_router, prefix="/api/crm")
 
 # CORS Configuration (Restricted for Production)
-cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://leadhub-32.preview.emergentagent.com').split(',')
+cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://deposit-crm.preview.emergentagent.com').split(',')
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,

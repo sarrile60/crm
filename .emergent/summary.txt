@@ -1,149 +1,176 @@
 <analysis>**original_problem_statement:**
-The user's initial request was for a Deposit Management System, which evolved into a full-fledged CRM. In this session, the user requested a major overhaul of the Leads list page to address significant performance, UI, and UX issues. The goal was to create a dense, performant, modern CRM view similar to EspoCRM, capable of handling 5k-50k leads without lag.
+The user's initial request was for a Deposit Management System, which evolved into a full-fledged CRM. In this session, the user requested a series of critical features and bug fixes for the Leads/CRM part of the application.
 
-The user's detailed requirements included:
-*   **Performance:** Implement server-side pagination, a virtualized list, debounced search, and optimized rendering.
-*   **Layout:** A sticky toolbar, sticky table headers, fixed column widths, and responsive design (table on desktop, cards on mobile).
-*   **Backend API:** Adjust the  endpoint to support pagination, filtering, searching, and sorting.
-*   **Instant Search:** The search functionality must not cause a page reload or loading glitch, providing an instant experience by filtering local results first, then updating with debounced server results.
-*   **Scalable Select All:** Implement a feature to select all leads matching a filter (e.g., all 5,109 leads), not just the ones visible on the current page, without loading all IDs into the client.
-*   **Mass Delete:** Add an option to delete leads in bulk (either the selected page or all matching leads).
-*   **Default Page Size:** Change the default number of rows per page to 100.
+**PRODUCT REQUIREMENTS:**
+1.  **Re-implement Mass Delete:** The previous implementation failed and was reverted. The new implementation should be integrated into the existing Mass Update modal.
+2.  **Fix Select All Logic:** Restore the modal that allows the user to select either the current page of leads or *all* leads matching the current filters.
+3.  **Fix Export CSV:** Ensure the export function includes all filtered leads, not just the visible page.
+4.  **Set Default Page Size:** Change the default rows per page in the leads table to 100.
+5.  **Remove Clickable Phone Numbers:** All  links for phone numbers should be removed, making them plain text.
+6.  **Remove Priority Field:** The Priority field for leads must be completely removed from the entire application (list view, filters, edit modals, detail views, and backend logic).
+7.  **Fix Blank Deposits Page:** The Deposits tab was showing a blank white page, which needed to be fixed.
+8.  **Fix Leads Page Double Loading:** The leads list page was flickering or refreshing upon load, which needed to be fixed.
+9.  **Overhaul Callback System:** The callback notification system was broken and needed a complete overhaul with specific logic:
+    *   A popup reminder must trigger for any lead with a  set.
+    *   The popup must have Call Now and Later (snooze) options.
+    *   Later snoozes the reminder for 5 minutes. An agent can snooze a maximum of two times.
+    *   On the third attempt, the Later button must be replaced with a Remove Callback button, and a notification should be sent to the supervisor.
+    *   If multiple callbacks are due, they should be queued and displayed one by one.
+    *   Clicking Call Now must clear the callback from the backend.
+    *   A Set Reminder button should be available in the leads list and lead detail view.
+10. **Fix Timezone Bug:** The date/time picker for setting callbacks was showing the wrong time due to a timezone conversion issue.
+11. **Enforce Phone Number Visibility:** Phone numbers must be masked or hidden in all modals and popups, respecting the visibility rules set for the user role.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack CRM. The  component has been significantly refactored to be more performant and professional. It now includes server-side pagination, a denser layout with fixed columns, sticky headers, a responsive mobile view, and an instant search feature that does not reload the page.
+The application is a full-stack CRM. The  and  components have been significantly refactored to implement the user's requests. The application is stable, with all major features and bug fixes from this session completed, except for one pending issue related to phone number visibility.
 
-Crucially, the application was just recovered from a critical failure. An attempt to add a Mass Delete feature introduced a bug that crashed the frontend, resulting in a blank white page. After several failed attempts to fix it, the agent successfully restored the application to a previously stable, working state by performing a HEAD is now at a7c9fda auto-commit for 39dd77ee-da80-43ee-a9e3-1794566c4e77. The application is now functional, but the mass delete feature and some other recent changes are not present.
+**Completed functionalities include:**
+*   A Mass Actions modal with Update and Delete tabs.
+*   A fully functional Select All modal (current page vs. all matching leads).
+*   A robust callback notification system with queuing, snoozing (2-strike rule), and a Remove Callback option.
+*   A Set Reminder feature integrated into the leads table.
+*   The Priority field has been completely purged from the application.
+*   Critical bugs related to the blank Deposits page and the double-loading Leads page have been resolved.
 
 **Last working item**:
--   Last item agent was working: Emergency recovery of the application. The agent's last implementation attempt (adding a mass delete feature) broke the frontend completely. The final, successful action was to revert the codebase by 15 commits using HEAD is now at a7c9fda auto-commit for 39dd77ee-da80-43ee-a9e3-1794566c4e77 to restore the last known stable version of the application.
--   Status: COMPLETED (The revert was successful, and the user confirmed the application is working again).
--   Agent Testing Done: Y (Verified via screenshot tool after the revert).
--   Which testing method agent to use? NA (The last action was a successful recovery).
--   User Testing Done: Y (User confirmed the application is no longer showing a blank page).
+-   Last item agent was working: The user reported that the urgent callback popup was not respecting phone number visibility rules (i.e., it was showing the full phone number instead of the masked version).
+-   Status: IN PROGRESS
+-   Agent Testing Done: N
+-   Which testing method agent to use? Frontend testing agent. The agent should test by logging in as an agent, setting a callback for a lead with a masked phone number, and verifying that the popup displays the masked number (e.g., ) and not the full number.
+-   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Blank page when clicking on Leads (P0)
+-   Issue 1: Phone number visibility is not respected in the urgent callback popup (P0)
 
 Issues Detail:
--   **Issue 1: Blank page when clicking on Leads**
-    -   **Attempted fixes:** The agent spent a significant amount of time debugging this issue. It was introduced while implementing a mass delete feature. Attempts included:
-        -   Fixing  errors in multiple components (, , etc.) that were incorrectly parsing the new paginated API response ( vs ).
-        -   Guarding against null values in JSX when rendering modals.
-        -   Reverting file changes using backups and .
-        -   None of these attempts worked, indicating a deeper issue was introduced. The final successful fix was a hard .
-    -   **Next debug checklist:** This specific issue is resolved, but the underlying cause (fragile state management, especially with modals) remains. The next agent should be extremely careful when adding new features to .
-    -   **Why fix this issue and what will be achieved with the fix?** The application was completely unusable. Fixing it restored all functionality.
-    -   **Status:** RESOLVED
-    -   **Is recurring issue?** Y (The blank page crash has happened multiple times due to different root causes, indicating frontend fragility).
+-   **Issue 1: Phone number visibility is not respected in the urgent callback popup**
+    -   **Attempted fixes:** The agent investigated  and correctly identified that the frontend logic for displaying the masked number was already in place. The investigation then shifted to the backend, assuming the API was not providing the necessary  field to the component.
+    -   **Next debug checklist:**
+        1.  **File:** .
+        2.  **Function:** .
+        3.  **Action:** Verify the  data fetched from  contains the  field. The agent already fixed the projection in  once to include , but it's possible  is still missing from the data being passed to the notification component's state.
+        4.  **Action:** Ensure the  object pushed to the  includes the  field.
+        5.  **Action:** In the JSX for the urgent modal (), confirm that it's using  when available, similar to the logic already implemented in the  reminder modal.
+    -   **Why fix this issue and what will be achieved with the fix?** To enforce data privacy and access control rules consistently across all parts of the application, ensuring agents only see the phone number information they are authorized to.
+    -   **Status:** IN PROGRESS
+    -   **Is recurring issue?** Y (The backend API not projecting all necessary fields to the frontend has been a recurring theme).
     -   **Should Test frontend/backend/both after fix?** Frontend.
-    -   **Blocked on other issue:** None.
 
 **In progress Task List**:
--   None. All in-progress work was reverted.
+-   None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **(P0) Re-implement Mass Delete:** Add a feature to delete leads in bulk. This must work for both the current page selection and the Select All Matching server-side selection. This was the feature that broke the app and was reverted. It needs to be implemented again, carefully.
-    -   **(P1) Re-implement Export All CSV:** The  function was updated to fetch all leads from the backend for export, but this change was lost in the . It needs to be re-implemented.
-    -   **(P1) Set Default Page Size to 100:** The default  was changed to 100, but this was also lost in the . This needs to be re-applied to .
-    -   **(P2) Add Italian translations** for the expense management UI in .
+    -   **(P2)** Add Italian translations for the expense management UI in .
 -   **Future Tasks:**
-    -   (P3) Add a client video testimonials section to the  page.
-    -   (P3) Refactor other large components like  and .
+    -   **(P3)** Add a soft-delete feature for leads, with a Recently Deleted view for 30-day recovery.
+    -   **(P3)** Refactor  (currently ~2100 lines) into smaller, more manageable components and custom hooks.
+    -   **(P3)** Refactor  (currently ~1000+ lines).
 
 **Completed work in this session**
--   **Leads Page Major Refactor (DONE & STABLE):**
-    -   **UI/Layout:** Implemented a dense, professional table layout with a sticky header, fixed column widths, and horizontal scroll to prevent overflow.
-    -   **Pagination:** Added full server-side pagination controls (Next/Prev buttons, page indicator, rows per page dropdown).
-    -   **Performance:**
-        -   Implemented an instant search feature using  to prevent input lag and page reloads. Search filters local results instantly while fetching server results in the background.
-        -   Optimized rendering with  on row components to improve Select All performance.
-    -   **Responsiveness:** Added a mobile-friendly card view for the leads list.
--   **Scalable Select All Feature (DONE & STABLE):** Implemented a professional modal allowing the user to select either the current page or *all* leads matching the current filters (server-side selection).
--   **Critical Application Recovery (DONE):** Successfully diagnosed that the application was irrecoverably broken by recent changes and performed a HEAD is now at a7c9fda auto-commit for 39dd77ee-da80-43ee-a9e3-1794566c4e77 to revert to a known stable state, making the app functional again.
+-   **Mass Actions Implementation (DONE):** Re-implemented the Mass Delete feature within a new tabbed Mass Actions modal and fixed the Export All functionality.
+-   **Select All Feature (DONE):** Restored the modal allowing users to select the current page or all filtered leads.
+-   **Critical Bug Fixes (DONE):**
+    -   Fixed the blank white page on the Deposits tab by correctly handling paginated API responses in .
+    -   Fixed the double-loading/flicker issue on the Leads page.
+-   **Callback System Overhaul (DONE):**
+    -   Completely rebuilt the callback notification logic in  to handle queuing, a 2-strike snooze rule, and a Remove Callback option.
+    -   Fixed the backend API () to correctly project the  field, which was the root cause of the system failure.
+    -   Added a  endpoint.
+    -   Added a Set Reminder modal and button to .
+-   **UI & Data Integrity Fixes (DONE):**
+    -   Completely removed the Priority field from all frontend components and backend queries.
+    -   Removed all clickable  links for phone numbers.
+    -   Fixed a timezone display bug in the  component.
+    -   Set the default page size on the leads table to 100.
+    -   Fixed phone number visibility in the Set Reminder modal.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Issue 1: FreePBX Dialplan Configuration**
-    -   **Debug checklist:** The user's  dialplan context on their FreePBX server is misconfigured, causing calls to originate from the wrong extension. The CRM is sending the correct data. The user needs to inspect  on their server.
-    -   **Why to solve this issue and what will be achieved with this?** This will make the Click-to-Call feature fully functional for all users.
-    -   **Should Test frontend/backend/both after fix:** Backend (API call verification).
+    -   **Debug checklist:** This is an external configuration issue on the user's FreePBX server. The CRM is sending the correct data. The user needs to inspect their dialplan ().
+    -   **Why to solve this issue and what will be achieved with this?** This will make the Click-to-Call feature fully functional. The issue is blocked pending action from the user.
+    -   **Should Test frontend/backend/both after fix:** N/A (External issue).
     -   **Is recurring issue?** Y.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** Frontend service crashing (Web server returned an unknown error / blank white page).
--   **Recurrence count:** High. This happened multiple times this session, culminating in a critical failure that required a .
--   **Status:** RESOLVED (for now). The immediate cause was a buggy implementation of a new feature (Mass Delete modal), but the pattern of frontend fragility remains a significant risk. The next agent must be extremely cautious.
+-   **Recurrence count:** High.
+-   **Status:** RESOLVED. The agent fixed a blank page on the Deposits tab caused by a component not handling a new paginated API response format. This highlights the fragility of the frontend to backend API changes.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Emergency Recovery:** Using HEAD is now at a7c9fda auto-commit for 39dd77ee-da80-43ee-a9e3-1794566c4e77 to revert the codebase to a stable state after a critical failure.
--   **React Performance Optimization:**
-    -   : To keep the search input responsive while filtering happens in the background.
-    -   : To prevent unnecessary re-renders of table rows, significantly speeding up Select All checkbox updates.
--   **Server-Side Operations:** The Leads page is now fully driven by a server-side paginated API.
--   **Scalable Selection:** Implemented a server-side Select All Matching feature that stores the selection rule (filters/search query) instead of a large array of IDs on the client.
--   **A/B Testing with Feature Flags:** Used a  variable () to switch between the old and a new, optimized component for testing.
+-   **API Response Fragility:** A recurring theme was frontend components breaking because they were hardcoded to expect a specific API response format (e.g., an array) and failed when the format changed (e.g., to a paginated object ).
+-   **Backend Projection Management:** The root cause of the callback system failure was the  endpoint not including  in its database projection. This required debugging and modifying the backend route.
+-   **Complex State Management in React:** The  component now manages a queue of popups, snooze counts, and modal states, all while polling the backend.  manages state for multiple modals simultaneously.
+-   **Systematic Refactoring:** The complete removal of the Priority field required a careful, multi-step search-and-replace process across a large component () to avoid breaking the UI.
 
 **key DB schema**
--   No schema changes were made in this session.
+-   No schema changes were made.
 
 **changes in tech stack**
--   **:** Added to the frontend to manage server state, caching, and background fetching, although the implementation was reverted. The dependency is still in .
+-   None.
 
 **All files of reference**
--    (The primary file of this entire session. It is large and complex.)
--    (Contains the paginated  endpoint.)
--    (This file also consumes the leads API and was a source of bugs after the API response format changed.)
--    (The parent component that renders ).
+-    (Core component for leads, heavily modified)
+-    (Core component for notifications, completely overhauled)
+-    (Backend logic for leads, modified multiple times)
+-    (Bug fix for API response handling)
+-    (Bug fix for timezone issue)
 
 **Areas that need refactoring**:
--   ****: Despite the improvements, this component is now over 2000 lines long and contains logic for data fetching, state management, UI rendering for multiple modals (edit, view, assign, delete, select-all), and business logic. It is extremely fragile. The next major feature addition should prioritize breaking this component down into smaller, more focused sub-components and custom hooks.
+-   ****: This component has grown to over 2100 lines and handles data fetching, filtering, pagination, and the UI for at least five different modals (Detail, Edit, Mass Actions, Select All, Set Reminder). It is extremely fragile and a prime candidate for being broken down into smaller components and custom hooks.
+-   ****: This component is now over 1000 lines and contains complex logic for polling, snoozing, state management for the urgent popup, and the notification bell UI. This should be split into separate modules for data fetching and UI rendering.
 
 **key api endpoints**
--   : Fully functional with server-side pagination, search, filtering, and sorting. It returns a  payload.
+-   : **NEW**. Deletes a list of leads provided in the request body.
+-   : **NEW**. Clears the  and  for a specific lead.
+-   : **MODIFIED**. The database projection was updated to include  and  to ensure the notification system works correctly.
+-   : **MODIFIED**. Confirmed to correctly save  to the database.
 
 **Critical Info for New Agent**
--   **THE APP WAS JUST REVERTED:** The most critical piece of information is that the application is stable *only because* the agent performed a HEAD is now at 842d1d4 Auto-commit before changes. This wiped out the last ~3 hours of work, including the failed Mass Delete feature, the Export All fix, and the default to 100 rows change.
--   **BE CAUTIOUS WITH :** This file is extremely large and fragile. The last attempt to add a new modal () to it broke the entire application. When re-implementing mass delete, do it with extreme care. Consider creating it as a separate component and ensure state management is isolated.
--   **Re-implement Reverted Features:** Your first tasks should be to safely re-implement the features that were lost in the revert: Mass Delete (P0), Export All (P1), and Default Page Size to 100 (P1).
+-   Your first task is to fix the phone number visibility in the urgent callback popup. The user has reported that the full phone number is shown when it should be masked. The issue is likely that  is not receiving or using the  field from the API.
+-   Be aware that the frontend has a history of being fragile to changes in backend API responses. When debugging UI issues, a good first step is always to inspect the network request and verify the exact data being returned by the API.
+-   The  and  files are very large and complex. Tread carefully when making changes and consider opportunities for minor refactoring if it doesn't expand the scope of your task.
 
 **documents and test reports created in this job**
 -   
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Requests a Mass Delete feature for leads. (Status: **PENDING - Implementation failed and was reverted**)
-2.  **User:** Reports the application is broken (blank page). (Status: **RESOLVED**)
-3.  **User:** Confirms the application is working again after the agent's . (Status: **Completed**)
-4.  **User:** Reports Select All button doesn't work. (Status: **RESOLVED**)
-5.  **User:** Reports the Select All confirmation is an ugly browser alert and asks for a professional modal. (Status: **RESOLVED**)
-6.  **User:** Reports the new professional modal appears behind the Import modal. (Status: **RESOLVED**)
-7.  **User:** Requests that the Export CSV feature exports all 1009 leads, not just the 100 on the current page. (Status: **PENDING - Implemented but then reverted**)
-8.  **User:** Requests the default rows per page be set to 100. (Status: **PENDING - Implemented but then reverted**)
-9.  **User:** Reports that searching for a lead causes a laggy Loading Leads... glitch and a page reload. (Status: **RESOLVED**)
-10. **User:** Reports that typing in the search box is laggy/stutters. (Status: **RESOLVED**)
+1.  User reports the callback system is completely broken and asks for a fix. (Status: **RESOLVED**)
+2.  User provides detailed requirements for the new callback logic (snooze, 3rd attempt rule, etc.). (Status: **RESOLVED**)
+3.  User approves the agent's plan to fix the callback system. (Status: **RESOLVED**)
+4.  User reports a timezone bug in the date picker. (Status: **RESOLVED**)
+5.  User requests that phone number visibility be respected in the reminder modal. (Status: **RESOLVED**)
+6.  User reports the callback popup is not appearing after the initial fixes. (Status: **RESOLVED**)
+7.  User insists the callback is still not working and asks the agent to test it thoroughly. (Status: **RESOLVED**)
+8.  The agent successfully fixes the callback popup, which was a backend projection issue.
+9.  User reports that while the popup works, it doesn't respect phone number visibility. (Status: **PENDING**)
+10. The user asks the agent to fix the phone number visibility in the callback popup. (Status: **PENDING - THIS IS THE CURRENT TASK**)
 
 **Project Health Check:**
--   **Broken:** None. The application is in a stable, working state after the revert.
+-   **Broken:**
+    -   Phone number visibility in the urgent callback popup is not working correctly.
 -   **Mocked:** None.
--   **Blocked:** The Click-to-Call feature remains blocked on the user's external FreePBX server configuration.
+-   **Blocked:**
+    -   The Click-to-Call feature remains blocked on the user's external FreePBX server configuration.
 
 **3rd Party Integrations**
--   **FreePBX:** Via direct TCP connection to the Asterisk Manager Interface (AMI).
--   **xlsx (sheetjs):** For parsing Excel files on the frontend.
--   **react-i18next:** For internationalization.
--   **@tanstack/react-query:** Installed but the implementation was reverted. Available for use.
--   **react-window:** Installed for virtualization.
+-   FreePBX: Via direct TCP connection to the Asterisk Manager Interface (AMI).
+-   xlsx (sheetjs): For parsing Excel files on the frontend.
+-   react-i18next: For internationalization.
+-   @tanstack/react-query: Installed but not actively used in the reverted code.
+-   react-window: Installed for list virtualization.
 
 **Testing status**
--   Testing agent used after significant changes: YES. It was instrumental in finding bugs with the Select All modal implementation.
--   Troubleshoot agent used after agent stuck in loop: YES. It helped identify a secondary location where the old API response was being used.
+-   Testing agent used after significant changes: YES, used once for the mass delete feature.
+-   Troubleshoot agent used after agent stuck in loop: NO.
 -   Test files created: None.
--   Known regressions: The Export All and Default 100 rows features were implemented but then lost during the emergency .
+-   Known regressions: None.
 
 **Credentials to test flow:**
 -   **Admin:**
@@ -154,7 +181,4 @@ Issues Detail:
     -   Password: 
 
 **What agent forgot to execute**
--   The Mass Delete feature implementation failed and was reverted. It is the top priority upcoming task.
--   The fix for Export CSV to export all leads was reverted.
--   The change to set the default page size to 100 was reverted.
--   The task to add Italian translations for the expense management UI from the original handoff remains pending.</analysis>
+-   The current pending task is to fix the phone number visibility in the callback popup, which was a direct follow-up from the user after the callback system was made functional.</analysis>
