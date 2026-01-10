@@ -259,13 +259,13 @@ LOGIN_RATE_LIMIT=5
 LOGIN_RATE_WINDOW_SECONDS=300
 
 # CORS Settings
-CORS_ALLOWED_ORIGINS=https://leads-ui-upgrade.preview.emergentagent.com,http://localhost:3000
+CORS_ALLOWED_ORIGINS=https://leadhub-32.preview.emergentagent.com,http://localhost:3000
 ```
 
 ### Frontend: `/app/frontend/.env`
 ```env
 # Backend API URL
-REACT_APP_BACKEND_URL=https://leads-ui-upgrade.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://leadhub-32.preview.emergentagent.com
 
 # Environment
 REACT_APP_ENV=production
@@ -285,7 +285,7 @@ REACT_APP_ENABLE_DEVTOOLS=false
 
 ### For Production Use:
 
-**URL:** `https://leads-ui-upgrade.preview.emergentagent.com/api/admin/login`
+**URL:** `https://leadhub-32.preview.emergentagent.com/api/admin/login`
 
 **Credentials:**
 - **Username:** `admin_f87450ce5d66`
@@ -293,7 +293,7 @@ REACT_APP_ENABLE_DEVTOOLS=false
 
 **Test with curl:**
 ```bash
-curl -X POST https://leads-ui-upgrade.preview.emergentagent.com/api/admin/login \
+curl -X POST https://leadhub-32.preview.emergentagent.com/api/admin/login \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin_f87450ce5d66",

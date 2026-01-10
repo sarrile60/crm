@@ -1,189 +1,149 @@
 <analysis>**original_problem_statement:**
-The user's initial request was for a Deposit Management System. Over time, this evolved into a full-fledged CRM including a Revenue Dashboard, Admin Analytics, and a comprehensive Financial Dashboard.
+The user's initial request was for a Deposit Management System, which evolved into a full-fledged CRM. In this session, the user requested a major overhaul of the Leads list page to address significant performance, UI, and UX issues. The goal was to create a dense, performant, modern CRM view similar to EspoCRM, capable of handling 5k-50k leads without lag.
 
-In this session, the user's primary requests were:
-1.  **Editable Commission Tiers**: Complete the feature to allow admins to edit agent and supervisor commission tiers through a GUI.
-2.  **Infinite Reload Bug**: Fix a critical bug causing the Commission Settings page to reload infinitely.
-3.  **Remove Watermark**: Remove the Made with Emergent watermark from the application.
-4.  **Admin Lead Editing**: Enhance the lead editing functionality to allow administrators to edit all fields of a lead, not just status and priority.
-5.  **Click-to-Call Integration**: Implement a Click-to-Call feature using the user's FreePBX server. This involved creating backend API endpoints to connect to the FreePBX AMI, updating the frontend to include a Call button on leads, and adding a SIP Extension field for users in the admin panel. The majority of the work on this feature involved extensive debugging of network, firewall, and FreePBX configuration issues.
-6.  **Frontend Stability**: Address a recurring Web server returned an unknown error and other preview availability issues.
-7.  **Translation Fixes**: Fix a hardcoded string on the homepage and translate it into all five available languages.
-8.  **CSV/Excel Import Refactor**: Fix multiple issues with the lead import functionality, including rate limiting, duplicate handling, character encoding, and finally adding support for Excel (.xlsx) files.
-9.  **Leads Page Major Refactor (Latest Request)**: The user's final and most detailed request is a complete overhaul of the Leads list page to address significant performance, UI, and UX issues.
+The user's detailed requirements included:
+*   **Performance:** Implement server-side pagination, a virtualized list, debounced search, and optimized rendering.
+*   **Layout:** A sticky toolbar, sticky table headers, fixed column widths, and responsive design (table on desktop, cards on mobile).
+*   **Backend API:** Adjust the  endpoint to support pagination, filtering, searching, and sorting.
+*   **Instant Search:** The search functionality must not cause a page reload or loading glitch, providing an instant experience by filtering local results first, then updating with debounced server results.
+*   **Scalable Select All:** Implement a feature to select all leads matching a filter (e.g., all 5,109 leads), not just the ones visible on the current page, without loading all IDs into the client.
+*   **Mass Delete:** Add an option to delete leads in bulk (either the selected page or all matching leads).
+*   **Default Page Size:** Change the default number of rows per page to 100.
 
-**PRODUCT REQUIREMENTS (Leads Page Refactor):**
-*   **Primary Goal:** Refactor the Leads list into a dense, performant, modern CRM view, similar to EspoCRM, eliminating layout bugs and performance lag with large datasets (5k-50k leads).
-*   **Layout:**
-    *   Use a consistent container (max-width or full-width) with proper padding.
-    *   Implement a **sticky toolbar** with title, search, filters (Status, Priority, etc.), and actions (Create, Import, Export).
-    *   The table must be in a container with  and a **sticky header row**.
-*   **Performance:**
-    *   Implement **server-side pagination** (e.g.,  & ). The current API is not paginated.
-    *   Implement a **virtualized list** (e.g.,  or ).
-    *   Use **debounced search** (~300ms) with cancellation of in-flight requests.
-    *   Optimize rendering with memoized components and stable keys.
-*   **Backend API:**
-    *   Create or adjust a  endpoint to support pagination, searching, filtering, and sorting.
-    *   The API should return a payload like .
-    *   Ensure database indexes exist on filterable and sortable fields.
-*   **UI/UX:**
-    *   Use a fixed table layout with defined column widths and text truncation ().
-    *   Display pagination info like 1–200 / 5,140 with prev/next buttons and a page size dropdown.
-    *   Support row interactions: single click to open details, checkbox for bulk actions (Assign, Change Status, Delete).
-*   **Responsive Design:**
-    *   Desktop: Full table view.
-    *   Mobile: Switch to a card list view.
-*   **Color/Branding:**
-    *   **CRITICAL:** Do NOT change the existing color palette, theme, or branding. Reuse all existing tokens and styles. The focus is on layout and performance, not a visual redesign.
-
-**User's preferred language**: English and Albanian.
+**User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack CRM with a Deposit Management System, Revenue Dashboard, Analytics Dashboard, and a Financial Dashboard. The major features implemented in this session include a fully functional and tested admin GUI for editing commission tiers, enhanced lead editing capabilities for administrators, and a Click-to-Call integration with the user's external FreePBX server. The lead import functionality has been significantly improved to handle bulk imports, different file formats (CSV/XLSX), and various data validation issues. However, the main Leads list page suffers from major performance and UI/UX issues, which is the focus of the next task.
+The application is a full-stack CRM. The  component has been significantly refactored to be more performant and professional. It now includes server-side pagination, a denser layout with fixed columns, sticky headers, a responsive mobile view, and an instant search feature that does not reload the page.
+
+Crucially, the application was just recovered from a critical failure. An attempt to add a Mass Delete feature introduced a bug that crashed the frontend, resulting in a blank white page. After several failed attempts to fix it, the agent successfully restored the application to a previously stable, working state by performing a HEAD is now at a7c9fda auto-commit for 39dd77ee-da80-43ee-a9e3-1794566c4e77. The application is now functional, but the mass delete feature and some other recent changes are not present.
 
 **Last working item**:
--   Last item agent was working: The agent was at the very beginning of the Leads Page Major Refactor task. The work involved analyzing the existing  (1600+ lines) and the corresponding backend endpoint  to plan the refactor. No code has been written for this task yet.
--   Status: NOT STARTED
--   Agent Testing Done: N
--   Which testing method agent to use? both. The backend requires testing for the new paginated API. The frontend requires extensive testing with the  to verify performance with large datasets, UI correctness, and responsiveness as per the detailed user requirements.
--   User Testing Done: N
+-   Last item agent was working: Emergency recovery of the application. The agent's last implementation attempt (adding a mass delete feature) broke the frontend completely. The final, successful action was to revert the codebase by 15 commits using HEAD is now at a7c9fda auto-commit for 39dd77ee-da80-43ee-a9e3-1794566c4e77 to restore the last known stable version of the application.
+-   Status: COMPLETED (The revert was successful, and the user confirmed the application is working again).
+-   Agent Testing Done: Y (Verified via screenshot tool after the revert).
+-   Which testing method agent to use? NA (The last action was a successful recovery).
+-   User Testing Done: Y (User confirmed the application is no longer showing a blank page).
 
 **All Pending/In progress Issue list**:
--   Issue 1: Leads Page Major Refactor (P0)
+-   Issue 1: Blank page when clicking on Leads (P0)
 
 Issues Detail:
--   **Issue 1: Leads Page Major Refactor**
-    -   **Description:** The user has provided a detailed set of requirements to completely overhaul the  component and its corresponding backend API. The current implementation is slow, buggy, and not scalable for large datasets.
-    -   **Next debug checklist:**
-        1.  **Backend:** Modify the  function in  to support server-side pagination, searching, filtering, and sorting as per the user's required API contract.
-        2.  **Backend:** Add necessary database indexes to the  collection for fields like , , , and  to ensure query performance.
-        3.  **Frontend:** Create a new, reusable, and optimized Table component.
-        4.  **Frontend:** Implement the new Leads page using the new Table component, incorporating a sticky toolbar, sticky table headers, and server-side pagination logic.
-        5.  **Frontend:** Implement virtualization ( or similar) to ensure smooth scrolling with large page sizes.
-        6.  **Frontend:** Ensure the new layout is responsive, switching to a card view on mobile.
-        7.  **Frontend:** Implement debounced search and filtering.
-    -   **Why fix this issue and what will be achieved with the fix?** This is the user's top priority. Fixing it will resolve major performance bottlenecks and UI/UX frustrations, making the core feature of the CRM professional and scalable.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** Both
-    -   **Blocked on other issue:** None
+-   **Issue 1: Blank page when clicking on Leads**
+    -   **Attempted fixes:** The agent spent a significant amount of time debugging this issue. It was introduced while implementing a mass delete feature. Attempts included:
+        -   Fixing  errors in multiple components (, , etc.) that were incorrectly parsing the new paginated API response ( vs ).
+        -   Guarding against null values in JSX when rendering modals.
+        -   Reverting file changes using backups and .
+        -   None of these attempts worked, indicating a deeper issue was introduced. The final successful fix was a hard .
+    -   **Next debug checklist:** This specific issue is resolved, but the underlying cause (fragile state management, especially with modals) remains. The next agent should be extremely careful when adding new features to .
+    -   **Why fix this issue and what will be achieved with the fix?** The application was completely unusable. Fixing it restored all functionality.
+    -   **Status:** RESOLVED
+    -   **Is recurring issue?** Y (The blank page crash has happened multiple times due to different root causes, indicating frontend fragility).
+    -   **Should Test frontend/backend/both after fix?** Frontend.
+    -   **Blocked on other issue:** None.
 
 **In progress Task List**:
--   **Task 1: Leads Page Major Refactor**
-    -   **Where to resume:** Start by modifying the backend endpoint  in  to implement server-side pagination.
-    -   **What will be achieved with this?** A professional, performant, and scalable lead management interface.
-    -   **Status:** NOT STARTED
-    -   **Should Test frontend/backend/both after fix?** Both
-    -   **Blocked on something:** None
+-   None. All in-progress work was reverted.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   (P1) Add Italian translations for the expense management UI in .
+    -   **(P0) Re-implement Mass Delete:** Add a feature to delete leads in bulk. This must work for both the current page selection and the Select All Matching server-side selection. This was the feature that broke the app and was reverted. It needs to be implemented again, carefully.
+    -   **(P1) Re-implement Export All CSV:** The  function was updated to fetch all leads from the backend for export, but this change was lost in the . It needs to be re-implemented.
+    -   **(P1) Set Default Page Size to 100:** The default  was changed to 100, but this was also lost in the . This needs to be re-applied to .
+    -   **(P2) Add Italian translations** for the expense management UI in .
 -   **Future Tasks:**
-    -   (P2) Add a client video testimonials section to the  page.
-    -   (P3) Refactor other large components like ,  into smaller, more manageable child components.
-    -   (P3) The new reusable Table component created for the Leads refactor should be used to refactor other tables in the app (e.g., Deposits, Revenue).
+    -   (P3) Add a client video testimonials section to the  page.
+    -   (P3) Refactor other large components like  and .
 
 **Completed work in this session**
--   **Editable Commission Tiers (DONE):** Implemented the full backend and frontend for an admin GUI to manage agent and supervisor commission tiers. Tested with both backend and frontend testing agents.
--   **Admin Lead Editing (DONE):** Implemented functionality for admins to edit all fields of a lead, including client details, which was previously restricted.
--   **Click-to-Call Integration (DONE):** Implemented a feature to initiate calls from the CRM via the user's FreePBX server. This included backend AMI integration, frontend UI changes, and extensive network/firewall debugging with the user.
--   **Lead Import Overhaul (DONE):** Fixed numerous bugs in the CSV import feature, including adding support for Excel files, implementing a bulk import endpoint to avoid rate-limiting, and improving data cleaning and validation.
--   **Bug Fix: Infinite Reload (FIXED):** Resolved an infinite render loop in  caused by an incorrect  dependency.
--   **Bug Fix: Corrupted Lead Data (FIXED):** Investigated and deleted corrupted leads that were created due to an import bug.
--   **UI/UX Fixes (DONE):**
-    -   Removed the Made with Emergent watermark.
-    -   Fixed a hardcoded string on the home page and added translations for it across all 5 languages.
-    -   Changed the Amount Lost field in the lead edit form from a dropdown to a text input as requested.
--   **Stability (FIXED):** Resolved multiple instances of Web server returned an unknown error and preview unavailability by rebuilding and restarting services.
+-   **Leads Page Major Refactor (DONE & STABLE):**
+    -   **UI/Layout:** Implemented a dense, professional table layout with a sticky header, fixed column widths, and horizontal scroll to prevent overflow.
+    -   **Pagination:** Added full server-side pagination controls (Next/Prev buttons, page indicator, rows per page dropdown).
+    -   **Performance:**
+        -   Implemented an instant search feature using  to prevent input lag and page reloads. Search filters local results instantly while fetching server results in the background.
+        -   Optimized rendering with  on row components to improve Select All performance.
+    -   **Responsiveness:** Added a mobile-friendly card view for the leads list.
+-   **Scalable Select All Feature (DONE & STABLE):** Implemented a professional modal allowing the user to select either the current page or *all* leads matching the current filters (server-side selection).
+-   **Critical Application Recovery (DONE):** Successfully diagnosed that the application was irrecoverably broken by recent changes and performed a HEAD is now at a7c9fda auto-commit for 39dd77ee-da80-43ee-a9e3-1794566c4e77 to revert to a known stable state, making the app functional again.
 
 **Earlier issues found/mentioned but not fixed**
 -   **Issue 1: FreePBX Dialplan Configuration**
-    -   **Debug checklist:** The user reported that when  (extension 1003) makes a call, the call originates from 's extension (1004). The agent proved the CRM sends the correct extension () to the FreePBX AMI. The issue lies within the user's  dialplan context on their FreePBX server. The user needs to inspect  on their server.
-    -   **Why to solve this issue and what will be achieved with this?** This is the final step to make the Click-to-Call feature work as intended for all users.
-    -   **Should Test frontend/backend/both after fix:** Backend (API call verification)
-    -   **Is recurring issue?** Y
+    -   **Debug checklist:** The user's  dialplan context on their FreePBX server is misconfigured, causing calls to originate from the wrong extension. The CRM is sending the correct data. The user needs to inspect  on their server.
+    -   **Why to solve this issue and what will be achieved with this?** This will make the Click-to-Call feature fully functional for all users.
+    -   **Should Test frontend/backend/both after fix:** Backend (API call verification).
+    -   **Is recurring issue?** Y.
 
 **Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork:** Frontend service crashing (Web server returned an unknown error).
--   **Recurrence count:** High (recurred multiple times this session).
--   **Status:** RESOLVED. The issue was consistently resolved by rebuilding the frontend (yarn run v1.22.22
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.) and restarting the  service. This suggests a stale build cache issue rather than the file deletion problem from the previous fork. The  script from the previous fork appears to be working correctly, but manual rebuilds are sometimes necessary after significant changes.
+-   **Issue recurrence in previous fork:** Frontend service crashing (Web server returned an unknown error / blank white page).
+-   **Recurrence count:** High. This happened multiple times this session, culminating in a critical failure that required a .
+-   **Status:** RESOLVED (for now). The immediate cause was a buggy implementation of a new feature (Mass Delete modal), but the pattern of frontend fragility remains a significant risk. The next agent must be extremely cautious.
 
 **Code Architecture**
-sip_extensionLeadUpdate
+
 
 **Key Technical Concepts**
--   **FreePBX AMI Integration:** Connecting to the Asterisk Manager Interface to originate calls programmatically. Involved debugging network connectivity, firewalls (iptables, ), and AMI authentication.
--   **Server-Side Operations:** The new requirement for the Leads page mandates a shift from client-side rendering to server-side pagination, filtering, and sorting to handle large datasets.
--   **UI Performance Optimization:** The user explicitly requested virtualization ( or ) and other React best practices (memoization, debouncing) to fix performance lag.
--   **File Parsing:** Implemented robust client-side parsing for both CSV and Excel (.xlsx) files using  and .
--   **Dynamic IP Handling:** The agent and user dealt with the ephemeral nature of the preview server's IP address, requiring updates to the user's FreePBX firewall rules.
+-   **Emergency Recovery:** Using HEAD is now at a7c9fda auto-commit for 39dd77ee-da80-43ee-a9e3-1794566c4e77 to revert the codebase to a stable state after a critical failure.
+-   **React Performance Optimization:**
+    -   : To keep the search input responsive while filtering happens in the background.
+    -   : To prevent unnecessary re-renders of table rows, significantly speeding up Select All checkbox updates.
+-   **Server-Side Operations:** The Leads page is now fully driven by a server-side paginated API.
+-   **Scalable Selection:** Implemented a server-side Select All Matching feature that stores the selection rule (filters/search query) instead of a large array of IDs on the client.
+-   **A/B Testing with Feature Flags:** Used a  variable () to switch between the old and a new, optimized component for testing.
 
 **key DB schema**
--   **crm_users:**  (field added)
+-   No schema changes were made in this session.
 
 **changes in tech stack**
--   ** (sheetjs):** Added to the frontend to support parsing  Excel files for the lead import feature.
+-   **:** Added to the frontend to manage server state, caching, and background fetching, although the implementation was reverted. The dependency is still in .
 
 **All files of reference**
--    (Target for refactor)
--    (Needs API update for pagination)
--    (Where SIP extension is managed)
--    (Completed feature)
--    (Models for users and leads)
--    (Watermark removal)
--   The 5 translation files under 
+-    (The primary file of this entire session. It is large and complex.)
+-    (Contains the paginated  endpoint.)
+-    (This file also consumes the leads API and was a source of bugs after the API response format changed.)
+-    (The parent component that renders ).
 
 **Areas that need refactoring**:
--   ****: This is the highest priority. The user has explicitly requested a ground-up refactor of this 1600+ line component to fix performance, UI bugs, and UX. A new, reusable  component should be created as part of this effort.
--   , : These remain large components that would benefit from being broken down into smaller, reusable child components in the future.
+-   ****: Despite the improvements, this component is now over 2000 lines long and contains logic for data fetching, state management, UI rendering for multiple modals (edit, view, assign, delete, select-all), and business logic. It is extremely fragile. The next major feature addition should prioritize breaking this component down into smaller, more focused sub-components and custom hooks.
 
 **key api endpoints**
--   : **NEEDS REFACTOR**. Must be updated to support server-side pagination, filtering, searching, and sorting.
--   : **(New)** Imports a list of leads from a CSV or Excel file in a single transaction.
--   : **(New)** Initiates a click-to-call request via the FreePBX AMI.
--   : Modified to allow admins to update all lead fields.
--   , : Endpoints to manage commission tiers, now fully implemented and tested.
+-   : Fully functional with server-side pagination, search, filtering, and sorting. It returns a  payload.
 
 **Critical Info for New Agent**
--   **Leads Page Refactor is P0:** Your immediate and primary task is the complete refactor of the Leads page as per the user's extremely detailed instructions. Do not deviate from the requirements, especially the performance aspects (server-side pagination, virtualization) and the constraint of not changing the color scheme.
--   **Click-to-Call and Dynamic IPs:** The Click-to-Call feature works from the CRM's perspective, but it is highly dependent on the user's external FreePBX configuration. The preview server's IP address is dynamic and changes when the agent sleeps. You will likely need to get the new IP (34.16.56.64) and instruct the user to update their FreePBX firewall () and potentially their AMI config () again.
--   **User-Side FreePBX Dialplan Issue:** The user has a dialplan misconfiguration on their PBX that causes calls to originate from the wrong extension. You have already proven the CRM sends the correct data. If the user brings it up again, gently remind them the issue is in their  context in  and offer to look at the config if they provide it.
+-   **THE APP WAS JUST REVERTED:** The most critical piece of information is that the application is stable *only because* the agent performed a HEAD is now at 842d1d4 Auto-commit before changes. This wiped out the last ~3 hours of work, including the failed Mass Delete feature, the Export All fix, and the default to 100 rows change.
+-   **BE CAUTIOUS WITH :** This file is extremely large and fragile. The last attempt to add a new modal () to it broke the entire application. When re-implementing mass delete, do it with extreme care. Consider creating it as a separate component and ensure state management is isolated.
+-   **Re-implement Reverted Features:** Your first tasks should be to safely re-implement the features that were lost in the revert: Mass Delete (P0), Export All (P1), and Default Page Size to 100 (P1).
 
 **documents and test reports created in this job**
--    (updated for commission settings and lead editing tests)
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Requests a major refactor of the Leads list page for performance and UI/UX, providing a very detailed specification document. (Status: **PENDING - THIS IS THE NEXT TASK**)
-2.  **User:** Reports that importing leads fails for a 209-lead file and that the Amount Lost field should be a text input, not a dropdown. (Status: **Completed**)
-3.  **User:** Reports Invalid credentials error after the agent tried to fix the import. (Status: **Completed**)
-4.  **User:** Reports that the import created garbled/corrupted leads and asks the agent to undo/delete them and fix the root cause. (Status: **Completed**)
-5.  **User:** Reports No valid leads found in CSV file and provides the file, which turned out to be an Excel file. (Status: **Completed**)
-6.  **User:** Reports that clicking  link redirects to the landing page. (Status: **Completed** - was a browser cache issue)
-7.  **User:** Reports the preview is unavailable again and there's a translation issue on the homepage. (Status: **Completed**)
-8.  **User:** Asks for backup server IPs to configure the PBX firewall. (Status: **Completed**)
-9.  **User:** Asks how to view billing history on Emergent. (Status: **Completed** - agent provided instructions)
-10. **User:** Asks for clarification on credit usage and billing history for a free-tier user who has previously purchased credits. (Status: **Completed** - agent provided instructions)
+1.  **User:** Requests a Mass Delete feature for leads. (Status: **PENDING - Implementation failed and was reverted**)
+2.  **User:** Reports the application is broken (blank page). (Status: **RESOLVED**)
+3.  **User:** Confirms the application is working again after the agent's . (Status: **Completed**)
+4.  **User:** Reports Select All button doesn't work. (Status: **RESOLVED**)
+5.  **User:** Reports the Select All confirmation is an ugly browser alert and asks for a professional modal. (Status: **RESOLVED**)
+6.  **User:** Reports the new professional modal appears behind the Import modal. (Status: **RESOLVED**)
+7.  **User:** Requests that the Export CSV feature exports all 1009 leads, not just the 100 on the current page. (Status: **PENDING - Implemented but then reverted**)
+8.  **User:** Requests the default rows per page be set to 100. (Status: **PENDING - Implemented but then reverted**)
+9.  **User:** Reports that searching for a lead causes a laggy Loading Leads... glitch and a page reload. (Status: **RESOLVED**)
+10. **User:** Reports that typing in the search box is laggy/stutters. (Status: **RESOLVED**)
 
 **Project Health Check:**
--   **Broken:** None.
+-   **Broken:** None. The application is in a stable, working state after the revert.
 -   **Mocked:** None.
--   **Blocked:** The Click-to-Call feature's full end-to-end functionality is blocked on the user's external FreePBX server configuration (firewall for dynamic IPs and dialplan logic).
+-   **Blocked:** The Click-to-Call feature remains blocked on the user's external FreePBX server configuration.
 
 **3rd Party Integrations**
--   **FreePBX:** Via direct TCP connection to the Asterisk Manager Interface (AMI). Not a formal library, but a key integration.
+-   **FreePBX:** Via direct TCP connection to the Asterisk Manager Interface (AMI).
 -   **xlsx (sheetjs):** For parsing Excel files on the frontend.
 -   **react-i18next:** For internationalization.
--   **i18next-browser-languagedetector:** For language detection.
--   **victory & d3-shape:** For charts.
+-   **@tanstack/react-query:** Installed but the implementation was reverted. Available for use.
+-   **react-window:** Installed for virtualization.
 
 **Testing status**
--   Testing agent used after significant changes: YES (for Commission Settings and Admin Lead Edit)
--   Troubleshoot agent used after agent stuck in loop: NO
--   Test files created: None
--   Known regressions: None
+-   Testing agent used after significant changes: YES. It was instrumental in finding bugs with the Select All modal implementation.
+-   Troubleshoot agent used after agent stuck in loop: YES. It helped identify a secondary location where the old API response was being used.
+-   Test files created: None.
+-   Known regressions: The Export All and Default 100 rows features were implemented but then lost during the emergency .
 
 **Credentials to test flow:**
 -   **Admin:**
@@ -192,11 +152,9 @@ sip_extensionLeadUpdate
 -   **Supervisor (Primary for testing):**
     -   Username: 
     -   Password: 
--   **Agent (with SIP extension):**
-    -   Username: 
-    -   Password: 
-    -   SIP Extension: 
 
 **What agent forgot to execute**
--   The agent has not yet started the implementation of the detailed Leads Page Major Refactor requested by the user.
--   The pending task from the previous fork to add Italian translations for the expense management UI has still not been addressed.</analysis>
+-   The Mass Delete feature implementation failed and was reverted. It is the top priority upcoming task.
+-   The fix for Export CSV to export all leads was reverted.
+-   The change to set the default page size to 100 was reverted.
+-   The task to add Italian translations for the expense management UI from the original handoff remains pending.</analysis>
