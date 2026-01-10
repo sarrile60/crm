@@ -1719,20 +1719,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-black mb-2">{t('leads.priority')}</label>
-                  <Select value={editData.priority} onValueChange={(value) => setEditData({ ...editData, priority: value })}>
-                    <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="low">{t('leads.low')}</SelectItem>
-                      <SelectItem value="medium">{t('leads.medium')}</SelectItem>
-                      <SelectItem value="high">{t('leads.high')}</SelectItem>
-                      <SelectItem value="urgent">{t('leads.urgent')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
               {(editData.status === 'Callback' || editData.status === 'Potential Callback' || editData.status === 'Pharos in progress') && (
                 <>
