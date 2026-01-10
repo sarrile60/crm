@@ -1014,7 +1014,16 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                             </div>
                             <div className="space-y-1 text-sm">
                               <p className="text-gray-700">
-                                <strong>{t('common.phone')}:</strong> <a href={`tel:+39${lead.phone}`} className="text-[#D4AF37] hover:underline">+39 {lead.phone}</a>
+                                <strong>{t('common.phone')}:</strong>{' '}
+                                {lead.phone_display !== undefined && lead.phone_display !== null ? (
+                                  lead.phone_display ? (
+                                    <span className="text-[#D4AF37]">{lead.phone_display}</span>
+                                  ) : (
+                                    <span className="text-gray-400 italic">{t('visibility.hidden')}</span>
+                                  )
+                                ) : (
+                                  <span className="text-[#D4AF37]">{lead.phone}</span>
+                                )}
                               </p>
                               <p className="text-gray-700">
                                 <strong>{t('crm.amountLost')}:</strong> {lead.amountLost}
