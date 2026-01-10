@@ -870,6 +870,11 @@ async def update_lead(lead_id: str, update_data: LeadUpdate, current_user: dict 
     
     update_dict = {k: v for k, v in update_data.dict().items() if v is not None}
     
+    # Debug logging for callback_date
+    logger.info(f"[UPDATE LEAD] Lead ID: {lead_id}, update_dict keys: {list(update_dict.keys())}")
+    if 'callback_date' in update_dict:
+        logger.info(f"[UPDATE LEAD] callback_date value: {update_dict['callback_date']}, type: {type(update_dict['callback_date'])}")
+    
     # Only admins can edit client details (fullName, email, phone, etc.)
     admin_only_fields = ['fullName', 'email', 'phone', 'scammerCompany', 'amountLost', 'caseDetails']
     if current_user.get("role", "").lower() != "admin":
