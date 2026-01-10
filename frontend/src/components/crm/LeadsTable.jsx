@@ -1294,23 +1294,16 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                     {/* Phone visibility controlled by backend - respect empty string as "hidden" */}
                     {selectedLead.phone_display !== undefined && selectedLead.phone_display !== null ? (
                       selectedLead.phone_display ? (
-                        <a 
-                          href={formatPhoneForCall(selectedLead.phone_real || selectedLead.phone)} 
-                          className="text-blue-600 hover:text-blue-800 underline font-semibold block"
-                          title={t('crm.clickToCall')}
-                        >
+                        <span className="text-gray-700 font-semibold block">
                           {selectedLead.phone_display}
-                        </a>
+                        </span>
                       ) : (
                         <span className="text-gray-400 italic block">{t('visibility.hidden')}</span>
                       )
                     ) : (
-                      <a 
-                        href={formatPhoneForCall(selectedLead.phone)} 
-                        className="text-blue-600 hover:text-blue-800 underline font-semibold block"
-                      >
+                      <span className="text-gray-700 font-semibold block">
                         {formatPhoneDisplay(selectedLead.phone)}
-                      </a>
+                      </span>
                     )}
                   </div>
                   <div>
