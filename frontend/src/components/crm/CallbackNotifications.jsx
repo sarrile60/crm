@@ -830,15 +830,11 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-gray-600">{t('common.phone')}:</label>
-                    {/* Respect phone visibility settings */}
-                    {urgentCallback.phone_display !== undefined && urgentCallback.phone_display !== null ? (
-                      urgentCallback.phone_display ? (
-                        <p className="text-2xl font-bold text-[#D4AF37]">{urgentCallback.phone_display}</p>
-                      ) : (
-                        <p className="text-lg text-gray-400 italic">{t('visibility.hidden')}</p>
-                      )
+                    {/* Respect phone visibility settings - NEVER show raw phone number */}
+                    {urgentCallback.phone_display ? (
+                      <p className="text-2xl font-bold text-[#D4AF37]">{urgentCallback.phone_display}</p>
                     ) : (
-                      <p className="text-2xl font-bold text-[#D4AF37]">{urgentCallback.phone}</p>
+                      <p className="text-lg text-gray-400 italic">{t('visibility.hidden')}</p>
                     )}
                   </div>
                   <div>
