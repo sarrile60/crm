@@ -736,6 +736,62 @@ async def get_crm_leads(
     # Calculate total time and payload size
     total_time = (time.time() - start_time) * 1000
     # Estimate payload size without json.dumps (to avoid serialization issues)
+
+@crm_router.post("/leads/select-all")
+async def select_all_leads(
+    status: Optional[str] = None,
+    assigned_to: Optional[str] = None,
+    team_id: Optional[str] = None,
+    priority: Optional[str] = None,
+    search: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Server-side 'Select All' - returns IDs of all leads matching current filters
+    This prevents having to load thousands of IDs in the client
+    """
+    # Build same query as list endpoint
+    scope_filter = await permission_engine.get_data_scope_filter(
+        user_id=current_user["id"],
+        entity="leads"
+    )
+    query = {**scope_filter}
+    
+    if status:
+        query["status"] = status
+    
+    read_perm = await permission_engine.check_permission(
+        user_id=current_user["id"],
+        entity="leads",
+        action=PermissionAction.READ
+    )
+    
+    if assigned_to and read_perm.scope in [PermissionScope.TEAM, PermissionScope.ALL]:
+        query["assigned_to"] = assigned_to
+    if team_id and read_perm.scope == PermissionScope.ALL:
+        query["team_id"] = team_id
+    if priority:
+        query["priority"] = priority
+    
+    if search:
+        query["$or"] = [
+            {"fullName": {"$regex": search, "$options": "i"}},
+            {"email": {"$regex": search, "$options": "i"}},
+            {"phone": {"$regex": search, "$options": "i"}},
+            {"scammerCompany": {"$regex": search, "$options": "i"}}
+        ]
+    
+    # Fetch only IDs (minimal payload)
+    lead_ids = await db.leads.find(query, {"_id": 0, "id": 1}).to_list(10000)
+    ids = [lead["id"] for lead in lead_ids]
+    
+    logger.info(f"[API] SELECT ALL: {len(ids)} lead IDs returned")
+    
+    return {
+        "lead_ids": ids,
+        "count": len(ids)
+    }
+
     payload_size_estimate = len(processed_leads) * 500  # ~500 bytes per lead estimate
     logger.info(f"[API] GET /crm/leads: {total_time:.2f}ms | ~{payload_size_estimate/1024:.2f}KB payload | {len(processed_leads)} leads")
     
