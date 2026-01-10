@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Eye, Edit, UserPlus, Filter, Search, Upload, Download, Plus, MessageSquare, ChevronLeft, ChevronRight, CheckSquare, Square, Trash2, AlertTriangle, Phone, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -577,21 +577,21 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
     }
   };
 
-  const toggleLeadSelection = (leadId) => {
+  const toggleLeadSelection = useCallback((leadId) => {
     setSelectedLeadIds(prev => 
       prev.includes(leadId) 
         ? prev.filter(id => id !== leadId)
         : [...prev, leadId]
     );
-  };
+  }, []);
 
-  const toggleSelectAll = () => {
+  const toggleSelectAll = useCallback(() => {
     if (selectedLeadIds.length === filteredLeads.length) {
       setSelectedLeadIds([]);
     } else {
       setSelectedLeadIds(filteredLeads.map(lead => lead.id));
     }
-  };
+  }, [selectedLeadIds.length, filteredLeads]);
 
   const handleMassUpdate = async () => {
     if (selectedLeadIds.length === 0) {
