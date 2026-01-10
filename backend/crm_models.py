@@ -135,6 +135,9 @@ class MassUpdateData(BaseModel):
     team_id: Optional[str] = None
     assigned_to: Optional[str] = None
 
+class MassDeleteData(BaseModel):
+    lead_ids: List[str]
+
 # Activity Log Models
 class ActivityLog(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
