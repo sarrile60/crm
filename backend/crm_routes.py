@@ -735,8 +735,9 @@ async def get_crm_leads(
     
     # Calculate total time and payload size
     total_time = (time.time() - start_time) * 1000
-    payload_size = len(json.dumps(processed_leads))
-    logger.info(f"[API] GET /crm/leads: {total_time:.2f}ms | {payload_size/1024:.2f}KB payload | {len(processed_leads)} leads")
+    # Estimate payload size without json.dumps (to avoid serialization issues)
+    payload_size_estimate = len(processed_leads) * 500  # ~500 bytes per lead estimate
+    logger.info(f"[API] GET /crm/leads: {total_time:.2f}ms | ~{payload_size_estimate/1024:.2f}KB payload | {len(processed_leads)} leads")
     
     # Return paginated response
     return {
