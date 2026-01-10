@@ -709,7 +709,9 @@ async def get_crm_leads(
             "assigned_to": 1,
             "team_id": 1,
             "created_at": 1,
-            "amountLost": 1
+            "amountLost": 1,
+            "callback_date": 1,
+            "callback_notes": 1
         }
     ).sort(sort_field, sort_direction).skip(offset).limit(limit).to_list(limit)
     query_time = (time.time() - query_time_start) * 1000
