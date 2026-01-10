@@ -729,9 +729,6 @@ async def get_crm_leads(
         user_team_ids
     )
     
-    # Debug: Log visibility rules for troubleshooting
-    print(f"[VISIBILITY] User {current_user.get('username')} (role: {current_user.get('role')}) visibility rules: {visibility_rules}")
-    
     # Apply visibility rules to each lead (backend-only masking)
     processed_leads = []
     for lead in leads:
