@@ -19,7 +19,7 @@ const API = `${BACKEND_URL}/api`;
 // Memoized LeadRow component to prevent unnecessary re-renders
 const LeadRow = React.memo(({ 
   lead, 
-  isSelected, 
+  isSelected,
   canMassUpdate, 
   onToggleSelection, 
   onViewDetails, 
@@ -1043,7 +1043,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 <LeadRow
                   key={lead.id}
                   lead={lead}
-                  isSelected={selectedLeadIds.includes(lead.id)}
+                  isSelected={selectedIdsSet.has(lead.id)}
                   canMassUpdate={canMassUpdate}
                   onToggleSelection={toggleLeadSelection}
                   onViewDetails={handleViewDetails}
