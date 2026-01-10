@@ -1144,6 +1144,51 @@ async def mass_update_leads(update_data: MassUpdateData, current_user: dict = De
     return {"success": True, "updated_count": result.modified_count}
 
 
+@crm_router.post("/leads/mass-delete")
+async def mass_delete_leads(delete_data: MassDeleteData, current_user: dict = Depends(get_current_user)):
+    """Mass delete multiple leads - uses permission engine for access control"""
+    if not delete_data.lead_ids:
+        raise HTTPException(status_code=400, detail="No leads selected")
+    
+    # Check delete permission for leads entity
+    permission_result = await permission_engine.check_permission(
+        user_id=current_user["id"],
+        entity="leads",
+        action=PermissionAction.DELETE
+    )
+    
+    # Only users with team or all scope can do mass deletes
+    if permission_result.scope not in [PermissionScope.TEAM, PermissionScope.ALL]:
+        raise HTTPException(status_code=403, detail="Permission denied: Mass deletes require team or full access")
+    
+    # Get lead names for logging before deletion
+    leads_to_delete = await db.leads.find(
+        {"id": {"$in": delete_data.lead_ids}},
+        {"_id": 0, "id": 1, "fullName": 1}
+    ).to_list(len(delete_data.lead_ids))
+    
+    lead_names = [lead.get("fullName", "Unknown") for lead in leads_to_delete]
+    
+    # Delete leads
+    result = await db.leads.delete_many(
+        {"id": {"$in": delete_data.lead_ids}}
+    )
+    
+    # Log activity
+    activity = ActivityLog(
+        lead_id="mass_delete",
+        user_id=current_user["id"],
+        user_name=current_user["full_name"],
+        action="mass_delete",
+        details=f"Mass deleted {result.deleted_count} leads: {', '.join(lead_names[:5])}{'...' if len(lead_names) > 5 else ''}"
+    )
+    await db.activity_logs.insert_one(activity.dict())
+    
+    logger.info(f"[MASS DELETE] User {current_user['full_name']} deleted {result.deleted_count} leads")
+    
+    return {"success": True, "deleted_count": result.deleted_count}
+
+
 # ==================== LEAD CREATION ROUTE ====================
 
 @crm_router.post("/leads/create")
