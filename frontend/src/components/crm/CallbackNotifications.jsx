@@ -493,28 +493,24 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       
       const now = new Date();
       
-      // Statuses that require callback notifications
-      const callbackStatuses = ['Callback', 'Potential Callback', 'Pharos in progress'];
-      const depositStatuses = ['Deposit 1', 'Deposit 2', 'Deposit 3', 'Deposit 4', 'Deposit 5'];
-      const allNotifyStatuses = [...callbackStatuses, ...depositStatuses];
-      
       // Get current snooze data
       const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
       
       // Get callbacks that have been marked as "called"
       const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
       
-      // Check for callbacks within the next 1 minute
+      // Check for callbacks - ANY lead with callback_date triggers reminder
       const newUrgentCallbacks = [];
       
       for (const lead of allLeads) {
-        if (allNotifyStatuses.includes(lead.status) && lead.callback_date) {
+        // Trigger for ANY lead with callback_date set (regardless of status)
+        if (lead.callback_date) {
           // ONLY alert for leads assigned to current user
           if (lead.assigned_to !== currentUser.id) {
             continue;
           }
           
-          // Skip if this callback has been marked as "called" (agent pressed Chiama)
+          // Skip if this callback has been marked as "called" (agent pressed Call Now)
           const calledData = calledCallbacks[lead.id];
           if (calledData && calledData.callback_date === lead.callback_date) {
             continue;
@@ -523,14 +519,18 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
           const callbackTime = new Date(lead.callback_date);
           const timeDiff = callbackTime - now;
           
-          // Skip if currently snoozed
+          // Skip if currently snoozed and snooze hasn't expired
           const snooze = snoozeDataFromStorage[lead.id];
-          if (snooze && snooze.snoozeUntil > Date.now()) {
+          if (snooze && snooze.snoozeUntil && snooze.snoozeUntil > Date.now()) {
             continue;
           }
           
-          // Alert if callback is within 30 seconds to 90 seconds from now
-          if (timeDiff > 30000 && timeDiff <= 90000) {
+          // Alert if callback time has arrived or is within 60 seconds
+          // Also alert if callback is overdue (timeDiff < 0) but not too old (within 1 hour)
+          const isUpcoming = timeDiff > -1000 && timeDiff <= 60000; // Within next 60 seconds
+          const isOverdue = timeDiff < 0 && timeDiff > -3600000; // Overdue but within last hour
+          
+          if (isUpcoming || isOverdue) {
             // Check if we already alerted for this specific callback time
             const alertKey = `callback_alerted_${lead.id}_${lead.callback_date}`;
             const alerted = localStorage.getItem(alertKey);
@@ -543,9 +543,14 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
         }
       }
       
-      // Add all new urgent callbacks to queue
+      // Add all new urgent callbacks to queue (deduplicate)
       if (newUrgentCallbacks.length > 0) {
-        setUrgentCallbackQueue(prev => [...prev, ...newUrgentCallbacks]);
+        setUrgentCallbackQueue(prev => {
+          const existingIds = new Set(prev.map(l => `${l.id}_${l.callback_date}`));
+          const uniqueNew = newUrgentCallbacks.filter(l => !existingIds.has(`${l.id}_${l.callback_date}`));
+          if (uniqueNew.length === 0) return prev;
+          return [...prev, ...uniqueNew];
+        });
         playAlertSound();
       }
       
