@@ -111,11 +111,6 @@ const LeadRow = React.memo(({
           </SelectContent>
         </Select>
       </td>
-      <td className="p-3">
-        <span className={`font-semibold text-sm ${getPriorityColor(lead.priority)}`}>
-          {lead.priority}
-        </span>
-      </td>
       <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
         {lead.team_id ? teams.find(t => t.id === lead.team_id)?.name || 'N/A' : t('common.noTeam')}
       </td>
