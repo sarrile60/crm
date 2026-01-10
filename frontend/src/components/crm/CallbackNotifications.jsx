@@ -480,46 +480,29 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
   const checkUpcomingCallbacks = async () => {
     try {
       const token = localStorage.getItem('crmToken');
-      if (!token) {
-        console.log('[CALLBACK] No token found');
-        return;
-      }
+      if (!token) return;
       const headers = { Authorization: `Bearer ${token}` };
 
-      // Fetch leads with callback_date - use high limit to get all potential callbacks
+      // Fetch leads - use high limit to get all potential callbacks
       const leadsRes = await axios.get(`${API}/crm/leads`, { 
         headers,
-        params: { limit: 10000 } // Get all leads to check for callbacks
+        params: { limit: 10000 }
       });
-      // Handle both old array format and new paginated format
       const allLeads = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
       
       const now = new Date();
-      console.log(`[CALLBACK] Checking ${allLeads.length} leads at ${now.toISOString()}`);
-      
-      // Get current snooze data
       const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
-      
-      // Get callbacks that have been marked as "called"
       const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
-      
-      // Check for callbacks - ANY lead with callback_date triggers reminder
       const newUrgentCallbacks = [];
       
-      // Filter leads with callback_date
-      const leadsWithCallback = allLeads.filter(l => l.callback_date);
-      console.log(`[CALLBACK] Found ${leadsWithCallback.length} leads with callback_date`);
-      
       for (const lead of allLeads) {
-        // Trigger for ANY lead with callback_date set (regardless of status)
         if (lead.callback_date) {
-          // For agents: only show callbacks for leads assigned to them
-          // For admins/supervisors: show all callbacks (they can see everything)
+          // For agents: only show their assigned leads
           if (currentUser.role === 'agent' && lead.assigned_to !== currentUser.id) {
             continue;
           }
           
-          // Skip if this callback has been marked as "called" (agent pressed Call Now)
+          // Skip if already called
           const calledData = calledCallbacks[lead.id];
           if (calledData && calledData.callback_date === lead.callback_date) {
             continue;
@@ -528,43 +511,33 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
           const callbackTime = new Date(lead.callback_date);
           const timeDiff = callbackTime - now;
           
-          // Skip if currently snoozed and snooze hasn't expired
+          // Skip if snoozed
           const snooze = snoozeDataFromStorage[lead.id];
           if (snooze && snooze.snoozeUntil && snooze.snoozeUntil > Date.now()) {
             continue;
           }
           
-          // Alert if callback time has arrived or is within 60 seconds
-          // Also alert if callback is overdue (timeDiff < 0) but not too old (within 1 hour)
-          const isUpcoming = timeDiff > -1000 && timeDiff <= 60000; // Within next 60 seconds
-          const isOverdue = timeDiff < 0 && timeDiff > -3600000; // Overdue but within last hour
+          // Alert if within 60 seconds or overdue (up to 1 hour)
+          const isUpcoming = timeDiff > -1000 && timeDiff <= 60000;
+          const isOverdue = timeDiff < 0 && timeDiff > -3600000;
           
           if (isUpcoming || isOverdue) {
-            console.log(`[CALLBACK] Lead ${lead.fullName} is due! timeDiff=${Math.round(timeDiff/1000)}s`);
-            // Use lead.id + callback timestamp for alert key
             const callbackTs = new Date(lead.callback_date).getTime();
             const alertKey = `callback_alerted_${lead.id}_${callbackTs}`;
             const alerted = localStorage.getItem(alertKey);
             
             if (!alerted) {
-              console.log(`[CALLBACK] Adding ${lead.fullName} to queue`);
               newUrgentCallbacks.push(lead);
               localStorage.setItem(alertKey, 'true');
-            } else {
-              console.log(`[CALLBACK] Already alerted for ${lead.fullName}`);
             }
           }
         }
       }
       
-      console.log(`[CALLBACK] New urgent: ${newUrgentCallbacks.length}`);
-      
-      // Add all new urgent callbacks to queue (deduplicate)
       if (newUrgentCallbacks.length > 0) {
         setUrgentCallbackQueue(prev => {
           const existingIds = new Set(prev.map(l => `${l.id}_${new Date(l.callback_date).getTime()}`));
           const uniqueNew = newUrgentCallbacks.filter(l => !existingIds.has(`${l.id}_${new Date(l.callback_date).getTime()}`));
-          console.log(`[CALLBACK] Adding ${uniqueNew.length} unique to queue`);
           if (uniqueNew.length === 0) return prev;
           return [...prev, ...uniqueNew];
         });
@@ -574,7 +547,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       fetchReminders();
       fetchPendingCallbacks();
     } catch (error) {
-      console.error('[CALLBACK] Error:', error);
+      console.error('Error checking callbacks:', error);
     }
   };
 
