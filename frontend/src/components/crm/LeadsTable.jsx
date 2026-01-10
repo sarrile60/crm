@@ -1429,64 +1429,169 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         </Dialog>
       )}
 
-      {/* Mass Update Modal */}
+      {/* Mass Update/Delete Modal */}
       {showMassUpdateModal && (
-        <Dialog open={showMassUpdateModal} onOpenChange={setShowMassUpdateModal}>
+        <Dialog open={showMassUpdateModal} onOpenChange={(open) => {
+          if (!open) {
+            setMassActionMode('update');
+            setShowMassDeleteConfirm(false);
+          }
+          setShowMassUpdateModal(open);
+        }}>
           <DialogContent className="max-w-lg bg-white">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-black">{t('crm.massUpdate')}</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-black">{t('crm.massActions')}</DialogTitle>
             </DialogHeader>
+            
+            {/* Tab Buttons */}
+            <div className="flex border-b border-gray-200 mb-4">
+              <button
+                onClick={() => { setMassActionMode('update'); setShowMassDeleteConfirm(false); }}
+                className={`flex-1 py-2 px-4 text-sm font-semibold border-b-2 transition-colors ${
+                  massActionMode === 'update' 
+                    ? 'border-[#D4AF37] text-[#D4AF37]' 
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <Edit className="w-4 h-4 inline mr-2" />
+                {t('crm.updateTab')}
+              </button>
+              <button
+                onClick={() => { setMassActionMode('delete'); setShowMassDeleteConfirm(false); }}
+                className={`flex-1 py-2 px-4 text-sm font-semibold border-b-2 transition-colors ${
+                  massActionMode === 'delete' 
+                    ? 'border-red-500 text-red-500' 
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <Trash2 className="w-4 h-4 inline mr-2" />
+                {t('crm.deleteTab')}
+              </button>
+            </div>
+
             <div className="space-y-4">
-              <p className="text-gray-700">{t('crm.updateSelectedLeads', { count: selectedLeadIds.length })}</p>
+              <p className="text-gray-700">
+                {massActionMode === 'update' 
+                  ? t('crm.updateSelectedLeads', { count: selectedLeadIds.length })
+                  : t('crm.deleteSelectedLeads', { count: selectedLeadIds.length })
+                }
+              </p>
               
-              <div>
-                <label className="block text-sm font-semibold text-black mb-2">{t('crm.statusOptional')}</label>
-                <Select value={massUpdateData.status || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, status: value === "_none" ? "" : value })}>
-                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder={t('crm.noChange')} />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="_none">{t('crm.noChange')}</SelectItem>
-                    {statuses.map(status => (
-                      <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Update Mode Content */}
+              {massActionMode === 'update' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-semibold text-black mb-2">{t('crm.statusOptional')}</label>
+                    <Select value={massUpdateData.status || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, status: value === "_none" ? "" : value })}>
+                      <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                        <SelectValue placeholder={t('crm.noChange')} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="_none">{t('crm.noChange')}</SelectItem>
+                        {statuses.map(status => (
+                          <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-black mb-2">{t('crm.teamOptional')}</label>
-                <Select value={massUpdateData.team_id || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, team_id: value === "_none" ? "" : value })}>
-                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder={t('crm.noChange')} />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="_none">{t('crm.noChange')}</SelectItem>
-                    {teams.map(team => (
-                      <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-black mb-2">{t('crm.teamOptional')}</label>
+                    <Select value={massUpdateData.team_id || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, team_id: value === "_none" ? "" : value })}>
+                      <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                        <SelectValue placeholder={t('crm.noChange')} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="_none">{t('crm.noChange')}</SelectItem>
+                        {teams.map(team => (
+                          <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-black mb-2">{t('crm.assignToUserOptional')}</label>
-                <Select value={massUpdateData.assigned_to || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, assigned_to: value === "_none" ? "" : value })}>
-                  <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                    <SelectValue placeholder={t('crm.noChange')} />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="_none">{t('crm.noChange')}</SelectItem>
-                    {users.filter(u => u.is_active).map(user => (
-                      <SelectItem key={user.id} value={user.id}>{user.full_name} ({user.role})</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-black mb-2">{t('crm.assignToUserOptional')}</label>
+                    <Select value={massUpdateData.assigned_to || "_none"} onValueChange={(value) => setMassUpdateData({ ...massUpdateData, assigned_to: value === "_none" ? "" : value })}>
+                      <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                        <SelectValue placeholder={t('crm.noChange')} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="_none">{t('crm.noChange')}</SelectItem>
+                        {users.filter(u => u.is_active).map(user => (
+                          <SelectItem key={user.id} value={user.id}>{user.full_name} ({user.role})</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              <Button onClick={handleMassUpdate} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
-                {t('crm.updateLeads')}
-              </Button>
+                  <Button onClick={handleMassUpdate} className="w-full bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
+                    {t('crm.updateLeads')}
+                  </Button>
+                </>
+              )}
+
+              {/* Delete Mode Content */}
+              {massActionMode === 'delete' && (
+                <>
+                  {!showMassDeleteConfirm ? (
+                    <>
+                      <div className="bg-red-50 border-l-4 border-red-500 p-4">
+                        <div className="flex items-start">
+                          <AlertTriangle className="w-5 h-5 text-red-500 mr-3 mt-0.5" />
+                          <div>
+                            <p className="text-sm font-semibold text-red-800">{t('crm.warningDeletePermanent')}</p>
+                            <p className="text-sm text-red-700 mt-1">{t('crm.warningDeleteDescription')}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <Button 
+                        onClick={() => setShowMassDeleteConfirm(true)} 
+                        className="w-full bg-red-600 text-white hover:bg-red-700 rounded-none font-semibold"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {t('crm.proceedToDelete')}
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <div className="bg-red-100 border-2 border-red-500 p-4 text-center">
+                        <AlertTriangle className="w-10 h-10 text-red-500 mx-auto mb-2" />
+                        <p className="text-lg font-bold text-red-800">{t('crm.confirmMassDelete')}</p>
+                        <p className="text-sm text-red-700 mt-2">
+                          {t('crm.aboutToDelete', { count: selectedLeadIds.length })}
+                        </p>
+                      </div>
+                      <div className="flex gap-3">
+                        <Button 
+                          onClick={() => setShowMassDeleteConfirm(false)} 
+                          className="flex-1 bg-gray-200 text-gray-800 hover:bg-gray-300 rounded-none font-semibold"
+                          disabled={isMassDeleting}
+                        >
+                          {t('common.cancel')}
+                        </Button>
+                        <Button 
+                          onClick={handleMassDelete} 
+                          className="flex-1 bg-red-600 text-white hover:bg-red-700 rounded-none font-semibold"
+                          disabled={isMassDeleting}
+                        >
+                          {isMassDeleting ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              {t('common.deleting')}
+                            </>
+                          ) : (
+                            <>
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              {t('crm.deleteForever')}
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </DialogContent>
         </Dialog>
