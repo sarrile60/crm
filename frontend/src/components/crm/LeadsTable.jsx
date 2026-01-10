@@ -484,6 +484,24 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         callback_notes: reminderNotes
       }, { headers });
       
+      // Clear any existing alert/called/snooze data for this lead so popup can trigger again
+      const alertKey = `callback_alerted_${reminderLead.id}_${reminderDateTime}`;
+      localStorage.removeItem(alertKey);
+      
+      // Also clear old alert keys for this lead
+      const oldAlertKey = `callback_alerted_${reminderLead.id}_${reminderLead.callback_date}`;
+      localStorage.removeItem(oldAlertKey);
+      
+      // Clear called callbacks for this lead
+      const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
+      delete calledCallbacks[reminderLead.id];
+      localStorage.setItem('called_callbacks', JSON.stringify(calledCallbacks));
+      
+      // Clear snooze data for this lead
+      const snoozeData = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
+      delete snoozeData[reminderLead.id];
+      localStorage.setItem('callback_snoozes', JSON.stringify(snoozeData));
+      
       toast.success(t('crm.reminderSet'));
       setShowReminderModal(false);
       setReminderLead(null);
