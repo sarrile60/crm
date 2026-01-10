@@ -124,6 +124,7 @@ const LeadRow = React.memo(({
             onClick={() => onViewDetails(lead)}
             size="sm"
             className="bg-blue-600 text-white hover:bg-blue-700 rounded-none h-8 w-8 p-0"
+            title={t('common.view')}
           >
             <Eye className="w-3.5 h-3.5" />
           </Button>
@@ -131,8 +132,17 @@ const LeadRow = React.memo(({
             onClick={() => onEdit(lead)}
             size="sm"
             className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none h-8 w-8 p-0"
+            title={t('common.edit')}
           >
             <Edit className="w-3.5 h-3.5" />
+          </Button>
+          <Button
+            onClick={() => onSetReminder(lead)}
+            size="sm"
+            className={`${lead.callback_date ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-500 hover:bg-gray-600'} text-white rounded-none h-8 w-8 p-0`}
+            title={lead.callback_date ? t('crm.editReminder') : t('crm.setReminder')}
+          >
+            <Clock className="w-3.5 h-3.5" />
           </Button>
           {(currentUserRole === 'admin' || currentUserRole === 'supervisor') && (
             <>
@@ -140,6 +150,7 @@ const LeadRow = React.memo(({
                 onClick={() => onAssign(lead)}
                 size="sm"
                 className="bg-green-600 text-white hover:bg-green-700 rounded-none h-8 w-8 p-0"
+                title={t('crm.assignLead')}
               >
                 <UserPlus className="w-3.5 h-3.5" />
               </Button>
