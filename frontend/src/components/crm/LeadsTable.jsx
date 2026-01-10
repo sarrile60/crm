@@ -267,7 +267,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         order: 'desc'
       };
       if (filters.status) queryParams.status = filters.status;
-      if (filters.priority) queryParams.priority = filters.priority;
       if (filters.search) queryParams.search = filters.search;
 
       const [leadsRes, usersRes, statusesRes, teamsRes] = await Promise.all([
