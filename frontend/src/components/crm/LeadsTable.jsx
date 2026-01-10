@@ -70,23 +70,16 @@ const LeadRow = React.memo(({
       <td className="p-3 overflow-hidden text-ellipsis whitespace-nowrap">
         {lead.phone_display !== undefined && lead.phone_display !== null ? (
           lead.phone_display ? (
-            <a 
-              href={formatPhoneForCall(lead.phone_real || lead.phone)} 
-              className="text-blue-600 hover:text-blue-800 font-mono underline text-sm"
-              title={t('crm.clickToCall')}
-            >
+            <span className="text-gray-700 font-mono text-sm">
               {lead.phone_display}
-            </a>
+            </span>
           ) : (
             <span className="text-gray-400 italic text-sm">{t('visibility.hidden')}</span>
           )
         ) : (
-          <a 
-            href={formatPhoneForCall(lead.phone)} 
-            className="text-blue-600 hover:text-blue-800 font-mono underline text-sm"
-          >
+          <span className="text-gray-700 font-mono text-sm">
             {formatPhoneDisplay(lead.phone)}
-          </a>
+          </span>
         )}
       </td>
       <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
