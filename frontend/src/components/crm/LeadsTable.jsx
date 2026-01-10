@@ -2081,7 +2081,16 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
             <div className="space-y-4">
               <div className="bg-gray-50 border border-gray-200 p-3">
                 <p className="font-semibold text-black">{reminderLead.fullName}</p>
-                <p className="text-sm text-gray-600">{reminderLead.phone}</p>
+                {/* Respect phone visibility settings */}
+                {reminderLead.phone_display !== undefined && reminderLead.phone_display !== null ? (
+                  reminderLead.phone_display ? (
+                    <p className="text-sm text-gray-600">{reminderLead.phone_display}</p>
+                  ) : (
+                    <p className="text-sm text-gray-400 italic">{t('visibility.hidden')}</p>
+                  )
+                ) : (
+                  <p className="text-sm text-gray-600">{formatPhoneDisplay(reminderLead.phone)}</p>
+                )}
               </div>
               
               <div>
