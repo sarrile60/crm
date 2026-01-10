@@ -1057,23 +1057,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
               </SelectContent>
             </Select>
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-black mb-2">{t('leads.priority')}</label>
-            <Select value={filters.priority || "all"} onValueChange={(value) => setFilters({ ...filters, priority: value === "all" ? "" : value })}>
-              <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                <SelectValue placeholder={t('common.all')} />
-              </SelectTrigger>
-              <SelectContent className="bg-white">
-                <SelectItem value="all">{t('common.all')}</SelectItem>
-                <SelectItem value="low">{t('leads.low')}</SelectItem>
-                <SelectItem value="medium">{t('leads.medium')}</SelectItem>
-                <SelectItem value="high">{t('leads.high')}</SelectItem>
-                <SelectItem value="urgent">{t('leads.urgent')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
           <div className="flex items-end">
-            <Button onClick={() => { setFilters({ status: '', priority: '', search: '' }); setSearchInput(''); setCurrentPage(1); }} className="bg-gray-800 text-white hover:bg-black rounded-none w-full">
+            <Button onClick={() => { setFilters({ status: '', search: '' }); setSearchInput(''); setCurrentPage(1); }} className="bg-gray-800 text-white hover:bg-black rounded-none w-full">
               {t('common.clearFilters')}
             </Button>
           </div>
