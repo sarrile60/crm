@@ -226,6 +226,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   const [massActionMode, setMassActionMode] = useState('update'); // 'update' or 'delete'
   const [showMassDeleteConfirm, setShowMassDeleteConfirm] = useState(false);
   const [isMassDeleting, setIsMassDeleting] = useState(false);
+  const [showSelectAllModal, setShowSelectAllModal] = useState(false);
+  const [isSelectingAll, setIsSelectingAll] = useState(false);
+  const [allMatchingSelected, setAllMatchingSelected] = useState(false); // true when "all matching" is selected
   const [showImportModal, setShowImportModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
