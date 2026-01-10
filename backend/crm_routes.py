@@ -14,7 +14,7 @@ from crm_models import (
     ActivityLog, ActivityLogCreate,
     LeadNote, LeadNoteCreate,
     CallbackReminder, CallbackReminderCreate,
-    MassUpdateData
+    MassUpdateData, MassDeleteData
 )
 from auth_utils import hash_password, verify_password, create_access_token, get_user_from_token
 from permission_engine import get_permission_engine, PermissionEngine
