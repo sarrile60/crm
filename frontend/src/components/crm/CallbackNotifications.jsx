@@ -487,6 +487,8 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       const allLeads = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
       
       const now = new Date();
+      console.log('[CALLBACK CHECK] Checking callbacks at:', now.toISOString());
+      console.log('[CALLBACK CHECK] Total leads:', allLeads.length);
       
       // Get current snooze data
       const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
@@ -497,27 +499,37 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       // Check for callbacks - ANY lead with callback_date triggers reminder
       const newUrgentCallbacks = [];
       
+      // Count leads with callback_date
+      const leadsWithCallback = allLeads.filter(l => l.callback_date);
+      console.log('[CALLBACK CHECK] Leads with callback_date:', leadsWithCallback.length);
+      
       for (const lead of allLeads) {
         // Trigger for ANY lead with callback_date set (regardless of status)
         if (lead.callback_date) {
+          console.log(`[CALLBACK CHECK] Lead ${lead.fullName} has callback at ${lead.callback_date}`);
+          
           // For agents: only show callbacks for leads assigned to them
           // For admins/supervisors: show all callbacks (they can see everything)
           if (currentUser.role === 'agent' && lead.assigned_to !== currentUser.id) {
+            console.log(`[CALLBACK CHECK] Skipping - not assigned to current agent`);
             continue;
           }
           
           // Skip if this callback has been marked as "called" (agent pressed Call Now)
           const calledData = calledCallbacks[lead.id];
           if (calledData && calledData.callback_date === lead.callback_date) {
+            console.log(`[CALLBACK CHECK] Skipping - already called`);
             continue;
           }
           
           const callbackTime = new Date(lead.callback_date);
           const timeDiff = callbackTime - now;
+          console.log(`[CALLBACK CHECK] Time diff: ${timeDiff}ms (${Math.round(timeDiff/1000)}s)`);
           
           // Skip if currently snoozed and snooze hasn't expired
           const snooze = snoozeDataFromStorage[lead.id];
           if (snooze && snooze.snoozeUntil && snooze.snoozeUntil > Date.now()) {
+            console.log(`[CALLBACK CHECK] Skipping - currently snoozed until ${new Date(snooze.snoozeUntil)}`);
             continue;
           }
           
@@ -526,24 +538,34 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
           const isUpcoming = timeDiff > -1000 && timeDiff <= 60000; // Within next 60 seconds
           const isOverdue = timeDiff < 0 && timeDiff > -3600000; // Overdue but within last hour
           
+          console.log(`[CALLBACK CHECK] isUpcoming: ${isUpcoming}, isOverdue: ${isOverdue}`);
+          
           if (isUpcoming || isOverdue) {
             // Check if we already alerted for this specific callback time
             const alertKey = `callback_alerted_${lead.id}_${lead.callback_date}`;
             const alerted = localStorage.getItem(alertKey);
             
+            console.log(`[CALLBACK CHECK] Alert key ${alertKey}: ${alerted}`);
+            
             if (!alerted) {
+              console.log(`[CALLBACK CHECK] Adding ${lead.fullName} to urgent queue!`);
               newUrgentCallbacks.push(lead);
               localStorage.setItem(alertKey, 'true');
+            } else {
+              console.log(`[CALLBACK CHECK] Already alerted for this callback`);
             }
           }
         }
       }
+      
+      console.log(`[CALLBACK CHECK] New urgent callbacks: ${newUrgentCallbacks.length}`);
       
       // Add all new urgent callbacks to queue (deduplicate)
       if (newUrgentCallbacks.length > 0) {
         setUrgentCallbackQueue(prev => {
           const existingIds = new Set(prev.map(l => `${l.id}_${l.callback_date}`));
           const uniqueNew = newUrgentCallbacks.filter(l => !existingIds.has(`${l.id}_${l.callback_date}`));
+          console.log(`[CALLBACK CHECK] Adding ${uniqueNew.length} unique callbacks to queue`);
           if (uniqueNew.length === 0) return prev;
           return [...prev, ...uniqueNew];
         });
