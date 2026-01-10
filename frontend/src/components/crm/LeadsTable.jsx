@@ -191,7 +191,6 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [filters, setFilters] = useState({
     status: '',
-    priority: '',
     search: ''
   });
   const [searchInput, setSearchInput] = useState(''); // Separate state for input
