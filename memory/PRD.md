@@ -39,6 +39,12 @@ The application is a production-ready CRM with robust lead management capabiliti
    - Changed default from 200 to 100 rows per page
    - Available options: 50, 100, 200, 500 (admin only)
 
+4. **Scalable Select All** (P1) ✅
+   - Modal appears when clicking "Select All" checkbox
+   - Option 1: Select Current Page (e.g., 100 leads)
+   - Option 2: Select All Matching (e.g., all 909 leads matching filters)
+   - Uses backend endpoint POST /api/crm/leads/select-all for scalable selection
+
 ## API Endpoints
 
 ### Lead Management
@@ -60,7 +66,7 @@ The application is a production-ready CRM with robust lead management capabiliti
 - **Internationalization**: react-i18next
 
 ## Key Files
-- `/app/frontend/src/components/crm/LeadsTable.jsx` - Main leads table component (~1600 lines)
+- `/app/frontend/src/components/crm/LeadsTable.jsx` - Main leads table component (~1700 lines)
 - `/app/backend/crm_routes.py` - CRM API routes
 - `/app/backend/crm_models.py` - Pydantic models
 
