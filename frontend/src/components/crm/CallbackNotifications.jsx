@@ -479,11 +479,6 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
 
   const checkUpcomingCallbacks = async () => {
     try {
-      // SKIP popup notifications for admins and supervisors - only agents get popups
-      if (currentUser.role === 'admin' || currentUser.role === 'supervisor') {
-        return;
-      }
-      
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
@@ -505,8 +500,9 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       for (const lead of allLeads) {
         // Trigger for ANY lead with callback_date set (regardless of status)
         if (lead.callback_date) {
-          // ONLY alert for leads assigned to current user
-          if (lead.assigned_to !== currentUser.id) {
+          // For agents: only show callbacks for leads assigned to them
+          // For admins/supervisors: show all callbacks (they can see everything)
+          if (currentUser.role === 'agent' && lead.assigned_to !== currentUser.id) {
             continue;
           }
           
