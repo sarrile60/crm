@@ -32,7 +32,6 @@ const LeadRow = React.memo(({
   formatPhoneDisplay, 
   formatPhoneForCall, 
   getStatusColor, 
-  getPriorityColor,
   users,
   teams,
   statuses,
