@@ -61,6 +61,13 @@ The application is a production-ready CRM with robust lead management capabiliti
    - **Reminder Modal**: Set date/time and notes for any lead
    - **Backend endpoint**: POST /api/crm/leads/{lead_id}/clear-callback
 
+7. **Phone Visibility Fix in Callback Popup** (P0) ✅
+   - Fixed urgent callback popup to respect phone number visibility rules
+   - Agents now see "Hidden" text instead of full phone numbers
+   - Admins continue to see full phone numbers (as intended)
+   - Fixed both urgent popup and overdue callbacks list
+   - File: `/app/frontend/src/components/crm/CallbackNotifications.jsx`
+
 ## API Endpoints
 
 ### Lead Management
