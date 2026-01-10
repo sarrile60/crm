@@ -1473,6 +1473,69 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         </Dialog>
       )}
 
+      {/* Select All Modal */}
+      {showSelectAllModal && (
+        <Dialog open={showSelectAllModal} onOpenChange={setShowSelectAllModal}>
+          <DialogContent className="max-w-md bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-black">{t('crm.selectLeads')}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-gray-700">{t('crm.selectLeadsDescription')}</p>
+              
+              {/* Option 1: Current Page */}
+              <button
+                onClick={handleSelectCurrentPage}
+                className="w-full p-4 border-2 border-gray-200 hover:border-[#D4AF37] rounded-none text-left transition-colors group"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-black group-hover:text-[#D4AF37]">
+                      {t('crm.selectCurrentPage')}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {t('crm.selectCurrentPageDesc', { count: filteredLeads.length })}
+                    </p>
+                  </div>
+                  <CheckSquare className="w-6 h-6 text-gray-400 group-hover:text-[#D4AF37]" />
+                </div>
+              </button>
+
+              {/* Option 2: All Matching */}
+              <button
+                onClick={handleSelectAllMatching}
+                disabled={isSelectingAll}
+                className="w-full p-4 border-2 border-gray-200 hover:border-[#D4AF37] rounded-none text-left transition-colors group disabled:opacity-50"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-black group-hover:text-[#D4AF37]">
+                      {t('crm.selectAllMatching')}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {t('crm.selectAllMatchingDesc', { count: totalLeads })}
+                    </p>
+                  </div>
+                  {isSelectingAll ? (
+                    <Loader2 className="w-6 h-6 text-[#D4AF37] animate-spin" />
+                  ) : (
+                    <CheckSquare className="w-6 h-6 text-gray-400 group-hover:text-[#D4AF37]" />
+                  )}
+                </div>
+              </button>
+
+              <Button 
+                onClick={() => setShowSelectAllModal(false)} 
+                variant="outline"
+                className="w-full rounded-none"
+              >
+                {t('common.cancel')}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {/* Mass Update/Delete Modal */}
       {showMassUpdateModal && (
         <Dialog open={showMassUpdateModal} onOpenChange={(open) => {
