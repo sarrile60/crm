@@ -65,7 +65,7 @@
     "zod": "^3.24.4"
   },
   "scripts": {
-    "start": "bash start.sh",
+    "start": "serve -s build -l 3000 --config serve.json",
     "start:serve": "serve -s build -l 3000 --config serve.json",
     "build": "GENERATE_SOURCEMAP=false craco build && cp serve.json build/",
     "test": "craco test",
