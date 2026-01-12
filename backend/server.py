@@ -386,6 +386,32 @@ async def get_admin_leads(authorization: Optional[str] = Header(None)):
 async def root():
     return {"message": "1 LAW SOLICITORS API - Running", "status": "healthy"}
 
+# Initialize admin endpoint (for fresh deployments)
+@api_router.get("/init-admin")
+async def init_admin():
+    """Create default admin user if none exists - call this once after fresh deployment"""
+    from auth_utils import hash_password
+    import uuid
+    
+    try:
+        user_count = await db.crm_users.count_documents({})
+        if user_count == 0:
+            default_admin = {
+                "id": str(uuid.uuid4()),
+                "username": "admin",
+                "password": hash_password("1Law@Solicitors2026!"),
+                "full_name": "Administrator",
+                "role": "admin",
+                "is_active": True,
+                "team_id": None
+            }
+            await db.crm_users.insert_one(default_admin)
+            return {"status": "success", "message": "Admin user created. Username: admin"}
+        else:
+            return {"status": "exists", "message": f"Database already has {user_count} users"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 # Include the routers in the main app
 app.include_router(api_router)
 app.include_router(crm_router)
