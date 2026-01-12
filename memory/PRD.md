@@ -68,6 +68,20 @@ The application is a production-ready CRM with robust lead management capabiliti
    - Fixed both urgent popup and overdue callbacks list
    - File: `/app/frontend/src/components/crm/CallbackNotifications.jsx`
 
+8. **Supervisor Commission Tiers Fix** (P0) ✅
+   - Fixed commission tiers not showing for supervisors in Earnings page
+   - Updated `get_user_team_ids` to include user's assigned team
+   - Added `commission_tiers` to early return response
+   - File: `/app/backend/finance_routes.py`
+
+9. **Create Deposit - Phone Visibility & Search** (P0) ✅
+   - Fixed phone visibility in Create Deposit client dropdown
+   - Supervisors now see masked phone numbers (e.g., `*******7898`)
+   - Admins see full phone numbers (as intended)
+   - Added searchable combobox for client selection
+   - Clients can be searched by name for 1000+ leads
+   - File: `/app/frontend/src/components/crm/DepositsManager.jsx`
+
 ## API Endpoints
 
 ### Lead Management
