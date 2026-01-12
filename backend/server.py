@@ -575,6 +575,32 @@ async def seed_database():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+# Migration endpoint to fix permissions data
+@api_router.get("/migrate-permissions")
+async def migrate_permissions():
+    """Migrate permissions from entity_name to entity field"""
+    try:
+        # Find all permissions with entity_name but no entity
+        perms_to_migrate = await db.permissions.find({
+            'entity_name': {'$exists': True},
+            'entity': {'$exists': False}
+        }).to_list(1000)
+        
+        migrated_count = 0
+        for perm in perms_to_migrate:
+            await db.permissions.update_one(
+                {'_id': perm['_id']},
+                {
+                    '$set': {'entity': perm['entity_name']},
+                    '$unset': {'entity_name': '', 'entity_id': ''}
+                }
+            )
+            migrated_count += 1
+        
+        return {"status": "success", "migrated": migrated_count}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 # Include the routers in the main app
 app.include_router(api_router)
 app.include_router(crm_router)
