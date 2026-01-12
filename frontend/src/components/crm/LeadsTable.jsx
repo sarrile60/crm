@@ -283,7 +283,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
 
   useEffect(() => {
     fetchData();
-  }, [filters, currentPage, pageSize]);
+  }, [filters, currentPage, pageSize, sortConfig]);
 
   useEffect(() => {
     setFilteredLeads(leads);
