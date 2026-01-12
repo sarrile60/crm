@@ -324,6 +324,16 @@ async def get_supervisor_financial_dashboard(
     supervisor_base_salary = salaries["supervisor"]
     
     if not team_ids:
+        # Still return commission tiers even if no teams
+        settings = await get_commission_settings()
+        display_tiers = []
+        for tier in settings.get("supervisor_tiers", DEFAULT_SUPERVISOR_COMMISSION_TIERS):
+            if tier["max_amount"]:
+                range_str = f"€{tier['min_amount']:,} - €{tier['max_amount']:,}"
+            else:
+                range_str = f"€{tier['min_amount']:,}+"
+            display_tiers.append({"range": range_str.replace(",", "."), "rate": f"{tier['rate']}%"})
+        
         return {
             "period": {
                 "month": start_date.month,
@@ -340,7 +350,8 @@ async def get_supervisor_financial_dashboard(
                 "pending_commission": 0
             },
             "team_deposits": [],
-            "agents_performance": []
+            "agents_performance": [],
+            "commission_tiers": display_tiers
         }
     
     # Get all approved deposits from the team for the month
