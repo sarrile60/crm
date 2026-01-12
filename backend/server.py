@@ -411,6 +411,29 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     await init_analytics()
+    
+    # Auto-create default admin if no users exist (for fresh deployments)
+    try:
+        from auth_utils import hash_password
+        import uuid
+        
+        user_count = await db.crm_users.count_documents({})
+        if user_count == 0:
+            logger.info("No users found - creating default admin user...")
+            default_admin = {
+                "id": str(uuid.uuid4()),
+                "username": "admin",
+                "password": hash_password("Admin123!"),
+                "full_name": "Administrator",
+                "role": "admin",
+                "is_active": True,
+                "team_id": None
+            }
+            await db.crm_users.insert_one(default_admin)
+            logger.info("Default admin user created: username='admin', password='Admin123!'")
+    except Exception as e:
+        logger.error(f"Error creating default admin: {e}")
+    
     logger.info("Application started successfully")
 
 @app.on_event("shutdown")
