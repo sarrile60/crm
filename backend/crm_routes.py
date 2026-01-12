@@ -669,7 +669,12 @@ async def get_crm_leads(
     )
     
     if assigned_to and read_perm.scope in [PermissionScope.TEAM, PermissionScope.ALL]:
-        query["assigned_to"] = assigned_to
+        # Support multiple assigned_to IDs (comma-separated)
+        if ',' in assigned_to:
+            assigned_to_list = [a.strip() for a in assigned_to.split(',') if a.strip()]
+            query["assigned_to"] = {"$in": assigned_to_list}
+        else:
+            query["assigned_to"] = assigned_to
     if team_id and read_perm.scope == PermissionScope.ALL:
         query["team_id"] = team_id
     if priority:
@@ -777,7 +782,12 @@ async def select_all_leads(
     )
     
     if assigned_to and read_perm.scope in [PermissionScope.TEAM, PermissionScope.ALL]:
-        query["assigned_to"] = assigned_to
+        # Support multiple assigned_to IDs (comma-separated)
+        if ',' in assigned_to:
+            assigned_to_list = [a.strip() for a in assigned_to.split(',') if a.strip()]
+            query["assigned_to"] = {"$in": assigned_to_list}
+        else:
+            query["assigned_to"] = assigned_to
     if team_id and read_perm.scope == PermissionScope.ALL:
         query["team_id"] = team_id
     if priority:
