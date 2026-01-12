@@ -38,6 +38,8 @@
     "name": "Nome",
     "email": "Email",
     "phone": "Telefono",
+    "searchClient": "Cerca cliente...",
+    "noResults": "Nessun risultato trovato.",
     "address": "Indirizzo",
     "notes": "Note",
     "description": "Descrizione",
