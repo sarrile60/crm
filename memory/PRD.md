@@ -142,6 +142,9 @@ The application is a production-ready CRM with robust lead management capabiliti
 - [ ] Break down LeadsTable.jsx into smaller components
 
 ## Testing
-- Backend: 11/11 tests passing
-- Frontend: All UI flows verified
-- Test file: `/app/tests/test_crm_mass_actions.py`
+- Backend: 11/11 sorting tests passing (test_leads_sorting.py)
+- Backend: Previous mass action tests passing (test_crm_mass_actions.py)
+- Frontend: 8/8 sorting UI tests verified
+- Test files: 
+  - `/app/tests/test_leads_sorting.py` (sorting feature)
+  - `/app/tests/test_crm_mass_actions.py` (mass actions)
