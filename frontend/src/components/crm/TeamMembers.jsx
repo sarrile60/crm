@@ -457,7 +457,13 @@ const TeamMembers = ({ currentUser }) => {
                       {memberLeads.map(lead => (
                         <tr key={lead.id} className="border-t hover:bg-gray-50">
                           <td className="p-3 font-medium">{lead.fullName}</td>
-                          <td className="p-3 text-gray-600">{lead.phone}</td>
+                          <td className="p-3 text-gray-600">
+                            {lead.phone_display ? (
+                              lead.phone_display
+                            ) : (
+                              <span className="text-gray-400 italic">{t('visibility.hidden')}</span>
+                            )}
+                          </td>
                           <td className="p-3">
                             <span className={`px-2 py-1 rounded text-xs font-semibold ${getLeadStatusColor(lead.status)}`}>
                               {lead.status}
