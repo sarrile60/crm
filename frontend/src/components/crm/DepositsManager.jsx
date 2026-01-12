@@ -2,11 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   DollarSign, Plus, Eye, Upload, Check, X, Clock, 
-  CreditCard, Bitcoin, FileText, User, Users, Building, Download, Image
+  CreditCard, Bitcoin, FileText, User, Users, Building, Download, Image, Search, ChevronsUpDown
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { toast } from 'sonner';
 import axios from 'axios';
 
