@@ -1766,6 +1766,66 @@ async def ami_debug(current_user: dict = Depends(get_current_user)):
         "env_source": "environment variable or .env file"
     }
 
+# Test AMI connection endpoint (admin only)
+@crm_router.get("/ami-test")
+async def ami_test(current_user: dict = Depends(get_current_user)):
+    """Test AMI connection - Admin only"""
+    if current_user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    import socket
+    
+    ami_host = os.environ.get('AMI_HOST', 'NOT_SET')
+    ami_port = int(os.environ.get('AMI_PORT', '5038'))
+    ami_user = os.environ.get('AMI_USER', 'NOT_SET')
+    ami_pass = os.environ.get('AMI_PASS', 'NOT_SET')
+    
+    result = {
+        "ami_host": ami_host,
+        "ami_port": ami_port,
+        "ami_user": ami_user,
+        "ami_pass_length": len(ami_pass),
+        "connection_test": "pending",
+        "auth_test": "pending"
+    }
+    
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(5)
+        sock.connect((ami_host, ami_port))
+        result["connection_test"] = "SUCCESS"
+        
+        # Read banner
+        banner = sock.recv(1024).decode()
+        result["ami_banner"] = banner.strip()
+        
+        # Test auth
+        login_cmd = f"Action: Login\r\nUsername: {ami_user}\r\nSecret: {ami_pass}\r\n\r\n"
+        sock.send(login_cmd.encode())
+        
+        import time
+        time.sleep(1)
+        response = sock.recv(4096).decode()
+        
+        if "Success" in response:
+            result["auth_test"] = "SUCCESS"
+        elif "Authentication failed" in response:
+            result["auth_test"] = "FAILED - Wrong username or password"
+            result["ami_pass_preview"] = f"{ami_pass[:3]}***" if len(ami_pass) > 3 else "***"
+        else:
+            result["auth_test"] = f"UNKNOWN: {response[:100]}"
+        
+        sock.close()
+        
+    except socket.timeout:
+        result["connection_test"] = "FAILED - Timeout (firewall?)"
+    except ConnectionRefusedError:
+        result["connection_test"] = "FAILED - Connection refused"
+    except Exception as e:
+        result["connection_test"] = f"FAILED - {str(e)}"
+    
+    return result
+
 @crm_router.post("/make-call")
 async def make_call(request: MakeCallRequest, current_user: dict = Depends(get_current_user)):
     """
