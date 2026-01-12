@@ -1680,6 +1680,15 @@ async def get_team_members_status(current_user: dict = Depends(get_current_user)
         else:
             member["status"] = "inactive"
     
+    # Add member count to each team for consistency with /chat/teams endpoint
+    for team in teams:
+        member_count = await db.crm_users.count_documents({
+            "team_id": team["id"],
+            "$or": [{"deleted_at": None}, {"deleted_at": {"$exists": False}}],
+            "is_active": {"$ne": False}
+        })
+        team["member_count"] = member_count
+    
     return {"members": members, "teams": teams}
 
 
