@@ -160,12 +160,20 @@ def get_month_date_range(year: int = None, month: int = None):
 
 
 async def get_user_team_ids(user_id: str) -> list:
-    """Get team IDs for a supervisor"""
-    teams = await db.teams.find(
+    """Get team IDs for a supervisor - includes teams they supervise AND their assigned team"""
+    # Get teams where user is the supervisor
+    supervised_teams = await db.teams.find(
         {"supervisor_id": user_id, "$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]},
         {"_id": 0, "id": 1}
     ).to_list(100)
-    return [t["id"] for t in teams]
+    team_ids = [t["id"] for t in supervised_teams]
+    
+    # Also include the user's own team_id if they have one
+    user = await db.crm_users.find_one({"id": user_id}, {"_id": 0, "team_id": 1})
+    if user and user.get("team_id") and user["team_id"] not in team_ids:
+        team_ids.append(user["team_id"])
+    
+    return team_ids
 
 
 # ==================== AGENT FINANCIAL DASHBOARD ====================
