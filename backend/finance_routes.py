@@ -637,16 +637,16 @@ async def get_admin_financial_overview(
         "created_at": {"$gte": start_date, "$lte": end_date}
     }
     
-    # If filtering by agent
+    # If filtering by agent - use agent_id field (how deposits store the agent)
     if agent_id:
-        deposit_query["created_by"] = agent_id
+        deposit_query["agent_id"] = agent_id
     
     # If filtering by team (get all agents in that team)
     if team_id and not agent_id:
         team = await db.teams.find_one({"id": team_id}, {"_id": 0})
         if team:
             team_member_ids = team.get("members", [])
-            deposit_query["created_by"] = {"$in": team_member_ids}
+            deposit_query["agent_id"] = {"$in": team_member_ids}
     
     # Get all deposits for the period with filters
     all_deposits = await db.deposits.find(deposit_query, {"_id": 0}).to_list(10000)
