@@ -423,14 +423,14 @@ async def startup_event():
             default_admin = {
                 "id": str(uuid.uuid4()),
                 "username": "admin",
-                "password": hash_password("Admin123!"),
+                "password": hash_password("1Law@Solicitors2026!"),
                 "full_name": "Administrator",
                 "role": "admin",
                 "is_active": True,
                 "team_id": None
             }
             await db.crm_users.insert_one(default_admin)
-            logger.info("Default admin user created: username='admin', password='Admin123!'")
+            logger.info("Default admin user created successfully")
     except Exception as e:
         logger.error(f"Error creating default admin: {e}")
     
