@@ -82,6 +82,12 @@ The application is a production-ready CRM with robust lead management capabiliti
    - Clients can be searched by name for 1000+ leads
    - File: `/app/frontend/src/components/crm/DepositsManager.jsx`
 
+10. **Supervisor Team Assignment Fix** (P0) ✅
+    - Fixed "No Team Assigned" showing for supervisors who are ASSIGNED to a team
+    - Updated `/api/chat/teams` to include teams where user is member (not just supervisor)
+    - Updated `/api/crm/team-members-status` to include member's assigned team
+    - Files: `/app/backend/chat_routes.py`, `/app/backend/crm_routes.py`
+
 ## API Endpoints
 
 ### Lead Management
