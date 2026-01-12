@@ -1745,6 +1745,27 @@ from pydantic import BaseModel as PydanticBaseModel
 class MakeCallRequest(PydanticBaseModel):
     lead_id: str
 
+# Debug endpoint to check AMI configuration (admin only)
+@crm_router.get("/ami-debug")
+async def ami_debug(current_user: dict = Depends(get_current_user)):
+    """Debug endpoint to verify AMI configuration - Admin only"""
+    if current_user.get('role') != 'admin':
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    ami_host = os.environ.get('AMI_HOST', 'NOT_SET')
+    ami_port = os.environ.get('AMI_PORT', 'NOT_SET')
+    ami_user = os.environ.get('AMI_USER', 'NOT_SET')
+    ami_pass = os.environ.get('AMI_PASS', 'NOT_SET')
+    
+    return {
+        "ami_host": ami_host,
+        "ami_port": ami_port,
+        "ami_user": ami_user,
+        "ami_pass_preview": f"{ami_pass[:3]}***{ami_pass[-3:]}" if len(ami_pass) > 6 else "***",
+        "ami_pass_length": len(ami_pass),
+        "env_source": "environment variable or .env file"
+    }
+
 @crm_router.post("/make-call")
 async def make_call(request: MakeCallRequest, current_user: dict = Depends(get_current_user)):
     """
