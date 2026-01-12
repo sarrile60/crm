@@ -553,6 +553,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       };
       if (filters.status) queryParams.status = filters.status;
       if (filters.search) queryParams.search = filters.search;
+      if (filters.assigned_to && filters.assigned_to.length > 0) {
+        queryParams.assigned_to = filters.assigned_to.join(',');
+      }
 
       const response = await axios.get(`${API}/crm/leads`, { headers, params: queryParams });
       const allLeads = Array.isArray(response.data) ? response.data : (response.data.data || []);
