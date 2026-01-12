@@ -1294,14 +1294,14 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 </th>
               )}
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none" 
+                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'created_at' ? 'bg-gray-900' : 'bg-black'}`}
                 style={{ width: '140px' }}
                 onClick={() => handleSort('created_at')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.date')}
                   {sortConfig.field === 'created_at' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
                   ) : (
                     <ArrowUpDown className="w-4 h-4 opacity-50" />
                   )}
