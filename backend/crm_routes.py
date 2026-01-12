@@ -1745,6 +1745,57 @@ from pydantic import BaseModel as PydanticBaseModel
 class MakeCallRequest(PydanticBaseModel):
     lead_id: str
 
+# Public AMI test endpoint (no auth required) - for deployment verification
+@crm_router.get("/ami-check")
+async def ami_check_public():
+    """Public endpoint to verify AMI config is hardcoded correctly"""
+    import socket
+    
+    # AMI credentials - hardcoded directly (no env vars)
+    ami_host = '194.32.79.101'
+    ami_port = 5038
+    ami_user = 'crm_dialer'
+    ami_pass = 'yo123mama'
+    
+    result = {
+        "code_version": "HARDCODED_V2",
+        "ami_host": ami_host,
+        "ami_port": ami_port,
+        "ami_user": ami_user,
+        "ami_pass_length": len(ami_pass),
+        "ami_pass_first3": ami_pass[:3],
+        "connection_test": "pending",
+        "auth_test": "pending"
+    }
+    
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(5)
+        sock.connect((ami_host, ami_port))
+        result["connection_test"] = "SUCCESS"
+        
+        banner = sock.recv(1024).decode()
+        result["ami_banner"] = banner.strip()
+        
+        login_cmd = f"Action: Login\r\nUsername: {ami_user}\r\nSecret: {ami_pass}\r\n\r\n"
+        sock.send(login_cmd.encode())
+        
+        import time
+        time.sleep(1)
+        response = sock.recv(4096).decode()
+        
+        if "Success" in response:
+            result["auth_test"] = "SUCCESS"
+        else:
+            result["auth_test"] = "FAILED"
+            result["response_preview"] = response[:200]
+        
+        sock.close()
+    except Exception as e:
+        result["error"] = str(e)
+    
+    return result
+
 # Debug endpoint to check AMI configuration (admin only)
 @crm_router.get("/ami-debug")
 async def ami_debug(current_user: dict = Depends(get_current_user)):
