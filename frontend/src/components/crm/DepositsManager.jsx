@@ -27,6 +27,8 @@ const DepositsManager = ({ currentUser, pendingDepositData, onDepositCreated }) 
   const [filter, setFilter] = useState('all');
   const [uploading, setUploading] = useState({});
   const [prefilledNotificationId, setPrefilledNotificationId] = useState(null);
+  const [leadSearchOpen, setLeadSearchOpen] = useState(false);
+  const [leadSearchQuery, setLeadSearchQuery] = useState('');
   
   // Create deposit form state
   const [newDeposit, setNewDeposit] = useState({
