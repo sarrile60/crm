@@ -458,19 +458,83 @@ const DepositsManager = ({ currentUser, pendingDepositData, onDepositCreated }) 
           </DialogHeader>
           
           <div className="space-y-4">
-            {/* Lead Selection */}
+            {/* Lead Selection - Searchable */}
             <div>
               <label className="block text-sm font-medium mb-1">{t('deposits.selectLead')} *</label>
-              <select
-                value={newDeposit.lead_id}
-                onChange={(e) => setNewDeposit({...newDeposit, lead_id: e.target.value})}
-                className="w-full border rounded p-2"
-              >
-                <option value="">{t('deposits.chooseLead')}</option>
-                {leads.map(lead => (
-                  <option key={lead.id} value={lead.id}>{lead.fullName} - {lead.phone}</option>
-                ))}
-              </select>
+              <Popover open={leadSearchOpen} onOpenChange={setLeadSearchOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={leadSearchOpen}
+                    className="w-full justify-between font-normal"
+                  >
+                    {newDeposit.lead_id ? (
+                      (() => {
+                        const selectedLead = leads.find(l => l.id === newDeposit.lead_id);
+                        if (!selectedLead) return t('deposits.chooseLead');
+                        // Respect phone visibility - use phone_display if available
+                        const phoneDisplay = selectedLead.phone_display !== undefined 
+                          ? (selectedLead.phone_display || t('visibility.hidden'))
+                          : selectedLead.phone;
+                        return `${selectedLead.fullName} - ${phoneDisplay}`;
+                      })()
+                    ) : (
+                      t('deposits.chooseLead')
+                    )}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start" style={{ width: 'var(--radix-popover-trigger-width)' }}>
+                  <Command>
+                    <CommandInput 
+                      placeholder={t('common.searchClient') || 'Search client...'} 
+                      value={leadSearchQuery}
+                      onValueChange={setLeadSearchQuery}
+                    />
+                    <CommandList>
+                      <CommandEmpty>{t('common.noResults') || 'No results found.'}</CommandEmpty>
+                      <CommandGroup>
+                        {leads
+                          .filter(lead => {
+                            if (!leadSearchQuery) return true;
+                            const query = leadSearchQuery.toLowerCase();
+                            return (
+                              lead.fullName?.toLowerCase().includes(query) ||
+                              lead.email?.toLowerCase().includes(query)
+                            );
+                          })
+                          .slice(0, 50) // Limit to 50 results for performance
+                          .map(lead => {
+                            // Respect phone visibility - use phone_display if available
+                            const phoneDisplay = lead.phone_display !== undefined 
+                              ? (lead.phone_display || t('visibility.hidden'))
+                              : lead.phone;
+                            return (
+                              <CommandItem
+                                key={lead.id}
+                                value={`${lead.fullName} ${lead.email || ''}`}
+                                onSelect={() => {
+                                  setNewDeposit({...newDeposit, lead_id: lead.id});
+                                  setLeadSearchOpen(false);
+                                  setLeadSearchQuery('');
+                                }}
+                              >
+                                <Check
+                                  className={`mr-2 h-4 w-4 ${newDeposit.lead_id === lead.id ? 'opacity-100' : 'opacity-0'}`}
+                                />
+                                <div className="flex flex-col">
+                                  <span className="font-medium">{lead.fullName}</span>
+                                  <span className="text-xs text-gray-500">{phoneDisplay}</span>
+                                </div>
+                              </CommandItem>
+                            );
+                          })}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Agent Selection */}
