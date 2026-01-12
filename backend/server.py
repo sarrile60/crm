@@ -396,13 +396,15 @@ app.include_router(analytics_router, prefix="/api/crm")
 app.include_router(finance_router, prefix="/api/crm")
 
 # CORS Configuration (Restricted for Production)
-cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', 'https://deposit-crm.preview.emergentagent.com').split(',')
+# Include both preview and production domains by default
+default_cors = 'https://1law-solicitors.com,https://www.1law-solicitors.com,https://deposit-crm.preview.emergentagent.com,https://lawfirm-ops.emergent.host,http://localhost:3000'
+cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS', default_cors).split(',')
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=[origin.strip() for origin in cors_origins],  # Specific origins only
-    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Explicit methods
-    allow_headers=["Authorization", "Content-Type"],  # Explicit headers
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Explicit methods including OPTIONS
+    allow_headers=["Authorization", "Content-Type", "Accept", "Accept-Language", "Content-Language"],  # Explicit headers
     max_age=3600  # Cache preflight for 1 hour
 )
 
