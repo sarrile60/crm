@@ -471,21 +471,22 @@ async def seed_database():
                 results["roles"].append(f"Exists: {role['name']}")
         
         # ============ SEED ENTITIES ============
+        # NOTE: Admin API uses 'entity_configs' collection with 'entity_name' field
         default_entities = [
-            {"id": str(uuid.uuid4()), "name": "leads", "display_name": "Leads", "icon": "users", "order": 1, "enabled": True, "created_at": datetime.now(timezone.utc)},
-            {"id": str(uuid.uuid4()), "name": "deposits", "display_name": "Deposits", "icon": "dollar-sign", "order": 2, "enabled": True, "created_at": datetime.now(timezone.utc)},
-            {"id": str(uuid.uuid4()), "name": "teams", "display_name": "Teams", "icon": "users", "order": 3, "enabled": True, "created_at": datetime.now(timezone.utc)},
-            {"id": str(uuid.uuid4()), "name": "reports", "display_name": "Reports", "icon": "bar-chart", "order": 4, "enabled": True, "created_at": datetime.now(timezone.utc)},
-            {"id": str(uuid.uuid4()), "name": "settings", "display_name": "Settings", "icon": "settings", "order": 5, "enabled": True, "created_at": datetime.now(timezone.utc)}
+            {"id": str(uuid.uuid4()), "entity_name": "leads", "display_name": "Leads", "icon": "users", "order": 1, "enabled": True, "created_at": datetime.now(timezone.utc)},
+            {"id": str(uuid.uuid4()), "entity_name": "deposits", "display_name": "Deposits", "icon": "dollar-sign", "order": 2, "enabled": True, "created_at": datetime.now(timezone.utc)},
+            {"id": str(uuid.uuid4()), "entity_name": "teams", "display_name": "Teams", "icon": "users", "order": 3, "enabled": True, "created_at": datetime.now(timezone.utc)},
+            {"id": str(uuid.uuid4()), "entity_name": "reports", "display_name": "Reports", "icon": "bar-chart", "order": 4, "enabled": True, "created_at": datetime.now(timezone.utc)},
+            {"id": str(uuid.uuid4()), "entity_name": "settings", "display_name": "Settings", "icon": "settings", "order": 5, "enabled": True, "created_at": datetime.now(timezone.utc)}
         ]
         
         for entity in default_entities:
-            existing = await db.entities.find_one({"name": entity["name"]})
+            existing = await db.entity_configs.find_one({"entity_name": entity["entity_name"]})
             if not existing:
-                await db.entities.insert_one(entity)
-                results["entities"].append(f"Created: {entity['name']}")
+                await db.entity_configs.insert_one(entity)
+                results["entities"].append(f"Created: {entity['entity_name']}")
             else:
-                results["entities"].append(f"Exists: {entity['name']}")
+                results["entities"].append(f"Exists: {entity['entity_name']}")
         
         # ============ SEED PERMISSIONS ============
         # Get role IDs
