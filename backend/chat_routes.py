@@ -142,11 +142,18 @@ async def get_chat_teams(request: Request):
             {"_id": 0, "id": 1, "name": 1, "description": 1, "supervisor_id": 1}
         ).to_list(100)
     else:
-        # Supervisor sees only teams they supervise
+        # Supervisor sees teams they supervise OR teams they are assigned to
+        user_team_id = current_user.get("team_id")
+        
+        # Build query: teams they supervise OR their assigned team
+        team_conditions = [{"supervisor_id": current_user["id"]}]
+        if user_team_id:
+            team_conditions.append({"id": user_team_id})
+        
         teams = await db.teams.find(
             {
-                "supervisor_id": current_user["id"],
-                "$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]
+                "$or": team_conditions,
+                "$and": [{"$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]}]
             },
             {"_id": 0, "id": 1, "name": 1, "description": 1, "supervisor_id": 1}
         ).to_list(100)
