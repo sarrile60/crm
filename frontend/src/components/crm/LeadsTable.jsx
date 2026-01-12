@@ -203,7 +203,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [filters, setFilters] = useState({
     status: '',
-    search: ''
+    search: '',
+    assigned_to: [] // Array for multi-select assigned users
   });
   const [searchInput, setSearchInput] = useState(''); // Separate state for input
   const searchRef = React.useRef(''); // Track actual search to avoid unnecessary updates
