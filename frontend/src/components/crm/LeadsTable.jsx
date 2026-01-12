@@ -212,6 +212,21 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   const [searchInput, setSearchInput] = useState(''); // Separate state for input
   const searchRef = React.useRef(''); // Track actual search to avoid unnecessary updates
   
+  // Sorting state
+  const [sortConfig, setSortConfig] = useState({
+    field: 'created_at', // Default sort by date
+    direction: 'desc'    // Default descending (newest first)
+  });
+  
+  // Handle column header click for sorting
+  const handleSort = (field) => {
+    setSortConfig(prev => ({
+      field,
+      direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
+    setCurrentPage(1); // Reset to first page on sort change
+  };
+  
   // Debounce search with 300ms delay
   useEffect(() => {
     const timer = setTimeout(() => {
