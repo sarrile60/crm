@@ -88,6 +88,19 @@ The application is a production-ready CRM with robust lead management capabiliti
     - Updated `/api/crm/team-members-status` to include member's assigned team
     - Files: `/app/backend/chat_routes.py`, `/app/backend/crm_routes.py`
 
+### Recent Implementations (Jan 12, 2026)
+11. **Sortable Column Headers** (P0) ✅
+    - Implemented server-side sorting for the leads table
+    - Clickable column headers: Date, Name, Phone, Email, Amount, Status, Team, Assigned To
+    - Sort indicators: ArrowUp (ASC), ArrowDown (DESC), ArrowUpDown (not sorted)
+    - Toggle behavior: click toggles between ASC and DESC
+    - Pagination resets to page 1 on sort change
+    - Allowed sort fields: `created_at`, `fullName`, `status`, `priority`, `email`, `phone`, `amountLost`, `team_id`, `assigned_to`
+    - Backend: Updated `GET /api/crm/leads` to handle `sort` and `order` query params
+    - Frontend: Added sortConfig state, handleSort function, and sortable header UI
+    - Files: `/app/backend/crm_routes.py`, `/app/frontend/src/components/crm/LeadsTable.jsx`
+    - Tests: 11 backend tests + 8 frontend tests (100% pass rate)
+
 ## API Endpoints
 
 ### Lead Management
