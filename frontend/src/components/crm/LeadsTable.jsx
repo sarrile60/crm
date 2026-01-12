@@ -1294,8 +1294,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 </th>
               )}
               <th 
-                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'created_at' ? 'bg-gray-900' : 'bg-black'}`}
-                style={{ width: '140px' }}
+                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                style={{ width: '140px', backgroundColor: sortConfig.field === 'created_at' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('created_at')}
               >
                 <div className="flex items-center gap-1">
@@ -1308,8 +1308,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 </div>
               </th>
               <th 
-                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'fullName' ? 'bg-gray-900' : 'bg-black'}`}
-                style={{ width: '180px' }}
+                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                style={{ width: '180px', backgroundColor: sortConfig.field === 'fullName' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('fullName')}
               >
                 <div className="flex items-center gap-1">
