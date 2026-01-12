@@ -1799,10 +1799,10 @@ async def make_call(request: MakeCallRequest, current_user: dict = Depends(get_c
     ami_user = os.environ.get('AMI_USER', 'crm_dialer')
     ami_pass = os.environ.get('AMI_PASS', 'yo123mama')
     
-    print(f"AMI Connection: {ami_host}:{ami_port} as {ami_user}")
-    print(f"")
-    print(f">>> SENDING TO FREEPBX: Extension={agent_extension}, Number={clean_number}")
-    print(f"")
+    # Log credentials for debugging (mask password)
+    logging.info(f"AMI Connection: {ami_host}:{ami_port} as {ami_user}")
+    logging.info(f"AMI Password (first 3 chars): {ami_pass[:3]}***")
+    logging.info(f">>> SENDING TO FREEPBX: Extension={agent_extension}, Number={clean_number}")
     
     try:
         # Connect to FreePBX AMI
