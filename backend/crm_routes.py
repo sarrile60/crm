@@ -1627,10 +1627,18 @@ async def get_team_members_status(current_user: dict = Depends(get_current_user)
         ).to_list(100)
         team_ids = [t["id"] for t in teams]
     else:
+        # Supervisor sees teams they supervise OR teams they are assigned to
+        user_team_id = current_user.get("team_id")
+        
+        # Build query: teams they supervise OR their assigned team
+        team_conditions = [{"supervisor_id": current_user["id"]}]
+        if user_team_id:
+            team_conditions.append({"id": user_team_id})
+        
         teams = await db.teams.find(
             {
-                "supervisor_id": current_user["id"],
-                "$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]
+                "$or": team_conditions,
+                "$and": [{"$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]}]
             },
             {"_id": 0}
         ).to_list(100)
