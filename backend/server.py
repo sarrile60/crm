@@ -445,6 +445,138 @@ async def setup_admin_now():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+# Seed database with initial data (roles, entities, permissions)
+@api_router.get("/seed-database")
+async def seed_database():
+    """Seed the database with default roles, entities, and permissions for fresh deployments"""
+    import uuid
+    from datetime import datetime, timezone
+    
+    results = {"roles": [], "entities": [], "permissions": []}
+    
+    try:
+        # ============ SEED ROLES ============
+        default_roles = [
+            {"id": str(uuid.uuid4()), "name": "Admin", "description": "Full system access", "is_system": True, "created_at": datetime.now(timezone.utc)},
+            {"id": str(uuid.uuid4()), "name": "Supervisor", "description": "Team management and oversight", "is_system": True, "created_at": datetime.now(timezone.utc)},
+            {"id": str(uuid.uuid4()), "name": "Agent", "description": "Lead management and client interactions", "is_system": True, "created_at": datetime.now(timezone.utc)}
+        ]
+        
+        for role in default_roles:
+            existing = await db.roles.find_one({"name": role["name"]})
+            if not existing:
+                await db.roles.insert_one(role)
+                results["roles"].append(f"Created: {role['name']}")
+            else:
+                results["roles"].append(f"Exists: {role['name']}")
+        
+        # ============ SEED ENTITIES ============
+        default_entities = [
+            {"id": str(uuid.uuid4()), "name": "leads", "display_name": "Leads", "icon": "users", "order": 1, "enabled": True, "created_at": datetime.now(timezone.utc)},
+            {"id": str(uuid.uuid4()), "name": "deposits", "display_name": "Deposits", "icon": "dollar-sign", "order": 2, "enabled": True, "created_at": datetime.now(timezone.utc)},
+            {"id": str(uuid.uuid4()), "name": "teams", "display_name": "Teams", "icon": "users", "order": 3, "enabled": True, "created_at": datetime.now(timezone.utc)},
+            {"id": str(uuid.uuid4()), "name": "reports", "display_name": "Reports", "icon": "bar-chart", "order": 4, "enabled": True, "created_at": datetime.now(timezone.utc)},
+            {"id": str(uuid.uuid4()), "name": "settings", "display_name": "Settings", "icon": "settings", "order": 5, "enabled": True, "created_at": datetime.now(timezone.utc)}
+        ]
+        
+        for entity in default_entities:
+            existing = await db.entities.find_one({"name": entity["name"]})
+            if not existing:
+                await db.entities.insert_one(entity)
+                results["entities"].append(f"Created: {entity['name']}")
+            else:
+                results["entities"].append(f"Exists: {entity['name']}")
+        
+        # ============ SEED PERMISSIONS ============
+        # Get role IDs
+        admin_role = await db.roles.find_one({"name": "Admin"})
+        supervisor_role = await db.roles.find_one({"name": "Supervisor"})
+        agent_role = await db.roles.find_one({"name": "Agent"})
+        
+        if admin_role and supervisor_role and agent_role:
+            # Get entity IDs
+            entities = await db.entities.find({}).to_list(100)
+            entity_map = {e["name"]: e["id"] for e in entities}
+            
+            # Admin gets ALL access to everything
+            for entity_name, entity_id in entity_map.items():
+                for action in ["view", "create", "edit", "delete"]:
+                    perm = {
+                        "id": str(uuid.uuid4()),
+                        "role_id": admin_role["id"],
+                        "entity_id": entity_id,
+                        "entity_name": entity_name,
+                        "action": action,
+                        "scope": "all",
+                        "created_at": datetime.now(timezone.utc)
+                    }
+                    existing = await db.permissions.find_one({
+                        "role_id": admin_role["id"],
+                        "entity_name": entity_name,
+                        "action": action
+                    })
+                    if not existing:
+                        await db.permissions.insert_one(perm)
+            results["permissions"].append("Admin: Full access to all entities")
+            
+            # Supervisor gets TEAM access to leads/deposits, view for reports
+            supervisor_perms = [
+                ("leads", ["view", "create", "edit"], "team"),
+                ("deposits", ["view", "create", "edit"], "team"),
+                ("teams", ["view"], "team"),
+                ("reports", ["view"], "team")
+            ]
+            for entity_name, actions, scope in supervisor_perms:
+                if entity_name in entity_map:
+                    for action in actions:
+                        perm = {
+                            "id": str(uuid.uuid4()),
+                            "role_id": supervisor_role["id"],
+                            "entity_id": entity_map[entity_name],
+                            "entity_name": entity_name,
+                            "action": action,
+                            "scope": scope,
+                            "created_at": datetime.now(timezone.utc)
+                        }
+                        existing = await db.permissions.find_one({
+                            "role_id": supervisor_role["id"],
+                            "entity_name": entity_name,
+                            "action": action
+                        })
+                        if not existing:
+                            await db.permissions.insert_one(perm)
+            results["permissions"].append("Supervisor: Team access to leads/deposits")
+            
+            # Agent gets OWN access to leads/deposits
+            agent_perms = [
+                ("leads", ["view", "create", "edit"], "own"),
+                ("deposits", ["view", "create"], "own")
+            ]
+            for entity_name, actions, scope in agent_perms:
+                if entity_name in entity_map:
+                    for action in actions:
+                        perm = {
+                            "id": str(uuid.uuid4()),
+                            "role_id": agent_role["id"],
+                            "entity_id": entity_map[entity_name],
+                            "entity_name": entity_name,
+                            "action": action,
+                            "scope": scope,
+                            "created_at": datetime.now(timezone.utc)
+                        }
+                        existing = await db.permissions.find_one({
+                            "role_id": agent_role["id"],
+                            "entity_name": entity_name,
+                            "action": action
+                        })
+                        if not existing:
+                            await db.permissions.insert_one(perm)
+            results["permissions"].append("Agent: Own access to leads/deposits")
+        
+        return {"status": "success", "results": results}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 # Include the routers in the main app
 app.include_router(api_router)
 app.include_router(crm_router)
