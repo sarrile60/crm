@@ -1752,11 +1752,11 @@ async def ami_debug(current_user: dict = Depends(get_current_user)):
     if current_user.get('role') != 'admin':
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    # Hardcoded correct credentials as defaults
-    ami_host = os.environ.get('AMI_HOST') or '194.32.79.101'
-    ami_port = os.environ.get('AMI_PORT') or '5038'
-    ami_user = os.environ.get('AMI_USER') or 'crm_dialer'
-    ami_pass = os.environ.get('AMI_PASS') or 'yo123mama'
+    # AMI credentials - hardcoded directly (no env vars)
+    ami_host = '194.32.79.101'
+    ami_port = '5038'
+    ami_user = 'crm_dialer'
+    ami_pass = 'yo123mama'
     
     return {
         "ami_host": ami_host,
@@ -1764,7 +1764,7 @@ async def ami_debug(current_user: dict = Depends(get_current_user)):
         "ami_user": ami_user,
         "ami_pass_preview": f"{ami_pass[:3]}***{ami_pass[-3:]}" if len(ami_pass) > 6 else "***",
         "ami_pass_length": len(ami_pass),
-        "env_source": "environment variable or hardcoded default"
+        "env_source": "HARDCODED IN CODE"
     }
 
 # Test AMI connection endpoint (admin only)
