@@ -1750,6 +1750,13 @@ class MakeCallRequest(PydanticBaseModel):
 async def ami_check_public():
     """Public endpoint to verify AMI config is hardcoded correctly"""
     import socket
+    import urllib.request
+    
+    # Get this server's external IP
+    try:
+        external_ip = urllib.request.urlopen('https://api.ipify.org', timeout=5).read().decode('utf8')
+    except:
+        external_ip = "UNKNOWN"
     
     # AMI credentials - hardcoded directly (no env vars)
     ami_host = '194.32.79.101'
@@ -1758,7 +1765,9 @@ async def ami_check_public():
     ami_pass = 'yo123mama'
     
     result = {
-        "code_version": "HARDCODED_V2",
+        "THIS_SERVER_IP": external_ip,
+        "WHITELIST_THIS_IP_IN_FREEPBX": external_ip,
+        "code_version": "HARDCODED_V3",
         "ami_host": ami_host,
         "ami_port": ami_port,
         "ami_user": ami_user,
