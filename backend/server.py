@@ -495,9 +495,9 @@ async def seed_database():
         agent_role = await db.roles.find_one({"name": "Agent"})
         
         if admin_role and supervisor_role and agent_role:
-            # Get entity IDs
-            entities = await db.entities.find({}).to_list(100)
-            entity_map = {e["name"]: e["id"] for e in entities}
+            # Get entity IDs from entity_configs collection
+            entities = await db.entity_configs.find({}).to_list(100)
+            entity_map = {e["entity_name"]: e["id"] for e in entities}
             
             # Admin gets ALL access to everything
             for entity_name, entity_id in entity_map.items():
