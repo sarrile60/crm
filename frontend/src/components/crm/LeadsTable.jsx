@@ -1283,7 +1283,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
           <thead className="bg-black sticky top-0 z-10">
             <tr>
               {canMassUpdate && (
-                <th className="text-left text-white p-3 font-semibold w-12">
+                <th className="text-left text-white p-3 font-semibold w-12 bg-black">
                   <button onClick={toggleSelectAll} className="text-white hover:text-[#D4AF37]">
                     {selectedLeadIds.length === filteredLeads.length && filteredLeads.length > 0 ? (
                       <CheckSquare className="w-5 h-5" />
