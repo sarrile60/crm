@@ -697,7 +697,9 @@ async def get_crm_leads(
     
     # Sort direction
     sort_direction = -1 if order == "desc" else 1
-    sort_field = sort if sort in ["created_at", "fullName", "status", "priority", "email"] else "created_at"
+    # Allow sorting by all table columns
+    allowed_sort_fields = ["created_at", "fullName", "status", "priority", "email", "phone", "amountLost", "team_id", "assigned_to"]
+    sort_field = sort if sort in allowed_sort_fields else "created_at"
     
     # Fetch paginated leads - PROJECT ONLY LIST FIELDS
     query_time_start = time.time()
