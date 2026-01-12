@@ -500,20 +500,19 @@ async def seed_database():
             entity_map = {e["entity_name"]: e["id"] for e in entities}
             
             # Admin gets ALL access to everything
-            for entity_name, entity_id in entity_map.items():
-                for action in ["view", "create", "edit", "delete"]:
+            for ent_name, entity_id in entity_map.items():
+                for action in ["read", "create", "edit", "delete"]:
                     perm = {
                         "id": str(uuid.uuid4()),
                         "role_id": admin_role["id"],
-                        "entity_id": entity_id,
-                        "entity_name": entity_name,
+                        "entity": ent_name,
                         "action": action,
-                        "scope": "all",
+                        "scope": "all" if action in ["read", "edit", "delete"] else "yes",
                         "created_at": datetime.now(timezone.utc)
                     }
                     existing = await db.permissions.find_one({
                         "role_id": admin_role["id"],
-                        "entity_name": entity_name,
+                        "entity": ent_name,
                         "action": action
                     })
                     if not existing:
@@ -522,26 +521,25 @@ async def seed_database():
             
             # Supervisor gets TEAM access to leads/deposits, view for reports
             supervisor_perms = [
-                ("leads", ["view", "create", "edit"], "team"),
-                ("deposits", ["view", "create", "edit"], "team"),
-                ("teams", ["view"], "team"),
-                ("reports", ["view"], "team")
+                ("leads", ["read", "create", "edit"], "team"),
+                ("deposits", ["read", "create", "edit"], "team"),
+                ("teams", ["read"], "team"),
+                ("reports", ["read"], "team")
             ]
-            for entity_name, actions, scope in supervisor_perms:
-                if entity_name in entity_map:
+            for ent_name, actions, scope in supervisor_perms:
+                if ent_name in entity_map:
                     for action in actions:
                         perm = {
                             "id": str(uuid.uuid4()),
                             "role_id": supervisor_role["id"],
-                            "entity_id": entity_map[entity_name],
-                            "entity_name": entity_name,
+                            "entity": ent_name,
                             "action": action,
-                            "scope": scope,
+                            "scope": scope if action in ["read", "edit", "delete"] else "yes",
                             "created_at": datetime.now(timezone.utc)
                         }
                         existing = await db.permissions.find_one({
                             "role_id": supervisor_role["id"],
-                            "entity_name": entity_name,
+                            "entity": ent_name,
                             "action": action
                         })
                         if not existing:
@@ -550,24 +548,23 @@ async def seed_database():
             
             # Agent gets OWN access to leads/deposits
             agent_perms = [
-                ("leads", ["view", "create", "edit"], "own"),
-                ("deposits", ["view", "create"], "own")
+                ("leads", ["read", "create", "edit"], "own"),
+                ("deposits", ["read", "create"], "own")
             ]
-            for entity_name, actions, scope in agent_perms:
-                if entity_name in entity_map:
+            for ent_name, actions, scope in agent_perms:
+                if ent_name in entity_map:
                     for action in actions:
                         perm = {
                             "id": str(uuid.uuid4()),
                             "role_id": agent_role["id"],
-                            "entity_id": entity_map[entity_name],
-                            "entity_name": entity_name,
+                            "entity": ent_name,
                             "action": action,
-                            "scope": scope,
+                            "scope": scope if action in ["read", "edit", "delete"] else "yes",
                             "created_at": datetime.now(timezone.utc)
                         }
                         existing = await db.permissions.find_one({
                             "role_id": agent_role["id"],
-                            "entity_name": entity_name,
+                            "entity": ent_name,
                             "action": action
                         })
                         if not existing:
