@@ -1776,11 +1776,11 @@ async def ami_test(current_user: dict = Depends(get_current_user)):
     
     import socket
     
-    # Hardcoded correct credentials as defaults
-    ami_host = os.environ.get('AMI_HOST') or '194.32.79.101'
-    ami_port = int(os.environ.get('AMI_PORT') or '5038')
-    ami_user = os.environ.get('AMI_USER') or 'crm_dialer'
-    ami_pass = os.environ.get('AMI_PASS') or 'yo123mama'
+    # AMI credentials - hardcoded directly (no env vars)
+    ami_host = '194.32.79.101'
+    ami_port = 5038
+    ami_user = 'crm_dialer'
+    ami_pass = 'yo123mama'
     
     result = {
         "ami_host": ami_host,
