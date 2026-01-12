@@ -430,18 +430,18 @@ async def setup_admin_now():
         # Delete existing admin if any
         await db.crm_users.delete_many({"username": "admin"})
         
-        # Create fresh admin
+        # Create fresh admin with simple password
         default_admin = {
             "id": str(uuid.uuid4()),
             "username": "admin",
-            "password": hash_password("1Law@Solicitors2026!"),
+            "password": hash_password("Admin2026"),
             "full_name": "Administrator",
             "role": "admin",
             "is_active": True,
             "team_id": None
         }
         await db.crm_users.insert_one(default_admin)
-        return {"status": "success", "message": "Admin created! Username: admin, Password: 1Law@Solicitors2026!"}
+        return {"status": "success", "message": "Admin created! Username: admin, Password: Admin2026"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
