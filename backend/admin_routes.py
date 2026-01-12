@@ -195,7 +195,10 @@ async def get_role_permissions(role_id: str):
     # Build permission map
     perm_map = {}
     for perm in permissions:
-        entity = perm["entity"]
+        # Handle both 'entity' and 'entity_name' fields for backward compatibility
+        entity = perm.get("entity") or perm.get("entity_name")
+        if not entity:
+            continue
         action = perm["action"]
         scope = perm["scope"]
         
