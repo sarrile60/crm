@@ -384,7 +384,7 @@ async def get_admin_leads(authorization: Optional[str] = Header(None)):
 # Health check
 @api_router.get("/")
 async def root():
-    return {"message": "1 LAW SOLICITORS API - Running", "status": "healthy"}
+    return {"message": "1 LAW SOLICITORS API - Running", "status": "healthy", "version": "2026-01-12-fix-entities"}
 
 # Initialize admin endpoint (for fresh deployments)
 @api_router.get("/init-admin")
