@@ -394,8 +394,17 @@ async def init_admin():
     import uuid
     
     try:
-        user_count = await db.crm_users.count_documents({})
-        if user_count == 0:
+        # Check if admin already exists
+        existing_admin = await db.crm_users.find_one({"username": "admin"})
+        if existing_admin:
+            # Update the password
+            await db.crm_users.update_one(
+                {"username": "admin"},
+                {"$set": {"password": hash_password("1Law@Solicitors2026!"), "is_active": True, "role": "admin"}}
+            )
+            return {"status": "updated", "message": "Admin password updated. Username: admin"}
+        else:
+            # Create new admin
             default_admin = {
                 "id": str(uuid.uuid4()),
                 "username": "admin",
@@ -406,9 +415,7 @@ async def init_admin():
                 "team_id": None
             }
             await db.crm_users.insert_one(default_admin)
-            return {"status": "success", "message": "Admin user created. Username: admin"}
-        else:
-            return {"status": "exists", "message": f"Database already has {user_count} users"}
+            return {"status": "created", "message": "Admin user created. Username: admin"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
