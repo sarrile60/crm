@@ -295,13 +295,13 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      // Build query params with pagination
+      // Build query params with pagination and sorting
       const offset = (currentPage - 1) * pageSize;
       const queryParams = {
         limit: pageSize,
         offset: offset,
-        sort: 'created_at',
-        order: 'desc'
+        sort: sortConfig.field,
+        order: sortConfig.direction
       };
       if (filters.status) queryParams.status = filters.status;
       if (filters.search) queryParams.search = filters.search;
