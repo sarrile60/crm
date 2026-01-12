@@ -101,6 +101,14 @@ The application is a production-ready CRM with robust lead management capabiliti
     - Files: `/app/backend/crm_routes.py`, `/app/frontend/src/components/crm/LeadsTable.jsx`
     - Tests: 11 backend tests + 8 frontend tests (100% pass rate)
 
+12. **Agent Filter Fix on Financial Overview** (P0) ✅
+    - Fixed agent filter not working on Financial Overview page
+    - Bug: Backend was filtering deposits by `created_by` instead of `agent_id` field
+    - Fix: Changed `deposit_query["created_by"]` to `deposit_query["agent_id"]` in `/app/backend/finance_routes.py`
+    - Also fixed team filter to use `agent_id` with `$in` operator
+    - Tests: 10 backend API tests + 4 frontend UI tests (100% pass rate)
+    - Test file: `/app/tests/test_finance_agent_filter.py`
+
 ## API Endpoints
 
 ### Lead Management
