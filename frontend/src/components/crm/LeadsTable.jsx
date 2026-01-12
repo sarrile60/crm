@@ -886,6 +886,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       const queryParams = {};
       if (filters.status) queryParams.status = filters.status;
       if (filters.search) queryParams.search = filters.search;
+      if (filters.assigned_to && filters.assigned_to.length > 0) {
+        queryParams.assigned_to = filters.assigned_to.join(',');
+      }
 
       const response = await axios.post(`${API}/crm/leads/select-all`, null, { headers, params: queryParams });
       
