@@ -1308,104 +1308,104 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none" 
+                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'fullName' ? 'bg-gray-900' : 'bg-black'}`}
                 style={{ width: '180px' }}
                 onClick={() => handleSort('fullName')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.name')}
                   {sortConfig.field === 'fullName' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
                   ) : (
                     <ArrowUpDown className="w-4 h-4 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none" 
+                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'phone' ? 'bg-gray-900' : 'bg-black'}`}
                 style={{ width: '150px' }}
                 onClick={() => handleSort('phone')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.phone')}
                   {sortConfig.field === 'phone' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
                   ) : (
                     <ArrowUpDown className="w-4 h-4 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none" 
+                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'email' ? 'bg-gray-900' : 'bg-black'}`}
                 style={{ width: '200px' }}
                 onClick={() => handleSort('email')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.email')}
                   {sortConfig.field === 'email' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
                   ) : (
                     <ArrowUpDown className="w-4 h-4 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none" 
+                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'amountLost' ? 'bg-gray-900' : 'bg-black'}`}
                 style={{ width: '110px' }}
                 onClick={() => handleSort('amountLost')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.amount')}
                   {sortConfig.field === 'amountLost' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
                   ) : (
                     <ArrowUpDown className="w-4 h-4 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none" 
+                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'status' ? 'bg-gray-900' : 'bg-black'}`}
                 style={{ width: '140px' }}
                 onClick={() => handleSort('status')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.status')}
                   {sortConfig.field === 'status' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
                   ) : (
                     <ArrowUpDown className="w-4 h-4 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none" 
+                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'team_id' ? 'bg-gray-900' : 'bg-black'}`}
                 style={{ width: '110px' }}
                 onClick={() => handleSort('team_id')}
               >
                 <div className="flex items-center gap-1">
                   {t('users.team')}
                   {sortConfig.field === 'team_id' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
                   ) : (
                     <ArrowUpDown className="w-4 h-4 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none" 
+                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'assigned_to' ? 'bg-gray-900' : 'bg-black'}`}
                 style={{ width: '130px' }}
                 onClick={() => handleSort('assigned_to')}
               >
                 <div className="flex items-center gap-1">
                   {t('leads.assignedTo')}
                   {sortConfig.field === 'assigned_to' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
                   ) : (
                     <ArrowUpDown className="w-4 h-4 opacity-50" />
                   )}
                 </div>
               </th>
-              <th className="text-left text-white p-3 font-semibold" style={{ width: '180px' }}>{t('common.actions')}</th>
+              <th className="text-left text-white p-3 font-semibold bg-black" style={{ width: '180px' }}>{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
