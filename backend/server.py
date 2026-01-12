@@ -17,7 +17,8 @@ from analytics_routes import analytics_router, init_analytics_routes
 from finance_routes import finance_router, init_finance_routes
 
 ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+# Use override=False so production environment variables take precedence over .env file
+load_dotenv(ROOT_DIR / '.env', override=False)
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
