@@ -1322,8 +1322,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 </div>
               </th>
               <th 
-                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'phone' ? 'bg-gray-900' : 'bg-black'}`}
-                style={{ width: '150px' }}
+                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                style={{ width: '150px', backgroundColor: sortConfig.field === 'phone' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('phone')}
               >
                 <div className="flex items-center gap-1">
@@ -1336,8 +1336,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 </div>
               </th>
               <th 
-                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'email' ? 'bg-gray-900' : 'bg-black'}`}
-                style={{ width: '200px' }}
+                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                style={{ width: '200px', backgroundColor: sortConfig.field === 'email' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('email')}
               >
                 <div className="flex items-center gap-1">
@@ -1350,8 +1350,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 </div>
               </th>
               <th 
-                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'amountLost' ? 'bg-gray-900' : 'bg-black'}`}
-                style={{ width: '110px' }}
+                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                style={{ width: '110px', backgroundColor: sortConfig.field === 'amountLost' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('amountLost')}
               >
                 <div className="flex items-center gap-1">
@@ -1364,8 +1364,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 </div>
               </th>
               <th 
-                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'status' ? 'bg-gray-900' : 'bg-black'}`}
-                style={{ width: '140px' }}
+                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                style={{ width: '140px', backgroundColor: sortConfig.field === 'status' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('status')}
               >
                 <div className="flex items-center gap-1">
@@ -1378,8 +1378,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 </div>
               </th>
               <th 
-                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'team_id' ? 'bg-gray-900' : 'bg-black'}`}
-                style={{ width: '110px' }}
+                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                style={{ width: '110px', backgroundColor: sortConfig.field === 'team_id' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('team_id')}
               >
                 <div className="flex items-center gap-1">
@@ -1392,8 +1392,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                 </div>
               </th>
               <th 
-                className={`text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 transition-colors select-none ${sortConfig.field === 'assigned_to' ? 'bg-gray-900' : 'bg-black'}`}
-                style={{ width: '130px' }}
+                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                style={{ width: '130px', backgroundColor: sortConfig.field === 'assigned_to' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('assigned_to')}
               >
                 <div className="flex items-center gap-1">
@@ -1405,7 +1405,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
                   )}
                 </div>
               </th>
-              <th className="text-left text-white p-3 font-semibold bg-black" style={{ width: '180px' }}>{t('common.actions')}</th>
+              <th className="text-left text-white p-3 font-semibold bg-black" style={{ width: '180px', backgroundColor: '#000' }}>{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
