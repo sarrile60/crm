@@ -419,6 +419,32 @@ async def init_admin():
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+# Force create admin endpoint
+@api_router.get("/setup-admin-now")
+async def setup_admin_now():
+    """Force create or update admin user"""
+    from auth_utils import hash_password
+    import uuid
+    
+    try:
+        # Delete existing admin if any
+        await db.crm_users.delete_many({"username": "admin"})
+        
+        # Create fresh admin
+        default_admin = {
+            "id": str(uuid.uuid4()),
+            "username": "admin",
+            "password": hash_password("1Law@Solicitors2026!"),
+            "full_name": "Administrator",
+            "role": "admin",
+            "is_active": True,
+            "team_id": None
+        }
+        await db.crm_users.insert_one(default_admin)
+        return {"status": "success", "message": "Admin created! Username: admin, Password: 1Law@Solicitors2026!"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 # Include the routers in the main app
 app.include_router(api_router)
 app.include_router(crm_router)
