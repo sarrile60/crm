@@ -208,6 +208,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
     search: '',
     assigned_to: [] // Array for multi-select assigned users
   });
+  const [assignedToOpen, setAssignedToOpen] = useState(false); // Popover open state for multi-select
   const [searchInput, setSearchInput] = useState(''); // Separate state for input
   const searchRef = React.useRef(''); // Track actual search to avoid unnecessary updates
   
