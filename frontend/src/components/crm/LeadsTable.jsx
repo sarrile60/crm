@@ -1132,7 +1132,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
 
       {/* Filters */}
       <div className="bg-gray-50 border-2 border-gray-200 p-6 mb-6">
-        <div className="grid md:grid-cols-4 gap-4">
+        <div className="grid md:grid-cols-5 gap-4">
           <div>
             <label className="block text-sm font-semibold text-black mb-2">{t('common.search')}</label>
             <div className="relative">
@@ -1159,8 +1159,47 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
               </SelectContent>
             </Select>
           </div>
+          <div>
+            <label className="block text-sm font-semibold text-black mb-2">{t('leads.assignedTo') || 'Assigned To'}</label>
+            <div className="relative">
+              <Select 
+                value={filters.assigned_to.length === 1 ? filters.assigned_to[0] : (filters.assigned_to.length > 1 ? "multiple" : "all")}
+                onValueChange={(value) => {
+                  if (value === "all") {
+                    setFilters({ ...filters, assigned_to: [] });
+                  } else if (value !== "multiple") {
+                    setFilters({ ...filters, assigned_to: [value] });
+                  }
+                }}
+              >
+                <SelectTrigger className="bg-white border-gray-300 rounded-none">
+                  <SelectValue>
+                    {filters.assigned_to.length === 0 
+                      ? t('common.all') 
+                      : filters.assigned_to.length === 1 
+                        ? users.find(u => u.id === filters.assigned_to[0])?.full_name || filters.assigned_to[0]
+                        : `${filters.assigned_to.length} ${t('common.selected') || 'selected'}`
+                    }
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-white max-h-60">
+                  <SelectItem value="all">{t('common.all')}</SelectItem>
+                  {users.filter(u => u.role !== 'admin').map(user => (
+                    <SelectItem key={user.id} value={user.id}>
+                      <div className="flex items-center gap-2">
+                        {filters.assigned_to.includes(user.id) && (
+                          <CheckSquare className="w-4 h-4 text-[#D4AF37]" />
+                        )}
+                        <span>{user.full_name} ({user.role})</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <div className="flex items-end">
-            <Button onClick={() => { setFilters({ status: '', search: '' }); setSearchInput(''); setCurrentPage(1); }} className="bg-gray-800 text-white hover:bg-black rounded-none w-full">
+            <Button onClick={() => { setFilters({ status: '', search: '', assigned_to: [] }); setSearchInput(''); setCurrentPage(1); }} className="bg-gray-800 text-white hover:bg-black rounded-none w-full">
               {t('common.clearFilters')}
             </Button>
           </div>
