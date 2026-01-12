@@ -39,6 +39,8 @@
     "name": "Name",
     "email": "Email",
     "phone": "Phone",
+    "searchClient": "Search client...",
+    "noResults": "No results found.",
     "address": "Address",
     "notes": "Notes",
     "description": "Description",
