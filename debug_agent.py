@@ -5,7 +5,7 @@ Debug agent access to leads
 import requests
 import json
 
-BASE_URL = "https://deposit-crm.preview.emergentagent.com/api"
+BASE_URL = "https://deposit-crm-1.preview.emergentagent.com/api"
 CRM_BASE_URL = f"{BASE_URL}/crm"
 
 def login_user(email, password):

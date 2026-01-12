@@ -616,7 +616,7 @@ production_origins = [
     'https://1law-solicitors.com',
     'https://www.1law-solicitors.com', 
     'https://lawfirm-ops.emergent.host',
-    'https://deposit-crm.preview.emergentagent.com',
+    'https://deposit-crm-1.preview.emergentagent.com',
     'http://localhost:3000',
     'http://localhost:8001'
 ]
