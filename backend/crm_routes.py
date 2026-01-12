@@ -1876,11 +1876,11 @@ async def make_call(request: MakeCallRequest, current_user: dict = Depends(get_c
     print(f"Client Number (original): {client_number}")
     print(f"Client Number (cleaned): {clean_number}")
     
-    # Get AMI credentials from environment
-    ami_host = os.environ.get('AMI_HOST', '194.32.79.101')
-    ami_port = int(os.environ.get('AMI_PORT', '5038'))
-    ami_user = os.environ.get('AMI_USER', 'crm_dialer')
-    ami_pass = os.environ.get('AMI_PASS', 'yo123mama')
+    # Get AMI credentials - use hardcoded defaults if env vars are missing or empty
+    ami_host = os.environ.get('AMI_HOST') or '194.32.79.101'
+    ami_port = int(os.environ.get('AMI_PORT') or '5038')
+    ami_user = os.environ.get('AMI_USER') or 'crm_dialer'
+    ami_pass = os.environ.get('AMI_PASS') or 'yo123mama'
     
     # Log credentials for debugging (mask password)
     logging.info(f"AMI Connection: {ami_host}:{ami_port} as {ami_user}")
