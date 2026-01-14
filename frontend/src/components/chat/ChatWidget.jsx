@@ -243,8 +243,10 @@ const ChatWidget = ({ currentUser }) => {
           console.log('[Chat Poll] Unread new messages for sound:', unreadNewMessages.length);
           
           if (unreadNewMessages.length > 0) {
-            console.log('[Chat Poll] Playing notification sound!');
-            playNotificationSound();
+            // Get sender name for notification
+            const senderName = unreadNewMessages[0]?.sender?.full_name || 'Someone';
+            console.log('[Chat Poll] Playing notification sound for message from:', senderName);
+            playNotificationSound(senderName);
           }
           
           // Check for system alert messages and show toast notification
