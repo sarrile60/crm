@@ -173,12 +173,15 @@ The application is a production-ready CRM with robust lead management capabiliti
 - Backend: 11/11 sorting tests passing (test_leads_sorting.py)
 - Backend: 10/10 finance agent filter tests passing (test_finance_agent_filter.py)
 - Backend: 11/11 chat unknown user fix tests passing (test_chat_unknown_user_fix.py)
+- Backend: 14/14 chat role restrictions tests passing (test_chat_role_restrictions.py)
 - Backend: Previous mass action tests passing (test_crm_mass_actions.py)
 - Frontend: 8/8 sorting UI tests verified
 - Frontend: 4/4 finance filter UI tests verified
 - Frontend: 3/3 chat widget UI tests verified
+- Frontend: 4/4 chat role restrictions UI tests verified
 - Test files: 
   - `/app/tests/test_leads_sorting.py` (sorting feature)
   - `/app/tests/test_finance_agent_filter.py` (agent filter fix)
   - `/app/tests/test_chat_unknown_user_fix.py` (chat unknown user fix)
+  - `/app/tests/test_chat_role_restrictions.py` (agent chat restrictions)
   - `/app/tests/test_crm_mass_actions.py` (mass actions)
