@@ -9,7 +9,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://deposit-crm-1.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dialerfix-crm.preview.emergentagent.com')
 
 # Test data - Nicolo Zennaro's agent ID
 NICOLO_AGENT_ID = "4f3ff1bf-1d64-47a2-b8d3-7dc84b4c80c3"

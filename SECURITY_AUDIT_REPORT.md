@@ -1,7 +1,7 @@
 # 🔒 COMPLETE TECHNICAL SECURITY AUDIT REPORT
 ## 1 LAW SOLICITORS CRM System
 **Generated:** November 23, 2025  
-**System:** https://deposit-crm-1.preview.emergentagent.com
+**System:** https://dialerfix-crm.preview.emergentagent.com
 
 ---
 
@@ -155,10 +155,10 @@ Any attacker can:
 ```
 Risk Level: CRITICAL (10/10)
 Accessible Files:
-✓ https://deposit-crm-1.preview.emergentagent.com/backend/.env
-✓ https://deposit-crm-1.preview.emergentagent.com/backend/server.py
-✓ https://deposit-crm-1.preview.emergentagent.com/backend/auth_utils.py
-✓ https://deposit-crm-1.preview.emergentagent.com/backend/crm_routes.py
+✓ https://dialerfix-crm.preview.emergentagent.com/backend/.env
+✓ https://dialerfix-crm.preview.emergentagent.com/backend/server.py
+✓ https://dialerfix-crm.preview.emergentagent.com/backend/auth_utils.py
+✓ https://dialerfix-crm.preview.emergentagent.com/backend/crm_routes.py
 
 Exposed Information:
 - JWT secret key
@@ -442,7 +442,7 @@ Filtering:
 
 ### Public Landing Page Structure
 ```
-URL: https://deposit-crm-1.preview.emergentagent.com/
+URL: https://dialerfix-crm.preview.emergentagent.com/
 Technology: React SPA
 
 Components:
@@ -606,7 +606,7 @@ class LeadCreate(BaseModel):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://deposit-crm-1.preview.emergentagent.com",
+        "https://dialerfix-crm.preview.emergentagent.com",
         "https://yourdomain.com"
     ],  # Specific domains only
     allow_credentials=True,

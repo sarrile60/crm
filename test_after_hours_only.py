@@ -10,7 +10,7 @@ import time
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://deposit-crm-1.preview.emergentagent.com/api"
+BASE_URL = "https://dialerfix-crm.preview.emergentagent.com/api"
 CRM_BASE_URL = f"{BASE_URL}/crm"
 
 # Test credentials from review request
