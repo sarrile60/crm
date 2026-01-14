@@ -673,3 +673,26 @@ async def startup_event():
 async def shutdown_db_client():
     client.close()
     logger.info("Database connection closed")
+
+# Health check endpoint - no auth required
+@app.get("/api/health")
+async def health_check():
+    """Health check endpoint for monitoring"""
+    try:
+        # Test database connection
+        await db.command('ping')
+        db_status = "connected"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+    
+    return {
+        "status": "healthy",
+        "database": db_status,
+        "cors_allow_all": allow_all_cors,
+        "environment": os.environ.get('ENVIRONMENT', 'unknown')
+    }
+
+@app.get("/health")
+async def health_check_root():
+    """Root health check endpoint"""
+    return await health_check()
