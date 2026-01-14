@@ -1159,7 +1159,8 @@
     "members": "membri",
     "errorOpeningTeamChat": "Errore nell'apertura della chat di team",
     "errorSendingMessage": "Errore nell'invio del messaggio",
-    "teamChatReadOnly": "Solo supervisori e amministratori possono inviare messaggi nelle chat di team"
+    "teamChatReadOnly": "Solo supervisori e amministratori possono inviare messaggi nelle chat di team",
+    "view": "Visualizza"
   },
   "adminDashboard": {
     "pageViews": "Visite Pagina",
