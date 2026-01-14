@@ -11,7 +11,7 @@ from datetime import datetime
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dialerfix-crm.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
-AGENT_CREDS = {"username": "nicolo", "password": "12345"}
+AGENT_CREDS = {"username": "nicolo", "password": "123"}
 SUPERVISOR_CREDS = {"username": "maurizio3", "password": "12345"}
 ADMIN_CREDS = {"username": "admin", "password": "Admin2026"}
 
