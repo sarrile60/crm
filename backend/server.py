@@ -20,11 +20,23 @@ ROOT_DIR = Path(__file__).parent
 # Use override=False so production environment variables take precedence over .env file
 load_dotenv(ROOT_DIR / '.env', override=False)
 
-# MongoDB connection - with fallback for production
+# MongoDB connection with connection pooling for better concurrency
 mongo_url = os.environ.get('MONGO_URL')
 if not mongo_url:
     raise ValueError("MONGO_URL environment variable is required")
-client = AsyncIOMotorClient(mongo_url)
+
+# Configure connection pool for handling multiple concurrent agents
+client = AsyncIOMotorClient(
+    mongo_url,
+    maxPoolSize=50,  # Maximum connections in pool
+    minPoolSize=10,  # Minimum connections to maintain
+    maxIdleTimeMS=30000,  # Close idle connections after 30s
+    waitQueueTimeoutMS=10000,  # Timeout waiting for connection
+    serverSelectionTimeoutMS=5000,  # Timeout for server selection
+    connectTimeoutMS=5000,  # Connection timeout
+    retryWrites=True,  # Retry failed writes
+    retryReads=True  # Retry failed reads
+)
 db_name = os.environ.get('DB_NAME', 'legal_crm_production')
 db = client[db_name]
 
