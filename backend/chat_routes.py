@@ -114,13 +114,53 @@ async def create_conversation(data: ConversationCreate, request: Request):
 async def get_conversations(request: Request):
     from server import db
     
-    
     current_user = await get_current_user(request)
+    current_role = current_user.get("role", "").lower()
     
     conversations = await db.conversations.find(
         {"participant_ids": current_user["id"]},
         {"_id": 0}
     ).sort("last_message_at", -1).to_list(100)
+    
+    # For agents: filter out conversations with other agents
+    # Agents can only see conversations with admins or their team's supervisor
+    if current_role == "agent":
+        agent_team_id = current_user.get("team_id")
+        
+        # Build list of allowed user IDs for agent
+        allowed_user_ids = set()
+        allowed_user_ids.add(current_user["id"])  # Always include self
+        allowed_user_ids.add("system_notifications")  # System notifications
+        
+        # Get all admins
+        admins = await db.crm_users.find(
+            {"role": {"$regex": "^admin$", "$options": "i"}},
+            {"_id": 0, "id": 1}
+        ).to_list(100)
+        for admin in admins:
+            allowed_user_ids.add(admin["id"])
+        
+        # If agent has a team, add the team's supervisor
+        if agent_team_id:
+            team = await db.teams.find_one({"id": agent_team_id}, {"_id": 0, "supervisor_id": 1})
+            if team and team.get("supervisor_id"):
+                allowed_user_ids.add(team["supervisor_id"])
+        
+        # Filter conversations: keep only those where ALL participants are in allowed list
+        # OR the conversation is a group/team chat
+        filtered_conversations = []
+        for conv in conversations:
+            # Always keep group chats, team chats, and system chats
+            if conv.get("is_group") or conv.get("is_team_chat") or conv.get("is_system_chat"):
+                filtered_conversations.append(conv)
+                continue
+            
+            # For private chats, check if all participants are allowed
+            participant_ids = set(conv.get("participant_ids", []))
+            if participant_ids.issubset(allowed_user_ids):
+                filtered_conversations.append(conv)
+        
+        conversations = filtered_conversations
     
     # Get participant details for each conversation using helper
     for conv in conversations:
