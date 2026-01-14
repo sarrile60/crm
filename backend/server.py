@@ -622,14 +622,17 @@ production_origins = [
     'http://localhost:3000',
     'http://localhost:8001'
 ]
-# Also allow any origins from env var
+# Also allow any origins from env var (use * to allow all origins if needed)
 env_origins = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
 all_origins = list(set(production_origins + [o.strip() for o in env_origins if o.strip()]))
+
+# If CORS_ALLOW_ALL is set to true, allow all origins
+allow_all_cors = os.environ.get('CORS_ALLOW_ALL', 'false').lower() == 'true'
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=all_origins,
+    allow_origins=["*"] if allow_all_cors else all_origins,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
     max_age=3600
