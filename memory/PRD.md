@@ -118,6 +118,17 @@ The application is a production-ready CRM with robust lead management capabiliti
     - Tests: 11 backend API tests + 3 frontend UI tests (100% pass rate)
     - Test file: `/app/tests/test_chat_unknown_user_fix.py`
 
+14. **Role-Based Chat Restrictions for Agents** (P0) ✅
+    - **Requirement**: Agents should only be able to see and chat with Admin(s) and their team's Supervisor
+    - **Implementation**:
+      - Modified `GET /api/chat/users` - Agents only see admins + their team's supervisor (no other agents)
+      - Modified `GET /api/chat/conversations` - Filters out agent-to-agent private chats from conversation list
+      - Modified `POST /api/chat/conversations` - Blocks agents from creating chats with other agents (returns 403)
+    - Agents without a team can only see Admin(s)
+    - Supervisors and Admins retain full access to all users
+    - Tests: 14 backend API tests + 4 frontend UI tests (100% pass rate)
+    - Test file: `/app/tests/test_chat_role_restrictions.py`
+
 ## API Endpoints
 
 ### Lead Management
