@@ -624,14 +624,52 @@ async def search_messages(request: Request, q: str, limit: int = 20):
 async def get_chat_users(request: Request):
     from server import db
     
-    
     current_user = await get_current_user(request)
+    current_role = current_user.get("role", "").lower()
     
-    # Get all users except current user (status field may not exist in crm_users)
-    users = await db.crm_users.find(
-        {"id": {"$ne": current_user["id"]}, "status": {"$ne": "deleted"}},
-        {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1}
-    ).to_list(100)
+    # Base query: exclude current user and deleted users
+    base_query = {"id": {"$ne": current_user["id"]}, "status": {"$ne": "deleted"}}
+    
+    # Role-based filtering for agents
+    if current_role == "agent":
+        # Agents can only chat with:
+        # 1. Admin(s)
+        # 2. Supervisor of their assigned team (if they have a team)
+        
+        agent_team_id = current_user.get("team_id")
+        allowed_user_ids = []
+        
+        # Get all admins
+        admins = await db.crm_users.find(
+            {"role": {"$regex": "^admin$", "$options": "i"}, "status": {"$ne": "deleted"}},
+            {"_id": 0, "id": 1}
+        ).to_list(100)
+        allowed_user_ids.extend([a["id"] for a in admins])
+        
+        # If agent has a team, find the team's supervisor
+        if agent_team_id:
+            team = await db.teams.find_one({"id": agent_team_id}, {"_id": 0, "supervisor_id": 1})
+            if team and team.get("supervisor_id"):
+                allowed_user_ids.append(team["supervisor_id"])
+        
+        # If no allowed users found, return empty list
+        if not allowed_user_ids:
+            return {"users": []}
+        
+        # Query only allowed users (exclude current user)
+        users = await db.crm_users.find(
+            {
+                "id": {"$in": allowed_user_ids, "$ne": current_user["id"]},
+                "status": {"$ne": "deleted"}
+            },
+            {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1}
+        ).to_list(100)
+    else:
+        # Admin and Supervisor can see all users
+        users = await db.crm_users.find(
+            base_query,
+            {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1}
+        ).to_list(100)
     
     return {"users": users}
 
