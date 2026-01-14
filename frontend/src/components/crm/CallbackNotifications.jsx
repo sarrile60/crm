@@ -162,8 +162,8 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     
     fetchAdminLoginRequests();
     fetchDepositNotifications();
-    const loginRequestInterval = setInterval(fetchAdminLoginRequests, 10000);
-    const depositInterval = setInterval(fetchDepositNotifications, 10000);
+    const loginRequestInterval = setInterval(fetchAdminLoginRequests, 30000); // Every 30s instead of 10s
+    const depositInterval = setInterval(fetchDepositNotifications, 20000); // Every 20s instead of 10s
     
     return () => {
       clearInterval(loginRequestInterval);
@@ -176,7 +176,7 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     if (currentUser?.role?.toLowerCase() !== 'supervisor') return;
     
     fetchSupervisorDepositNotifications();
-    const supervisorDepositInterval = setInterval(fetchSupervisorDepositNotifications, 10000);
+    const supervisorDepositInterval = setInterval(fetchSupervisorDepositNotifications, 20000); // Every 20s instead of 10s
     
     return () => {
       clearInterval(supervisorDepositInterval);
