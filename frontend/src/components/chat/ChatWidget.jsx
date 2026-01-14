@@ -43,13 +43,30 @@ const ChatWidget = ({ currentUser }) => {
   useEffect(() => {
     audioRef.current = new Audio(NOTIFICATION_SOUND);
     audioRef.current.volume = 0.5;
+    
+    // Request notification permission on mount
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }, []);
 
-  // Play notification sound
-  const playNotificationSound = useCallback(() => {
+  // Play notification sound and show browser notification
+  const playNotificationSound = useCallback((senderName = 'New message') => {
+    // Play sound
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {});
+      audioRef.current.play().catch((err) => {
+        console.log('[Chat] Audio play failed (browser autoplay policy):', err.message);
+      });
+    }
+    
+    // Show browser notification if page is not visible
+    if (document.visibilityState === 'hidden' && 'Notification' in window && Notification.permission === 'granted') {
+      new Notification('New Chat Message', {
+        body: `You have a new message from ${senderName}`,
+        icon: '/favicon.ico',
+        tag: 'chat-notification' // Prevents duplicate notifications
+      });
     }
   }, []);
 
