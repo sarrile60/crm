@@ -245,8 +245,31 @@ const ChatWidget = ({ currentUser }) => {
           if (unreadNewMessages.length > 0) {
             // Get sender name for notification
             const senderName = unreadNewMessages[0]?.sender?.full_name || 'Someone';
+            const messagePreview = unreadNewMessages[0]?.content?.substring(0, 50) || '';
             console.log('[Chat Poll] Playing notification sound for message from:', senderName);
             playNotificationSound(senderName);
+            
+            // Show toast notification for new chat message (only if chat widget is closed)
+            if (!isOpen) {
+              toast.info(`💬 ${senderName}`, {
+                description: messagePreview + (messagePreview.length >= 50 ? '...' : ''),
+                duration: 5000,
+                action: {
+                  label: t('chat.view') || 'View',
+                  onClick: () => {
+                    setIsOpen(true);
+                    // Find the conversation for this message
+                    const conv = conversations.find(c => 
+                      c.participant_ids?.includes(unreadNewMessages[0]?.sender_id)
+                    );
+                    if (conv) {
+                      setSelectedConversation(conv);
+                      fetchMessages(conv.id);
+                    }
+                  }
+                }
+              });
+            }
           }
           
           // Check for system alert messages and show toast notification
