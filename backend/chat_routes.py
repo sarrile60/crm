@@ -122,24 +122,9 @@ async def get_conversations(request: Request):
         {"_id": 0}
     ).sort("last_message_at", -1).to_list(100)
     
-    # Get participant details for each conversation
+    # Get participant details for each conversation using helper
     for conv in conversations:
-        participants = []
-        for pid in conv["participant_ids"]:
-            if pid == "system_notifications":
-                # System notification pseudo-user
-                participants.append({
-                    "id": "system_notifications",
-                    "full_name": "⚠️ System Alerts",
-                    "username": "system",
-                    "role": "system",
-                    "status": "active"
-                })
-            else:
-                user = await db.crm_users.find_one({"id": pid}, {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1, "status": 1})
-                if user:
-                    participants.append(user)
-        conv["participants"] = participants
+        await populate_conversation_participants(db, conv)
         
         # Get unread count for this user
         unread_count = await db.messages.count_documents({
