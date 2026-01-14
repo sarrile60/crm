@@ -193,6 +193,8 @@ const ChatWidget = ({ currentUser }) => {
       });
       
       if (response.data.messages.length > 0) {
+        console.log('[Chat Poll] Received messages:', response.data.messages.length, 'isInitialPoll:', isInitialPoll.current);
+        
         // Update last poll time FIRST to prevent re-fetching same messages
         const lastMsg = response.data.messages[response.data.messages.length - 1];
         setLastPollTime(lastMsg.created_at);
@@ -201,6 +203,8 @@ const ChatWidget = ({ currentUser }) => {
         const trulyNewMessages = response.data.messages.filter(m => 
           !seenMessageIds.current.has(m.id) && m.sender_id !== currentUser.id
         );
+        
+        console.log('[Chat Poll] Truly new messages:', trulyNewMessages.length, 'from other users');
         
         // Add all message IDs to seen set
         response.data.messages.forEach(m => seenMessageIds.current.add(m.id));
@@ -215,7 +219,10 @@ const ChatWidget = ({ currentUser }) => {
             !m.read_by || !m.read_by.includes(currentUser.id)
           );
           
+          console.log('[Chat Poll] Unread new messages for sound:', unreadNewMessages.length);
+          
           if (unreadNewMessages.length > 0) {
+            console.log('[Chat Poll] Playing notification sound!');
             playNotificationSound();
           }
           
