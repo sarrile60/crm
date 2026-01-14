@@ -129,6 +129,19 @@ The application is a production-ready CRM with robust lead management capabiliti
     - Tests: 14 backend API tests + 4 frontend UI tests (100% pass rate)
     - Test file: `/app/tests/test_chat_role_restrictions.py`
 
+15. **Real-time Chat Notification Fix** (P0) ✅
+    - **Bug**: When supervisor texts an agent, the agent doesn't receive real-time notification or sound
+    - **Root Cause**: Notification logic wasn't properly distinguishing between initial load and subsequent polls
+    - **Implementation**:
+      - Fixed `isInitialPoll` flag to correctly prevent sound on first load but allow on subsequent polls
+      - `trulyNewMessages` filter correctly identifies messages not yet in `seenMessageIds`
+      - Added toast notification with sender name and message preview when chat is closed
+      - Added Browser Notification API support for background tab notifications
+      - `playNotificationSound` function handles browser autoplay policies gracefully
+    - Tests: 12 backend API tests + 5 frontend UI tests (100% pass rate)
+    - Test file: `/app/tests/test_chat_notifications.py`
+    - **Note**: Browser autoplay policies may block notification sound - toast provides visual fallback
+
 ## API Endpoints
 
 ### Lead Management
