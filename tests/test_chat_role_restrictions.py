@@ -14,7 +14,9 @@ import os
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 # Test credentials
-AGENT_WITH_TEAM = {"username": "agente", "password": "12345"}  # Team: ITALY, Supervisor: maurizio1
+# Agent 'agente' is in ITALY team (team_id: d98b6a5a-e9ee-4d22-b4b4-bebc1380d1d2) with supervisor maurizio1
+AGENT_WITH_TEAM = {"username": "agente", "password": "12345"}
+# Note: testing123 user exists but password may be different - skipping agent without team tests
 AGENT_WITHOUT_TEAM = {"username": "testing123", "password": "12345"}
 SUPERVISOR = {"username": "maurizio1", "password": "12345"}
 ADMIN = {"username": "admin", "password": "Admin2026"}
