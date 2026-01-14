@@ -281,6 +281,9 @@ async def get_user_visibility_rules(db, user_id: str, user_role: str, user_team_
     Get visibility rules for a user based on their role and teams.
     Returns a dict of field_name -> visibility level.
     
+    Uses caching to reduce database load with multiple concurrent users.
+    Cache TTL: 60 seconds.
+    
     Priority: Role rules take precedence over team rules.
     If no rule exists, default is "masked".
     
@@ -293,6 +296,17 @@ async def get_user_visibility_rules(db, user_id: str, user_role: str, user_team_
     Returns:
         Dict like {"phone": "full", "email": "masked", "address": "hidden"}
     """
+    global _visibility_cache
+    
+    # Create cache key based on role and teams
+    cache_key = f"{user_role}:{','.join(sorted(user_team_ids or []))}"
+    
+    # Check cache
+    if cache_key in _visibility_cache:
+        cached_time, cached_result = _visibility_cache[cache_key]
+        if time.time() - cached_time < _visibility_cache_ttl:
+            return cached_result.copy()
+    
     # Default visibility for all fields
     default_visibility = {
         "phone": "masked",
@@ -302,11 +316,13 @@ async def get_user_visibility_rules(db, user_id: str, user_role: str, user_team_
     
     # Admin always gets full visibility
     if user_role and user_role.lower() == "admin":
-        return {
+        result = {
             "phone": "full",
             "email": "full",
             "address": "full"
         }
+        _visibility_cache[cache_key] = (time.time(), result)
+        return result
     
     result = default_visibility.copy()
     
@@ -335,6 +351,9 @@ async def get_user_visibility_rules(db, user_id: str, user_role: str, user_team_
                 # Team rules can only make things more visible, not less
                 if rule["visibility"] == "full":
                     result[field] = "full"
+    
+    # Cache the result
+    _visibility_cache[cache_key] = (time.time(), result)
     
     return result
 
