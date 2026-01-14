@@ -197,4 +197,5 @@ The application is a production-ready CRM with robust lead management capabiliti
   - `/app/tests/test_finance_agent_filter.py` (agent filter fix)
   - `/app/tests/test_chat_unknown_user_fix.py` (chat unknown user fix)
   - `/app/tests/test_chat_role_restrictions.py` (agent chat restrictions)
+  - `/app/tests/test_chat_notifications.py` (real-time notifications)
   - `/app/tests/test_crm_mass_actions.py` (mass actions)
