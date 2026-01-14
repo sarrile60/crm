@@ -42,6 +42,29 @@ async def get_current_user(request: Request):
     except Exception as e:
         raise HTTPException(status_code=401, detail=str(e))
 
+# Helper function to populate participant details for a conversation
+async def populate_conversation_participants(db, conversation):
+    """Populate participant details for a conversation"""
+    participants = []
+    for pid in conversation.get("participant_ids", []):
+        if pid == "system_notifications":
+            participants.append({
+                "id": "system_notifications",
+                "full_name": "⚠️ System Alerts",
+                "username": "system",
+                "role": "system",
+                "status": "active"
+            })
+        else:
+            user = await db.crm_users.find_one(
+                {"id": pid}, 
+                {"_id": 0, "id": 1, "full_name": 1, "username": 1, "role": 1, "status": 1}
+            )
+            if user:
+                participants.append(user)
+    conversation["participants"] = participants
+    return conversation
+
 # Create a new conversation (private or group)
 @router.post("/conversations")
 async def create_conversation(data: ConversationCreate, request: Request):
@@ -59,6 +82,8 @@ async def create_conversation(data: ConversationCreate, request: Request):
         }, {"_id": 0})
         
         if existing:
+            # Populate participant details before returning
+            await populate_conversation_participants(db, existing)
             return existing
     
     # Create new conversation
@@ -78,6 +103,9 @@ async def create_conversation(data: ConversationCreate, request: Request):
     
     await db.conversations.insert_one(conversation)
     del conversation["_id"]
+    
+    # Populate participant details before returning
+    await populate_conversation_participants(db, conversation)
     
     return conversation
 
