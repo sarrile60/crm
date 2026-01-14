@@ -1311,7 +1311,8 @@
     "members": "members",
     "errorOpeningTeamChat": "Error opening team chat",
     "errorSendingMessage": "Error sending message",
-    "teamChatReadOnly": "Only supervisors and admins can send messages in team chats"
+    "teamChatReadOnly": "Only supervisors and admins can send messages in team chats",
+    "view": "View"
   },
   "adminDashboard": {
     "pageViews": "Page Views",
