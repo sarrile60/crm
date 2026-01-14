@@ -243,6 +243,8 @@ const ChatWidget = ({ currentUser }) => {
             const senderName = unreadNewMessages[0]?.sender?.full_name || 'Someone';
             const messagePreview = unreadNewMessages[0]?.content?.substring(0, 50) || '';
             
+            console.log('[ChatWidget] PLAYING NOTIFICATION for message from:', senderName);
+            
             // Play notification sound
             playNotificationSound(senderName);
             
