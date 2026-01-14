@@ -109,6 +109,15 @@ The application is a production-ready CRM with robust lead management capabiliti
     - Tests: 10 backend API tests + 4 frontend UI tests (100% pass rate)
     - Test file: `/app/tests/test_finance_agent_filter.py`
 
+### Recent Implementations (Jan 14, 2026)
+13. **Chat Widget "Unknown User" Bug Fix** (P0) ✅
+    - **Bug**: When clicking to chat with an agent as supervisor, the name in the chatbox shows 'Unknown User' on first click, but works correctly on second click
+    - **Root Cause**: Race condition - `POST /api/chat/conversations` endpoint was returning conversation objects without the `participants` array populated with user details (full_name, username, role)
+    - **Fix**: Created reusable helper function `populate_conversation_participants()` in `/app/backend/chat_routes.py` that populates participant details for both new and existing conversations
+    - The helper function is called before returning from POST endpoint for both new and existing conversations
+    - Tests: 11 backend API tests + 3 frontend UI tests (100% pass rate)
+    - Test file: `/app/tests/test_chat_unknown_user_fix.py`
+
 ## API Endpoints
 
 ### Lead Management
