@@ -101,8 +101,8 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       fetchPendingCallbacks();
     }, 30000);
     
-    // Check for snoozed callbacks every 10 seconds
-    const snoozeInterval = setInterval(checkSnoozedCallbacks, 10000);
+    // Check for snoozed callbacks every 30 seconds (reduced from 10s for performance)
+    const snoozeInterval = setInterval(checkSnoozedCallbacks, 30000);
     
     return () => {
       clearInterval(interval);
