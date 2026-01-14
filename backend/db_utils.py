@@ -22,6 +22,12 @@ Usage:
 from typing import Any, Dict
 from copy import deepcopy
 from datetime import datetime
+from functools import lru_cache
+import time
+
+# Simple in-memory cache for visibility rules (TTL: 60 seconds)
+_visibility_cache = {}
+_visibility_cache_ttl = 60  # seconds
 
 
 async def insert_and_return_clean(collection, document: Dict[str, Any]) -> Dict[str, Any]:
