@@ -70,8 +70,37 @@ async def populate_conversation_participants(db, conversation):
 async def create_conversation(data: ConversationCreate, request: Request):
     from server import db
     
-    
     current_user = await get_current_user(request)
+    current_role = current_user.get("role", "").lower()
+    
+    # For agents: validate they can only start conversations with admins or their team's supervisor
+    if current_role == "agent" and not data.is_group:
+        agent_team_id = current_user.get("team_id")
+        
+        # Build list of allowed user IDs for agent
+        allowed_user_ids = set()
+        
+        # Get all admins
+        admins = await db.crm_users.find(
+            {"role": {"$regex": "^admin$", "$options": "i"}},
+            {"_id": 0, "id": 1}
+        ).to_list(100)
+        for admin in admins:
+            allowed_user_ids.add(admin["id"])
+        
+        # If agent has a team, add the team's supervisor
+        if agent_team_id:
+            team = await db.teams.find_one({"id": agent_team_id}, {"_id": 0, "supervisor_id": 1})
+            if team and team.get("supervisor_id"):
+                allowed_user_ids.add(team["supervisor_id"])
+        
+        # Validate that all participants are allowed
+        for participant_id in data.participant_ids:
+            if participant_id not in allowed_user_ids:
+                raise HTTPException(
+                    status_code=403, 
+                    detail="Agents can only start conversations with admins or their team's supervisor"
+                )
     
     # For private chats, check if conversation already exists
     if not data.is_group and len(data.participant_ids) == 1:
