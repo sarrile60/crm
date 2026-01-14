@@ -20,10 +20,13 @@ ROOT_DIR = Path(__file__).parent
 # Use override=False so production environment variables take precedence over .env file
 load_dotenv(ROOT_DIR / '.env', override=False)
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
+# MongoDB connection - with fallback for production
+mongo_url = os.environ.get('MONGO_URL')
+if not mongo_url:
+    raise ValueError("MONGO_URL environment variable is required")
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db_name = os.environ.get('DB_NAME', 'legal_crm_production')
+db = client[db_name]
 
 # Initialize databases
 init_crm_db(db)
