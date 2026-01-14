@@ -129,8 +129,8 @@ async def security_middleware(request: Request, call_next):
         rate_window = int(os.environ.get('RATE_LIMIT_WINDOW_SECONDS', 60))
         client_data["requests"] = [t for t in client_data["requests"] if current_time - t < rate_window]
         
-        # Check if rate limit exceeded
-        max_requests = int(os.environ.get('RATE_LIMIT_REQUESTS', 100))
+        # Check if rate limit exceeded (increased from 100 to 300 for multiple agents)
+        max_requests = int(os.environ.get('RATE_LIMIT_REQUESTS', 300))
         if len(client_data["requests"]) >= max_requests:
             logger.warning(f"Rate limit exceeded for {client_ip}")
             raise HTTPException(status_code=429, detail="Too many requests. Please slow down.")
