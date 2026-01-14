@@ -82,10 +82,6 @@ const ChatWidget = ({ currentUser }) => {
       // Calculate total unread
       const total = response.data.conversations.reduce((sum, c) => sum + (c.unread_count || 0), 0);
       setUnreadTotal(total);
-      
-      if (total > 0) {
-        console.log('[Chat] Total unread messages:', total);
-      }
     } catch (error) {
       console.error('Error fetching conversations:', error);
     }
