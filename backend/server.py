@@ -143,46 +143,64 @@ async def security_middleware(request: Request, call_next):
         logger.warning(f"Blocked access to sensitive path: {path} from {client_ip}")
         raise HTTPException(status_code=404, detail="Not found")
     
-    # 2. RATE LIMITING (Application Level) - Per-IP + Per-User
-    # In Kubernetes/proxy environments, all requests may come from same proxy IP
-    # So we also track by Authorization header to avoid false positives
+    # 2. RATE LIMITING (Application Level) - Dual Layer: Global IP + Per-User
+    # Layer 1: Global IP cap prevents abuse even with token rotation
+    # Layer 2: Per-user limit for fair distribution among authenticated users
     if os.environ.get('RATE_LIMIT_ENABLED', 'true').lower() == 'true':
-        # Use Authorization token hash as secondary key (for authenticated requests)
-        auth_header = request.headers.get("Authorization", "")
-        auth_key = auth_header[-20:] if auth_header else ""  # Last 20 chars of token as key
-        
-        # Combined key: IP + partial auth token (prevents false positives from proxy)
-        rate_key = f"{client_ip}:{auth_key}" if auth_key else client_ip
-        client_data = rate_limit_storage[rate_key]
-        
-        # Clean old requests (older than window)
         rate_window = int(os.environ.get('RATE_LIMIT_WINDOW_SECONDS', 60))
-        client_data["requests"] = [t for t in client_data["requests"] if current_time - t < rate_window]
         
-        # Higher limit for production multi-agent usage
-        # 10 agents * 15 req/s each = 150 req/s, with buffer = 1000/60s per user
-        max_requests = int(os.environ.get('RATE_LIMIT_REQUESTS', 1000))
-        if len(client_data["requests"]) >= max_requests:
-            logger.warning(f"Rate limit exceeded for {rate_key[:20]}...")
-            # Return 429 (not 500) so frontend can retry
-            raise HTTPException(status_code=429, detail="Too many requests. Please slow down.")
+        # LAYER 1: Global IP cap (prevents abuse by rotating tokens)
+        ip_data = rate_limit_storage[f"ip:{client_ip}"]
+        ip_data["requests"] = [t for t in ip_data["requests"] if current_time - t < rate_window]
+        global_ip_limit = int(os.environ.get('RATE_LIMIT_GLOBAL_IP', 3000))  # High but finite
         
-        # Record this request
-        client_data["requests"].append(current_time)
+        if len(ip_data["requests"]) >= global_ip_limit:
+            logger.warning(f"Global IP rate limit exceeded for {client_ip}")
+            raise HTTPException(
+                status_code=429, 
+                detail="Too many requests from this IP. Please slow down.",
+                headers={
+                    "X-RateLimit-Limit": str(global_ip_limit),
+                    "X-RateLimit-Remaining": "0",
+                    "X-RateLimit-Reset": str(int(current_time + rate_window)),
+                    "Retry-After": str(rate_window)
+                }
+            )
+        ip_data["requests"].append(current_time)
         
-        # Login rate limiting DISABLED - causing issues during testing/deployment
-        # if '/login' in path:
-        #     login_window = int(os.environ.get('LOGIN_RATE_WINDOW_SECONDS', 300))
-        #     login_requests = [t for t in client_data["requests"] if current_time - t < login_window and '/login' in path]
-        #     
-        #     if len(login_requests) > int(os.environ.get('LOGIN_RATE_LIMIT', 5)):
-        #         logger.warning(f"Login rate limit exceeded for {client_ip}")
-        #         raise HTTPException(status_code=429, detail="Too many login attempts. Try again later.")
+        # LAYER 2: Per-user limit (IP + token combination)
+        auth_header = request.headers.get("Authorization", "")
+        auth_key = auth_header[-20:] if auth_header else ""  # Last 20 chars of token
+        rate_key = f"user:{client_ip}:{auth_key}" if auth_key else f"user:{client_ip}"
+        user_data = rate_limit_storage[rate_key]
+        user_data["requests"] = [t for t in user_data["requests"] if current_time - t < rate_window]
+        
+        per_user_limit = int(os.environ.get('RATE_LIMIT_REQUESTS', 1500))
+        remaining = max(0, per_user_limit - len(user_data["requests"]))
+        
+        if len(user_data["requests"]) >= per_user_limit:
+            logger.warning(f"Per-user rate limit exceeded for {rate_key[:30]}...")
+            raise HTTPException(
+                status_code=429, 
+                detail="Too many requests. Please slow down.",
+                headers={
+                    "X-RateLimit-Limit": str(per_user_limit),
+                    "X-RateLimit-Remaining": "0",
+                    "X-RateLimit-Reset": str(int(current_time + rate_window)),
+                    "Retry-After": str(rate_window)
+                }
+            )
+        user_data["requests"].append(current_time)
     
     # 3. PROCESS REQUEST
     response = await call_next(request)
     
-    # 4. ADD SECURITY HEADERS
+    # 4. ADD RATE LIMIT HEADERS (for debugging)
+    if os.environ.get('RATE_LIMIT_ENABLED', 'true').lower() == 'true':
+        response.headers["X-RateLimit-Limit"] = str(per_user_limit)
+        response.headers["X-RateLimit-Remaining"] = str(remaining - 1)
+    
+    # 5. ADD SECURITY HEADERS
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-XSS-Protection"] = "1; mode=block"
