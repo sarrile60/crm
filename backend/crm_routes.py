@@ -671,6 +671,11 @@ async def get_crm_leads(
     start_time = time.time()
     query_start = time.time()
     
+    # GUARDRAIL: Enforce safe pagination limits
+    limit = clamp_limit(limit)
+    offset = clamp_offset(offset)
+    sort = validate_sort_field(sort)
+    
     # Get data scope filter from permission engine (GUI-configured)
     scope_filter = await permission_engine.get_data_scope_filter(
         user_id=current_user["id"],
