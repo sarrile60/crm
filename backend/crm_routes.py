@@ -47,7 +47,26 @@ logger = logging.getLogger(__name__)
 # ============================================
 MAX_LIMIT = 200  # Maximum records per page for list endpoints
 MAX_IDS_PER_REQUEST = 500  # Maximum IDs for bulk operations
+MAX_QUERY_TIME_MS = 10000  # 10 second query timeout warning
+MAX_RESPONSE_ITEMS = 200  # Maximum items in any list response
 ALLOWED_SORT_FIELDS = ["created_at", "fullName", "status", "priority", "email", "phone", "amountLost", "team_id", "assigned_to"]
+
+# List projection fields - only return what's needed for list views
+LIST_PROJECTION = {
+    "_id": 0,
+    "id": 1,
+    "fullName": 1,
+    "email": 1,
+    "phone": 1,
+    "status": 1,
+    "priority": 1,
+    "assigned_to": 1,
+    "team_id": 1,
+    "created_at": 1,
+    "amountLost": 1,
+    "callback_date": 1,
+    "callback_notes": 1
+}
 
 def clamp_limit(limit: int, max_limit: int = MAX_LIMIT) -> int:
     """Clamp limit to safe range [1, max_limit]"""
@@ -62,6 +81,12 @@ def clamp_offset(offset: int) -> int:
 def validate_sort_field(sort: str) -> str:
     """Validate sort field against allowlist"""
     return sort if sort in ALLOWED_SORT_FIELDS else "created_at"
+
+def check_query_time(start_time: float, endpoint: str) -> None:
+    """Log warning if query takes too long"""
+    duration_ms = (time.time() - start_time) * 1000
+    if duration_ms > MAX_QUERY_TIME_MS:
+        logger.warning(f"[SLOW QUERY] {endpoint}: {duration_ms:.0f}ms (threshold: {MAX_QUERY_TIME_MS}ms)")
 
 def init_crm_db(database):
     global db, permission_engine
