@@ -280,7 +280,7 @@ async def login(credentials: UserLogin):
         "user": {
             "id": user["id"],
             "username": user["username"],
-            "full_name": user["full_name"],
+            "full_name": user.get("full_name", user.get("username", "")),
             "role": user["role"],
             "team_id": user.get("team_id")
         },
@@ -296,7 +296,7 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
     return {
         "id": current_user["id"],
         "username": current_user["username"],
-        "full_name": current_user["full_name"],
+        "full_name": current_user.get("full_name", current_user.get("username", "")),
         "role": current_user["role"],
         "team_id": current_user.get("team_id")
     }
