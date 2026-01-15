@@ -104,7 +104,6 @@
     "uploading": "Uploading...",
     "on": "on",
     "review": "Review",
-    "view": "View",
     "from": "From",
     "to": "To",
     "quickFilters": "Quick Filters"
@@ -119,7 +118,7 @@
     "loginError": "Invalid credentials",
     "sessionExpires": "Session expires at",
     "timeRemaining": "remaining",
-    "approvedSession": "\u26a0\ufe0f After-hours approved",
+    "approvedSession": "⚠️ After-hours approved",
     "crmPortal": "CRM Portal",
     "accessClientManagement": "Access the client management system",
     "adminNoExpiry": "Admin - No session expiry"
@@ -635,12 +634,12 @@
     "reminderDateRequired": "Please select a date and time for the reminder",
     "errorSettingReminder": "Error setting reminder",
     "errorClearingReminder": "Error clearing reminder",
-    "assignLead": "Assign Lead",
     "scheduleConflict": "SCHEDULE CONFLICT",
     "appointmentConflictMessage": "You already have an appointment at this time (including 15 min buffer):",
     "time": "Time",
     "chooseAnotherTime": "Choose another time to avoid overlaps.",
-    "callbacksScheduledInfo": "You have {{count}} callbacks already scheduled. The system will automatically notify you of conflicts."
+    "callbacksScheduledInfo": "You have {{count}} callbacks already scheduled. The system will automatically notify you of conflicts.",
+    "selectionCapped": "Selected {{selected}} of {{total}} leads (maximum selection limit reached)"
   },
   "admin": {
     "title": "Administration Panel",
@@ -1173,7 +1172,7 @@
     "legalInfo": "Legal Information",
     "companyType": "Type: Private Limited Company",
     "established": "Established: September 9, 2021",
-    "sicCode": "SIC Code: 69102 \u2013 Solicitors",
+    "sicCode": "SIC Code: 69102 – Solicitors",
     "availableInForm": "available in form"
   },
   "footer": {
@@ -1181,7 +1180,7 @@
     "legalInfo": "Legal Information",
     "companyType": "Type: Private Limited Company",
     "established": "Established: September 9, 2021",
-    "sicCode": "SIC Code: 69102 \u2013 Solicitors",
+    "sicCode": "SIC Code: 69102 – Solicitors",
     "recognisedBody": "Recognised Body Law Practice"
   },
   "messages": {
@@ -1251,7 +1250,7 @@
     "step3": "The initial consultation is <strong>completely free</strong> and without obligation",
     "backToHome": "Back to Home",
     "footerTagline": "Law firm specialized in fund recovery from financial fraud",
-    "copyright": "\u00a9 2024 1 Law Solicitors. All rights reserved."
+    "copyright": "© 2024 1 Law Solicitors. All rights reserved."
   },
   "permissions": {
     "title": "Permission Matrix",
@@ -1324,7 +1323,7 @@
     "ctaClicks": "CTA Clicks",
     "clicksOnCtaButtons": "Clicks on CTA buttons",
     "conversionRate": "Conversion Rate",
-    "formStartsToLeads": "Form starts \u2192 Completed leads",
+    "formStartsToLeads": "Form starts → Completed leads",
     "amountLost": "Amount Lost",
     "caseDescription": "Case Description"
   },
