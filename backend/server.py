@@ -143,18 +143,28 @@ async def security_middleware(request: Request, call_next):
         logger.warning(f"Blocked access to sensitive path: {path} from {client_ip}")
         raise HTTPException(status_code=404, detail="Not found")
     
-    # 2. RATE LIMITING (Application Level)
+    # 2. RATE LIMITING (Application Level) - Per-IP + Per-User
+    # In Kubernetes/proxy environments, all requests may come from same proxy IP
+    # So we also track by Authorization header to avoid false positives
     if os.environ.get('RATE_LIMIT_ENABLED', 'true').lower() == 'true':
-        client_data = rate_limit_storage[client_ip]
+        # Use Authorization token hash as secondary key (for authenticated requests)
+        auth_header = request.headers.get("Authorization", "")
+        auth_key = auth_header[-20:] if auth_header else ""  # Last 20 chars of token as key
+        
+        # Combined key: IP + partial auth token (prevents false positives from proxy)
+        rate_key = f"{client_ip}:{auth_key}" if auth_key else client_ip
+        client_data = rate_limit_storage[rate_key]
         
         # Clean old requests (older than window)
         rate_window = int(os.environ.get('RATE_LIMIT_WINDOW_SECONDS', 60))
         client_data["requests"] = [t for t in client_data["requests"] if current_time - t < rate_window]
         
-        # Check if rate limit exceeded (increased from 100 to 300 for multiple agents)
-        max_requests = int(os.environ.get('RATE_LIMIT_REQUESTS', 300))
+        # Higher limit for production multi-agent usage
+        # 10 agents * 15 req/s each = 150 req/s, with buffer = 1000/60s per user
+        max_requests = int(os.environ.get('RATE_LIMIT_REQUESTS', 1000))
         if len(client_data["requests"]) >= max_requests:
-            logger.warning(f"Rate limit exceeded for {client_ip}")
+            logger.warning(f"Rate limit exceeded for {rate_key[:20]}...")
+            # Return 429 (not 500) so frontend can retry
             raise HTTPException(status_code=429, detail="Too many requests. Please slow down.")
         
         # Record this request
