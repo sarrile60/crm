@@ -282,6 +282,75 @@ async def logging_middleware(request: Request, call_next):
         )
 
 # ============================================
+# GLOBAL EXCEPTION HANDLERS
+# ============================================
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """Handle HTTP exceptions with consistent JSON format"""
+    request_id = getattr(request.state, 'request_id', generate_request_id())
+    log_structured("warning", request_id,
+        method=request.method,
+        path=request.url.path,
+        status=exc.status_code,
+        error=str(exc.detail)
+    )
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "request_id": request_id,
+            "error_code": f"HTTP_{exc.status_code}",
+            "message": str(exc.detail)
+        },
+        headers={"X-Request-Id": request_id}
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Handle validation errors with consistent JSON format"""
+    request_id = getattr(request.state, 'request_id', generate_request_id())
+    log_structured("warning", request_id,
+        method=request.method,
+        path=request.url.path,
+        status=422,
+        error="Validation error",
+        details=str(exc.errors())[:200]  # Truncate for safety
+    )
+    return JSONResponse(
+        status_code=422,
+        content={
+            "request_id": request_id,
+            "error_code": "VALIDATION_ERROR",
+            "message": "Invalid request data",
+            "details": exc.errors()
+        },
+        headers={"X-Request-Id": request_id}
+    )
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """Handle unexpected exceptions"""
+    request_id = getattr(request.state, 'request_id', generate_request_id())
+    log_structured("error", request_id,
+        method=request.method,
+        path=request.url.path,
+        status=500,
+        error=str(exc),
+        stack_trace=traceback.format_exc()
+    )
+    return JSONResponse(
+        status_code=500,
+        content={
+            "request_id": request_id,
+            "error_code": "INTERNAL_ERROR",
+            "message": "An unexpected error occurred"
+        },
+        headers={"X-Request-Id": request_id}
+    )
+
+# ============================================
 # HELPER FUNCTIONS
 # ============================================
 
