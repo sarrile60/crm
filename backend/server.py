@@ -195,10 +195,13 @@ async def security_middleware(request: Request, call_next):
     # 3. PROCESS REQUEST
     response = await call_next(request)
     
-    # 4. ADD RATE LIMIT HEADERS (for debugging)
+    # 4. ADD RATE LIMIT HEADERS (for debugging) - only if rate limiting is enabled
     if os.environ.get('RATE_LIMIT_ENABLED', 'true').lower() == 'true':
-        response.headers["X-RateLimit-Limit"] = str(per_user_limit)
-        response.headers["X-RateLimit-Remaining"] = str(remaining - 1)
+        try:
+            response.headers["X-RateLimit-Limit"] = str(per_user_limit)
+            response.headers["X-RateLimit-Remaining"] = str(max(0, remaining - 1))
+        except NameError:
+            pass  # Variables not defined if rate limiting path wasn't taken
     
     # 5. ADD SECURITY HEADERS
     response.headers["X-Frame-Options"] = "DENY"
