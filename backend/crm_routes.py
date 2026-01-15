@@ -42,6 +42,27 @@ permission_engine: PermissionEngine = None
 # Logger
 logger = logging.getLogger(__name__)
 
+# ============================================
+# API GUARDRAILS - Prevent server overload
+# ============================================
+MAX_LIMIT = 200  # Maximum records per page for list endpoints
+MAX_IDS_PER_REQUEST = 500  # Maximum IDs for bulk operations
+ALLOWED_SORT_FIELDS = ["created_at", "fullName", "status", "priority", "email", "phone", "amountLost", "team_id", "assigned_to"]
+
+def clamp_limit(limit: int, max_limit: int = MAX_LIMIT) -> int:
+    """Clamp limit to safe range [1, max_limit]"""
+    if limit < 1:
+        return 50  # default
+    return min(limit, max_limit)
+
+def clamp_offset(offset: int) -> int:
+    """Ensure offset is non-negative"""
+    return max(0, offset)
+
+def validate_sort_field(sort: str) -> str:
+    """Validate sort field against allowlist"""
+    return sort if sort in ALLOWED_SORT_FIELDS else "created_at"
+
 def init_crm_db(database):
     global db, permission_engine
     init_session_settings_db(database)  # Initialize session settings
