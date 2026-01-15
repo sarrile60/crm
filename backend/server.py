@@ -239,7 +239,6 @@ async def logging_middleware(request: Request, call_next):
         # Log structured request info (no PII)
         if not is_sensitive:
             log_data = {
-                "request_id": request_id,
                 "method": method,
                 "path": path,
                 "status": response.status_code,
