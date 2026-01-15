@@ -483,12 +483,30 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       if (!token) return;
       const headers = { Authorization: `Bearer ${token}` };
 
-      // Fetch leads - use high limit to get all potential callbacks
-      const leadsRes = await axios.get(`${API}/crm/leads`, { 
-        headers,
-        params: { limit: 10000 }
-      });
-      const allLeads = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
+      // FIXED: Use safe pagination limit instead of fetching all leads
+      // Only fetch leads that have callback_date set (server filters by user permissions)
+      // We paginate through to collect callbacks - max 200 per page
+      const allLeads = [];
+      let offset = 0;
+      const pageSize = 200;
+      let hasMore = true;
+      
+      while (hasMore && offset < 1000) { // Safety cap: max 1000 leads checked
+        const leadsRes = await axios.get(`${API}/crm/leads`, { 
+          headers,
+          params: { limit: pageSize, offset }
+        });
+        const pageData = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
+        
+        // Only keep leads with callback_date for efficiency
+        const leadsWithCallbacks = pageData.filter(lead => lead.callback_date);
+        allLeads.push(...leadsWithCallbacks);
+        
+        // Check if we need more pages
+        const total = leadsRes.data.total || pageData.length;
+        offset += pageSize;
+        hasMore = pageData.length === pageSize && offset < total;
+      }
       
       const now = new Date();
       const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
