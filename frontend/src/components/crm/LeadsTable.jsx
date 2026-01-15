@@ -562,21 +562,39 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      // Build query params with same filters but NO pagination (fetch all)
-      const queryParams = {
-        limit: 50000, // High limit to get all leads
-        offset: 0,
+      // FIXED: Use safe pagination to fetch leads for export
+      // Fetch in batches of 200 (server MAX_LIMIT) instead of one giant request
+      const allLeads = [];
+      let offset = 0;
+      const pageSize = 200;
+      let hasMore = true;
+      
+      // Build base query params with same filters
+      const baseParams = {
         sort: 'created_at',
         order: 'desc'
       };
-      if (filters.status) queryParams.status = filters.status;
-      if (filters.search) queryParams.search = filters.search;
+      if (filters.status) baseParams.status = filters.status;
+      if (filters.search) baseParams.search = filters.search;
       if (filters.assigned_to && filters.assigned_to.length > 0) {
-        queryParams.assigned_to = filters.assigned_to.join(',');
+        baseParams.assigned_to = filters.assigned_to.join(',');
       }
-
-      const response = await axios.get(`${API}/crm/leads`, { headers, params: queryParams });
-      const allLeads = Array.isArray(response.data) ? response.data : (response.data.data || []);
+      
+      while (hasMore) {
+        const response = await axios.get(`${API}/crm/leads`, { 
+          headers, 
+          params: { ...baseParams, limit: pageSize, offset } 
+        });
+        const pageData = Array.isArray(response.data) ? response.data : (response.data.data || []);
+        allLeads.push(...pageData);
+        
+        const total = response.data.total || pageData.length;
+        offset += pageSize;
+        hasMore = pageData.length === pageSize && offset < total;
+        
+        // Safety cap to prevent infinite loops
+        if (offset > 10000) break;
+      }
 
       if (allLeads.length === 0) {
         toast.error(t('crm.noLeadsToExport'));
