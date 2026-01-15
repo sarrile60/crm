@@ -846,7 +846,6 @@ async def select_all_leads(
         "total": total_count,
         "capped": total_count > MAX_IDS_PER_REQUEST
     }
-    }
 
 @crm_router.get("/leads/{lead_id}")
 async def get_lead_detail(lead_id: str, current_user: dict = Depends(get_current_user)):
