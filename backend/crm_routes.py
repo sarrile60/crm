@@ -790,7 +790,7 @@ async def select_all_leads(
 ):
     """
     Server-side 'Select All' - returns IDs of all leads matching current filters
-    This prevents having to load thousands of IDs in the client
+    GUARDRAIL: Capped at MAX_IDS_PER_REQUEST to prevent server overload
     """
     # Build same query as list endpoint
     scope_filter = await permission_engine.get_data_scope_filter(
@@ -828,26 +828,24 @@ async def select_all_leads(
             {"scammerCompany": {"$regex": search, "$options": "i"}}
         ]
     
+    # Get total count first
+    total_count = await db.leads.count_documents(query)
+    
+    # GUARDRAIL: Cap IDs returned to prevent overload
+    capped_limit = min(total_count, MAX_IDS_PER_REQUEST)
+    
     # Fetch only IDs (minimal payload)
-    lead_ids = await db.leads.find(query, {"_id": 0, "id": 1}).to_list(10000)
+    lead_ids = await db.leads.find(query, {"_id": 0, "id": 1}).to_list(capped_limit)
     ids = [lead["id"] for lead in lead_ids]
     
-    logger.info(f"[API] SELECT ALL: {len(ids)} lead IDs returned")
+    logger.info(f"[API] SELECT ALL: {len(ids)} lead IDs returned (total: {total_count}, capped: {capped_limit})")
     
     return {
         "lead_ids": ids,
-        "count": len(ids)
+        "count": len(ids),
+        "total": total_count,
+        "capped": total_count > MAX_IDS_PER_REQUEST
     }
-
-    payload_size_estimate = len(processed_leads) * 500  # ~500 bytes per lead estimate
-    logger.info(f"[API] GET /crm/leads: {total_time:.2f}ms | ~{payload_size_estimate/1024:.2f}KB payload | {len(processed_leads)} leads")
-    
-    # Return paginated response
-    return {
-        "data": processed_leads,
-        "total": total,
-        "limit": limit,
-        "offset": offset
     }
 
 @crm_router.get("/leads/{lead_id}")
