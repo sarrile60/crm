@@ -80,13 +80,35 @@ app = FastAPI(
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
-# Configure logging
+# Configure logging - JSON structured format for production
 LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
 logging.basicConfig(
     level=getattr(logging, LOG_LEVEL),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# ============================================
+# REQUEST CORRELATION + STRUCTURED LOGGING
+# ============================================
+import uuid
+import json as json_lib
+import traceback
+from starlette.responses import JSONResponse
+
+def generate_request_id():
+    """Generate unique request ID"""
+    return str(uuid.uuid4())[:8]  # Short ID for readability
+
+def log_structured(level: str, request_id: str, **kwargs):
+    """Log structured JSON (no PII)"""
+    log_data = {"request_id": request_id, **kwargs}
+    # Remove any potential PII
+    for key in ["password", "token", "secret", "credential", "email"]:
+        if key in log_data:
+            log_data[key] = "[REDACTED]"
+    log_msg = json_lib.dumps(log_data)
+    getattr(logger, level.lower(), logger.info)(log_msg)
 
 # ============================================
 # SECURITY MIDDLEWARE (EMERGENT-COMPATIBLE)
