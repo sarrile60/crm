@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
+import { getWithRetry } from '../utils/apiRetry';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -10,7 +11,7 @@ const getAuthHeaders = () => ({
 });
 
 /**
- * Hook to fetch leads with React Query caching
+ * Hook to fetch leads with React Query caching and automatic retry
  */
 export function useLeads({ page = 1, pageSize = 200, filters = {}, sort = 'created_at', order = 'desc' }) {
   return useQuery({
@@ -25,7 +26,8 @@ export function useLeads({ page = 1, pageSize = 200, filters = {}, sort = 'creat
         ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
       };
       
-      const response = await axios.get(`${API}/crm/leads`, {
+      // Use retry-enabled GET for resilience under load
+      const response = await getWithRetry(`${API}/crm/leads`, {
         headers: getAuthHeaders(),
         params
       });
@@ -39,6 +41,8 @@ export function useLeads({ page = 1, pageSize = 200, filters = {}, sort = 'creat
     keepPreviousData: true, // Keep showing previous data while fetching new page
     staleTime: 60 * 1000, // 60 seconds
     cacheTime: 30 * 60 * 1000, // 30 minutes
+    retry: 2, // React Query retry (in addition to our retry utility)
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 5000),
   });
 }
 
