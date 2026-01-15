@@ -1,59 +1,76 @@
 <analysis>**original_problem_statement:**
-The user's initial request was for a Deposit Management System, which evolved into a full-fledged CRM.
+The initial goal was to build a Deposit Management System, which evolved into a full-fledged CRM.
 
-In this session, the user's primary goal was to complete the sortable table headers feature for the leads table. After this was completed, several new bugs were reported and addressed:
-1.  **UI Bug:** After implementing sorting, clicking on a column header would cause the header's text to disappear (e.g., Date or Name would go blank).
-2.  **Financial Dashboard Bug:** The financial overview dashboard showed 0€ revenue when filtering by a specific agent, even though the agent had approved deposits. The All Agents view was correct.
-3.  **Click-to-Call Failure:** The Click-to-Call feature was failing with AMI authentication failed or Connection timed out errors, specifically in the deployed production environment, while it intermittently worked in preview. This became the main focus of the session.
+In this session, the user reported several issues and new requirements:
+1.  A visual bug in the chat widget where an agent's name showed as Unknown User on the first click.
+2.  A new feature request to restrict agent-to-agent chat, allowing them to only chat with their team supervisor and admins.
+3.  A bug where real-time chat notifications (sound and visual toast) were not working for agents.
+4.  A critical bug where the production deployment on the custom domain () showed a blank page or an Error loading data message.
+5.  A major concern about the application's stability and performance when 7+ agents are using it concurrently.
+
+The user's final request was to act as a Senior CRM Developer and follow a very specific, multi-step plan to methodically diagnose and fix the production instability issues.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a functional CRM. In this session, the sortable column headers feature for the leads table was successfully implemented and tested. A subsequent UI bug causing header text to disappear was also fixed by removing CSS transitions and using inline styles. A critical bug in the financial dashboard that prevented correct data display when filtering by agent has been resolved and verified. The primary remaining issue is an external configuration problem with the Click-to-Call feature.
+The application is a CRM with features for lead management, user management, and an internal chat system. In this session, the agent fixed several bugs related to the chat functionality, including a race condition causing Unknown User to display, and implemented a real-time notification system with unread badges and toast popups. Role-based access controls were added to the chat to prevent agents from messaging each other.
+
+Crucially, the agent also addressed production deployment issues by correcting environment variables and CORS settings. Significant performance optimizations were implemented, including adding over 25 database indexes, implementing caching for visibility rules, and tuning connection pooling and rate limits. Local concurrency tests now pass for up to 30 simultaneous users. However, the user reports that the production environment still fails under a load of 7+ agents. The last user message provided a detailed, structured plan to debug this production-specific issue.
 
 **Last working item**:
--   Last item agent was working: Fixing the Click-to-Call feature. The agent successfully diagnosed that the root cause is not an authentication failure within the app, but an IP-based firewall block on the user's external FreePBX server. The server's IP addresses (for both preview and production) were not on the  list in .
--   Status: IN PROGRESS
--   Agent Testing Done: Y
--   Which testing method agent to use? The user must perform the final test. The agent has provided the user with the exact commands to run on their PBX server to resolve the issue. The next step is for the user to confirm if the fix works.
+-   Last item agent was working: The agent had just received and acknowledged a comprehensive, multi-step diagnostic plan from the user (acting as a Senior CRM Developer) to systematically find and fix the root cause of the API instability and  errors happening in the production environment under load.
+-   Status: NOT STARTED
+-   Agent Testing Done: N
+-   Which testing method agent to use? The user has mandated a specific, multi-step debugging and testing plan. This involves using logs, reproducing errors, and running load tests.
 -   User Testing Done: N
 
 **All Pending/In progress Issue list**:
--   Issue 1: Click-to-Call feature is blocked by external FreePBX configuration. (P0)
--   Issue 2: CSV import fails due to mismatched column headers. (P1)
+-   Issue 1: Production API instability under load (P0)
+-   Issue 2: Click-to-Call feature blocked by external FreePBX configuration (P1)
+-   Issue 3: CSV import fails due to mismatched column headers (P2)
 
 Issues Detail:
--   **Issue 1: Click-to-Call feature is blocked by external FreePBX configuration.**
-    -   **Attempted fixes:** The agent went through an extensive debugging process, including: adding  to , adding multiple debug and test endpoints (, , ) to diagnose the environment, and temporarily hardcoding AMI credentials into the application to rule out environment variable issues.
-    -   **Next debug checklist:** The issue has been diagnosed. The agent must guide the user to perform the following actions on their FreePBX server:
-        1.  SSH into the PBX server and edit the Asterisk manager configuration file: .
-        2.  Locate the  user section.
-        3.  Change the  line to . This will whitelist connections from any IP, preventing the issue from recurring when the CRM server IP changes.
-        4.  Save the file and reload the Asterisk manager configuration with the command: .
-        5.  Ask the user to test the Click-to-Call feature from the production URL.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a critical feature for the CRM. Fixing it will allow agents to initiate calls directly from the application.
-    -   **Status:** IN PROGRESS (Blocked on user action)
+-   **Issue 1: Production API instability under load**
+    -   **Description:** The production environment on the custom domain () shows an Error loading data message when 7+ agents are using the application concurrently. This is caused by the backend returning  on multiple endpoints (, , etc.), especially when a large limit () is requested.
+    -   **Attempted fixes:** The agent has already implemented significant performance optimizations: added comprehensive database indexes, cached visibility rules, configured DB connection pooling, increased API rate limits, and optimized frontend polling intervals. Local concurrency tests now pass. However, the production issue persists. The user also reported an SSL handshake failure when the agent tried to  the production domain.
+    -   **Next debug checklist:** **The user has provided a mandatory, detailed plan.** The next agent MUST follow these steps precisely:
+        1.  **STEP 0 (Safety/Repro Setup):** Confirm production vs. preview environment differences (DB URI, API URL, secrets, CORS).
+        2.  **STEP 1 (Find The Real Error):** For each endpoint that returns a 500 error, find the full stack trace in the server logs. If logs are insufficient, implement structured logging with request correlation IDs.
+        3.  **STEP 2 (Fix ):**
+            -   **Backend:** Add a  constant (e.g., 100) and clamp the  query parameter to this value. Validate all query parameters.
+            -   **Frontend:** Find where the  call is made (likely an export or select all feature) and replace it with proper pagination.
+        4.  **STEP 3 (Database Performance):** Based on stack traces, verify that the DB connection is a reused singleton (already done, but verify), all necessary indexes are present in production, and queries use projection to limit returned fields.
+        5.  **STEP 4 (Fix Other 500s):** For other failing endpoints (session-check, users, teams), defensively check for missing env vars, missing DB records, and handle errors gracefully instead of crashing.
+        6.  **STEP 5 (Verify with Load):** Retest with 10 agents logging in and opening the Leads page within 30 seconds, confirming no 500 errors.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a critical P0 production blocker. Fixing it will make the CRM stable and usable for the user's entire team.
+    -   **Status:** NOT STARTED (on the new detailed plan)
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** User needs to test the end-to-end functionality.
+    -   **Should Test frontend/backend/both after fix?** Both, using a concurrency test as specified by the user.
     -   **Blocked on other issue:** None.
--   **Issue 2: CSV import fails due to mismatched column headers.**
-    -   **Attempted fixes:** None in this session. This was deferred by the user.
-    -   **Next debug checklist:**
-        1.  Modify the frontend CSV parsing logic in  to map headers from the user's format (, ) to the backend's expected format (, ).
-        2.  Alternatively, update the backend endpoint  in  to accept multiple possible header names for each field.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a critical feature for user adoption, allowing them to migrate data from their old CRM.
+-   **Issue 2: Click-to-Call feature is blocked by external FreePBX configuration.**
+    -   **Description:** From a previous session. The feature fails due to an IP-based firewall block on the user's external FreePBX server. The CRM server IP address is not whitelisted.
+    -   **Next debug checklist:** Guide the user to edit  on their PBX server and set  to resolve this permanently.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a core CRM feature for agents.
+    -   **Status:** BLOCKED (on user action)
+    -   **Is recurring issue?** Y
+    -   **Should Test frontend/backend/both after fix?** User must test end-to-end.
+    -   **Blocked on other issue:** None.
+-   **Issue 3: CSV import fails due to mismatched column headers.**
+    -   **Description:** From a previous session, deferred by the user. The import expects headers like  but the user's file has .
+    -   **Next debug checklist:** Update frontend parsing logic () or backend endpoint () to handle header variations.
+    -   **Why fix this issue and what will be achieved with the fix?** Allows users to migrate data from their old CRM.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** Frontend testing agent to simulate a file upload.
-    -   **Blocked on other issue:** None
+    -   **Blocked on other issue:** None.
 
 **In progress Task List**:
 -   None.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
-    -   **(P2)** Remove the hardcoded AMI credentials from  and revert to using environment variables, now that the root cause is understood.
-    -   **(P2)** Remove Reports from the Entity Configuration in the Admin Panel, as the feature is not implemented.
+    -   **(P2)** Remove the hardcoded AMI credentials from  and revert to using environment variables.
+    -   **(P2)** Remove Reports from the Entity Configuration in the Admin Panel.
     -   **(P2)** Add Italian translations for the expense management UI in .
 -   **Future Tasks:**
     -   **(P3)** Add a soft-delete feature for leads.
@@ -61,104 +78,116 @@ Issues Detail:
     -   **(P3)** Refactor  (~1000+ lines).
 
 **Completed work in this session**
--   **Sortable Leads Table (DONE):**
-    -   Implemented server-side sorting for the leads table by updating .
-    -   Added UI elements and state management to  to trigger sorting.
-    -   Fully tested with the testing agent.
--   **UI Bugfix (DONE):**
-    -   Fixed a CSS rendering bug where column header text would disappear upon being clicked for sorting. The fix involved removing  from .
--   **Financial Dashboard Bugfix (DONE):**
-    -   Fixed a bug in  where filtering by a specific agent resulted in 0€ revenue. The query was corrected to filter by  instead of .
-    -   Fully tested with the testing agent.
+-   **Chat Unknown User Bug (DONE):** Fixed a race condition in  by ensuring participant details are populated in the backend  response.
+-   **Role-Based Chat Restrictions (DONE):** Modified  and  to prevent agents from seeing or chatting with other agents. They can only see supervisors and admins.
+-   **Real-time Chat Notifications (DONE):** Fixed and verified the real-time notification system. The fix involved debugging the polling logic, ensuring toast notifications appear (), and adding correct translations. Unread message badge counts now update correctly.
+-   **Production Blank Page Fix (DONE):** Diagnosed and fixed the blank page on the custom domain by setting the correct  in  and ensuring  was enabled in .
+-   **Production Concurrency & Performance Optimization (DONE):**
+    -   Added over 25 database indexes across all major collections (, , , etc.).
+    -   Implemented a 60-second cache for user visibility rules in  to reduce database load.
+    -   Configured MongoDB connection pooling ().
+    -   Increased API rate limits to .
+    -   Optimized frontend polling intervals to reduce server load.
+    -   Verified locally that the application can handle 30+ concurrent agents.
+-   **User Password Reset (DONE):** Restored the password for the user 'nicolo' to '123' after it was changed during testing.
 
 **Earlier issues found/mentioned but not fixed**
--   The FreePBX Dialplan Configuration issue from the previous handoff is the same as the active Click-to-Call issue, which is now properly diagnosed as an IP whitelist problem.
+-   See All Pending/In progress Issue list.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence in previous fork:** External dependency configuration (FreePBX).
 -   **Recurrence count:** High.
--   **Status:** IN PROGRESS. The issue of the preview server IP changing and breaking the connection recurred in this session and was a key part of the final diagnosis. The proposed fix () is intended to resolve this recurrence permanently.
+-   **Status:** IN PROGRESS (Blocked on user action). The proposed fix of whitelisting all IPs () is intended to solve this permanently.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **External Service Debugging:** The session was dominated by debugging a complex external service issue (FreePBX). The agent effectively used , created custom debug endpoints (), and analyzed user-provided logs to isolate the problem, moving from incorrect hypotheses (auth) to the correct one (firewall/IP block).
--   **Production vs. Preview Environments:** A key challenge was diagnosing a bug that only appeared in production. This led to the discovery that preview and production environments have different, non-static IP addresses, which was the root cause of the FreePBX connection failure.
--   **CSS Rendering Bugs:** The agent diagnosed and fixed a subtle rendering glitch in React caused by a  class interfering with dynamic background color changes during state updates.
+-   **Production Debugging:** Diagnosing issues specific to a production environment vs. preview, including CORS, environment variables, and SSL failures.
+-   **Concurrency & Performance Tuning:** Systematically improving application stability under load by adding database indexes, implementing caching (), configuring connection pooling (), adjusting API rate limits, and optimizing frontend polling intervals.
+-   **Load Testing:** Using scripts to simulate concurrent user activity to find breaking points and verify fixes.
+-   **Real-time UI:** Implementing and debugging a frontend polling mechanism () to create real-time features like chat notifications and unread message badges.
+-   **API Guardrails:** The concept of adding server-side validation (e.g., max limit for pagination) to prevent harmful client requests.
 
 **key DB schema**
--   No schema changes in this session.
+-   **Indexes Added:** Over 25 new indexes were created across the following collections to improve query performance under load: , , , , , , , and . This includes single-field and compound indexes.
 
 **changes in tech stack**
--   None.
+-    library was added to the backend for implementing the visibility rules cache.
+-    was installed for running the concurrency test script.
 
 **All files of reference**
--   : Heavily modified. Updated the  endpoint for sorting. Added multiple debug endpoints for the AMI issue (, , ). Temporarily hardcoded AMI credentials.
--   : Heavily modified to fix the disappearing header bug by removing  and using inline styles for dynamic backgrounds.
--   : Updated the  endpoint to correctly filter deposits by .
--   : Updated to use  to prevent local  files from overriding production environment variables.
+-   : Modified to add caching with  for the  function.
+-   : Modified to add  to the Motor client, add a  endpoint, and manage CORS settings.
+-   : Heavily modified to fix multiple bugs and implement the real-time notification system (polling, toasts, sounds).
+-   : Modified to fix the Unknown User bug and implement role-based access controls for agents.
+-   : Modified to adjust  format, set , and configure rate limiting.
+-   : Modified to set  to the user's custom production domain.
+-   : Modified to increase polling intervals.
+-    & : Modified to add the  translation key.
 
 **Areas that need refactoring**:
--   ****: The hardcoded AMI credentials must be removed and replaced with environment variable lookups once the user's external configuration is stable.
--   ****: Still a very large component that needs to be broken down.
+-   ****: Remains a very large component (+2100 lines).
+-   ****: Remains a large component (+1000 lines).
 
 **key api endpoints**
--   : **MODIFIED** to support sorting on multiple new fields.
--   : **MODIFIED** to fix the agent filtering logic.
--   : **MODIFIED** to hardcode AMI credentials as a temporary fix.
--   : **NEW** public endpoint to test AMI connectivity and check the server's outbound IP.
--   : **NEW** auth-protected endpoint to test AMI connectivity.
+-   : **HEAVILY ANALYZED**. This is the primary endpoint failing under load. It is paginated but was being called with an unsafe limit ().
+-   : **MODIFIED** to filter users based on the agent's role.
+-   : **MODIFIED** to populate participant data to fix a UI bug and to block agents from creating chats with other agents.
+-   : **ANALYZED** for real-time notification debugging.
+-   : **NEW** endpoint added to  to diagnose production environment health (DB connection, CORS, etc.).
+-   Other endpoints failing under load: , , , , .
 
 **Critical Info for New Agent**
--   Your immediate task is to guide the user to fix their external FreePBX configuration, which is blocking the Click-to-Call feature. The issue is **not** an authentication failure; it is an IP whitelist issue.
--   **Solution:** The user must edit  on their PBX server and set  for the  user. This allows connections from any IP, which is necessary because the preview and production server IPs are dynamic.
--   The AMI credentials have been **temporarily hardcoded** in  to eliminate them as a variable during debugging. Once the Click-to-Call feature is confirmed working, you should create a task to revert this and use environment variables again.
--   The user has been very frustrated by this issue. Be clear, concise, and focus on the single, confirmed solution.
+-   **Your primary task is to follow the user's explicit, multi-step plan from the last message to stabilize the production environment.** The user is acting as a Senior CRM Developer and has laid out a precise debugging methodology. Do not deviate from this plan.
+-   The core issue is API instability ( errors) in the **production environment** when 7+ agents are active. While extensive local performance tuning has been done, the problem persists in production, pointing to an environment-specific issue (DB limits, proxy timeouts, or missing indexes in production).
+-   Do not assume local fixes are live in production. The user needs to re-deploy after your changes.
+-   The call to  is a smoking gun that must be fixed on both the frontend (find the source of the call) and backend (enforce a max limit).
+-   The SSL handshake failure () observed via  is a strong indicator of an infrastructure-level issue with the custom domain's configuration, which may be the ultimate root cause. However, you must first execute the user's requested code-level debugging plan.
 
 **documents and test reports created in this job**
--    (updated)
+-    (updated multiple times)
+-   
+-   
 -   
 -   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Reports the frontend is broken. (Status: **RESOLVED**)
-2.  **User:** Asks how to fix the PBX config if they can't save it. (Status: **RESOLVED**, agent suggested )
-3.  **User:** Confirms the  line is wrong and asks how to allow all IPs. (Status: **RESOLVED**, agent provided correct syntax)
-4.  **User:** Asks for the current server IP. (Status: **RESOLVED**, agent provided the new preview IP and explained why allowing all is better)
-5.  **User:** Asks what the new IP  is. (Status: **RESOLVED**, agent explained it's the new preview IP)
-6.  **User:** Asks why AMI is not working if it's an authentication issue. (Status: **RESOLVED**, agent explained it's an IP block disguised as an auth failure)
-7.  **User:** Asks if a forked session will still be deployed. (Status: **RESOLVED**, agent confirmed deployment is separate)
-8.  **User:** Asks to speak with the deployment agent. (Status: **ADDRESSED**, agent explained the deployment agent can't find the IP)
-9.  **User:** Provides the output of the  endpoint, showing  on preview and No authorization header on production, proving deployment hasn't finished and the IP whitelist is the issue. (Status: **PENDING ACTION**)
-10. **User:** Asks what commands to run on the console to check logs. (Status: **RESOLVED**)
+1.  **User:** Asks how to check the  endpoint. (Status: **RESOLVED**, agent checked it and found it wasn't deployed yet).
+2.  **User:** Reports error loading data again when 7+ agents are logged in. (Status: **IN PROGRESS**, this is the main P0 issue).
+3.  **User:** Asks if the previous performance work was the reason for the error loading data message. (Status: **ADDRESSED**, agent explained the 500 error is different from performance slowdowns).
+4.  **User:** Asks a series of deep diagnostic questions about the application's architecture and behavior under load. (Status: **ADDRESSED**, agent investigated and answered each one).
+5.  **User:** Instructs the agent to unlock SENIOR proffesSional CRM developer MODE. (Status: **ADDRESSED**, agent confirmed).
+6.  **User:** Provides a very detailed, multi-step engineering plan to find and fix the production stability issues. (Status: **PENDING ACTION**, this is the new primary task).
+7.  **User:** Reports a blank page on the custom domain. (Status: **RESOLVED**, agent fixed  and CORS).
+8.  **User:** Asks what about the domain?. (Status: **RESOLVED**, agent updated ).
+9.  **User:** Asks to call the deployer agent and run a health check. (Status: **RESOLVED**, agent did this multiple times, found and fixed blockers).
+10. **User:** Reports that real-time messages are still not working as expected. (Status: **RESOLVED**, agent did extensive debugging and fixed the toast notification system).
 
 **Project Health Check:**
 -   **Broken:**
-    -   Click-to-Call feature.
-    -   CSV Lead Import.
+    -   Production deployment under concurrent load (7+ agents).
 -   **Mocked:** None.
 -   **Blocked:**
-    -   The Click-to-Call feature is blocked pending the user's external FreePBX server configuration.
+    -   Click-to-Call feature (pending user action on their external FreePBX server).
 
 **3rd Party Integrations**
--   **FreePBX / Asterisk:** Connects via Asterisk Manager Interface (AMI) for the Click-to-Call feature. This is the source of the main ongoing issue.
+-   **FreePBX / Asterisk:** For Click-to-Call. Connection is currently blocked by the user's firewall.
 -   **xlsx (sheetjs):** For parsing Excel/CSV files on the frontend.
 -   **react-i18next:** For internationalization.
+-   **sonner:** For toast notifications.
 
 **Testing status**
--   Testing agent used after significant changes: YES. Used for sortable headers and the financial dashboard fix.
+-   Testing agent used after significant changes: YES. Used multiple times to verify chat fixes and notification systems.
 -   Troubleshoot agent used after agent stuck in loop: NO.
--   Test files created:
-    -    (created by testing agent)
-    -    (created by testing agent)
--   Known regressions: None.
+-   Test files created: New tests were added by the testing agent in  for chat features and real-time notifications.
+-   Known regressions: None identified, but the production environment is unstable under load.
 
 **Credentials to test flow:**
--   **Preview/Production Admin:**  / 
+-   **Admin:**  / 
 -   **Supervisor:**  / 
--   **AMI User (on FreePBX):**  /  (This is hardcoded in )
+-   **Agent (active):**  / 
+-   **Agent (active):**  / 
 
 **What agent forgot to execute**
--   The agent correctly deferred the CSV import task based on the user's explicit instructions.
--   A follow-up task should be created to remove the hardcoded AMI credentials from the codebase after the external configuration is fixed and verified.</analysis>
+-   The agent has not forgotten any tasks. The final user message provided a new, comprehensive plan that overrides previous priorities. The next agent's sole focus should be on executing this new plan.</analysis>

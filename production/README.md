@@ -111,10 +111,10 @@ bash scripts/start_backend.sh &
 curl http://127.0.0.1:8001/health
 
 # Frontend
-curl -I https://dialerfix-crm.preview.emergentagent.com/
+curl -I https://onelaw-crm.preview.emergentagent.com/
 
 # Admin login
-curl -X POST https://dialerfix-crm.preview.emergentagent.com/api/admin/login \
+curl -X POST https://onelaw-crm.preview.emergentagent.com/api/admin/login \
   -H "Content-Type: application/json" \
   -d '{"username":"crm_admin_1cacbbfa","password":"SZNBgcmU61#rlNgVsFhHCrzb&D6RFhTyJpjUIoCP"}'
 ```
@@ -303,7 +303,7 @@ curl http://127.0.0.1:8001/health
 ### Performance Metrics
 ```bash
 # Response time test
-time curl -s https://dialerfix-crm.preview.emergentagent.com/health > /dev/null
+time curl -s https://onelaw-crm.preview.emergentagent.com/health > /dev/null
 
 # Should be < 200ms
 ```
@@ -358,10 +358,10 @@ sudo supervisorctl start frontend
 - **Secrets:** `/app/production/PRODUCTION_SECRETS.txt`
 
 ### Important URLs
-- **Public Site:** `https://dialerfix-crm.preview.emergentagent.com/`
-- **Admin Panel:** `https://dialerfix-crm.preview.emergentagent.com/admin`
-- **API Base:** `https://dialerfix-crm.preview.emergentagent.com/api`
-- **Health Check:** `https://dialerfix-crm.preview.emergentagent.com/health`
+- **Public Site:** `https://onelaw-crm.preview.emergentagent.com/`
+- **Admin Panel:** `https://onelaw-crm.preview.emergentagent.com/admin`
+- **API Base:** `https://onelaw-crm.preview.emergentagent.com/api`
+- **Health Check:** `https://onelaw-crm.preview.emergentagent.com/health`
 
 ---
 

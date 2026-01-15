@@ -7,7 +7,7 @@ import requests
 import json
 
 # Configuration
-BASE_URL = "https://dialerfix-crm.preview.emergentagent.com/api"
+BASE_URL = "https://onelaw-crm.preview.emergentagent.com/api"
 
 # Admin credentials
 ADMIN_CREDENTIALS = {

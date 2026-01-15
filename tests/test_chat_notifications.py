@@ -8,7 +8,7 @@ import os
 import time
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dialerfix-crm.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://onelaw-crm.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 AGENT_CREDS = {"username": "nicolo", "password": "123"}
