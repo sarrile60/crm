@@ -201,25 +201,85 @@ async def security_middleware(request: Request, call_next):
 
 @app.middleware("http")
 async def logging_middleware(request: Request, call_next):
-    """Log requests (excluding sensitive paths)"""
+    """Structured logging with request correlation"""
     path = request.url.path
+    method = request.method
     
-    # Don't log sensitive paths
-    if any(word in path.lower() for word in ['password', 'secret', 'token', 'credential']):
-        return await call_next(request)
+    # Generate or extract request ID
+    request_id = request.headers.get("X-Request-Id", generate_request_id())
+    
+    # Store request_id in request state for use in route handlers
+    request.state.request_id = request_id
+    
+    # Don't log sensitive paths in detail
+    is_sensitive = any(word in path.lower() for word in ['password', 'secret', 'credential'])
     
     start_time = time.time()
-    response = await call_next(request)
-    process_time = time.time() - start_time
     
-    logger.info(
-        f"{request.method} {path} - "
-        f"Status: {response.status_code} - "
-        f"Time: {process_time:.3f}s - "
-        f"IP: {request.client.host}"
-    )
-    
-    return response
+    try:
+        response = await call_next(request)
+        duration_ms = (time.time() - start_time) * 1000
+        
+        # Add request ID to response header
+        response.headers["X-Request-Id"] = request_id
+        
+        # Extract user info from token if present (for logging, not auth)
+        user_id = "anonymous"
+        user_role = "none"
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            try:
+                token = auth_header.split(" ")[1]
+                payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+                user_id = payload.get("user_id", "unknown")[:8]  # Truncate for privacy
+                user_role = payload.get("role", "unknown")
+            except:
+                pass
+        
+        # Log structured request info (no PII)
+        if not is_sensitive:
+            log_data = {
+                "request_id": request_id,
+                "method": method,
+                "path": path,
+                "status": response.status_code,
+                "duration_ms": round(duration_ms, 2),
+                "user_id": user_id,
+                "role": user_role
+            }
+            # Add query params for GET requests (useful for debugging pagination issues)
+            if method == "GET" and request.query_params:
+                safe_params = {k: v for k, v in request.query_params.items() 
+                              if k in ["limit", "offset", "sort", "order", "status", "search"]}
+                if safe_params:
+                    log_data["params"] = safe_params
+                    
+            log_level = "warning" if response.status_code >= 400 else "info"
+            log_structured(log_level, request_id, **log_data)
+        
+        return response
+        
+    except Exception as e:
+        duration_ms = (time.time() - start_time) * 1000
+        # Log error with stack trace
+        log_structured("error", request_id,
+            method=method,
+            path=path,
+            status=500,
+            duration_ms=round(duration_ms, 2),
+            error=str(e),
+            stack_trace=traceback.format_exc()
+        )
+        # Return consistent JSON error
+        return JSONResponse(
+            status_code=500,
+            content={
+                "request_id": request_id,
+                "error_code": "INTERNAL_ERROR",
+                "message": "An internal error occurred"
+            },
+            headers={"X-Request-Id": request_id}
+        )
 
 # ============================================
 # HELPER FUNCTIONS
