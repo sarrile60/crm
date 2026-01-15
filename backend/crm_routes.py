@@ -751,27 +751,16 @@ async def get_crm_leads(
     # sort field already validated by guardrail
     sort_field = sort
     
-    # Fetch paginated leads - PROJECT ONLY LIST FIELDS
+    # Fetch paginated leads - USE CENTRALIZED PROJECTION for consistency
     query_time_start = time.time()
     leads = await db.leads.find(
         query, 
-        {
-            "_id": 0,
-            "id": 1,
-            "fullName": 1,
-            "email": 1,
-            "phone": 1,
-            "status": 1,
-            "priority": 1,
-            "assigned_to": 1,
-            "team_id": 1,
-            "created_at": 1,
-            "amountLost": 1,
-            "callback_date": 1,
-            "callback_notes": 1
-        }
+        LIST_PROJECTION  # Centralized projection - only list fields
     ).sort(sort_field, sort_direction).skip(offset).limit(limit).to_list(limit)
     query_time = (time.time() - query_time_start) * 1000
+    
+    # Log slow queries for debugging
+    check_query_time(query_time_start, f"GET /leads (limit={limit}, offset={offset})")
     logger.info(f"[DB QUERY] fetch_leads: {query_time:.2f}ms | {len(leads)} results")
     
     # Get visibility rules for current user (GUI-configured, backend-enforced)
