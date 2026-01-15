@@ -931,7 +931,16 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       if (response.data.lead_ids) {
         setSelectedLeadIds(response.data.lead_ids);
         setAllMatchingSelected(true);
-        toast.success(t('crm.selectedAllMatching', { count: response.data.count }));
+        
+        // Check if selection was capped
+        if (response.data.capped) {
+          toast.warning(t('crm.selectionCapped', { 
+            selected: response.data.count, 
+            total: response.data.total 
+          }));
+        } else {
+          toast.success(t('crm.selectedAllMatching', { count: response.data.count }));
+        }
       }
     } catch (error) {
       console.error('Error selecting all leads:', error);
