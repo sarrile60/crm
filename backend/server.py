@@ -814,7 +814,7 @@ production_origins = [
     'https://www.1law-solicitors.com', 
     'https://lawfirm-ops.emergent.host',
     'https://dialerfix-crm.emergent.host',
-    'https://onelaw-crm.preview.emergentagent.com',
+    'https://fervent-mclaren-2.preview.emergentagent.com',
     'http://localhost:3000',
     'http://localhost:8001'
 ]

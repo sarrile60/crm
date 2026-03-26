@@ -9,7 +9,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://onelaw-crm.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://fervent-mclaren-2.preview.emergentagent.com')
 
 # Test data - Nicolo Zennaro's agent ID
 NICOLO_AGENT_ID = "4f3ff1bf-1d64-47a2-b8d3-7dc84b4c80c3"

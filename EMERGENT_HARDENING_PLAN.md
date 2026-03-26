@@ -103,7 +103,7 @@ RATE_LIMIT_ENABLED=true
 
 **File: `/app/frontend/.env`**
 ```env
-REACT_APP_BACKEND_URL=https://onelaw-crm.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://fervent-mclaren-2.preview.emergentagent.com
 REACT_APP_ENV=production
 GENERATE_SOURCEMAP=false
 ```
@@ -184,7 +184,7 @@ async def security_middleware(request: Request, call_next):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://onelaw-crm.preview.emergentagent.com",
+        "https://fervent-mclaren-2.preview.emergentagent.com",
         "http://localhost:3000"  # For development only
     ],
     allow_credentials=True,

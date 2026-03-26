@@ -11,7 +11,7 @@ from datetime import datetime, timezone, timedelta
 import logging
 
 # Configuration
-BASE_URL = "https://onelaw-crm.preview.emergentagent.com/api"
+BASE_URL = "https://fervent-mclaren-2.preview.emergentagent.com/api"
 CRM_BASE_URL = f"{BASE_URL}/crm"
 
 # Setup logging

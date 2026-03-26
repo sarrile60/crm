@@ -1,5 +1,5 @@
 {
-  "summary": "Admin Panel testing completed successfully. All features verified working: Role Management (3 roles), Entity Configuration (5 entities), Permission Matrix (fully functional with role selection and permission editing). CRITICAL: Production URL https://1law-solicitors.com is DOWN (Cloudflare Error 1023 - Could not find host). Testing was performed on Emergent preview URL (https://onelaw-crm.preview.emergentagent.com) which is working correctly.",
+  "summary": "Admin Panel testing completed successfully. All features verified working: Role Management (3 roles), Entity Configuration (5 entities), Permission Matrix (fully functional with role selection and permission editing). CRITICAL: Production URL https://1law-solicitors.com is DOWN (Cloudflare Error 1023 - Could not find host). Testing was performed on Emergent preview URL (https://fervent-mclaren-2.preview.emergentagent.com) which is working correctly.",
   "backend_issues": {
     "critical": [],
     "minor": []
@@ -115,7 +115,7 @@
       "status": "WORKING"
     },
     "emergent_preview": {
-      "url": "https://onelaw-crm.preview.emergentagent.com",
+      "url": "https://fervent-mclaren-2.preview.emergentagent.com",
       "status": "WORKING"
     }
   }
