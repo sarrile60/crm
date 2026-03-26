@@ -101,28 +101,9 @@ async def get_base_salaries():
 
 
 async def get_current_user(authorization: Optional[str] = Header(None)):
-    """Get current user from JWT token"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="No authorization header")
-    
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        user_id = payload.get("user_id")
-        
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        
-        user = await db.crm_users.find_one({"id": user_id}, {"_id": 0, "password": 0})
-        
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
-        
-        return user
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+    """Cached user auth - delegates to shared cached_auth module"""
+    from cached_auth import get_current_user_cached
+    return await get_current_user_cached(authorization)
 
 
 async def get_commission_rate_async(total_volume: float, role: str) -> tuple:
@@ -649,7 +630,21 @@ async def get_admin_financial_overview(
             deposit_query["agent_id"] = {"$in": team_member_ids}
     
     # Get all deposits for the period with filters
-    all_deposits = await db.deposits.find(deposit_query, {"_id": 0}).to_list(10000)
+    import asyncio as _asyncio
+    
+    # Run independent queries in parallel
+    deposits_task = db.deposits.find(deposit_query, {"_id": 0}).to_list(10000)
+    agents_count_task = db.crm_users.count_documents({"role": "agent", "deleted_at": None})
+    supervisors_count_task = db.crm_users.count_documents({"role": "supervisor", "deleted_at": None})
+    agent_list_task = db.crm_users.find({"role": "agent", "deleted_at": None}, {"_id": 0, "id": 1}).to_list(500)
+    supervisor_list_task = db.crm_users.find({"role": "supervisor", "deleted_at": None}, {"_id": 0, "id": 1}).to_list(100)
+    expenses_task = db.expenses.find({
+        "date": {"$gte": start_date.strftime("%Y-%m-%d"), "$lte": end_date.strftime("%Y-%m-%d")}
+    }, {"_id": 0}).to_list(1000)
+    
+    all_deposits, agents, supervisors, agent_list, supervisor_list, expenses = await _asyncio.gather(
+        deposits_task, agents_count_task, supervisors_count_task, agent_list_task, supervisor_list_task, expenses_task
+    )
     
     approved_deposits = [d for d in all_deposits if d.get("status") == "approved"]
     pending_deposits = [d for d in all_deposits if d.get("status") == "pending"]
@@ -658,10 +653,6 @@ async def get_admin_financial_overview(
     total_approved = sum(d.get("amount", 0) for d in approved_deposits)
     total_pending = sum(d.get("amount", 0) for d in pending_deposits)
     total_rejected = sum(d.get("amount", 0) for d in rejected_deposits)
-    
-    # Count active agents and supervisors
-    agents = await db.crm_users.count_documents({"role": "agent", "deleted_at": None})
-    supervisors = await db.crm_users.count_documents({"role": "supervisor", "deleted_at": None})
     
     # Get base salaries from database
     salaries = await get_base_salaries()
@@ -673,9 +664,7 @@ async def get_admin_financial_overview(
     total_supervisor_salaries = supervisors * supervisor_base_salary
     total_salaries = total_agent_salaries + total_supervisor_salaries
     
-    # Calculate total commissions paid
-    # For agents: sum of each agent's commission based on their personal volume
-    agent_list = await db.crm_users.find({"role": "agent", "deleted_at": None}, {"_id": 0, "id": 1}).to_list(500)
+    # Calculate total commissions paid (using pre-fetched agent_list)
     total_agent_commissions = 0
     
     for agent in agent_list:
@@ -684,8 +673,7 @@ async def get_admin_financial_overview(
         rate, _ = await get_commission_rate_async(agent_volume, "agent")
         total_agent_commissions += agent_volume * rate
     
-    # For supervisors: sum of each supervisor's commission based on team volume
-    supervisor_list = await db.crm_users.find({"role": "supervisor", "deleted_at": None}, {"_id": 0, "id": 1}).to_list(100)
+    # For supervisors (using pre-fetched supervisor_list)
     total_supervisor_commissions = 0
     
     for supervisor in supervisor_list:
@@ -697,11 +685,7 @@ async def get_admin_financial_overview(
     
     total_commissions = total_agent_commissions + total_supervisor_commissions
     
-    # Get expenses for the month
-    expenses = await db.expenses.find({
-        "date": {"$gte": start_date.strftime("%Y-%m-%d"), "$lte": end_date.strftime("%Y-%m-%d")}
-    }, {"_id": 0}).to_list(1000)
-    
+    # Expenses (pre-fetched above)
     total_expenses = sum(e.get("amount", 0) for e in expenses)
     
     # Expenses by type

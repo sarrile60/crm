@@ -32,28 +32,9 @@ def init_deposit_routes(database):
 
 
 async def get_current_user(authorization: Optional[str] = Header(None)):
-    """Get current user from JWT token"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="No authorization header")
-    
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        user_id = payload.get("user_id")
-        
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        
-        user = await db.crm_users.find_one({"id": user_id}, {"_id": 0, "password": 0})
-        
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
-        
-        return user
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+    """Cached user auth - delegates to shared cached_auth module"""
+    from cached_auth import get_current_user_cached
+    return await get_current_user_cached(authorization)
 
 
 # ==================== MODELS ====================

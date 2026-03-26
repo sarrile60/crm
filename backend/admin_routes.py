@@ -47,35 +47,9 @@ admin_router = APIRouter(prefix="/api/admin", tags=["admin"])
 # ============================================
 
 async def get_current_user(authorization: Optional[str] = Header(None)):
-    """
-    Get current user from JWT token
-    Copied from crm_routes to avoid circular dependency
-    """
-    from auth_utils import decode_token
-    
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authentication format")
-    
-    token = authorization.replace("Bearer ", "")
-    
-    try:
-        payload = decode_token(token)
-        user_id = payload.get("user_id")
-        
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        
-        # Get user from database
-        user = await db.crm_users.find_one({"id": user_id})
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
-        
-        return user
-    except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+    """Cached user auth - delegates to shared cached_auth module"""
+    from cached_auth import get_current_user_cached
+    return await get_current_user_cached(authorization)
 
 
 # ============================================
@@ -84,23 +58,24 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
 
 async def require_admin(current_user: dict = Depends(get_current_user)):
     """
-    Verify user has admin access
-    NOTE: This checks user_roles collection, not hard-coded role field
+    Verify user has admin access.
+    Fast path: check role field directly (avoids extra DB query).
     """
-    # Check if user has admin role in user_roles collection
+    # Fast path: check the role field directly
+    if current_user.get("role", "").lower() == "admin":
+        return current_user
+    
+    # Slow path: check user_roles collection (only if role field doesn't say admin)
     user_role = await db.user_roles.find_one({
         "user_id": current_user["id"]
     })
     
     if not user_role:
-        # Fallback: check old role field during migration
-        if current_user.get("role") != "admin":
-            raise HTTPException(status_code=403, detail="Admin access required")
-    else:
-        # Check if user has a role named "admin"
-        role = await db.roles.find_one({"id": user_role["role_id"]})
-        if not role or role["name"].lower() != "admin":
-            raise HTTPException(status_code=403, detail="Admin access required")
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    role = await db.roles.find_one({"id": user_role["role_id"]})
+    if not role or role["name"].lower() != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
     
     return current_user
 

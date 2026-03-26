@@ -47,6 +47,10 @@ init_deposit_routes(db)
 init_analytics_routes(db)
 init_finance_routes(db)
 
+# Initialize shared cached auth
+from cached_auth import init_cached_auth
+init_cached_auth(db)
+
 # Initialize audit logging
 from audit_utils import init_audit_db
 init_audit_db(db)

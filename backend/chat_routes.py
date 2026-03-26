@@ -23,24 +23,11 @@ class ConversationCreate(BaseModel):
 class TypingIndicator(BaseModel):
     is_typing: bool
 
-# Dependency to get current user from token (reuse CRM auth)
+# Dependency to get current user from token (cached)
 async def get_current_user(request: Request):
-    from server import db
-    from crm_routes import get_user_from_token
-    
+    from cached_auth import get_current_user_cached
     authorization = request.headers.get("Authorization", "")
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    try:
-        token = authorization.replace('Bearer ', '')
-        user_data = get_user_from_token(token)
-        user = await db.crm_users.find_one({"id": user_data["user_id"]}, {"_id": 0})
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
-        return user
-    except Exception as e:
-        raise HTTPException(status_code=401, detail=str(e))
+    return await get_current_user_cached(authorization)
 
 # Helper function to populate participant details for a conversation
 async def populate_conversation_participants(db, conversation):

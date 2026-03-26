@@ -22,28 +22,9 @@ def init_analytics_routes(database):
 
 
 async def get_current_user(authorization: Optional[str] = Header(None)):
-    """Get current user from JWT token"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="No authorization header")
-    
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        user_id = payload.get("user_id")
-        
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        
-        user = await db.crm_users.find_one({"id": user_id}, {"_id": 0, "password": 0})
-        
-        if not user:
-            raise HTTPException(status_code=401, detail="User not found")
-        
-        return user
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError as e:
-        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+    """Cached user auth - delegates to shared cached_auth module"""
+    from cached_auth import get_current_user_cached
+    return await get_current_user_cached(authorization)
 
 
 def get_date_range(period: str, date_from: Optional[str] = None, date_to: Optional[str] = None):
@@ -97,13 +78,44 @@ async def get_analytics_overview(
     
     start_date, end_date = get_date_range(period, date_from, date_to)
     
-    # ==================== LEADS ANALYTICS ====================
+    import asyncio
     
-    # Total leads in period
+    # ==================== PARALLEL DATA FETCH ====================
+    # Fetch all base data in parallel (was sequential = 4 round trips)
     leads_query = {
         "created_at": {"$gte": start_date, "$lte": end_date}
     }
-    total_leads = await db.leads.count_documents(leads_query)
+    deposits_query = {
+        "created_at": {"$gte": start_date, "$lte": end_date}
+    }
+    
+    # Compare to previous period
+    period_days = (end_date - start_date).days
+    prev_start = start_date - timedelta(days=period_days)
+    prev_end = start_date
+    
+    all_leads_task = db.leads.find(leads_query, {"_id": 0, "status": 1, "created_at": 1, "source": 1, "assigned_to": 1, "team_id": 1}).to_list(10000)
+    all_deposits_task = db.deposits.find(deposits_query, {"_id": 0}).to_list(10000)
+    agents_task = db.crm_users.find(
+        {"role": {"$in": ["agent", "supervisor"]}, "deleted_at": None},
+        {"_id": 0, "id": 1, "full_name": 1, "role": 1, "team_id": 1}
+    ).to_list(500)
+    teams_task = db.teams.find(
+        {"$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]},
+        {"_id": 0, "id": 1, "name": 1}
+    ).to_list(100)
+    prev_leads_task = db.leads.count_documents({"created_at": {"$gte": prev_start, "$lte": prev_end}})
+    prev_deposits_task = db.deposits.find(
+        {"created_at": {"$gte": prev_start, "$lte": prev_end}, "status": "approved"},
+        {"_id": 0, "amount": 1}
+    ).to_list(10000)
+    
+    all_leads, all_deposits, agents, teams, prev_leads, prev_deposits_docs = await asyncio.gather(
+        all_leads_task, all_deposits_task, agents_task, teams_task, prev_leads_task, prev_deposits_task
+    )
+    
+    total_leads = len(all_leads)
+    prev_revenue = sum(d.get("amount", 0) for d in prev_deposits_docs)
     
     # Leads by status
     all_leads = await db.leads.find(leads_query, {"_id": 0, "status": 1, "created_at": 1, "source": 1, "assigned_to": 1, "team_id": 1}).to_list(10000)
@@ -149,12 +161,7 @@ async def get_analytics_overview(
     converted_leads = sum(1 for lead in all_leads if lead.get("status") in deposit_statuses)
     conversion_rate = (converted_leads / total_leads * 100) if total_leads > 0 else 0
     
-    # ==================== DEPOSIT ANALYTICS ====================
-    
-    deposits_query = {
-        "created_at": {"$gte": start_date, "$lte": end_date}
-    }
-    all_deposits = await db.deposits.find(deposits_query, {"_id": 0}).to_list(10000)
+    # ==================== DEPOSIT ANALYTICS (from parallel-fetched data) ====================
     
     total_deposits = len(all_deposits)
     approved_deposits = [d for d in all_deposits if d.get("status") == "approved"]
@@ -188,13 +195,20 @@ async def get_analytics_overview(
     
     deposits_by_type_list = [{"type": k, "count": v["count"], "amount": v["amount"]} for k, v in deposits_by_type.items()]
     
-    # ==================== AGENT PERFORMANCE ====================
+    # ==================== AGENT PERFORMANCE (from parallel-fetched data) ====================
     
-    # Get all agents
-    agents = await db.crm_users.find(
-        {"role": {"$in": ["agent", "supervisor"]}, "deleted_at": None},
-        {"_id": 0, "id": 1, "full_name": 1, "role": 1, "team_id": 1}
-    ).to_list(500)
+    # Pre-fetch all activity counts in one query instead of N queries per agent
+    all_agent_ids = [a["id"] for a in agents]
+    activity_pipeline = [
+        {"$match": {
+            "user_id": {"$in": all_agent_ids},
+            "action": {"$in": ["callback_completed", "call_made", "status_changed"]},
+            "timestamp": {"$gte": start_date.isoformat(), "$lte": end_date.isoformat()}
+        }},
+        {"$group": {"_id": "$user_id", "count": {"$sum": 1}}}
+    ]
+    activity_counts_raw = await db.activity_logs.aggregate(activity_pipeline).to_list(500)
+    activity_counts = {a["_id"]: a["count"] for a in activity_counts_raw}
     
     agent_performance = []
     for agent in agents:
@@ -202,20 +216,10 @@ async def get_analytics_overview(
         
         # Leads assigned to agent in period
         agent_leads = [l for l in all_leads if l.get("assigned_to") == agent_id]
-        
-        # Leads converted (deposit status)
         agent_converted = sum(1 for l in agent_leads if l.get("status") in deposit_statuses)
-        
-        # Deposits created by agent
         agent_deposits = [d for d in approved_deposits if d.get("agent_id") == agent_id]
         agent_revenue = sum(d.get("amount", 0) for d in agent_deposits)
-        
-        # Get callbacks completed (from activity logs)
-        callbacks_count = await db.activity_logs.count_documents({
-            "user_id": agent_id,
-            "action": {"$in": ["callback_completed", "call_made", "status_changed"]},
-            "timestamp": {"$gte": start_date.isoformat(), "$lte": end_date.isoformat()}
-        })
+        callbacks_count = activity_counts.get(agent_id, 0)
         
         agent_performance.append({
             "agent_id": agent_id,
@@ -233,27 +237,25 @@ async def get_analytics_overview(
     # Sort by revenue
     agent_performance.sort(key=lambda x: x["revenue"], reverse=True)
     
-    # ==================== TEAM PERFORMANCE ====================
+    # ==================== TEAM PERFORMANCE (from parallel-fetched data) ====================
     
-    teams = await db.teams.find(
-        {"$or": [{"archived_at": None}, {"archived_at": {"$exists": False}}]},
-        {"_id": 0, "id": 1, "name": 1}
-    ).to_list(100)
+    # Pre-fetch team member counts in one query instead of N queries
+    all_team_ids = [t["id"] for t in teams]
+    member_pipeline = [
+        {"$match": {"team_id": {"$in": all_team_ids}, "deleted_at": None}},
+        {"$group": {"_id": "$team_id", "count": {"$sum": 1}}}
+    ]
+    member_counts_raw = await db.crm_users.aggregate(member_pipeline).to_list(100)
+    member_counts = {m["_id"]: m["count"] for m in member_counts_raw}
     
     team_performance = []
     for team in teams:
         team_id = team["id"]
-        
-        # Team leads
         team_leads = [l for l in all_leads if l.get("team_id") == team_id]
         team_converted = sum(1 for l in team_leads if l.get("status") in deposit_statuses)
-        
-        # Team deposits
         team_deposits = [d for d in approved_deposits if d.get("team_id") == team_id]
         team_revenue = sum(d.get("amount", 0) for d in team_deposits)
-        
-        # Team members count
-        team_members = await db.crm_users.count_documents({"team_id": team_id, "deleted_at": None})
+        team_members = member_counts.get(team_id, 0)
         
         team_performance.append({
             "team_id": team_id,
@@ -270,22 +272,7 @@ async def get_analytics_overview(
     # Sort by revenue
     team_performance.sort(key=lambda x: x["revenue"], reverse=True)
     
-    # ==================== SUMMARY STATS ====================
-    
-    # Compare to previous period
-    period_days = (end_date - start_date).days
-    prev_start = start_date - timedelta(days=period_days)
-    prev_end = start_date
-    
-    prev_leads = await db.leads.count_documents({
-        "created_at": {"$gte": prev_start, "$lte": prev_end}
-    })
-    
-    prev_deposits = await db.deposits.find({
-        "created_at": {"$gte": prev_start, "$lte": prev_end},
-        "status": "approved"
-    }, {"_id": 0, "amount": 1}).to_list(10000)
-    prev_revenue = sum(d.get("amount", 0) for d in prev_deposits)
+    # ==================== SUMMARY STATS (comparison data from parallel fetch) ====================
     
     leads_change = ((total_leads - prev_leads) / prev_leads * 100) if prev_leads > 0 else 0
     revenue_change = ((total_revenue - prev_revenue) / prev_revenue * 100) if prev_revenue > 0 else 0
@@ -424,39 +411,38 @@ async def get_deposits_detail(
 @analytics_router.get("/realtime")
 async def get_realtime_stats(current_user: dict = Depends(get_current_user)):
     """Get real-time statistics for dashboard widgets"""
+    import asyncio
+    
     role = current_user.get("role", "").lower()
     
     if role != "admin":
         raise HTTPException(status_code=403, detail="Only admin can access analytics")
     
-    # Use naive datetime for MongoDB comparison (DB stores naive datetimes)
     now = datetime.now()
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    
-    # Today's stats
-    today_leads = await db.leads.count_documents({
-        "created_at": {"$gte": today_start}
-    })
-    
-    today_deposits = await db.deposits.find({
-        "created_at": {"$gte": today_start}
-    }, {"_id": 0, "status": 1, "amount": 1}).to_list(1000)
-    
-    today_revenue = sum(d.get("amount", 0) for d in today_deposits if d.get("status") == "approved")
-    
-    # Active users (last 5 minutes) - use naive datetime
     active_threshold = now - timedelta(minutes=5)
-    active_users = await db.crm_users.count_documents({
+    
+    # Run ALL queries in parallel (was 5 sequential = 5 × 115ms)
+    today_leads_task = db.leads.count_documents({"created_at": {"$gte": today_start}})
+    today_deposits_task = db.deposits.find(
+        {"created_at": {"$gte": today_start}},
+        {"_id": 0, "status": 1, "amount": 1}
+    ).to_list(1000)
+    active_users_task = db.crm_users.count_documents({
         "last_active": {"$gte": active_threshold},
         "deleted_at": None
     })
-    
-    # Pending items
-    pending_deposits = await db.deposits.count_documents({"status": "pending"})
-    pending_callbacks = await db.callback_reminders.count_documents({
+    pending_deposits_task = db.deposits.count_documents({"status": "pending"})
+    pending_callbacks_task = db.callback_reminders.count_documents({
         "is_completed": False,
         "callback_date": {"$lte": now.isoformat()}
     })
+    
+    today_leads, today_deposits, active_users, pending_deposits, pending_callbacks = await asyncio.gather(
+        today_leads_task, today_deposits_task, active_users_task, pending_deposits_task, pending_callbacks_task
+    )
+    
+    today_revenue = sum(d.get("amount", 0) for d in today_deposits if d.get("status") == "approved")
     
     return {
         "today": {
