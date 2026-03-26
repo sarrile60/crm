@@ -94,7 +94,32 @@ def init_crm_db(database):
     db = database
     permission_engine = get_permission_engine(database)
 
-# Dependency to get current user from token
+# ============================================
+# USER CACHE - Eliminates 1 DB query per request
+# ============================================
+_user_cache = {}  # user_id -> (timestamp, user_doc)
+_USER_CACHE_TTL = 30  # seconds
+
+def _get_cached_user(user_id: str):
+    """Get user from cache if not expired"""
+    if user_id in _user_cache:
+        ts, user = _user_cache[user_id]
+        if time.time() - ts < _USER_CACHE_TTL:
+            return user
+    return None
+
+def _set_cached_user(user_id: str, user_doc: dict):
+    """Cache user document"""
+    _user_cache[user_id] = (time.time(), user_doc)
+
+def invalidate_user_cache(user_id: str = None):
+    """Invalidate user cache - call when user is updated"""
+    if user_id:
+        _user_cache.pop(user_id, None)
+    else:
+        _user_cache.clear()
+
+# Dependency to get current user from token (CACHED)
 async def get_current_user(authorization: Optional[str] = Header(None)):
     if not authorization:
         raise HTTPException(status_code=401, detail="No authorization header")
@@ -102,10 +127,22 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
     try:
         token = authorization.replace('Bearer ', '')
         user_data = get_user_from_token(token)
-        user = await db.crm_users.find_one({"id": user_data["user_id"]})
+        user_id = user_data["user_id"]
+        
+        # Check cache first
+        cached = _get_cached_user(user_id)
+        if cached:
+            return cached
+        
+        # Cache miss - query DB
+        user = await db.crm_users.find_one({"id": user_id})
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
+        
+        _set_cached_user(user_id, user)
         return user
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=401, detail=str(e))
 
@@ -504,6 +541,10 @@ async def update_user(user_id: str, update_data: UserUpdate, current_user: dict 
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="User not found")
     
+    # Invalidate caches for this user
+    invalidate_user_cache(user_id)
+    permission_engine.cache.invalidate_all()
+    
     return {"success": True}
 
 @crm_router.delete("/users/{user_id}", dependencies=[Depends(require_role(["admin"]))])
@@ -694,14 +735,13 @@ async def get_crm_leads(
     """Get leads with filters and pagination - uses permission engine for data scoping"""
     # Start performance monitoring
     start_time = time.time()
-    query_start = time.time()
     
     # GUARDRAIL: Enforce safe pagination limits
     limit = clamp_limit(limit)
     offset = clamp_offset(offset)
     sort = validate_sort_field(sort)
     
-    # Get data scope filter from permission engine (GUI-configured)
+    # Get data scope filter from permission engine (CACHED - typically 0 DB queries)
     scope_filter = await permission_engine.get_data_scope_filter(
         user_id=current_user["id"],
         entity="leads"
@@ -712,7 +752,7 @@ async def get_crm_leads(
     if status:
         query["status"] = status
     
-    # Check if user has permission to filter by assigned_to (team or all scope)
+    # Check if user has permission to filter by assigned_to (CACHED)
     read_perm = await permission_engine.check_permission(
         user_id=current_user["id"],
         entity="leads",
@@ -720,7 +760,6 @@ async def get_crm_leads(
     )
     
     if assigned_to and read_perm.scope in [PermissionScope.TEAM, PermissionScope.ALL]:
-        # Support multiple assigned_to IDs (comma-separated)
         if ',' in assigned_to:
             assigned_to_list = [a.strip() for a in assigned_to.split(',') if a.strip()]
             query["assigned_to"] = {"$in": assigned_to_list}
@@ -740,30 +779,25 @@ async def get_crm_leads(
             {"scammerCompany": {"$regex": search, "$options": "i"}}
         ]
     
-    # Get total count for pagination (use countDocuments for better performance)
-    count_start = time.time()
-    total = await db.leads.count_documents(query)
-    count_time = (time.time() - count_start) * 1000
-    logger.info(f"[DB QUERY] count_leads: {count_time:.2f}ms | {total} results")
-    
     # Sort direction
     sort_direction = -1 if order == "desc" else 1
-    # sort field already validated by guardrail
     sort_field = sort
     
-    # Fetch paginated leads - USE CENTRALIZED PROJECTION for consistency
-    query_time_start = time.time()
-    leads = await db.leads.find(
+    # PERFORMANCE: Run count and fetch in parallel using asyncio.gather
+    import asyncio
+    
+    count_task = db.leads.count_documents(query)
+    fetch_task = db.leads.find(
         query, 
-        LIST_PROJECTION  # Centralized projection - only list fields
+        LIST_PROJECTION
     ).sort(sort_field, sort_direction).skip(offset).limit(limit).to_list(limit)
-    query_time = (time.time() - query_time_start) * 1000
     
-    # Log slow queries for debugging
-    check_query_time(query_time_start, f"GET /leads (limit={limit}, offset={offset})")
-    logger.info(f"[DB QUERY] fetch_leads: {query_time:.2f}ms | {len(leads)} results")
+    total, leads = await asyncio.gather(count_task, fetch_task)
     
-    # Get visibility rules for current user (GUI-configured, backend-enforced)
+    query_time = (time.time() - start_time) * 1000
+    logger.info(f"[DB QUERY] leads (count+fetch parallel): {query_time:.2f}ms | {len(leads)}/{total} results")
+    
+    # Get visibility rules for current user (CACHED in db_utils)
     user_team_ids = current_user.get("team_ids", []) or []
     if current_user.get("team_id") and current_user["team_id"] not in user_team_ids:
         user_team_ids.append(current_user["team_id"])
@@ -775,16 +809,14 @@ async def get_crm_leads(
         user_team_ids
     )
     
-    # Apply visibility rules to each lead (backend-only masking)
+    # Apply visibility rules to each lead (in-memory, fast)
     processed_leads = []
     for lead in leads:
         processed_lead = apply_visibility_to_lead(lead, visibility_rules)
         processed_leads.append(processed_lead)
     
-    # Calculate total time and log performance
     total_time = (time.time() - start_time) * 1000
-    payload_size_estimate = len(processed_leads) * 500
-    logger.info(f"[API] GET /crm/leads: {total_time:.2f}ms | ~{payload_size_estimate/1024:.2f}KB payload | {len(processed_leads)} leads")
+    logger.info(f"[API] GET /crm/leads: {total_time:.2f}ms | {len(processed_leads)} leads")
     
     return {
         "data": processed_leads,
@@ -1745,24 +1777,29 @@ async def get_team_members_status(current_user: dict = Depends(get_current_user)
 @crm_router.get("/dashboard/stats")
 async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     """Get dashboard statistics - uses permission engine for data scoping"""
-    # Get data scope filter from permission engine (GUI-configured)
+    import asyncio
+    
+    # Get data scope filter from permission engine (CACHED)
     scope_filter = await permission_engine.get_data_scope_filter(
         user_id=current_user["id"],
         entity="leads"
     )
     query = {**scope_filter}
     
-    total_leads = await db.leads.count_documents(query)
-    new_leads = await db.leads.count_documents({**query, "status": "new"})
-    in_progress = await db.leads.count_documents({**query, "status": "in_progress"})
-    won = await db.leads.count_documents({**query, "status": "won"})
-    
-    # Get callback reminders
-    pending_callbacks = await db.callback_reminders.count_documents({
+    # PERFORMANCE: Run all counts in parallel
+    total_task = db.leads.count_documents(query)
+    new_task = db.leads.count_documents({**query, "status": "new"})
+    in_progress_task = db.leads.count_documents({**query, "status": "in_progress"})
+    won_task = db.leads.count_documents({**query, "status": "won"})
+    callbacks_task = db.callback_reminders.count_documents({
         "assigned_to": current_user["id"],
         "is_completed": False,
         "callback_date": {"$lte": datetime.now(timezone.utc)}
     })
+    
+    total_leads, new_leads, in_progress, won, pending_callbacks = await asyncio.gather(
+        total_task, new_task, in_progress_task, won_task, callbacks_task
+    )
     
     return {
         "total_leads": total_leads,

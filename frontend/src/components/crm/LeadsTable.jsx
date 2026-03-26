@@ -281,21 +281,47 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   const [reminderDateTime, setReminderDateTime] = useState('');
   const [reminderNotes, setReminderNotes] = useState('');
 
+  // Fetch static data (users, statuses, teams) only once on mount
+  const [staticDataLoaded, setStaticDataLoaded] = useState(false);
+  
   useEffect(() => {
-    fetchData();
+    fetchStaticData();
+  }, []);
+
+  useEffect(() => {
+    fetchLeadsOnly();
   }, [filters, currentPage, pageSize, sortConfig]);
 
   useEffect(() => {
     setFilteredLeads(leads);
   }, [leads]);
 
-  const fetchData = async () => {
+  const fetchStaticData = async () => {
+    try {
+      const token = localStorage.getItem('crmToken');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const [usersRes, statusesRes, teamsRes] = await Promise.all([
+        axios.get(`${API}/crm/users`, { headers }),
+        axios.get(`${API}/crm/statuses`, { headers }),
+        axios.get(`${API}/crm/teams`, { headers })
+      ]);
+
+      setUsers(usersRes.data);
+      setStatuses(statusesRes.data);
+      setTeams(teamsRes.data);
+      setStaticDataLoaded(true);
+    } catch (error) {
+      console.error('Error fetching static data:', error);
+    }
+  };
+
+  const fetchLeadsOnly = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      // Build query params with pagination and sorting
       const offset = (currentPage - 1) * pageSize;
       const queryParams = {
         limit: pageSize,
@@ -309,28 +335,24 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         queryParams.assigned_to = filters.assigned_to.join(',');
       }
 
-      const [leadsRes, usersRes, statusesRes, teamsRes] = await Promise.all([
-        axios.get(`${API}/crm/leads`, { headers, params: queryParams }),
-        axios.get(`${API}/crm/users`, { headers }),
-        axios.get(`${API}/crm/statuses`, { headers }),
-        axios.get(`${API}/crm/teams`, { headers })
-      ]);
+      const leadsRes = await axios.get(`${API}/crm/leads`, { headers, params: queryParams });
 
-      // Handle both old array format and new paginated format
       const leadsData = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
       const total = leadsRes.data.total || leadsData.length;
       
       setLeads(leadsData);
       setTotalLeads(total);
-      setUsers(usersRes.data);
-      setStatuses(statusesRes.data);
-      setTeams(teamsRes.data);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching leads:', error);
       toast.error(t('users.errorLoadingData'));
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchData = async () => {
+    // Full refresh - reload everything
+    await Promise.all([fetchStaticData(), fetchLeadsOnly()]);
   };
 
   const formatCreatedDate = (dateString) => {
@@ -451,7 +473,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       
       // Wait a bit for database to update, then refresh
       setTimeout(() => {
-        fetchData();
+        fetchLeadsOnly();
       }, 500);
     } catch (error) {
       console.error('Error creating lead:', error);
@@ -475,7 +497,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       toast.success(t('leads.leadDeleted'));
       setShowDeleteModal(false);
       setLeadToDelete(null);
-      fetchData();
+      fetchLeadsOnly();
     } catch (error) {
       toast.error(error.response?.data?.detail || t('crm.errorDeletingLead'));
     }
@@ -529,7 +551,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       setReminderLead(null);
       setReminderDateTime('');
       setReminderNotes('');
-      fetchData();
+      fetchLeadsOnly();
     } catch (error) {
       toast.error(error.response?.data?.detail || t('crm.errorSettingReminder'));
     }
@@ -549,7 +571,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       setReminderLead(null);
       setReminderDateTime('');
       setReminderNotes('');
-      fetchData();
+      fetchLeadsOnly();
     } catch (error) {
       toast.error(error.response?.data?.detail || t('crm.errorClearingReminder'));
     }
@@ -721,7 +743,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         
         setShowImportModal(false);
         setCsvFile(null);
-        fetchData();
+        fetchLeadsOnly();
       } catch (error) {
         console.error('Import error:', error);
         toast.error(error.response?.data?.detail || t('crm.errorImportingCSV'));
@@ -778,7 +800,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
         const headers = { Authorization: `Bearer ${token}` };
         await axios.put(`${API}/crm/leads/${leadId}`, { status: newStatus }, { headers });
         toast.success(t('crm.statusUpdated'));
-        fetchData();
+        fetchLeadsOnly();
       } catch (error) {
         toast.error(t('crm.errorUpdatingStatus'));
       }
@@ -799,7 +821,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       toast.success(t('crm.statusUpdatedWithCallback'));
       setInlineEditLeadId(null);
       setInlineStatusData({ status: '', callback_date: '', callback_notes: '' });
-      fetchData();
+      fetchLeadsOnly();
     } catch (error) {
       toast.error(t('crm.errorUpdating'));
     }
@@ -849,7 +871,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       
       toast.success(t('leads.leadUpdated'));
       setShowEditModal(false);
-      fetchData();
+      fetchLeadsOnly();
       
       // If we're in detail modal, update the selected lead
       if (showDetailModal) {
@@ -877,7 +899,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       
       toast.success(t('crm.leadAssignedSuccess'));
       setShowAssignModal(false);
-      fetchData();
+      fetchLeadsOnly();
     } catch (error) {
       toast.error(t('crm.errorAssigningLead'));
     }
@@ -980,7 +1002,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       setSelectedLeadIds([]);
       setMassUpdateData({ status: '', team_id: '', assigned_to: '' });
       setMassActionMode('update');
-      fetchData();
+      fetchLeadsOnly();
     } catch (error) {
       toast.error(t('crm.errorMassUpdate'));
     }
@@ -1007,7 +1029,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
       setShowMassDeleteConfirm(false);
       setSelectedLeadIds([]);
       setMassActionMode('update');
-      fetchData();
+      fetchLeadsOnly();
     } catch (error) {
       toast.error(error.response?.data?.detail || t('crm.errorMassDelete'));
     } finally {

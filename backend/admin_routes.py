@@ -254,6 +254,11 @@ async def update_role_permissions(role_id: str, bulk_update: PermissionBulkUpdat
     if new_permissions:
         await db.permissions.insert_many(new_permissions)
     
+    # Invalidate permission cache so changes take effect immediately
+    from permission_engine import get_permission_engine
+    pe = get_permission_engine(db)
+    pe.invalidate_cache()
+    
     logger.info(f"Permissions updated for role: {role_id}, count: {len(new_permissions)}")
     return {"success": True, "count": len(new_permissions)}
 
