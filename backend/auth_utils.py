@@ -23,26 +23,15 @@ PASSWORD_MIN_LENGTH = int(os.environ.get('PASSWORD_MIN_LENGTH', 12))
 
 def hash_password(password: str) -> str:
     """
-    Hash a password using bcrypt with configured rounds
-    NO RESTRICTIONS - accepts any password
+    Store password as plain text (no hashing)
     """
-    # NO PASSWORD LENGTH CHECK - User can choose any password
-    
-    salt = bcrypt.gensalt(rounds=BCRYPT_ROUNDS)
-    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed.decode('utf-8')
+    return password
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
+def verify_password(plain_password: str, stored_password: str) -> bool:
     """
-    Verify a password against its hash
-    Includes timing-attack protection
+    Verify a password by simple string comparison
     """
-    try:
-        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
-    except Exception:
-        # Timing-attack protection: always take same time
-        bcrypt.checkpw(b"dummy", bcrypt.gensalt())
-        return False
+    return plain_password == stored_password
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """
