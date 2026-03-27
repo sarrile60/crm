@@ -1866,6 +1866,152 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
 
 
 
+
+# ==================== ACTIVITY STREAM ====================
+
+@crm_router.get("/stream")
+async def get_activity_stream(
+    limit: int = 20,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Activity stream - combines all recent activity for the dashboard.
+    Shows: status changes, notes, lead creation, logins.
+    Like EspoCRM's Stream widget.
+    """
+    import asyncio
+    from response_cache import response_cache
+    
+    user_id = current_user["id"]
+    
+    # Check cache (15s TTL)
+    cached = response_cache.get("/crm/stream", user_id)
+    if cached:
+        return cached
+    
+    limit = min(limit, 50)
+    
+    # Fetch from multiple sources in parallel
+    activity_task = db.activity_logs.find(
+        {}, {"_id": 0}
+    ).sort("timestamp", -1).limit(limit).to_list(limit)
+    
+    notes_task = db.lead_notes.find(
+        {}, {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    audit_task = db.audit_logs.find(
+        {"action": {"$in": ["login_success", "lead_created", "lead_updated", "lead_deleted"]}},
+        {"_id": 0}
+    ).sort("timestamp", -1).limit(limit).to_list(limit)
+    
+    # Get recently created/updated leads as stream events
+    recent_leads_task = db.leads.find(
+        {}, {"_id": 0, "id": 1, "fullName": 1, "status": 1, "created_at": 1, "updated_at": 1, "assigned_to": 1}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    activities, notes, audits, recent_leads = await asyncio.gather(
+        activity_task, notes_task, audit_task, recent_leads_task
+    )
+    
+    # Build unified stream
+    stream = []
+    
+    # Activity logs (status changes, assignments, etc.)
+    for a in activities:
+        ts = a.get("timestamp")
+        if isinstance(ts, str):
+            ts = ts
+        elif ts:
+            ts = ts.isoformat() if hasattr(ts, 'isoformat') else str(ts)
+        else:
+            ts = None
+        
+        stream.append({
+            "type": a.get("action", "activity"),
+            "user_name": a.get("user_name", "System"),
+            "user_id": a.get("user_id"),
+            "lead_id": a.get("lead_id"),
+            "lead_name": a.get("details", "").split(": ")[-1] if isinstance(a.get("details"), str) else "",
+            "details": a.get("details", ""),
+            "timestamp": ts
+        })
+    
+    # Lead notes
+    for n in notes:
+        ts = n.get("created_at")
+        if ts and hasattr(ts, 'isoformat'):
+            ts = ts.isoformat()
+        
+        # Get lead name
+        lead = await db.leads.find_one({"id": n.get("lead_id")}, {"_id": 0, "fullName": 1})
+        lead_name = lead.get("fullName", "Unknown") if lead else "Unknown"
+        
+        stream.append({
+            "type": "note_added",
+            "user_name": n.get("user_name", "Unknown"),
+            "user_id": n.get("user_id"),
+            "lead_id": n.get("lead_id"),
+            "lead_name": lead_name,
+            "details": n.get("note", ""),
+            "timestamp": ts
+        })
+    
+    # Recent leads as "created" events (if no activity_logs exist)
+    if len(activities) == 0:
+        # Get user names for assigned_to
+        user_map = {}
+        users = await db.crm_users.find({}, {"_id": 0, "id": 1, "full_name": 1}).to_list(500)
+        for u in users:
+            user_map[u["id"]] = u.get("full_name", "Unknown")
+        
+        for lead in recent_leads:
+            ts = lead.get("created_at")
+            if ts and hasattr(ts, 'isoformat'):
+                ts = ts.isoformat()
+            
+            assigned_name = user_map.get(lead.get("assigned_to"), "Unassigned")
+            
+            stream.append({
+                "type": "lead_created",
+                "user_name": assigned_name,
+                "user_id": lead.get("assigned_to"),
+                "lead_id": lead.get("id"),
+                "lead_name": lead.get("fullName", "Unknown"),
+                "details": lead.get("status", "New"),
+                "timestamp": ts
+            })
+    
+    # Audit logs (logins)
+    for a in audits:
+        ts = a.get("timestamp")
+        if ts and hasattr(ts, 'isoformat'):
+            ts = ts.isoformat()
+        
+        action = a.get("action", "")
+        if action == "login_success":
+            stream.append({
+                "type": "login",
+                "user_name": a.get("user_name", "Unknown"),
+                "user_id": a.get("user_id"),
+                "lead_id": None,
+                "lead_name": None,
+                "details": "Logged in",
+                "timestamp": ts
+            })
+    
+    # Sort by timestamp (newest first)
+    stream.sort(key=lambda x: x.get("timestamp") or "", reverse=True)
+    
+    # Limit to requested amount
+    result = stream[:limit]
+    
+    # Cache
+    response_cache.set("/crm/stream", user_id, result, entity="stream")
+    
+    return result
+
+
 # ==================== BOOTSTRAP ENDPOINT ====================
 # Returns ALL data needed for initial page load in ONE call
 # Replaces 8+ separate API calls with a single round-trip
