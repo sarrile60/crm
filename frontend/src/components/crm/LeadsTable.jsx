@@ -1601,171 +1601,140 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
       {/* Detail Modal with Navigation */}
       {showDetailModal && selectedLead && (
         <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-          <DialogContent className="max-w-4xl bg-white max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="max-w-3xl bg-white max-h-[90vh] overflow-y-auto p-0">
+            {/* Header with lead name + status */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-3 z-10">
               <div className="flex items-center justify-between">
-                <DialogTitle className="text-2xl font-bold text-black">{t('crm.leadDetails')}</DialogTitle>
-                <div className="flex gap-2">
-                  {/* Click-to-Call Button - Only shown if lead has phone */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#D4AF37]/10 flex items-center justify-center">
+                    <span className="text-sm font-bold text-[#D4AF37]">{(selectedLead.fullName || '?')[0]}</span>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-black leading-tight">{selectedLead.fullName}</h2>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${getStatusColor(selectedLead.status)}`}>
+                        {selectedLead.status}
+                      </span>
+                      <span className="text-xs text-gray-400">{formatCreatedDate(selectedLead.created_at)}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
                   {selectedLead.phone && (
                     <Button
                       onClick={() => handleMakeCall(selectedLead.id)}
                       disabled={isCallingLead}
                       size="sm"
-                      className="bg-green-600 text-white hover:bg-green-700 rounded-none disabled:opacity-50"
-                      title={t('call.clickToCall')}
+                      className="bg-green-600 text-white hover:bg-green-700 rounded-sm h-8 text-xs"
                     >
-                      {isCallingLead ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Phone className="w-4 h-4" />
-                      )}
+                      {isCallingLead ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Phone className="w-3.5 h-3.5" />}
                       <span className="ml-1">{t('call.call')}</span>
                     </Button>
                   )}
-                  <Button
-                    onClick={() => navigateLead(-1)}
-                    disabled={currentLeadIndex === 0}
-                    size="sm"
-                    className="bg-gray-200 text-black hover:bg-gray-300 rounded-none disabled:opacity-50"
-                  >
+                  <Button onClick={() => navigateLead(-1)} disabled={currentLeadIndex === 0} size="sm" className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-sm h-8 w-8 p-0">
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
-                  <Button
-                    onClick={() => navigateLead(1)}
-                    disabled={currentLeadIndex === filteredLeads.length - 1}
-                    size="sm"
-                    className="bg-gray-200 text-black hover:bg-gray-300 rounded-none disabled:opacity-50"
-                  >
+                  <Button onClick={() => navigateLead(1)} disabled={currentLeadIndex === filteredLeads.length - 1} size="sm" className="bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-sm h-8 w-8 p-0">
                     <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
-            </DialogHeader>
-            <div className="space-y-6">
-              {/* Lead Info */}
-              <div>
-                <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2">{t('crm.leadInfo')}</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">{t('leads.fullName')}</label>
-                    <p className="text-black font-semibold">{selectedLead.fullName}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">{t('common.email')}</label>
-                    <p className="text-black">{selectedLead.email}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">{t('common.phone')}</label>
-                    {/* Phone visibility controlled by backend - respect empty string as "hidden" */}
+            </div>
+
+            <div className="px-6 py-4 space-y-5">
+              {/* Contact Info - Compact Grid */}
+              <div className="grid grid-cols-3 gap-x-6 gap-y-3">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-gray-400 mb-0.5">Email</div>
+                  <div className="text-sm text-black">{selectedLead.email || '—'}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-gray-400 mb-0.5">Phone</div>
+                  <div className="text-sm text-black">
                     {selectedLead.phone_display !== undefined && selectedLead.phone_display !== null ? (
-                      selectedLead.phone_display ? (
-                        <span className="text-gray-700 font-semibold block">
-                          {selectedLead.phone_display}
-                        </span>
-                      ) : (
-                        <span className="text-gray-400 italic block">{t('visibility.hidden')}</span>
-                      )
+                      selectedLead.phone_display || <span className="text-gray-400 italic">{t('visibility.hidden')}</span>
                     ) : (
-                      <span className="text-gray-700 font-semibold block">
-                        {formatPhoneDisplay(selectedLead.phone)}
-                      </span>
+                      formatPhoneDisplay(selectedLead.phone) || '—'
                     )}
                   </div>
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">{t('crm.amountLost')}</label>
-                    <p className="text-black font-semibold">{selectedLead.amountLost}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">{t('crm.scammerCompany')}</label>
-                    <p className="text-black">{selectedLead.scammerCompany}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">{t('crm.createdDate')}</label>
-                    <p className="text-black">{formatCreatedDate(selectedLead.created_at)}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">{t('common.status')}</label>
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(selectedLead.status)}`}>
-                      {selectedLead.status}
-                    </span>
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">{t('users.team')}</label>
-                    <p className="text-black">{selectedLead.team_id ? teams.find(t => t.id === selectedLead.team_id)?.name || 'N/A' : t('common.noTeam')}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">{t('leads.assignedTo')}</label>
-                    <p className="text-black">{selectedLead.assigned_to ? users.find(u => u.id === selectedLead.assigned_to)?.full_name || 'N/A' : t('crm.notAssigned')}</p>
-                  </div>
                 </div>
-                <div className="mt-4">
-                  <label className="text-sm font-semibold text-gray-600">{t('crm.caseDetails')}</label>
-                  <p className="text-black mt-2 p-4 bg-gray-50 border border-gray-200 whitespace-pre-wrap">{selectedLead.caseDetails}</p>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-gray-400 mb-0.5">Amount Lost</div>
+                  <div className="text-sm font-semibold text-black">€{selectedLead.amountLost || '0'}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-gray-400 mb-0.5">Company</div>
+                  <div className="text-sm text-black">{selectedLead.scammerCompany || '—'}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-gray-400 mb-0.5">Team</div>
+                  <div className="text-sm text-black">{selectedLead.team_id ? teams.find(t => t.id === selectedLead.team_id)?.name || 'N/A' : 'No Team'}</div>
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-gray-400 mb-0.5">Assigned To</div>
+                  <div className="text-sm text-black">{selectedLead.assigned_to ? users.find(u => u.id === selectedLead.assigned_to)?.full_name || 'N/A' : 'Not assigned'}</div>
                 </div>
               </div>
 
-              {/* Quick Status Update Section */}
-              <div>
-                <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2">{t('crm.updateStatus')}</h3>
-                <div className="bg-gray-50 border-2 border-gray-200 p-4 space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-black mb-2">{t('common.status')}</label>
-                    <Select value={editData.status || selectedLead.status} onValueChange={(value) => setEditData({ ...editData, status: value })}>
-                      <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white">
-                        {statuses.map(status => (
-                          <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  {((editData.status || selectedLead.status) === 'Callback' || 
-                    (editData.status || selectedLead.status) === 'Potential Callback' || 
-                    (editData.status || selectedLead.status) === 'Pharos in progress') && (
-                    <>
-                      <div className="bg-yellow-50 border-2 border-yellow-400 p-3">
-                        <p className="text-sm font-semibold text-black mb-1">⚠️ {t('crm.callbackDepositRequired')}</p>
-                        <p className="text-xs text-gray-700">{t('crm.setDateTimeNotification')}</p>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-black mb-2">{t('crm.dateTime')} *</label>
-                        <Input
-                          type="datetime-local"
-                          value={editData.callback_date || ''}
-                          onChange={(e) => setEditData({ ...editData, callback_date: e.target.value })}
-                          className="bg-white border-gray-300 rounded-none"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-black mb-2">{t('crm.notesOptional')}</label>
-                        <Textarea
-                          value={editData.callback_notes || ''}
-                          onChange={(e) => setEditData({ ...editData, callback_notes: e.target.value })}
-                          placeholder={t('crm.addNotes')}
-                          className="bg-white border-gray-300 rounded-none"
-                          rows={2}
-                        />
-                      </div>
-                    </>
-                  )}
-                  
-                  <Button onClick={handleSaveEdit} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none font-semibold">
+              {/* Case Details */}
+              {selectedLead.caseDetails && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-gray-400 mb-1">Case Details</div>
+                  <div className="text-sm text-gray-700 bg-gray-50 border border-gray-100 rounded-sm p-3 whitespace-pre-wrap">{selectedLead.caseDetails}</div>
+                </div>
+              )}
+
+              {/* Quick Status Update - Inline */}
+              <div className="bg-gray-50 border border-gray-200 rounded-sm p-3">
+                <div className="flex items-center gap-3">
+                  <div className="text-xs font-medium text-gray-600 flex-shrink-0">Status:</div>
+                  <Select value={editData.status || selectedLead.status} onValueChange={(value) => setEditData({ ...editData, status: value })}>
+                    <SelectTrigger className="bg-white border-gray-300 rounded-sm h-8 text-sm w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      {statuses.map(status => (
+                        <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button onClick={handleSaveEdit} size="sm" className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-sm h-8 text-xs">
                     {t('common.saveChanges')}
                   </Button>
                 </div>
+                
+                {((editData.status || selectedLead.status) === 'Callback' || 
+                  (editData.status || selectedLead.status) === 'Potential Callback' || 
+                  (editData.status || selectedLead.status) === 'Pharos in progress') && (
+                  <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-orange-500" />
+                      <span className="text-xs font-medium text-orange-600">Callback date required</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        type="datetime-local"
+                        value={editData.callback_date || ''}
+                        onChange={(e) => setEditData({ ...editData, callback_date: e.target.value })}
+                        className="bg-white border-gray-300 rounded-sm h-8 text-sm flex-1"
+                      />
+                      <Input
+                        placeholder="Notes (optional)"
+                        value={editData.callback_notes || ''}
+                        onChange={(e) => setEditData({ ...editData, callback_notes: e.target.value })}
+                        className="bg-white border-gray-300 rounded-sm h-8 text-sm flex-1"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Comments Section */}
+              {/* Notes Section - Compact */}
               <div>
-                <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2 flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4" />
-                  {t('crm.commentsAndNotes')}
-                </h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <MessageSquare className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm font-semibold text-black">{t('crm.commentsAndNotes')}</span>
+                </div>
                 
                 {/* Add New Comment */}
                 <div className="bg-gray-50 border-2 border-gray-200 p-4 mb-4">
