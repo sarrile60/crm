@@ -591,8 +591,6 @@ const CRMDashboard = () => {
                         } else if (item.type === 'lead_assigned') {
                           actionText = <span>assigned lead <strong className="text-[#D4AF37]">{item.lead_name}</strong></span>;
                           detailContent = <span className="text-xs text-gray-500">{item.details}</span>;
-                        } else if (item.type === 'login') {
-                          actionText = <span>logged in</span>;
                         } else {
                           actionText = <span>{item.details || item.type}</span>;
                         }

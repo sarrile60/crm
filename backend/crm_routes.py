@@ -1901,7 +1901,7 @@ async def get_activity_stream(
     ).sort("created_at", -1).limit(limit).to_list(limit)
     
     audit_task = db.audit_logs.find(
-        {"action": {"$in": ["login_success", "lead_created", "lead_updated", "lead_deleted"]}},
+        {"action": {"$in": ["lead_created", "lead_updated", "lead_deleted"]}},
         {"_id": 0}
     ).sort("timestamp", -1).limit(limit).to_list(limit)
     
@@ -1982,21 +1982,21 @@ async def get_activity_stream(
                 "timestamp": ts
             })
     
-    # Audit logs (logins)
+    # Audit logs - only lead-related events (no logins)
     for a in audits:
         ts = a.get("timestamp")
         if ts and hasattr(ts, 'isoformat'):
             ts = ts.isoformat()
         
         action = a.get("action", "")
-        if action == "login_success":
+        if action in ["lead_created", "lead_updated", "lead_deleted"]:
             stream.append({
-                "type": "login",
+                "type": action,
                 "user_name": a.get("user_name", "Unknown"),
                 "user_id": a.get("user_id"),
-                "lead_id": None,
-                "lead_name": None,
-                "details": "Logged in",
+                "lead_id": a.get("entity_id"),
+                "lead_name": a.get("entity_name", "Unknown"),
+                "details": str(a.get("details", "")),
                 "timestamp": ts
             })
     
