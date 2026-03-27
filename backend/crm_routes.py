@@ -1841,11 +1841,11 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
     )
     query = {**scope_filter}
     
-    # PERFORMANCE: Run all counts in parallel
+    # PERFORMANCE: Run all counts in parallel (use case-insensitive regex for status)
     total_task = db.leads.count_documents(query)
-    new_task = db.leads.count_documents({**query, "status": "new"})
-    in_progress_task = db.leads.count_documents({**query, "status": "in_progress"})
-    won_task = db.leads.count_documents({**query, "status": "won"})
+    new_task = db.leads.count_documents({**query, "status": {"$regex": "^new$", "$options": "i"}})
+    in_progress_task = db.leads.count_documents({**query, "status": {"$regex": "^in.progress$", "$options": "i"}})
+    won_task = db.leads.count_documents({**query, "status": {"$regex": "^(won|closed.won)$", "$options": "i"}})
     callbacks_task = db.callback_reminders.count_documents({
         "assigned_to": current_user["id"],
         "is_completed": False,
@@ -1898,11 +1898,11 @@ async def get_bootstrap_data(current_user: dict = Depends(get_current_user)):
     query = {**scope_filter}
     
     # Build all tasks to run in parallel
-    # 1. Dashboard stats
+    # 1. Dashboard stats (case-insensitive status matching)
     total_task = db.leads.count_documents(query)
-    new_task = db.leads.count_documents({**query, "status": "new"})
-    in_progress_task = db.leads.count_documents({**query, "status": "in_progress"})
-    won_task = db.leads.count_documents({**query, "status": "won"})
+    new_task = db.leads.count_documents({**query, "status": {"$regex": "^new$", "$options": "i"}})
+    in_progress_task = db.leads.count_documents({**query, "status": {"$regex": "^in.progress$", "$options": "i"}})
+    won_task = db.leads.count_documents({**query, "status": {"$regex": "^(won|closed.won)$", "$options": "i"}})
     callbacks_task = db.callback_reminders.count_documents({
         "assigned_to": current_user["id"],
         "is_completed": False,

@@ -31,6 +31,7 @@ const CRMDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [callbackLead, setCallbackLead] = useState(null);
   const [sessionInfo, setSessionInfo] = useState(null);
+  const [recentLeads, setRecentLeads] = useState([]);
   
   // Track which tabs have been visited (for lazy keep-alive)
   const [visitedTabs, setVisitedTabs] = useState(new Set(['dashboard']));
@@ -163,6 +164,14 @@ const CRMDashboard = () => {
         setCurrentUser(data.user);
         localStorage.setItem('crmUser', JSON.stringify(data.user));
       }
+      
+      // Fetch recent leads for dashboard (small query, runs in background)
+      axios.get(`${API}/crm/leads`, { headers, params: { limit: 8, offset: 0, sort: 'created_at', order: 'desc' } })
+        .then(res => {
+          const leads = Array.isArray(res.data) ? res.data : (res.data.data || []);
+          setRecentLeads(leads);
+        })
+        .catch(() => {});
     } catch (error) {
       console.error('Error fetching data:', error);
       if (error.response?.status === 401) {
@@ -503,18 +512,50 @@ const CRMDashboard = () => {
                 </div>
               </div>
 
-              {/* Recent Leads Preview */}
-              {bootstrapData?.users && (
-                <div className="bg-white border border-gray-200 rounded-sm">
-                  <div className="px-4 py-2 border-b border-gray-200 flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-black">Recent Activity</h3>
-                    <button onClick={() => setActiveTab('leads')} className="text-xs text-[#D4AF37] hover:underline">View all leads →</button>
-                  </div>
-                  <div className="p-4 text-center text-sm text-gray-400">
-                    Click "View all leads" to see your {stats.total_leads} leads
-                  </div>
+              {/* Recent Leads Table */}
+              <div className="bg-white border border-gray-200 rounded-sm">
+                <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-black">Recent Leads</h3>
+                  <button onClick={() => setActiveTab('leads')} className="text-xs text-[#D4AF37] hover:underline">View all {stats.total_leads} leads →</button>
                 </div>
-              )}
+                {recentLeads.length > 0 ? (
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-gray-50 text-xs text-gray-500">
+                        <th className="text-left px-4 py-1.5 font-medium">Name</th>
+                        <th className="text-left px-4 py-1.5 font-medium">Email</th>
+                        <th className="text-left px-4 py-1.5 font-medium">Status</th>
+                        <th className="text-left px-4 py-1.5 font-medium">Amount</th>
+                        <th className="text-left px-4 py-1.5 font-medium">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recentLeads.map((lead, i) => (
+                        <tr key={lead.id || i} className="border-t border-gray-50 hover:bg-gray-50 cursor-pointer" onClick={() => { setActiveTab('leads'); }}>
+                          <td className="px-4 py-1.5 text-xs font-medium text-black">{lead.fullName}</td>
+                          <td className="px-4 py-1.5 text-xs text-gray-500">{lead.email_display || lead.email}</td>
+                          <td className="px-4 py-1.5">
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                              lead.status === 'New' ? 'bg-blue-100 text-blue-700' :
+                              lead.status === 'Callback' ? 'bg-pink-100 text-pink-700' :
+                              lead.status?.includes('Deposit') ? 'bg-green-100 text-green-700' :
+                              lead.status === 'In Progress' ? 'bg-cyan-100 text-cyan-700' :
+                              lead.status === 'Not Interested' ? 'bg-gray-100 text-gray-600' :
+                              'bg-gray-100 text-gray-600'
+                            }`}>{lead.status}</span>
+                          </td>
+                          <td className="px-4 py-1.5 text-xs text-gray-500">€{lead.amountLost}</td>
+                          <td className="px-4 py-1.5 text-xs text-gray-400">
+                            {lead.created_at ? new Date(lead.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="p-4 text-center text-xs text-gray-400">Loading recent leads...</div>
+                )}
+              </div>
             </div>
           )}
         </div>

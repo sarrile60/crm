@@ -1094,17 +1094,40 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
   };
 
   const getStatusColor = (status) => {
+    // Use dynamic colors from loaded statuses if available
+    const statusObj = statuses.find(s => s.name === status);
+    if (statusObj && statusObj.color) {
+      // Convert hex color to tailwind-like inline style
+      return '';  // Will use inline style instead
+    }
+    // Fallback static colors for common statuses
     const colors = {
-      new: 'bg-blue-100 text-blue-800',
-      contacted: 'bg-purple-100 text-purple-800',
-      qualified: 'bg-green-100 text-green-800',
-      callback: 'bg-yellow-100 text-yellow-800',
-      in_progress: 'bg-orange-100 text-orange-800',
-      won: 'bg-green-600 text-white',
-      lost: 'bg-red-100 text-red-800',
-      rejected: 'bg-gray-100 text-gray-800'
+      'New': 'bg-blue-100 text-blue-800',
+      'Contacted': 'bg-yellow-100 text-yellow-800',
+      'No Answer 1': 'bg-amber-100 text-amber-800',
+      'No Answer 2': 'bg-amber-100 text-amber-800',
+      'No Answer 3': 'bg-amber-200 text-amber-900',
+      'Qualified': 'bg-purple-100 text-purple-800',
+      'Low Potential': 'bg-orange-100 text-orange-800',
+      'Callback': 'bg-pink-100 text-pink-800',
+      'Potential Callback': 'bg-pink-50 text-pink-700',
+      'In Progress': 'bg-cyan-100 text-cyan-800',
+      'Pharos in progress': 'bg-violet-100 text-violet-800',
+      'Negotiation': 'bg-orange-100 text-orange-800',
+      'Good Client': 'bg-emerald-100 text-emerald-800',
+      'Deposit': 'bg-green-100 text-green-800',
+      'Deposit 1': 'bg-green-100 text-green-800',
+      'Deposit 2': 'bg-green-200 text-green-900',
+      'Deposit 3': 'bg-green-200 text-green-900',
+      'Deposit 4': 'bg-green-300 text-green-900',
+      'Deposit 5': 'bg-green-300 text-green-900',
+      'Closed Won': 'bg-green-500 text-white',
+      'Closed Lost': 'bg-red-100 text-red-800',
+      'Not Interested': 'bg-gray-200 text-gray-700',
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    // Case-insensitive lookup
+    const key = Object.keys(colors).find(k => k.toLowerCase() === (status || '').toLowerCase());
+    return colors[key] || 'bg-gray-100 text-gray-700';
   };
 
   if (loading && leads.length === 0) {
