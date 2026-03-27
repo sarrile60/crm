@@ -553,7 +553,7 @@ const CRMDashboard = () => {
                     <h3 className="text-sm font-semibold text-black">Recent Leads</h3>
                     <div className="flex items-center gap-2">
                       <button onClick={() => setActiveTab('leads')} className="text-[10px] text-[#D4AF37] hover:underline">View all {stats.total_leads} →</button>
-                      <button onClick={() => setRecentLeads([])} className="text-gray-400 hover:text-gray-600 text-xs" title="Clear">✕</button>
+                      <button onClick={() => { setRecentLeads([]); fetchData(); }} className="text-gray-400 hover:text-gray-600 text-xs" title="Refresh">↻</button>
                     </div>
                   </div>
                   {recentLeads.length > 0 ? (
@@ -596,7 +596,7 @@ const CRMDashboard = () => {
                 <div className="bg-white border border-gray-200 rounded-sm flex flex-col">
                   <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-black">Stream</h3>
-                    <button onClick={() => setStreamData([])} className="text-gray-400 hover:text-gray-600 text-xs" title="Clear">✕</button>
+                    <button onClick={() => { setStreamData([]); fetchData(); }} className="text-gray-400 hover:text-gray-600 text-xs" title="Refresh">↻</button>
                   </div>
                   {streamData.length > 0 ? (
                     <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto flex-1">
@@ -675,7 +675,7 @@ const CRMDashboard = () => {
                   <div className="bg-white border border-gray-200 rounded-sm flex flex-col">
                     <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                       <h3 className="text-sm font-semibold text-black">Login Activity</h3>
-                      <button onClick={() => setLoginActivity([])} className="text-gray-400 hover:text-gray-600 text-xs" title="Clear">✕</button>
+                      <button onClick={() => { setLoginActivity([]); fetchData(); }} className="text-gray-400 hover:text-gray-600 text-xs" title="Refresh">↻</button>
                     </div>
                     {loginActivity.length > 0 ? (
                       <div className="divide-y divide-gray-50 max-h-[400px] overflow-y-auto flex-1">
