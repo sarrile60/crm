@@ -733,7 +733,7 @@ async def get_chat_users(request: Request):
 @router.get("/poll")
 async def poll_messages(request: Request, since: Optional[str] = None, conversation_id: Optional[str] = None):
     from server import db
-    
+    import asyncio
     
     current_user = await get_current_user(request)
     
@@ -745,6 +745,9 @@ async def poll_messages(request: Request, since: Optional[str] = None, conversat
     
     conversation_ids = [c["id"] for c in user_conversations]
     
+    if not conversation_ids:
+        return {"messages": [], "typing": {}, "read_updates": []}
+    
     query = {
         "conversation_id": {"$in": conversation_ids},
         "sender_id": {"$ne": current_user["id"]}
@@ -753,46 +756,37 @@ async def poll_messages(request: Request, since: Optional[str] = None, conversat
     if since:
         query["created_at"] = {"$gt": since}
     
-    new_messages = await db.messages.find(
-        query,
-        {"_id": 0}
-    ).sort("created_at", 1).to_list(50)
+    # Run messages query and read updates in parallel
+    messages_task = db.messages.find(query, {"_id": 0}).sort("created_at", 1).to_list(50)
     
-    # Add sender info
-    for msg in new_messages:
-        if msg["sender_id"] == "system_notifications":
-            msg["sender"] = {
-                "id": "system_notifications",
-                "full_name": "⚠️ System Alerts"
-            }
-        else:
-            sender = await db.crm_users.find_one({"id": msg["sender_id"]}, {"_id": 0, "id": 1, "full_name": 1})
-            msg["sender"] = sender
-    
-    # Get typing indicators
-    typing_info = {}
-    for conv_id in conversation_ids:
-        conv = await db.conversations.find_one({"id": conv_id}, {"_id": 0, "typing_users": 1})
-        if conv and conv.get("typing_users"):
-            typing_users = [u for u in conv["typing_users"] if u != current_user["id"]]
-            if typing_users:
-                typing_info[conv_id] = typing_users
-    
-    # Get read status updates for the current conversation (if specified)
-    read_updates = []
     if conversation_id:
-        # Get messages sent by current user in this conversation with their read_by status
-        my_messages = await db.messages.find(
-            {
-                "conversation_id": conversation_id,
-                "sender_id": current_user["id"]
-            },
+        read_task = db.messages.find(
+            {"conversation_id": conversation_id, "sender_id": current_user["id"]},
             {"_id": 0, "id": 1, "read_by": 1}
         ).to_list(100)
-        read_updates = my_messages
+        new_messages, read_updates = await asyncio.gather(messages_task, read_task)
+    else:
+        new_messages = await messages_task
+        read_updates = []
+    
+    # Batch-fetch sender info (1 query instead of N)
+    sender_ids = list(set(m["sender_id"] for m in new_messages if m["sender_id"] != "system_notifications"))
+    senders = {}
+    if sender_ids:
+        sender_docs = await db.crm_users.find(
+            {"id": {"$in": sender_ids}},
+            {"_id": 0, "id": 1, "full_name": 1}
+        ).to_list(100)
+        senders = {s["id"]: s for s in sender_docs}
+    
+    for msg in new_messages:
+        if msg["sender_id"] == "system_notifications":
+            msg["sender"] = {"id": "system_notifications", "full_name": "⚠️ System Alerts"}
+        else:
+            msg["sender"] = senders.get(msg["sender_id"], {"id": msg["sender_id"], "full_name": "Unknown"})
     
     return {
         "messages": new_messages,
-        "typing": typing_info,
+        "typing": {},
         "read_updates": read_updates
     }

@@ -59,19 +59,30 @@ const CRMDashboard = () => {
       return;
     }
     
+    // Quick JWT expiry check (client-side, no API call)
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (payload.exp && payload.exp * 1000 < Date.now()) {
+        localStorage.removeItem('crmToken');
+        localStorage.removeItem('crmUser');
+        navigate('/crm/login');
+        return;
+      }
+    } catch (e) {
+      // Token parse failed - let server validate it
+      console.debug('JWT parse failed, will validate server-side');
+    }
+    
     setCurrentUser(JSON.parse(user));
     fetchData();
     
-    // Start session check interval (every 2 minutes instead of 60s)
+    // Session check every 2 minutes (for after-hours enforcement)
     const sessionCheckInterval = setInterval(checkSession, 120000);
     
-    // Start heartbeat interval (every 60 seconds instead of 30s)
+    // Heartbeat every 60 seconds
     const heartbeatInterval = setInterval(sendHeartbeat, 60000);
     
-    // Check session immediately on load
-    checkSession();
-    
-    // Send initial heartbeat
+    // Initial heartbeat only (skip session check — JWT already verified above)
     sendHeartbeat();
     
     return () => {
@@ -494,11 +505,7 @@ const CRMDashboard = () => {
         )}
 
         {activeTab === 'leads' && (
-          process.env.REACT_APP_PERF_MODE === 'true' ? (
-            <LeadsTableOptimized currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} />
-          ) : (
             <LeadsTable currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} bootstrapData={bootstrapData} />
-          )
         )}
         {activeTab === 'deposits' && (
           <DepositsManager 

@@ -351,7 +351,7 @@ const ChatWidget = ({ currentUser }) => {
   useEffect(() => {
     if (!currentUser) return;
     
-    const interval = setInterval(pollMessages, 5000); // Poll every 5 seconds for better performance
+    const interval = setInterval(pollMessages, 10000); // Poll every 10 seconds for better performance
     return () => clearInterval(interval);
   }, [currentUser, pollMessages]);
 

@@ -283,35 +283,35 @@ async def login(credentials: UserLogin):
                     detail=f"after_hours_approval_required:{reason}"
                 )
     
-    # Update last login
-    await db.crm_users.update_one(
-        {"id": user["id"]},
-        {"$set": {"last_login": datetime.now(timezone.utc)}}
-    )
+    # Run non-blocking operations in parallel
+    import asyncio
     
-    # Note: Don't delete the approved request immediately - let it stay valid
-    # for its entire duration so user can re-login if needed. The cleanup
-    # at the start of this function will remove expired approvals.
-    
-    # Calculate session expiry from settings
+    # Calculate session expiry first (needed for token)
     session_expiry = await get_session_expiry_from_settings()
     
-    # Log successful login
-    await log_auth_event(
-        action=AuditAction.LOGIN_SUCCESS,
-        username=user["username"],
-        user_id=user["id"],
-        success=True,
-        details={"session_expiry": session_expiry.isoformat()}
-    )
-    
-    # Create token with session expiry
+    # Create token immediately (no DB needed)
     token = create_access_token({
         "user_id": user["id"],
         "username": user["username"],
         "role": user["role"],
         "session_expiry": session_expiry.isoformat()
     })
+    
+    # Fire background tasks (don't wait for these)
+    asyncio.ensure_future(db.crm_users.update_one(
+        {"id": user["id"]},
+        {"$set": {"last_login": datetime.now(timezone.utc)}}
+    ))
+    asyncio.ensure_future(log_auth_event(
+        action=AuditAction.LOGIN_SUCCESS,
+        username=user["username"],
+        user_id=user["id"],
+        success=True,
+        details={"session_expiry": session_expiry.isoformat()}
+    ))
+    
+    # Cache user for subsequent requests
+    _set_cached_user(user["id"], user)
     
     return {
         "token": token,
@@ -323,8 +323,7 @@ async def login(credentials: UserLogin):
             "team_id": user.get("team_id")
         },
         "session": {
-            "expiry": session_expiry.isoformat(),
-            "info": await get_session_info()
+            "expiry": session_expiry.isoformat()
         }
     }
 
@@ -1659,16 +1658,15 @@ async def mark_alert_read(alert_id: str, current_user: dict = Depends(get_curren
 
 @crm_router.post("/heartbeat")
 async def update_heartbeat(current_user: dict = Depends(get_current_user)):
-    """Update user's last_active timestamp and status - called periodically by frontend"""
+    """Update user's last_active timestamp - fire-and-forget for instant response"""
+    import asyncio
     now = datetime.now(timezone.utc)
     
-    await db.crm_users.update_one(
+    # Fire and forget - don't wait for DB write
+    asyncio.ensure_future(db.crm_users.update_one(
         {"id": current_user["id"]},
-        {"$set": {
-            "last_active": now,
-            "status": "active"
-        }}
-    )
+        {"$set": {"last_active": now, "status": "active"}}
+    ))
     
     return {"success": True, "last_active": now.isoformat()}
 

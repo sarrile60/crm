@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Header
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
@@ -30,12 +31,15 @@ client = AsyncIOMotorClient(
     mongo_url,
     maxPoolSize=50,  # Maximum connections in pool
     minPoolSize=10,  # Minimum connections to maintain
-    maxIdleTimeMS=30000,  # Close idle connections after 30s
+    maxIdleTimeMS=60000,  # Close idle connections after 60s (was 30s)
     waitQueueTimeoutMS=10000,  # Timeout waiting for connection
     serverSelectionTimeoutMS=5000,  # Timeout for server selection
     connectTimeoutMS=5000,  # Connection timeout
+    socketTimeoutMS=20000,  # Socket timeout
     retryWrites=True,  # Retry failed writes
-    retryReads=True  # Retry failed reads
+    retryReads=True,  # Retry failed reads
+    readPreference='nearest',  # Use nearest replica for lowest latency
+    compressors=['zstd', 'zlib'],  # Wire compression
 )
 db_name = os.environ.get('DB_NAME', 'legal_crm_production')
 db = client[db_name]
@@ -838,8 +842,18 @@ app.add_middleware(
     max_age=3600
 )
 
+# GZip compression for all responses > 500 bytes
+app.add_middleware(GZipMiddleware, minimum_size=500)
+
 @app.on_event("startup")
 async def startup_event():
+    # Pre-warm MongoDB connection pool (eliminates cold-start latency)
+    try:
+        await db.command('ping')
+        logger.info("MongoDB connection pool pre-warmed")
+    except Exception as e:
+        logger.error(f"MongoDB ping failed: {e}")
+    
     await init_analytics()
     
     # Auto-create default admin if no users exist (for fresh deployments)
