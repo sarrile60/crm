@@ -37,6 +37,7 @@ const CRMDashboard = () => {
   const [streamLimit, setStreamLimit] = useState(15);
   const [loginLimit, setLoginLimit] = useState(10);
   const [loadingMore, setLoadingMore] = useState('');
+  const [openDropdown, setOpenDropdown] = useState(null); // 'reports' or 'settings' or null
   
   // Track which tabs have been visited (for lazy keep-alive)
   const [visitedTabs, setVisitedTabs] = useState(new Set(['dashboard']));
@@ -418,8 +419,12 @@ const CRMDashboard = () => {
 
             {/* Reports Dropdown (Admin) */}
             {currentUser?.role === 'admin' && (
-              <div className="relative group">
+              <div className="relative"
+                onMouseEnter={() => setOpenDropdown('reports')}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
                 <button
+                  onClick={() => setOpenDropdown(openDropdown === 'reports' ? null : 'reports')}
                   className={`px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-medium transition-all rounded-sm whitespace-nowrap flex items-center gap-1 ${
                     ['revenue', 'analytics', 'finance', 'depositApprovals'].includes(activeTab)
                       ? 'text-[#D4AF37] bg-[#D4AF37]/10'
@@ -430,28 +435,34 @@ const CRMDashboard = () => {
                   Reports
                   <ChevronDown className="w-3 h-3" />
                 </button>
-                <div className="absolute left-0 top-full mt-0 w-52 bg-white border border-gray-200 shadow-lg rounded-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                  <button onClick={() => setActiveTab('revenue')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'revenue' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
-                    <BarChart3 className="w-3.5 h-3.5" /> Revenue
-                  </button>
-                  <button onClick={() => setActiveTab('analytics')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'analytics' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
-                    <PieChart className="w-3.5 h-3.5" /> Analytics
-                  </button>
-                  <button onClick={() => setActiveTab('finance')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'finance' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
-                    <Wallet className="w-3.5 h-3.5" /> Finance
-                  </button>
-                  <div className="border-t border-gray-100"></div>
-                  <button onClick={() => setActiveTab('depositApprovals')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'depositApprovals' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
-                    <CheckCircle className="w-3.5 h-3.5" /> Deposit Approvals
-                  </button>
-                </div>
+                {openDropdown === 'reports' && (
+                  <div className="absolute left-0 top-full w-52 bg-white border border-gray-200 shadow-lg rounded-sm z-50">
+                    <button onClick={() => { setActiveTab('revenue'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'revenue' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                      <BarChart3 className="w-3.5 h-3.5" /> Revenue
+                    </button>
+                    <button onClick={() => { setActiveTab('analytics'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'analytics' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                      <PieChart className="w-3.5 h-3.5" /> Analytics
+                    </button>
+                    <button onClick={() => { setActiveTab('finance'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'finance' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                      <Wallet className="w-3.5 h-3.5" /> Finance
+                    </button>
+                    <div className="border-t border-gray-100"></div>
+                    <button onClick={() => { setActiveTab('depositApprovals'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'depositApprovals' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                      <CheckCircle className="w-3.5 h-3.5" /> Deposit Approvals
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* Admin Dropdown */}
+            {/* Settings Dropdown */}
             {currentUser?.role === 'admin' && (
-              <div className="relative group">
+              <div className="relative"
+                onMouseEnter={() => setOpenDropdown('settings')}
+                onMouseLeave={() => setOpenDropdown(null)}
+              >
                 <button
+                  onClick={() => setOpenDropdown(openDropdown === 'settings' ? null : 'settings')}
                   className={`px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-medium transition-all rounded-sm whitespace-nowrap flex items-center gap-1 ${
                     ['settings', 'commissionSettings'].includes(activeTab)
                       ? 'text-[#D4AF37] bg-[#D4AF37]/10'
@@ -462,18 +473,20 @@ const CRMDashboard = () => {
                   Settings
                   <ChevronDown className="w-3 h-3" />
                 </button>
-                <div className="absolute left-0 top-full mt-0 w-52 bg-white border border-gray-200 shadow-lg rounded-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                  <button onClick={() => setActiveTab('commissionSettings')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'commissionSettings' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
-                    <Sliders className="w-3.5 h-3.5" /> Commission Settings
-                  </button>
-                  <button onClick={() => setActiveTab('settings')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'settings' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
-                    <Settings className="w-3.5 h-3.5" /> CRM Settings
-                  </button>
-                  <div className="border-t border-gray-100"></div>
-                  <button onClick={() => navigate('/crm/admin')} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700">
-                    <Shield className="w-3.5 h-3.5" /> Administration Panel
-                  </button>
-                </div>
+                {openDropdown === 'settings' && (
+                  <div className="absolute left-0 top-full w-52 bg-white border border-gray-200 shadow-lg rounded-sm z-50">
+                    <button onClick={() => { setActiveTab('commissionSettings'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'commissionSettings' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                      <Sliders className="w-3.5 h-3.5" /> Commission Settings
+                    </button>
+                    <button onClick={() => { setActiveTab('settings'); setOpenDropdown(null); }} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'settings' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                      <Settings className="w-3.5 h-3.5" /> CRM Settings
+                    </button>
+                    <div className="border-t border-gray-100"></div>
+                    <button onClick={() => { navigate('/crm/admin'); setOpenDropdown(null); }} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700">
+                      <Shield className="w-3.5 h-3.5" /> Administration Panel
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
