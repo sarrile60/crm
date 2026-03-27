@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Database, Edit, Check, X, Users, User, Phone, FileText, Briefcase, Calendar, Mail, Settings, Tag, Building2, DollarSign, Target, MessageSquare, Clipboard, Clock, UserCheck, Award, HelpCircle, Contact } from 'lucide-react';
+import { Database, Edit, Check, X, Users, User, Phone, FileText, Briefcase, Calendar, Mail, Settings, Tag, Building2, DollarSign, Target, MessageSquare, Clipboard, Clock, UserCheck, Award, HelpCircle, Contact, BarChart3, PieChart, TrendingUp, Shield, Eye, Activity } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { toast } from 'sonner';
@@ -36,7 +36,18 @@ const ICON_MAP = {
   'award': Award,
   'database': Database,
   'help-circle': HelpCircle,
-  'helpcircle': HelpCircle
+  'helpcircle': HelpCircle,
+  'bar-chart': BarChart3,
+  'barchart': BarChart3,
+  'bar-chart-3': BarChart3,
+  'barchart3': BarChart3,
+  'pie-chart': PieChart,
+  'piechart': PieChart,
+  'trending-up': TrendingUp,
+  'trendingup': TrendingUp,
+  'shield': Shield,
+  'eye': Eye,
+  'activity': Activity
 };
 
 // Helper function to get icon component
