@@ -1182,29 +1182,29 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
   return (
     <div className="flex flex-col h-full max-w-[1600px] mx-auto">
       {/* Sticky Toolbar */}
-      <div className="sticky top-0 z-20 bg-white pb-4 mb-4">{/* Changed z-10 to z-20 to be above table header */}
+      <div className="sticky top-0 z-20 bg-white pb-2 md:pb-4 mb-2 md:mb-4">
         {/* Title and Action Buttons */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-3xl font-bold text-black">{t('leads.title')}</h2>
-          <div className="flex gap-3">
+        <div className="flex items-center justify-between mb-2 md:mb-4 flex-wrap gap-2">
+          <h2 className="text-xl md:text-3xl font-bold text-black">{t('leads.title')}</h2>
+          <div className="flex gap-2 flex-wrap">
           {canMassUpdate && selectedLeadIds.length > 0 && (
-            <Button onClick={() => setShowMassUpdateModal(true)} className="bg-purple-600 text-white hover:bg-purple-700 rounded-none">
-              <Edit className="w-4 h-4 mr-2" />
+            <Button onClick={() => setShowMassUpdateModal(true)} size="sm" className="bg-purple-600 text-white hover:bg-purple-700 rounded-sm h-8 text-xs">
+              <Edit className="w-3.5 h-3.5 mr-1" />
               {t('crm.massUpdate')} ({selectedLeadIds.length})
             </Button>
           )}
-          <Button onClick={() => setShowCreateModal(true)} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
-            <Plus className="w-4 h-4 mr-2" />
+          <Button onClick={() => setShowCreateModal(true)} size="sm" className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-sm h-8 text-xs">
+            <Plus className="w-3.5 h-3.5 mr-1" />
             {t('leads.createLead')}
           </Button>
           {currentUser.role === 'admin' && (
             <>
-              <Button onClick={() => setShowImportModal(true)} className="bg-blue-600 text-white hover:bg-blue-700 rounded-none">
-                <Upload className="w-4 h-4 mr-2" />
+              <Button onClick={() => setShowImportModal(true)} size="sm" className="bg-blue-600 text-white hover:bg-blue-700 rounded-sm h-8 text-xs hidden md:flex">
+                <Upload className="w-3.5 h-3.5 mr-1" />
                 {t('common.import')} CSV
               </Button>
-              <Button onClick={handleExportCSV} className="bg-green-600 text-white hover:bg-green-700 rounded-none">
-                <Download className="w-4 h-4 mr-2" />
+              <Button onClick={handleExportCSV} size="sm" className="bg-green-600 text-white hover:bg-green-700 rounded-sm h-8 text-xs hidden md:flex">
+                <Download className="w-3.5 h-3.5 mr-1" />
                 {t('common.export')} CSV
               </Button>
             </>
@@ -1213,12 +1213,12 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
         </div>
 
         {/* Pagination Info and Controls */}
-        <div className="flex items-center justify-between text-sm mb-4">
+        <div className="flex items-center justify-between text-xs md:text-sm flex-wrap gap-2">
           <div className="text-gray-700 font-semibold">
             {t('common.showing')} {startRecord}–{endRecord} / {totalLeads}
           </div>
-          <div className="flex items-center gap-3">
-            <label className="text-gray-700 font-semibold">{t('common.rowsPerPage')}:</label>
+          <div className="flex items-center gap-2 md:gap-3">
+            <label className="text-gray-700 font-semibold hidden md:inline">{t('common.rowsPerPage')}:</label>
             <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
               <SelectTrigger className="w-[80px] h-8 bg-white border-gray-300 rounded-none">
                 <SelectValue />
@@ -1253,8 +1253,8 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
         </div>
       </div>
 
-      {/* Compact Filters - Single Row */}
-      <div className="flex items-center gap-2 mb-3 px-1">
+      {/* Compact Filters - Responsive */}
+      <div className="flex items-center gap-2 mb-3 px-1 flex-wrap">
         <div className="relative flex-1 max-w-xs">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <Input
@@ -1601,7 +1601,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
       {/* Detail Modal with Navigation */}
       {showDetailModal && selectedLead && (
         <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-          <DialogContent className="max-w-3xl bg-white max-h-[90vh] overflow-y-auto p-0">
+          <DialogContent className="max-w-3xl w-[95vw] md:w-auto bg-white max-h-[95vh] md:max-h-[90vh] overflow-y-auto p-0">
             {/* Header with lead name + status */}
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-3 z-10">
               <div className="flex items-center justify-between">
@@ -1641,9 +1641,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
               </div>
             </div>
 
-            <div className="px-6 py-4 space-y-5">
-              {/* Contact Info - Compact Grid */}
-              <div className="grid grid-cols-3 gap-x-6 gap-y-3">
+            <div className="px-4 md:px-6 py-3 md:py-4 space-y-4 md:space-y-5">
+              {/* Contact Info - Responsive Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 md:gap-x-6 gap-y-3">
                 <div>
                   <div className="text-[10px] uppercase tracking-wide text-gray-400 mb-0.5">Email</div>
                   <div className="text-sm text-black">{selectedLead.email || '—'}</div>
@@ -1686,7 +1686,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
 
               {/* Quick Status Update - Inline */}
               <div className="bg-gray-50 border border-gray-200 rounded-sm p-3">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3 flex-wrap">
                   <div className="text-xs font-medium text-gray-600 flex-shrink-0">Status:</div>
                   <Select value={editData.status || selectedLead.status} onValueChange={(value) => setEditData({ ...editData, status: value })}>
                     <SelectTrigger className="bg-white border-gray-300 rounded-sm h-8 text-sm w-48">

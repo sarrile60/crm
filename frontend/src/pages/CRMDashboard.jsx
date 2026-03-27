@@ -266,13 +266,13 @@ const CRMDashboard = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-black border-b border-[#D4AF37] px-6 sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto flex items-center justify-between h-14">
-          <div className="flex items-center gap-3">
-            <Scale className="w-7 h-7 text-[#D4AF37]" />
-            <div>
-              <h1 className="text-white text-base font-semibold leading-tight">1 LAW SOLICITORS CRM</h1>
-              <p className="text-gray-400 text-xs leading-tight">{currentUser?.full_name} · {t(`users.roles.${currentUser?.role}`)}</p>
+      <header className="bg-black border-b border-[#D4AF37] px-3 md:px-6 sticky top-0 z-50">
+        <div className="max-w-[1600px] mx-auto flex items-center justify-between h-12 md:h-14">
+          <div className="flex items-center gap-2 md:gap-3 min-w-0">
+            <Scale className="w-6 h-6 md:w-7 md:h-7 text-[#D4AF37] flex-shrink-0" />
+            <div className="min-w-0">
+              <h1 className="text-white text-sm md:text-base font-semibold leading-tight truncate">1 LAW SOLICITORS CRM</h1>
+              <p className="text-gray-400 text-[10px] md:text-xs leading-tight truncate">{currentUser?.full_name} · {t(`users.roles.${currentUser?.role}`)}</p>
             </div>
           </div>
           
@@ -311,15 +311,14 @@ const CRMDashboard = () => {
         </div>
       </header>
 
-      {/* Navigation - Clean Professional Layout */}
-      <nav className="bg-white border-b border-gray-200 px-6">
-        <div className="max-w-[1600px] mx-auto flex items-center h-11">
-          {/* Primary Nav Items */}
-          <div className="flex items-center gap-1">
+      {/* Navigation - Scrollable on mobile */}
+      <nav className="bg-white border-b border-gray-200 px-3 md:px-6">
+        <div className="max-w-[1600px] mx-auto flex items-center h-11 overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-1 flex-nowrap">
             {/* Dashboard */}
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm ${
+              className={`px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-medium transition-all rounded-sm whitespace-nowrap ${
                 activeTab === 'dashboard'
                   ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                   : 'text-gray-600 hover:text-black hover:bg-gray-100'
@@ -332,7 +331,7 @@ const CRMDashboard = () => {
             {/* Leads */}
             <button
               onClick={() => setActiveTab('leads')}
-              className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm ${
+              className={`px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-medium transition-all rounded-sm whitespace-nowrap ${
                 activeTab === 'leads'
                   ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                   : 'text-gray-600 hover:text-black hover:bg-gray-100'
@@ -345,7 +344,7 @@ const CRMDashboard = () => {
             {/* Deposits */}
             <button
               onClick={() => setActiveTab('deposits')}
-              className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm ${
+              className={`px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-medium transition-all rounded-sm whitespace-nowrap ${
                 activeTab === 'deposits'
                   ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                   : 'text-gray-600 hover:text-black hover:bg-gray-100'
@@ -359,7 +358,7 @@ const CRMDashboard = () => {
             {(currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
               <button
                 onClick={() => setActiveTab('team')}
-                className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm ${
+                className={`px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-medium transition-all rounded-sm whitespace-nowrap ${
                   activeTab === 'team'
                     ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                     : 'text-gray-600 hover:text-black hover:bg-gray-100'
@@ -374,7 +373,7 @@ const CRMDashboard = () => {
             {(currentUser?.role === 'agent' || currentUser?.role === 'supervisor') && (
               <button
                 onClick={() => setActiveTab('earnings')}
-                className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm ${
+                className={`px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-medium transition-all rounded-sm whitespace-nowrap ${
                   activeTab === 'earnings'
                     ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                     : 'text-gray-600 hover:text-black hover:bg-gray-100'
@@ -394,7 +393,7 @@ const CRMDashboard = () => {
             {currentUser?.role === 'admin' && (
               <div className="relative group">
                 <button
-                  className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm flex items-center gap-1 ${
+                  className={`px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-medium transition-all rounded-sm whitespace-nowrap flex items-center gap-1 ${
                     ['revenue', 'analytics', 'finance', 'depositApprovals'].includes(activeTab)
                       ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                       : 'text-gray-600 hover:text-black hover:bg-gray-100'
@@ -426,7 +425,7 @@ const CRMDashboard = () => {
             {currentUser?.role === 'admin' && (
               <div className="relative group">
                 <button
-                  className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm flex items-center gap-1 ${
+                  className={`px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm font-medium transition-all rounded-sm whitespace-nowrap flex items-center gap-1 ${
                     ['settings', 'commissionSettings'].includes(activeTab)
                       ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                       : 'text-gray-600 hover:text-black hover:bg-gray-100'
@@ -455,7 +454,7 @@ const CRMDashboard = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-[1600px] mx-auto px-6 py-4">
+      <main className="max-w-[1600px] mx-auto px-3 md:px-6 py-3 md:py-4">
         {/* ==================== LAZY KEEP-ALIVE TABS ====================
              Mount once on first visit, then keep alive (display:none) forever.
              Result: ALL tab switches are INSTANT after first visit.
@@ -465,14 +464,14 @@ const CRMDashboard = () => {
         <div style={{ display: activeTab === 'dashboard' ? 'block' : 'none' }}>
           {stats && (
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-black">{t('dashboard.title')}</h2>
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <h2 className="text-lg md:text-xl font-bold text-black">{t('dashboard.title')}</h2>
                 <div className="flex gap-2">
                   <Button onClick={() => setActiveTab('leads')} size="sm" className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-sm text-xs h-8">
                     {t('dashboard.viewAllLeads')}
                   </Button>
                   {currentUser?.role === 'admin' && (
-                    <Button onClick={() => navigate('/crm/admin')} size="sm" className="bg-gray-800 text-white hover:bg-black rounded-sm text-xs h-8">
+                    <Button onClick={() => navigate('/crm/admin')} size="sm" className="bg-gray-800 text-white hover:bg-black rounded-sm text-xs h-8 hidden md:flex">
                       {t('dashboard.adminPanel')}
                     </Button>
                   )}
