@@ -34,6 +34,9 @@ const CRMDashboard = () => {
   const [recentLeads, setRecentLeads] = useState([]);
   const [streamData, setStreamData] = useState([]);
   const [loginActivity, setLoginActivity] = useState([]);
+  const [streamLimit, setStreamLimit] = useState(15);
+  const [loginLimit, setLoginLimit] = useState(10);
+  const [loadingMore, setLoadingMore] = useState('');
   
   // Track which tabs have been visited (for lazy keep-alive)
   const [visitedTabs, setVisitedTabs] = useState(new Set(['dashboard']));
@@ -188,6 +191,30 @@ const CRMDashboard = () => {
       setLoading(false);
     }
   };
+
+  const loadMoreStream = async () => {
+    try {
+      setLoadingMore('stream');
+      const token = localStorage.getItem('crmToken');
+      const newLimit = streamLimit + 15;
+      const res = await axios.get(`${API}/crm/stream`, { headers: { Authorization: `Bearer ${token}` }, params: { limit: newLimit } });
+      setStreamData(res.data || []);
+      setStreamLimit(newLimit);
+    } catch (e) {} finally { setLoadingMore(''); }
+  };
+
+  const loadMoreLogins = async () => {
+    try {
+      setLoadingMore('login');
+      const token = localStorage.getItem('crmToken');
+      const newLimit = loginLimit + 10;
+      const res = await axios.get(`${API}/crm/login-activity`, { headers: { Authorization: `Bearer ${token}` }, params: { limit: newLimit } });
+      setLoginActivity(res.data || []);
+      setLoginLimit(newLimit);
+    } catch (e) {} finally { setLoadingMore(''); }
+  };
+
+
 
   const handleLogout = async () => {
     try {
@@ -521,13 +548,16 @@ const CRMDashboard = () => {
               {/* Three-column layout: Recent Leads + Stream + Login Activity */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Recent Leads */}
-                <div className="bg-white border border-gray-200 rounded-sm">
+                <div className="bg-white border border-gray-200 rounded-sm flex flex-col">
                   <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-black">Recent Leads</h3>
-                    <button onClick={() => setActiveTab('leads')} className="text-xs text-[#D4AF37] hover:underline">View all {stats.total_leads} →</button>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => setActiveTab('leads')} className="text-[10px] text-[#D4AF37] hover:underline">View all {stats.total_leads} →</button>
+                      <button onClick={() => setRecentLeads([])} className="text-gray-400 hover:text-gray-600 text-xs" title="Clear">✕</button>
+                    </div>
                   </div>
                   {recentLeads.length > 0 ? (
-                    <div className="divide-y divide-gray-50">
+                    <div className="divide-y divide-gray-50 flex-1 max-h-[400px] overflow-y-auto">
                       {recentLeads.map((lead, i) => (
                         <div key={lead.id || i} className="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center justify-between" onClick={() => setActiveTab('leads')}>
                           <div className="flex items-center gap-3 min-w-0">
@@ -557,15 +587,19 @@ const CRMDashboard = () => {
                   ) : (
                     <div className="p-4 text-center text-xs text-gray-400">Loading...</div>
                   )}
+                  <button onClick={() => setActiveTab('leads')} className="w-full py-2 text-xs text-[#D4AF37] hover:bg-gray-50 border-t border-gray-100 font-medium">
+                    Show more
+                  </button>
                 </div>
 
                 {/* Activity Stream (EspoCRM style) */}
-                <div className="bg-white border border-gray-200 rounded-sm">
-                  <div className="px-4 py-2 border-b border-gray-100">
+                <div className="bg-white border border-gray-200 rounded-sm flex flex-col">
+                  <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-black">Stream</h3>
+                    <button onClick={() => setStreamData([])} className="text-gray-400 hover:text-gray-600 text-xs" title="Clear">✕</button>
                   </div>
                   {streamData.length > 0 ? (
-                    <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
+                    <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto flex-1">
                       {streamData.map((item, i) => {
                         const initials = (item.user_name || '??').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
                         const colors = ['bg-blue-500', 'bg-green-500', 'bg-orange-500', 'bg-purple-500', 'bg-pink-500', 'bg-cyan-500', 'bg-amber-500'];
@@ -631,16 +665,20 @@ const CRMDashboard = () => {
                   ) : (
                     <div className="p-6 text-center text-xs text-gray-400">No recent activity</div>
                   )}
+                  <button onClick={loadMoreStream} disabled={loadingMore === 'stream'} className="w-full py-2 text-xs text-[#D4AF37] hover:bg-gray-50 border-t border-gray-100 font-medium disabled:opacity-50">
+                    {loadingMore === 'stream' ? 'Loading...' : 'Show more'}
+                  </button>
                 </div>
 
                 {/* Login Activity (Admin only) */}
                 {currentUser?.role === 'admin' && (
-                  <div className="bg-white border border-gray-200 rounded-sm">
-                    <div className="px-4 py-2 border-b border-gray-100">
+                  <div className="bg-white border border-gray-200 rounded-sm flex flex-col">
+                    <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                       <h3 className="text-sm font-semibold text-black">Login Activity</h3>
+                      <button onClick={() => setLoginActivity([])} className="text-gray-400 hover:text-gray-600 text-xs" title="Clear">✕</button>
                     </div>
                     {loginActivity.length > 0 ? (
-                      <div className="divide-y divide-gray-50 max-h-[400px] overflow-y-auto">
+                      <div className="divide-y divide-gray-50 max-h-[400px] overflow-y-auto flex-1">
                         {loginActivity.map((item, i) => {
                           const initials = (item.user_name || '??').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
                           const roleColor = item.role === 'admin' ? 'bg-red-500' : item.role === 'supervisor' ? 'bg-blue-500' : 'bg-green-500';
@@ -670,6 +708,9 @@ const CRMDashboard = () => {
                     ) : (
                       <div className="p-6 text-center text-xs text-gray-400">No login activity</div>
                     )}
+                    <button onClick={loadMoreLogins} disabled={loadingMore === 'login'} className="w-full py-2 text-xs text-[#D4AF37] hover:bg-gray-50 border-t border-gray-100 font-medium disabled:opacity-50">
+                      {loadingMore === 'login' ? 'Loading...' : 'Show more'}
+                    </button>
                   </div>
                 )}
               </div>
