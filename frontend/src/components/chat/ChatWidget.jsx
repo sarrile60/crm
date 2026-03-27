@@ -406,7 +406,7 @@ const ChatWidget = ({ currentUser }) => {
     }
     
     const messageToSend = newMessage.trim();
-    setIsSending(true);
+    setNewMessage(''); // Clear immediately so user can type next message
     
     try {
       const token = localStorage.getItem('crmToken');
@@ -416,9 +416,6 @@ const ChatWidget = ({ currentUser }) => {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
-      // Clear message only after successful send
-      setNewMessage('');
       
       // Add message only if it doesn't already exist
       setMessages(prev => {
@@ -432,10 +429,7 @@ const ChatWidget = ({ currentUser }) => {
       fetchConversations();
     } catch (error) {
       console.error('Error sending message:', error);
-      // Restore message on error
-      setNewMessage(messageToSend);
-    } finally {
-      setIsSending(false);
+      toast.error('Failed to send message');
     }
   };
 
@@ -1013,15 +1007,14 @@ const ChatWidget = ({ currentUser }) => {
                     <Paperclip className="w-5 h-5 text-gray-500" />
                   </button>
                   <Input
-                    placeholder={isSending ? 'Sending...' : t('chat.typeMessage')}
+                    placeholder={t('chat.typeMessage')}
                     value={newMessage}
                     onChange={handleTyping}
-                    onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && !isSending && sendMessage()}
-                    className={`flex-1 ${isSending ? 'opacity-50' : ''}`}
-                    disabled={isSending}
+                    onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                    className="flex-1"
                   />
-                  <Button onClick={sendMessage} disabled={!newMessage.trim() || isSending} className={isSending ? 'opacity-50' : ''}>
-                    <Send className={`w-4 h-4 ${isSending ? 'animate-spin' : ''}`} />
+                  <Button onClick={sendMessage} disabled={!newMessage.trim()}>
+                    <Send className="w-4 h-4" />
                   </Button>
                 </div>
               )}
