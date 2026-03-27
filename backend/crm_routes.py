@@ -783,16 +783,33 @@ async def get_crm_leads(
     sort_direction = -1 if order == "desc" else 1
     sort_field = sort
     
-    # PERFORMANCE: Run count and fetch in parallel using asyncio.gather
+    # PERFORMANCE: Use $facet to get count + data in ONE query (single Atlas round-trip)
     import asyncio
     
-    count_task = db.leads.count_documents(query)
-    fetch_task = db.leads.find(
-        query, 
-        LIST_PROJECTION
-    ).sort(sort_field, sort_direction).skip(offset).limit(limit).to_list(limit)
+    pipeline = [
+        {"$match": query},
+        {"$facet": {
+            "data": [
+                {"$sort": {sort_field: sort_direction}},
+                {"$skip": offset},
+                {"$limit": limit},
+                {"$project": LIST_PROJECTION}
+            ],
+            "count": [
+                {"$count": "total"}
+            ]
+        }}
+    ]
     
-    total, leads = await asyncio.gather(count_task, fetch_task)
+    result = await db.leads.aggregate(pipeline).to_list(1)
+    
+    if result:
+        leads = result[0].get("data", [])
+        count_result = result[0].get("count", [])
+        total = count_result[0]["total"] if count_result else 0
+    else:
+        leads = []
+        total = 0
     
     query_time = (time.time() - start_time) * 1000
     logger.info(f"[DB QUERY] leads (count+fetch parallel): {query_time:.2f}ms | {len(leads)}/{total} results")

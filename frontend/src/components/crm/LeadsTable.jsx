@@ -188,7 +188,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
   // Pagination state
   const [totalLeads, setTotalLeads] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(100);
+  const [pageSize, setPageSize] = useState(50);
 
   // Handle urgent callback lead - only trigger once, then clear
   useEffect(() => {
@@ -1107,8 +1107,33 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  if (loading) {
-    return <div className="text-center py-12">{t('leads.loadingLeads')}</div>;
+  if (loading && leads.length === 0) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="h-8 w-48 bg-gray-200 animate-pulse rounded"></div>
+          <div className="flex gap-2">
+            <div className="h-10 w-32 bg-gray-200 animate-pulse rounded"></div>
+            <div className="h-10 w-32 bg-gray-200 animate-pulse rounded"></div>
+          </div>
+        </div>
+        <div className="border border-gray-200">
+          <div className="bg-gray-800 h-12"></div>
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="flex items-center border-t border-gray-200 p-3 gap-4">
+              <div className="h-4 w-24 bg-gray-200 animate-pulse rounded"></div>
+              <div className="h-4 w-32 bg-gray-200 animate-pulse rounded"></div>
+              <div className="h-4 w-28 bg-gray-200 animate-pulse rounded"></div>
+              <div className="h-4 w-40 bg-gray-200 animate-pulse rounded"></div>
+              <div className="h-4 w-16 bg-gray-200 animate-pulse rounded"></div>
+              <div className="h-6 w-20 bg-gray-200 animate-pulse rounded-full"></div>
+              <div className="h-4 w-20 bg-gray-200 animate-pulse rounded"></div>
+              <div className="h-4 w-24 bg-gray-200 animate-pulse rounded"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   const canMassUpdate = ['admin', 'supervisor'].includes(currentUser.role);
