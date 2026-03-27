@@ -33,6 +33,7 @@ const CRMDashboard = () => {
   const [sessionInfo, setSessionInfo] = useState(null);
   const [recentLeads, setRecentLeads] = useState([]);
   const [streamData, setStreamData] = useState([]);
+  const [loginActivity, setLoginActivity] = useState([]);
   
   // Track which tabs have been visited (for lazy keep-alive)
   const [visitedTabs, setVisitedTabs] = useState(new Set(['dashboard']));
@@ -166,15 +167,17 @@ const CRMDashboard = () => {
         localStorage.setItem('crmUser', JSON.stringify(data.user));
       }
       
-      // Fetch recent leads and stream for dashboard (run in background)
+      // Fetch recent leads, stream, and login activity for dashboard (run in background)
       const bgHeaders = { Authorization: `Bearer ${token}` };
       Promise.all([
         axios.get(`${API}/crm/leads`, { headers: bgHeaders, params: { limit: 8, offset: 0, sort: 'created_at', order: 'desc' } }),
-        axios.get(`${API}/crm/stream`, { headers: bgHeaders, params: { limit: 15 } })
-      ]).then(([leadsRes, streamRes]) => {
+        axios.get(`${API}/crm/stream`, { headers: bgHeaders, params: { limit: 15 } }),
+        axios.get(`${API}/crm/login-activity`, { headers: bgHeaders, params: { limit: 10 } })
+      ]).then(([leadsRes, streamRes, loginRes]) => {
         const leads = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
         setRecentLeads(leads);
         setStreamData(streamRes.data || []);
+        setLoginActivity(loginRes.data || []);
       }).catch(() => {});
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -516,8 +519,8 @@ const CRMDashboard = () => {
                 </div>
               </div>
 
-              {/* Two-column layout: Recent Leads + Activity Stream */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Three-column layout: Recent Leads + Stream + Login Activity */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Recent Leads */}
                 <div className="bg-white border border-gray-200 rounded-sm">
                   <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
@@ -630,6 +633,46 @@ const CRMDashboard = () => {
                     <div className="p-6 text-center text-xs text-gray-400">No recent activity</div>
                   )}
                 </div>
+
+                {/* Login Activity (Admin only) */}
+                {currentUser?.role === 'admin' && (
+                  <div className="bg-white border border-gray-200 rounded-sm">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <h3 className="text-sm font-semibold text-black">Login Activity</h3>
+                    </div>
+                    {loginActivity.length > 0 ? (
+                      <div className="divide-y divide-gray-50 max-h-[400px] overflow-y-auto">
+                        {loginActivity.map((item, i) => {
+                          const initials = (item.user_name || '??').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+                          const roleColor = item.role === 'admin' ? 'bg-red-500' : item.role === 'supervisor' ? 'bg-blue-500' : 'bg-green-500';
+                          const roleBadge = item.role === 'admin' ? 'bg-red-100 text-red-700' : item.role === 'supervisor' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700';
+                          
+                          const timeStr = item.timestamp ? (() => {
+                            const d = new Date(item.timestamp);
+                            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                          })() : '';
+                          
+                          return (
+                            <div key={i} className="px-4 py-2 hover:bg-gray-50 flex items-center gap-3">
+                              <div className={`w-7 h-7 rounded-full ${roleColor} flex items-center justify-center flex-shrink-0`}>
+                                <span className="text-[10px] font-bold text-white">{initials}</span>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs font-medium text-gray-800">{item.user_name}</div>
+                                <span className={`px-1.5 py-0 rounded text-[9px] font-medium ${roleBadge}`}>{item.role}</span>
+                              </div>
+                              <div className="text-[10px] text-gray-400 flex-shrink-0 text-right">
+                                {timeStr}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="p-6 text-center text-xs text-gray-400">No login activity</div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}

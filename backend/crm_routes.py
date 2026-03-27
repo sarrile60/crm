@@ -1867,6 +1867,55 @@ async def get_dashboard_stats(current_user: dict = Depends(get_current_user)):
 
 
 
+
+# ==================== LOGIN ACTIVITY ====================
+
+@crm_router.get("/login-activity")
+async def get_login_activity(
+    limit: int = 10,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Get recent login activity for agents and supervisors.
+    Shows who logged in and when — separate from the lead stream.
+    Admin-only view.
+    """
+    if current_user.get("role", "").lower() != "admin":
+        return []
+    
+    limit = min(limit, 30)
+    
+    # Get recent successful logins (exclude admin logins)
+    logins = await db.audit_logs.find(
+        {
+            "action": "login_success",
+        },
+        {"_id": 0, "user_name": 1, "user_id": 1, "timestamp": 1, "details": 1}
+    ).sort("timestamp", -1).limit(limit).to_list(limit)
+    
+    # Get user roles for each login
+    result = []
+    user_cache = {}
+    for login in logins:
+        user_id = login.get("user_id")
+        if user_id and user_id not in user_cache:
+            user = await db.crm_users.find_one({"id": user_id}, {"_id": 0, "role": 1, "full_name": 1})
+            user_cache[user_id] = user or {}
+        
+        user_info = user_cache.get(user_id, {})
+        ts = login.get("timestamp")
+        if ts and hasattr(ts, 'isoformat'):
+            ts = ts.isoformat()
+        
+        result.append({
+            "user_name": user_info.get("full_name") or login.get("user_name", "Unknown"),
+            "role": user_info.get("role", "unknown"),
+            "timestamp": ts
+        })
+    
+    return result
+
+
 # ==================== ACTIVITY STREAM ====================
 
 @crm_router.get("/stream")
