@@ -39,6 +39,16 @@ const CRMDashboard = () => {
   const [loadingMore, setLoadingMore] = useState('');
   const [openDropdown, setOpenDropdown] = useState(null); // 'reports' or 'settings' or null
   
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!openDropdown) return;
+    const handleClick = (e) => {
+      if (!e.target.closest('[data-dropdown]')) setOpenDropdown(null);
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [openDropdown]);
+  
   // Track which tabs have been visited (for lazy keep-alive)
   const [visitedTabs, setVisitedTabs] = useState(new Set(['dashboard']));
   
@@ -419,9 +429,7 @@ const CRMDashboard = () => {
 
             {/* Reports Dropdown (Admin) */}
             {currentUser?.role === 'admin' && (
-              <div className="relative"
-                onMouseEnter={() => setOpenDropdown('reports')}
-                onMouseLeave={() => setOpenDropdown(null)}
+              <div className="relative" data-dropdown
               >
                 <button
                   onClick={() => setOpenDropdown(openDropdown === 'reports' ? null : 'reports')}
@@ -457,9 +465,7 @@ const CRMDashboard = () => {
 
             {/* Settings Dropdown */}
             {currentUser?.role === 'admin' && (
-              <div className="relative"
-                onMouseEnter={() => setOpenDropdown('settings')}
-                onMouseLeave={() => setOpenDropdown(null)}
+              <div className="relative" data-dropdown
               >
                 <button
                   onClick={() => setOpenDropdown(openDropdown === 'settings' ? null : 'settings')}
