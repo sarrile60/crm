@@ -32,8 +32,22 @@ const CRMDashboard = () => {
   const [callbackLead, setCallbackLead] = useState(null);
   const [sessionInfo, setSessionInfo] = useState(null);
   
+  // Track which tabs have been visited (for lazy keep-alive)
+  const [visitedTabs, setVisitedTabs] = useState(new Set(['dashboard']));
+  
   // Bootstrap data - shared across components to avoid duplicate API calls
   const [bootstrapData, setBootstrapData] = useState(null);
+  
+  // Update visited tabs when activeTab changes
+  useEffect(() => {
+    if (activeTab) {
+      setVisitedTabs(prev => {
+        const next = new Set(prev);
+        next.add(activeTab);
+        return next;
+      });
+    }
+  }, [activeTab]);
 
   // Send heartbeat to update last_active status
   const sendHeartbeat = async () => {
@@ -444,85 +458,138 @@ const CRMDashboard = () => {
 
       {/* Main Content */}
       <main className="max-w-[1600px] mx-auto p-8">
-        {activeTab === 'dashboard' && stats && (
-          <div>
-            <h2 className="text-3xl font-bold text-black mb-8">{t('dashboard.title')}</h2>
-            
-            {/* Stats Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              <div className="bg-white border-2 border-[#D4AF37] p-6 shadow-lg">
-                <div className="flex items-center justify-between mb-4">
-                  <FileText className="w-8 h-8 text-[#D4AF37]" />
-                  <span className="text-sm text-gray-600">{t('common.total')}</span>
-                </div>
-                <div className="text-4xl font-bold text-black mb-2">{stats.total_leads}</div>
-                <p className="text-gray-600">{t('dashboard.totalLeads')}</p>
-              </div>
+        {/* ==================== LAZY KEEP-ALIVE TABS ====================
+             Mount once on first visit, then keep alive (display:none) forever.
+             Result: ALL tab switches are INSTANT after first visit.
+        */}
 
-              <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
-                <div className="flex items-center justify-between mb-4">
-                  <AlertCircle className="w-8 h-8 text-blue-600" />
-                  <span className="text-sm text-gray-600">{t('common.new')}</span>
+        {/* Dashboard */}
+        <div style={{ display: activeTab === 'dashboard' ? 'block' : 'none' }}>
+          {stats && (
+            <div>
+              <h2 className="text-3xl font-bold text-black mb-8">{t('dashboard.title')}</h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div className="bg-white border-2 border-[#D4AF37] p-6 shadow-lg">
+                  <div className="flex items-center justify-between mb-4">
+                    <FileText className="w-8 h-8 text-[#D4AF37]" />
+                    <span className="text-sm text-gray-600">{t('common.total')}</span>
+                  </div>
+                  <div className="text-4xl font-bold text-black mb-2">{stats.total_leads}</div>
+                  <p className="text-gray-600">{t('dashboard.totalLeads')}</p>
                 </div>
-                <div className="text-4xl font-bold text-black mb-2">{stats.new_leads}</div>
-                <p className="text-gray-600">{t('dashboard.newLeads')}</p>
-              </div>
-
-              <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
-                <div className="flex items-center justify-between mb-4">
-                  <TrendingUp className="w-8 h-8 text-orange-600" />
-                  <span className="text-sm text-gray-600">{t('common.inProgress')}</span>
+                <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
+                  <div className="flex items-center justify-between mb-4">
+                    <AlertCircle className="w-8 h-8 text-blue-600" />
+                    <span className="text-sm text-gray-600">{t('common.new')}</span>
+                  </div>
+                  <div className="text-4xl font-bold text-black mb-2">{stats.new_leads}</div>
+                  <p className="text-gray-600">{t('dashboard.newLeads')}</p>
                 </div>
-                <div className="text-4xl font-bold text-black mb-2">{stats.in_progress}</div>
-                <p className="text-gray-600">{t('dashboard.inProgress')}</p>
-              </div>
-
-              <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
-                <div className="flex items-center justify-between mb-4">
-                  <Bell className="w-8 h-8 text-red-600" />
-                  <span className="text-sm text-gray-600">{t('common.urgent')}</span>
+                <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
+                  <div className="flex items-center justify-between mb-4">
+                    <TrendingUp className="w-8 h-8 text-orange-600" />
+                    <span className="text-sm text-gray-600">{t('common.inProgress')}</span>
+                  </div>
+                  <div className="text-4xl font-bold text-black mb-2">{stats.in_progress}</div>
+                  <p className="text-gray-600">{t('dashboard.inProgress')}</p>
                 </div>
-                <div className="text-4xl font-bold text-black mb-2">{stats.pending_callbacks}</div>
-                <p className="text-gray-600">{t('dashboard.pendingCallbacks')}</p>
+                <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
+                  <div className="flex items-center justify-between mb-4">
+                    <Bell className="w-8 h-8 text-red-600" />
+                    <span className="text-sm text-gray-600">{t('common.urgent')}</span>
+                  </div>
+                  <div className="text-4xl font-bold text-black mb-2">{stats.pending_callbacks}</div>
+                  <p className="text-gray-600">{t('dashboard.pendingCallbacks')}</p>
+                </div>
               </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-gray-50 border-2 border-gray-200 p-6">
-              <h3 className="text-xl font-bold text-black mb-4">{t('dashboard.quickActions')}</h3>
-              <div className="flex flex-wrap gap-4">
-                <Button onClick={() => setActiveTab('leads')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
-                  {t('dashboard.viewAllLeads')}
-                </Button>
-                {currentUser?.role === 'admin' && (
-                  <Button onClick={() => navigate('/crm/admin')} className="bg-black text-white hover:bg-gray-800 rounded-none">
-                    {t('dashboard.adminPanel')}
+              <div className="bg-gray-50 border-2 border-gray-200 p-6">
+                <h3 className="text-xl font-bold text-black mb-4">{t('dashboard.quickActions')}</h3>
+                <div className="flex flex-wrap gap-4">
+                  <Button onClick={() => setActiveTab('leads')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
+                    {t('dashboard.viewAllLeads')}
                   </Button>
-                )}
+                  {currentUser?.role === 'admin' && (
+                    <Button onClick={() => navigate('/crm/admin')} className="bg-black text-white hover:bg-gray-800 rounded-none">
+                      {t('dashboard.adminPanel')}
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
+          )}
+        </div>
+
+        {/* Leads - always mounted */}
+        <div style={{ display: activeTab === 'leads' ? 'block' : 'none' }}>
+          <LeadsTable currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} bootstrapData={bootstrapData} />
+        </div>
+
+        {/* Deposits - lazy mount, then keep alive */}
+        {visitedTabs.has('deposits') && (
+          <div style={{ display: activeTab === 'deposits' ? 'block' : 'none' }}>
+            <DepositsManager 
+              currentUser={currentUser} 
+              pendingDepositData={pendingDepositData}
+              onDepositCreated={() => setPendingDepositData(null)}
+            />
           </div>
         )}
 
-        {activeTab === 'leads' && (
-            <LeadsTable currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} bootstrapData={bootstrapData} />
+        {/* Earnings (Agent/Supervisor) */}
+        {visitedTabs.has('earnings') && (currentUser?.role === 'agent' || currentUser?.role === 'supervisor') && (
+          <div style={{ display: activeTab === 'earnings' ? 'block' : 'none' }}>
+            <FinancialDashboard currentUser={currentUser} />
+          </div>
         )}
-        {activeTab === 'deposits' && (
-          <DepositsManager 
-            currentUser={currentUser} 
-            pendingDepositData={pendingDepositData}
-            onDepositCreated={() => setPendingDepositData(null)}
-          />
+
+        {/* Deposit Approvals (Admin) */}
+        {visitedTabs.has('depositApprovals') && currentUser?.role === 'admin' && (
+          <div style={{ display: activeTab === 'depositApprovals' ? 'block' : 'none' }}>
+            <DepositApprovals currentUser={currentUser} />
+          </div>
         )}
-        {activeTab === 'earnings' && (currentUser?.role === 'agent' || currentUser?.role === 'supervisor') && <FinancialDashboard currentUser={currentUser} />}
-        {activeTab === 'depositApprovals' && currentUser?.role === 'admin' && <DepositApprovals currentUser={currentUser} />}
-        {activeTab === 'analytics' && currentUser?.role === 'admin' && <AnalyticsDashboard currentUser={currentUser} />}
-        {activeTab === 'finance' && currentUser?.role === 'admin' && <FinancialDashboard currentUser={currentUser} />}
-        {activeTab === 'commissionSettings' && currentUser?.role === 'admin' && <CommissionSettings currentUser={currentUser} />}
-        {activeTab === 'revenue' && (currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && <TeamRevenue currentUser={currentUser} />}
-        {activeTab === 'team' && (currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && <TeamMembers currentUser={currentUser} />}
-        {/* Users tab moved to Administration Panel */}
-        {activeTab === 'settings' && <SettingsPanel />}
+
+        {/* Analytics (Admin) */}
+        {visitedTabs.has('analytics') && currentUser?.role === 'admin' && (
+          <div style={{ display: activeTab === 'analytics' ? 'block' : 'none' }}>
+            <AnalyticsDashboard currentUser={currentUser} />
+          </div>
+        )}
+
+        {/* Finance (Admin) */}
+        {visitedTabs.has('finance') && currentUser?.role === 'admin' && (
+          <div style={{ display: activeTab === 'finance' ? 'block' : 'none' }}>
+            <FinancialDashboard currentUser={currentUser} />
+          </div>
+        )}
+
+        {/* Commission Settings (Admin) */}
+        {visitedTabs.has('commissionSettings') && currentUser?.role === 'admin' && (
+          <div style={{ display: activeTab === 'commissionSettings' ? 'block' : 'none' }}>
+            <CommissionSettings currentUser={currentUser} />
+          </div>
+        )}
+
+        {/* Revenue (Supervisor/Admin) */}
+        {visitedTabs.has('revenue') && (currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
+          <div style={{ display: activeTab === 'revenue' ? 'block' : 'none' }}>
+            <TeamRevenue currentUser={currentUser} />
+          </div>
+        )}
+
+        {/* Team (Supervisor/Admin) */}
+        {visitedTabs.has('team') && (currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
+          <div style={{ display: activeTab === 'team' ? 'block' : 'none' }}>
+            <TeamMembers currentUser={currentUser} />
+          </div>
+        )}
+
+        {/* Settings */}
+        {visitedTabs.has('settings') && (
+          <div style={{ display: activeTab === 'settings' ? 'block' : 'none' }}>
+            <SettingsPanel />
+          </div>
+        )}
       </main>
       
       {/* Chat Widget */}
