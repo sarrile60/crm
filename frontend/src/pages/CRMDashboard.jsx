@@ -341,7 +341,7 @@ const CRMDashboard = () => {
 
       {/* Navigation - Scrollable on mobile */}
       <nav className="bg-white border-b border-gray-200 px-3 md:px-6">
-        <div className="max-w-[1600px] mx-auto flex items-center h-11 overflow-x-auto scrollbar-hide">
+        <div className="max-w-[1600px] mx-auto flex items-center h-11 overflow-x-auto md:overflow-visible scrollbar-hide">
           <div className="flex items-center gap-1 flex-nowrap">
             {/* Dashboard */}
             <button
