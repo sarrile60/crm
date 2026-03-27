@@ -1253,133 +1253,120 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-gray-50 border-2 border-gray-200 p-6 mb-6">
-        <div className="grid md:grid-cols-5 gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-black mb-2">{t('common.search')}</label>
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder={t('leads.searchPlaceholder')}
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-10 bg-white border-gray-300 rounded-none"
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-black mb-2">{t('common.status')}</label>
-            <Select value={filters.status || "all"} onValueChange={(value) => setFilters({ ...filters, status: value === "all" ? "" : value })}>
-              <SelectTrigger className="bg-white border-gray-300 rounded-none">
-                <SelectValue placeholder={t('common.all')} />
-              </SelectTrigger>
-              <SelectContent className="bg-white">
-                <SelectItem value="all">{t('common.all')}</SelectItem>
-                {statuses.map(status => (
-                  <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-black mb-2">{t('leads.assignedTo') || 'Assigned To'}</label>
-            <Popover open={assignedToOpen} onOpenChange={setAssignedToOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={assignedToOpen}
-                  className="w-full justify-between bg-white border-gray-300 rounded-none font-normal hover:bg-gray-50"
-                >
-                  <span className="truncate">
-                    {filters.assigned_to.length === 0 
-                      ? t('common.all')
-                      : filters.assigned_to.length === 1 
-                        ? users.find(u => u.id === filters.assigned_to[0])?.full_name || 'Selected'
-                        : `${filters.assigned_to.length} ${t('common.selected') || 'selected'}`
-                    }
-                  </span>
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[280px] p-0" align="start">
-                <Command>
-                  <CommandInput placeholder={t('common.searchUsers') || 'Search users...'} />
-                  <CommandList>
-                    <CommandEmpty>{t('common.noResults') || 'No users found.'}</CommandEmpty>
-                    <CommandGroup>
-                      {/* Clear All / Select All options */}
+      {/* Compact Filters - Single Row */}
+      <div className="flex items-center gap-2 mb-3 px-1">
+        <div className="relative flex-1 max-w-xs">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Input
+            placeholder={t('leads.searchPlaceholder')}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="pl-9 h-8 bg-white border-gray-300 rounded-sm text-sm"
+          />
+        </div>
+        <Select value={filters.status || "all"} onValueChange={(value) => setFilters({ ...filters, status: value === "all" ? "" : value })}>
+          <SelectTrigger className="bg-white border-gray-300 rounded-sm h-8 w-40 text-sm">
+            <SelectValue placeholder={t('common.all')} />
+          </SelectTrigger>
+          <SelectContent className="bg-white">
+            <SelectItem value="all">{t('common.all')}</SelectItem>
+            {statuses.map(status => (
+              <SelectItem key={status.id} value={status.name}>{status.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Popover open={assignedToOpen} onOpenChange={setAssignedToOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={assignedToOpen}
+              className="justify-between bg-white border-gray-300 rounded-sm h-8 w-44 font-normal hover:bg-gray-50 text-sm"
+            >
+              <span className="truncate text-sm">
+                {filters.assigned_to.length === 0 
+                  ? t('common.all')
+                  : filters.assigned_to.length === 1 
+                    ? users.find(u => u.id === filters.assigned_to[0])?.full_name || 'Selected'
+                    : `${filters.assigned_to.length} ${t('common.selected') || 'selected'}`
+                }
+              </span>
+              <ChevronsUpDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[280px] p-0" align="start">
+            <Command>
+              <CommandInput placeholder={t('common.searchUsers') || 'Search users...'} />
+              <CommandList>
+                <CommandEmpty>{t('common.noResults') || 'No users found.'}</CommandEmpty>
+                <CommandGroup>
+                  <CommandItem
+                    onSelect={() => {
+                      setFilters({ ...filters, assigned_to: [] });
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <div className={`mr-2 flex h-4 w-4 items-center justify-center rounded-sm border ${filters.assigned_to.length === 0 ? 'bg-[#D4AF37] border-[#D4AF37]' : 'border-gray-300'}`}>
+                      {filters.assigned_to.length === 0 && <Check className="h-3 w-3 text-white" />}
+                    </div>
+                    <span className="font-medium">{t('common.all')} ({t('common.noFilter') || 'No Filter'})</span>
+                  </CommandItem>
+                  <div className="h-px bg-gray-200 my-1" />
+                  {users.filter(u => u.role !== 'admin').map(user => {
+                    const isSelected = filters.assigned_to.includes(user.id);
+                    return (
                       <CommandItem
+                        key={user.id}
                         onSelect={() => {
-                          setFilters({ ...filters, assigned_to: [] });
+                          if (isSelected) {
+                            setFilters({ 
+                              ...filters, 
+                              assigned_to: filters.assigned_to.filter(id => id !== user.id) 
+                            });
+                          } else {
+                            setFilters({ 
+                              ...filters, 
+                              assigned_to: [...filters.assigned_to, user.id] 
+                            });
+                          }
                         }}
                         className="cursor-pointer"
                       >
-                        <div className={`mr-2 flex h-4 w-4 items-center justify-center rounded-sm border ${filters.assigned_to.length === 0 ? 'bg-[#D4AF37] border-[#D4AF37]' : 'border-gray-300'}`}>
-                          {filters.assigned_to.length === 0 && <Check className="h-3 w-3 text-white" />}
+                        <div className={`mr-2 flex h-4 w-4 items-center justify-center rounded-sm border ${isSelected ? 'bg-[#D4AF37] border-[#D4AF37]' : 'border-gray-300'}`}>
+                          {isSelected && <Check className="h-3 w-3 text-white" />}
                         </div>
-                        <span className="font-medium">{t('common.all')} ({t('common.noFilter') || 'No Filter'})</span>
+                        <span>{user.full_name}</span>
+                        <span className="ml-auto text-xs text-gray-500">({user.role})</span>
                       </CommandItem>
-                      <div className="h-px bg-gray-200 my-1" />
-                      {/* User list */}
-                      {users.filter(u => u.role !== 'admin').map(user => {
-                        const isSelected = filters.assigned_to.includes(user.id);
-                        return (
-                          <CommandItem
-                            key={user.id}
-                            onSelect={() => {
-                              if (isSelected) {
-                                setFilters({ 
-                                  ...filters, 
-                                  assigned_to: filters.assigned_to.filter(id => id !== user.id) 
-                                });
-                              } else {
-                                setFilters({ 
-                                  ...filters, 
-                                  assigned_to: [...filters.assigned_to, user.id] 
-                                });
-                              }
-                            }}
-                            className="cursor-pointer"
-                          >
-                            <div className={`mr-2 flex h-4 w-4 items-center justify-center rounded-sm border ${isSelected ? 'bg-[#D4AF37] border-[#D4AF37]' : 'border-gray-300'}`}>
-                              {isSelected && <Check className="h-3 w-3 text-white" />}
-                            </div>
-                            <span>{user.full_name}</span>
-                            <span className="ml-auto text-xs text-gray-500">({user.role})</span>
-                          </CommandItem>
-                        );
-                      })}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-                {/* Footer with selected count and clear button */}
-                {filters.assigned_to.length > 0 && (
-                  <div className="border-t p-2 flex items-center justify-between bg-gray-50">
-                    <span className="text-sm text-gray-600">
-                      {filters.assigned_to.length} {t('common.selected') || 'selected'}
-                    </span>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => setFilters({ ...filters, assigned_to: [] })}
-                      className="h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <X className="w-3 h-3 mr-1" />
-                      {t('common.clear') || 'Clear'}
-                    </Button>
-                  </div>
-                )}
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div className="flex items-end">
-            <Button onClick={() => { setFilters({ status: '', search: '', assigned_to: [] }); setSearchInput(''); setCurrentPage(1); }} className="bg-gray-800 text-white hover:bg-black rounded-none w-full">
-              {t('common.clearFilters')}
-            </Button>
-          </div>
-        </div>
+                    );
+                  })}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+            {filters.assigned_to.length > 0 && (
+              <div className="border-t p-2 flex items-center justify-between bg-gray-50">
+                <span className="text-sm text-gray-600">
+                  {filters.assigned_to.length} {t('common.selected') || 'selected'}
+                </span>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setFilters({ ...filters, assigned_to: [] })}
+                  className="h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <X className="w-3 h-3 mr-1" />
+                  {t('common.clear') || 'Clear'}
+                </Button>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
+        {(filters.status || filters.search || filters.assigned_to.length > 0) && (
+          <Button onClick={() => { setFilters({ status: '', search: '', assigned_to: [] }); setSearchInput(''); setCurrentPage(1); }} variant="ghost" size="sm" className="h-8 text-xs text-gray-500 hover:text-black">
+            <X className="w-3 h-3 mr-1" />
+            {t('common.clearFilters')}
+          </Button>
+        )}
       </div>
 
       {/* Leads Table - Desktop View */}
