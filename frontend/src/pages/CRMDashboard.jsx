@@ -264,12 +264,12 @@ const CRMDashboard = () => {
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-black border-b border-[#D4AF37] px-6 sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto flex items-center justify-between h-12">
-          <div className="flex items-center gap-2">
-            <Scale className="w-6 h-6 text-[#D4AF37]" />
+        <div className="max-w-[1600px] mx-auto flex items-center justify-between h-14">
+          <div className="flex items-center gap-3">
+            <Scale className="w-7 h-7 text-[#D4AF37]" />
             <div>
-              <h1 className="text-white text-sm font-semibold leading-tight">1 LAW SOLICITORS CRM</h1>
-              <p className="text-gray-400 text-[10px] leading-tight">{currentUser?.full_name} · {t(`users.roles.${currentUser?.role}`)}</p>
+              <h1 className="text-white text-base font-semibold leading-tight">1 LAW SOLICITORS CRM</h1>
+              <p className="text-gray-400 text-xs leading-tight">{currentUser?.full_name} · {t(`users.roles.${currentUser?.role}`)}</p>
             </div>
           </div>
           
@@ -300,8 +300,8 @@ const CRMDashboard = () => {
               </div>
             )}
             <CallbackNotifications onCallbackAlert={handleCallbackAlert} currentUser={currentUser} bootstrapData={bootstrapData} />
-            <Button onClick={handleLogout} size="sm" className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-sm h-8 text-xs">
-              <LogOut className="w-3.5 h-3.5 mr-1" />
+            <Button onClick={handleLogout} size="sm" className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-sm h-9 text-sm px-4">
+              <LogOut className="w-4 h-4 mr-1.5" />
               {t('auth.logout')}
             </Button>
           </div>
@@ -310,45 +310,45 @@ const CRMDashboard = () => {
 
       {/* Navigation - Clean Professional Layout */}
       <nav className="bg-white border-b border-gray-200 px-6">
-        <div className="max-w-[1600px] mx-auto flex items-center h-10">
+        <div className="max-w-[1600px] mx-auto flex items-center h-11">
           {/* Primary Nav Items */}
           <div className="flex items-center gap-1">
             {/* Dashboard */}
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`px-3 py-2 text-sm font-medium transition-all rounded-sm ${
+              className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm ${
                 activeTab === 'dashboard'
                   ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                   : 'text-gray-600 hover:text-black hover:bg-gray-100'
               }`}
             >
-              <TrendingUp className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
+              <TrendingUp className="w-4 h-4 inline mr-1.5 -mt-0.5" />
               {t('nav.dashboard')}
             </button>
 
             {/* Leads */}
             <button
               onClick={() => setActiveTab('leads')}
-              className={`px-3 py-2 text-sm font-medium transition-all rounded-sm ${
+              className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm ${
                 activeTab === 'leads'
                   ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                   : 'text-gray-600 hover:text-black hover:bg-gray-100'
               }`}
             >
-              <FileText className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
+              <FileText className="w-4 h-4 inline mr-1.5 -mt-0.5" />
               {t('nav.leads')}
             </button>
 
             {/* Deposits */}
             <button
               onClick={() => setActiveTab('deposits')}
-              className={`px-3 py-2 text-sm font-medium transition-all rounded-sm ${
+              className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm ${
                 activeTab === 'deposits'
                   ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                   : 'text-gray-600 hover:text-black hover:bg-gray-100'
               }`}
             >
-              <DollarSign className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
+              <DollarSign className="w-4 h-4 inline mr-1.5 -mt-0.5" />
               {t('nav.deposits')}
             </button>
 
@@ -356,13 +356,13 @@ const CRMDashboard = () => {
             {(currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
               <button
                 onClick={() => setActiveTab('team')}
-                className={`px-3 py-2 text-sm font-medium transition-all rounded-sm ${
+                className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm ${
                   activeTab === 'team'
                     ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                     : 'text-gray-600 hover:text-black hover:bg-gray-100'
                 }`}
               >
-                <Users className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
+                <Users className="w-4 h-4 inline mr-1.5 -mt-0.5" />
                 {t('nav.team')}
               </button>
             )}
@@ -371,13 +371,13 @@ const CRMDashboard = () => {
             {(currentUser?.role === 'agent' || currentUser?.role === 'supervisor') && (
               <button
                 onClick={() => setActiveTab('earnings')}
-                className={`px-3 py-2 text-sm font-medium transition-all rounded-sm ${
+                className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm ${
                   activeTab === 'earnings'
                     ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                     : 'text-gray-600 hover:text-black hover:bg-gray-100'
                 }`}
               >
-                <Wallet className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
+                <Wallet className="w-4 h-4 inline mr-1.5 -mt-0.5" />
                 {t('nav.earnings')}
               </button>
             )}
@@ -391,13 +391,13 @@ const CRMDashboard = () => {
             {currentUser?.role === 'admin' && (
               <div className="relative group">
                 <button
-                  className={`px-3 py-2 text-sm font-medium transition-all rounded-sm flex items-center gap-1 ${
+                  className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm flex items-center gap-1 ${
                     ['revenue', 'analytics', 'finance', 'depositApprovals'].includes(activeTab)
                       ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                       : 'text-gray-600 hover:text-black hover:bg-gray-100'
                   }`}
                 >
-                  <BarChart3 className="w-3.5 h-3.5 -mt-0.5" />
+                  <BarChart3 className="w-4 h-4 -mt-0.5" />
                   Reports
                   <ChevronDown className="w-3 h-3" />
                 </button>
@@ -423,13 +423,13 @@ const CRMDashboard = () => {
             {currentUser?.role === 'admin' && (
               <div className="relative group">
                 <button
-                  className={`px-3 py-2 text-sm font-medium transition-all rounded-sm flex items-center gap-1 ${
+                  className={`px-4 py-2.5 text-sm font-medium transition-all rounded-sm flex items-center gap-1 ${
                     ['settings', 'commissionSettings'].includes(activeTab)
                       ? 'text-[#D4AF37] bg-[#D4AF37]/10'
                       : 'text-gray-600 hover:text-black hover:bg-gray-100'
                   }`}
                 >
-                  <Settings className="w-3.5 h-3.5 -mt-0.5" />
+                  <Settings className="w-4 h-4 -mt-0.5" />
                   Settings
                   <ChevronDown className="w-3 h-3" />
                 </button>
