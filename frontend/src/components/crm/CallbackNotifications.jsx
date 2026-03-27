@@ -12,7 +12,7 @@ const API = `${BACKEND_URL}/api`;
 // 24 hours in milliseconds for auto-expiry
 const NOTIFICATION_EXPIRY_MS = 24 * 60 * 60 * 1000;
 
-const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
+const CallbackNotifications = ({ onCallbackAlert, currentUser, bootstrapData }) => {
   const { t, i18n } = useTranslation();
   const [reminders, setReminders] = useState([]);
   const [pendingCallbacks, setPendingCallbacks] = useState([]);
@@ -90,19 +90,33 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
     }
   }, [urgentCallbackQueue, showUrgentModal]);
 
+  // Use bootstrap data if available (eliminates initial API calls)
   useEffect(() => {
-    fetchReminders();
-    fetchPendingCallbacks();
+    if (bootstrapData) {
+      if (bootstrapData.reminders) setReminders(bootstrapData.reminders);
+      if (bootstrapData.deposit_notifications) {
+        setDepositNotifications(bootstrapData.deposit_notifications.notifications || []);
+      }
+      if (bootstrapData.login_requests) setLoginRequests(bootstrapData.login_requests);
+    }
+  }, [bootstrapData]);
+
+  useEffect(() => {
+    // If bootstrap data provided, skip initial fetch (already loaded)
+    if (!bootstrapData) {
+      fetchReminders();
+      fetchPendingCallbacks();
+    }
     checkUpcomingCallbacks();
     
-    // Check for reminders and callbacks every 30 seconds
+    // Check for reminders and callbacks every 60 seconds (reduced from 30s for performance)
     const interval = setInterval(() => {
       checkUpcomingCallbacks();
       fetchPendingCallbacks();
-    }, 30000);
+    }, 60000);
     
-    // Check for snoozed callbacks every 30 seconds (reduced from 10s for performance)
-    const snoozeInterval = setInterval(checkSnoozedCallbacks, 30000);
+    // Check for snoozed callbacks every 60 seconds
+    const snoozeInterval = setInterval(checkSnoozedCallbacks, 60000);
     
     return () => {
       clearInterval(interval);
@@ -229,66 +243,26 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      const leadsRes = await axios.get(`${API}/crm/leads`, { headers });
-      // Handle both old array format and new paginated format
-      const allLeads = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
+      // Use dedicated server-side endpoint (instead of fetching ALL leads)
+      const res = await axios.get(`${API}/crm/pending-callbacks`, { headers });
+      const pendingLeads = res.data || [];
       
-      // Clean up old "called" markers
-      cleanupCalledCallbacks(allLeads);
-      
-      // Statuses that require callback notifications
-      const callbackStatuses = ['Callback', 'Potential Callback', 'Pharos in progress'];
-      const depositStatuses = ['Deposit 1', 'Deposit 2', 'Deposit 3', 'Deposit 4', 'Deposit 5'];
-      const allNotifyStatuses = [...callbackStatuses, ...depositStatuses];
-      
-      // Get callbacks that have been marked as "called"
+      // Get local dismiss/called markers
       const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
-      
-      // Get dismissed callbacks
       const dismissed = JSON.parse(localStorage.getItem('dismissed_callbacks') || '{}');
       
-      // Filter leads - ONLY show OVERDUE callbacks (scaduto)
-      const now = new Date();
-      const pending = allLeads.filter(lead => {
-        // Only show if status requires callback AND has callback date
-        if (!allNotifyStatuses.includes(lead.status) || !lead.callback_date) {
-          return false;
-        }
-        
-        // ONLY show notifications for leads assigned to current user
-        if (lead.assigned_to !== currentUser.id) {
-          return false;
-        }
-        
-        // Skip if this callback has been marked as "called" (agent pressed Chiama)
+      // Filter out locally dismissed/called
+      const pending = pendingLeads.filter(lead => {
         const calledData = calledCallbacks[lead.id];
         if (calledData && calledData.callback_date === lead.callback_date) {
           return false;
         }
-        
-        // Skip if this callback has been dismissed by the user
         const dismissKey = `${lead.id}_${lead.callback_date}`;
         if (dismissed[dismissKey]) {
           return false;
         }
-        
-        const callbackTime = new Date(lead.callback_date);
-        
-        // Auto-expire: Skip callbacks older than 24 hours
-        const timeSinceCallback = now - callbackTime;
-        if (timeSinceCallback > NOTIFICATION_EXPIRY_MS) {
-          return false;
-        }
-        
-        // ONLY show callbacks that are OVERDUE (past the callback time)
-        // When agent changes callback time to future, it disappears automatically
-        const isOverdue = callbackTime < now;
-        
-        return isOverdue;
+        return true;
       });
-      
-      // Sort by callback date (most overdue first - oldest at top)
-      pending.sort((a, b) => new Date(a.callback_date) - new Date(b.callback_date));
       
       setPendingCallbacks(pending);
       updateTotalNotifications(reminders.length, pending.length);
@@ -483,43 +457,17 @@ const CallbackNotifications = ({ onCallbackAlert, currentUser }) => {
       if (!token) return;
       const headers = { Authorization: `Bearer ${token}` };
 
-      // FIXED: Use safe pagination limit instead of fetching all leads
-      // Only fetch leads that have callback_date set (server filters by user permissions)
-      // We paginate through to collect callbacks - max 200 per page
-      const allLeads = [];
-      let offset = 0;
-      const pageSize = 200;
-      let hasMore = true;
-      
-      while (hasMore && offset < 1000) { // Safety cap: max 1000 leads checked
-        const leadsRes = await axios.get(`${API}/crm/leads`, { 
-          headers,
-          params: { limit: pageSize, offset }
-        });
-        const pageData = Array.isArray(leadsRes.data) ? leadsRes.data : (leadsRes.data.data || []);
-        
-        // Only keep leads with callback_date for efficiency
-        const leadsWithCallbacks = pageData.filter(lead => lead.callback_date);
-        allLeads.push(...leadsWithCallbacks);
-        
-        // Check if we need more pages
-        const total = leadsRes.data.total || pageData.length;
-        offset += pageSize;
-        hasMore = pageData.length === pageSize && offset < total;
-      }
+      // Use dedicated endpoint instead of fetching ALL leads
+      const res = await axios.get(`${API}/crm/pending-callbacks`, { headers });
+      const callbackLeads = res.data || [];
       
       const now = new Date();
       const snoozeDataFromStorage = JSON.parse(localStorage.getItem('callback_snoozes') || '{}');
       const calledCallbacks = JSON.parse(localStorage.getItem('called_callbacks') || '{}');
       const newUrgentCallbacks = [];
       
-      for (const lead of allLeads) {
+      for (const lead of callbackLeads) {
         if (lead.callback_date) {
-          // For agents: only show their assigned leads
-          if (currentUser.role === 'agent' && lead.assigned_to !== currentUser.id) {
-            continue;
-          }
-          
           // Skip if already called
           const calledData = calledCallbacks[lead.id];
           if (calledData && calledData.callback_date === lead.callback_date) {

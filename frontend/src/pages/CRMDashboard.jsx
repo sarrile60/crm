@@ -31,6 +31,9 @@ const CRMDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [callbackLead, setCallbackLead] = useState(null);
   const [sessionInfo, setSessionInfo] = useState(null);
+  
+  // Bootstrap data - shared across components to avoid duplicate API calls
+  const [bootstrapData, setBootstrapData] = useState(null);
 
   // Send heartbeat to update last_active status
   const sendHeartbeat = async () => {
@@ -59,11 +62,11 @@ const CRMDashboard = () => {
     setCurrentUser(JSON.parse(user));
     fetchData();
     
-    // Start session check interval (every 60 seconds)
-    const sessionCheckInterval = setInterval(checkSession, 60000);
+    // Start session check interval (every 2 minutes instead of 60s)
+    const sessionCheckInterval = setInterval(checkSession, 120000);
     
-    // Start heartbeat interval (every 30 seconds) to track activity
-    const heartbeatInterval = setInterval(sendHeartbeat, 30000);
+    // Start heartbeat interval (every 60 seconds instead of 30s)
+    const heartbeatInterval = setInterval(sendHeartbeat, 60000);
     
     // Check session immediately on load
     checkSession();
@@ -123,8 +126,18 @@ const CRMDashboard = () => {
       const token = localStorage.getItem('crmToken');
       const headers = { Authorization: `Bearer ${token}` };
 
-      const statsRes = await axios.get(`${API}/crm/dashboard/stats`, { headers });
-      setStats(statsRes.data);
+      // Use bootstrap endpoint - ONE call returns everything
+      const bootstrapRes = await axios.get(`${API}/crm/bootstrap`, { headers });
+      const data = bootstrapRes.data;
+      
+      setStats(data.dashboard);
+      setBootstrapData(data);
+      
+      // Update current user from server
+      if (data.user) {
+        setCurrentUser(data.user);
+        localStorage.setItem('crmUser', JSON.stringify(data.user));
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
       if (error.response?.status === 401) {
@@ -248,7 +261,7 @@ const CRMDashboard = () => {
                 <div className="text-[#D4AF37]">{t('auth.adminNoExpiry')}</div>
               </div>
             )}
-            <CallbackNotifications onCallbackAlert={handleCallbackAlert} currentUser={currentUser} />
+            <CallbackNotifications onCallbackAlert={handleCallbackAlert} currentUser={currentUser} bootstrapData={bootstrapData} />
             <Button onClick={handleLogout} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
               <LogOut className="w-4 h-4 mr-2" />
               {t('auth.logout')}
@@ -484,7 +497,7 @@ const CRMDashboard = () => {
           process.env.REACT_APP_PERF_MODE === 'true' ? (
             <LeadsTableOptimized currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} />
           ) : (
-            <LeadsTable currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} />
+            <LeadsTable currentUser={currentUser} urgentCallbackLead={callbackLead} onClearCallbackLead={() => setCallbackLead(null)} bootstrapData={bootstrapData} />
           )
         )}
         {activeTab === 'deposits' && (

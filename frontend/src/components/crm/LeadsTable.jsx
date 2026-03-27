@@ -172,7 +172,7 @@ const LeadRow = React.memo(({
   );
 });
 
-const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) => {
+const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, bootstrapData }) => {
   const { t } = useTranslation();
   const [leads, setLeads] = useState([]);
   const [filteredLeads, setFilteredLeads] = useState([]);
@@ -281,12 +281,20 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead }) =>
   const [reminderDateTime, setReminderDateTime] = useState('');
   const [reminderNotes, setReminderNotes] = useState('');
 
-  // Fetch static data (users, statuses, teams) only once on mount
+  // Fetch static data (users, statuses, teams) — use bootstrap data if available
   const [staticDataLoaded, setStaticDataLoaded] = useState(false);
   
   useEffect(() => {
-    fetchStaticData();
-  }, []);
+    if (bootstrapData && !staticDataLoaded) {
+      // Use pre-fetched bootstrap data — NO API calls needed!
+      setUsers(bootstrapData.users || []);
+      setStatuses(bootstrapData.statuses || []);
+      setTeams(bootstrapData.teams || []);
+      setStaticDataLoaded(true);
+    } else if (!staticDataLoaded) {
+      fetchStaticData();
+    }
+  }, [bootstrapData]);
 
   useEffect(() => {
     fetchLeadsOnly();
