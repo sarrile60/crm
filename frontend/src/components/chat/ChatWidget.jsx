@@ -38,6 +38,7 @@ const ChatWidget = ({ currentUser }) => {
   const fileInputRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const audioRef = useRef(null);
+  const chatInputRef = useRef(null);
 
   // Initialize audio
   useEffect(() => {
@@ -406,7 +407,10 @@ const ChatWidget = ({ currentUser }) => {
     }
     
     const messageToSend = newMessage.trim();
-    setNewMessage(''); // Clear immediately so user can type next message
+    setNewMessage('');
+    
+    // Keep focus on input so user can type next message immediately
+    setTimeout(() => chatInputRef.current?.focus(), 0);
     
     try {
       const token = localStorage.getItem('crmToken');
@@ -1007,6 +1011,7 @@ const ChatWidget = ({ currentUser }) => {
                     <Paperclip className="w-5 h-5 text-gray-500" />
                   </button>
                   <Input
+                    ref={chatInputRef}
                     placeholder={t('chat.typeMessage')}
                     value={newMessage}
                     onChange={handleTyping}
