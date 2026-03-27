@@ -347,13 +347,15 @@ const ChatWidget = ({ currentUser }) => {
     }
   }, [currentUser, fetchConversations, fetchTeams]);
 
-  // Polling interval
+  // Polling interval - faster when chat is open (3s), slower when closed (15s)
   useEffect(() => {
     if (!currentUser) return;
     
-    const interval = setInterval(pollMessages, 10000); // Poll every 10 seconds for better performance
+    const pollInterval = isOpen ? 3000 : 15000;
+    pollMessages(); // Poll immediately
+    const interval = setInterval(pollMessages, pollInterval);
     return () => clearInterval(interval);
-  }, [currentUser, pollMessages]);
+  }, [currentUser, pollMessages, isOpen]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
