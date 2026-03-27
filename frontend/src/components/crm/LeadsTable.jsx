@@ -46,58 +46,58 @@ const LeadRow = React.memo(({
   }, [lead.id, onToggleSelection]);
 
   return (
-    <tr className="border-t border-gray-200 hover:bg-gray-50">
+    <tr className="border-t border-gray-100 hover:bg-gray-50 h-[36px]">
       {canMassUpdate && (
-        <td className="p-3">
+        <td className="px-2 py-1">
           <button onClick={handleCheckboxClick} className="text-gray-700 hover:text-[#D4AF37]">
             {isSelected ? (
-              <CheckSquare className="w-5 h-5" />
+              <CheckSquare className="w-4 h-4" />
             ) : (
-              <Square className="w-5 h-5" />
+              <Square className="w-4 h-4" />
             )}
           </button>
         </td>
       )}
-      <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+      <td className="px-2 py-1 text-gray-600 text-xs overflow-hidden text-ellipsis whitespace-nowrap">
         {formatCreatedDate(lead.created_at)}
       </td>
-      <td className="p-3 overflow-hidden text-ellipsis whitespace-nowrap">
+      <td className="px-2 py-1 overflow-hidden text-ellipsis whitespace-nowrap">
         <button
           onClick={() => onViewDetails(lead)}
-          className="text-black font-semibold hover:text-[#D4AF37] underline text-sm"
+          className="text-black font-medium hover:text-[#D4AF37] underline text-xs"
         >
           {lead.fullName}
         </button>
       </td>
-      <td className="p-3 overflow-hidden text-ellipsis whitespace-nowrap">
+      <td className="px-2 py-1 overflow-hidden text-ellipsis whitespace-nowrap">
         {lead.phone_display !== undefined && lead.phone_display !== null ? (
           lead.phone_display ? (
-            <span className="text-gray-700 font-mono text-sm">
+            <span className="text-gray-600 font-mono text-xs">
               {lead.phone_display}
             </span>
           ) : (
-            <span className="text-gray-400 italic text-sm">{t('visibility.hidden')}</span>
+            <span className="text-gray-400 italic text-xs">{t('visibility.hidden')}</span>
           )
         ) : (
-          <span className="text-gray-700 font-mono text-sm">
+          <span className="text-gray-600 font-mono text-xs">
             {formatPhoneDisplay(lead.phone)}
           </span>
         )}
       </td>
-      <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+      <td className="px-2 py-1 text-gray-600 text-xs overflow-hidden text-ellipsis whitespace-nowrap max-w-[180px]">
         {lead.email_display !== undefined && lead.email_display !== null ? (
           lead.email_display || <span className="text-gray-400 italic">{t('visibility.hidden')}</span>
         ) : (
           lead.email
         )}
       </td>
-      <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">{lead.amountLost}</td>
-      <td className="p-3">
+      <td className="px-2 py-1 text-gray-600 text-xs overflow-hidden text-ellipsis whitespace-nowrap">{lead.amountLost}</td>
+      <td className="px-2 py-1">
         <Select value={lead.status || undefined} onValueChange={(value) => onStatusChange(lead.id, value)}>
-          <SelectTrigger className="w-full bg-white border-gray-300 rounded-none h-8 text-sm">
+          <SelectTrigger className="w-full bg-white border-gray-300 rounded-none h-6 text-xs px-1">
             <SelectValue placeholder={t('leads.selectStatus')}>
               {lead.status && (
-                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(lead.status)}`}>
+                <span className={`px-1.5 py-0 rounded-full text-[10px] font-semibold ${getStatusColor(lead.status)}`}>
                   {lead.status}
                 </span>
               )}
@@ -106,7 +106,7 @@ const LeadRow = React.memo(({
           <SelectContent className="bg-white">
             {statuses.map(status => (
               <SelectItem key={status.id} value={status.name}>
-                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(status.name)}`}>
+                <span className={`px-1.5 py-0 rounded-full text-[10px] font-semibold ${getStatusColor(status.name)}`}>
                   {status.name}
                 </span>
               </SelectItem>
@@ -114,55 +114,55 @@ const LeadRow = React.memo(({
           </SelectContent>
         </Select>
       </td>
-      <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+      <td className="px-2 py-1 text-gray-600 text-xs overflow-hidden text-ellipsis whitespace-nowrap">
         {lead.team_id ? teams.find(t => t.id === lead.team_id)?.name || 'N/A' : t('common.noTeam')}
       </td>
-      <td className="p-3 text-gray-700 text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+      <td className="px-2 py-1 text-gray-600 text-xs overflow-hidden text-ellipsis whitespace-nowrap">
         {lead.assigned_to ? users.find(u => u.id === lead.assigned_to)?.full_name || 'N/A' : t('crm.notAssigned')}
       </td>
-      <td className="p-3">
-        <div className="flex gap-1">
+      <td className="px-1 py-1">
+        <div className="flex gap-0.5">
           <Button
             onClick={() => onViewDetails(lead)}
             size="sm"
-            className="bg-blue-600 text-white hover:bg-blue-700 rounded-none h-8 w-8 p-0"
+            className="bg-blue-600 text-white hover:bg-blue-700 rounded-none h-6 w-6 p-0"
             title={t('common.view')}
           >
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className="w-3 h-3" />
           </Button>
           <Button
             onClick={() => onEdit(lead)}
             size="sm"
-            className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none h-8 w-8 p-0"
+            className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none h-6 w-6 p-0"
             title={t('common.edit')}
           >
-            <Edit className="w-3.5 h-3.5" />
+            <Edit className="w-3 h-3" />
           </Button>
           <Button
             onClick={() => onSetReminder(lead)}
             size="sm"
-            className={`${lead.callback_date ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-500 hover:bg-gray-600'} text-white rounded-none h-8 w-8 p-0`}
+            className={`${lead.callback_date ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-500 hover:bg-gray-600'} text-white rounded-none h-6 w-6 p-0`}
             title={lead.callback_date ? t('crm.editReminder') : t('crm.setReminder')}
           >
-            <Clock className="w-3.5 h-3.5" />
+            <Clock className="w-3 h-3" />
           </Button>
           {(currentUserRole === 'admin' || currentUserRole === 'supervisor') && (
             <>
               <Button
                 onClick={() => onAssign(lead)}
                 size="sm"
-                className="bg-green-600 text-white hover:bg-green-700 rounded-none h-8 w-8 p-0"
+                className="bg-green-600 text-white hover:bg-green-700 rounded-none h-6 w-6 p-0"
                 title={t('crm.assignLead')}
               >
-                <UserPlus className="w-3.5 h-3.5" />
+                <UserPlus className="w-3 h-3" />
               </Button>
               <Button
                 onClick={() => onDelete(lead)}
                 size="sm"
-                className="bg-red-600 text-white hover:bg-red-700 rounded-none h-8 w-8 p-0"
+                className="bg-red-600 text-white hover:bg-red-700 rounded-none h-6 w-6 p-0"
                 title={t('leads.deleteLead')}
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-3 h-3" />
               </Button>
             </>
           )}
@@ -1365,135 +1365,135 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
           <thead className="bg-black sticky top-0 z-10">
             <tr>
               {canMassUpdate && (
-                <th className="text-left text-white p-3 font-semibold w-12 bg-black">
+                <th className="text-left text-white px-2 py-1.5 font-medium text-xs w-10 bg-black">
                   <button onClick={toggleSelectAll} className="text-white hover:text-[#D4AF37]">
                     {selectedLeadIds.length === filteredLeads.length && filteredLeads.length > 0 ? (
-                      <CheckSquare className="w-5 h-5" />
+                      <CheckSquare className="w-4 h-4" />
                     ) : (
-                      <Square className="w-5 h-5" />
+                      <Square className="w-4 h-4" />
                     )}
                   </button>
                 </th>
               )}
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                className="text-left text-white px-2 py-1.5 font-medium text-xs cursor-pointer hover:bg-gray-800 select-none bg-black"
                 style={{ width: '140px', backgroundColor: sortConfig.field === 'created_at' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('created_at')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.date')}
                   {sortConfig.field === 'created_at' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3 text-[#D4AF37]" /> : <ArrowDown className="w-3 h-3 text-[#D4AF37]" />
                   ) : (
-                    <ArrowUpDown className="w-4 h-4 opacity-50" />
+                    <ArrowUpDown className="w-3 h-3 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                className="text-left text-white px-2 py-1.5 font-medium text-xs cursor-pointer hover:bg-gray-800 select-none bg-black"
                 style={{ width: '180px', backgroundColor: sortConfig.field === 'fullName' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('fullName')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.name')}
                   {sortConfig.field === 'fullName' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3 text-[#D4AF37]" /> : <ArrowDown className="w-3 h-3 text-[#D4AF37]" />
                   ) : (
-                    <ArrowUpDown className="w-4 h-4 opacity-50" />
+                    <ArrowUpDown className="w-3 h-3 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                className="text-left text-white px-2 py-1.5 font-medium text-xs cursor-pointer hover:bg-gray-800 select-none bg-black"
                 style={{ width: '150px', backgroundColor: sortConfig.field === 'phone' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('phone')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.phone')}
                   {sortConfig.field === 'phone' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3 text-[#D4AF37]" /> : <ArrowDown className="w-3 h-3 text-[#D4AF37]" />
                   ) : (
-                    <ArrowUpDown className="w-4 h-4 opacity-50" />
+                    <ArrowUpDown className="w-3 h-3 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                className="text-left text-white px-2 py-1.5 font-medium text-xs cursor-pointer hover:bg-gray-800 select-none bg-black"
                 style={{ width: '200px', backgroundColor: sortConfig.field === 'email' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('email')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.email')}
                   {sortConfig.field === 'email' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3 text-[#D4AF37]" /> : <ArrowDown className="w-3 h-3 text-[#D4AF37]" />
                   ) : (
-                    <ArrowUpDown className="w-4 h-4 opacity-50" />
+                    <ArrowUpDown className="w-3 h-3 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                className="text-left text-white px-2 py-1.5 font-medium text-xs cursor-pointer hover:bg-gray-800 select-none bg-black"
                 style={{ width: '110px', backgroundColor: sortConfig.field === 'amountLost' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('amountLost')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.amount')}
                   {sortConfig.field === 'amountLost' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3 text-[#D4AF37]" /> : <ArrowDown className="w-3 h-3 text-[#D4AF37]" />
                   ) : (
-                    <ArrowUpDown className="w-4 h-4 opacity-50" />
+                    <ArrowUpDown className="w-3 h-3 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                className="text-left text-white px-2 py-1.5 font-medium text-xs cursor-pointer hover:bg-gray-800 select-none bg-black"
                 style={{ width: '140px', backgroundColor: sortConfig.field === 'status' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('status')}
               >
                 <div className="flex items-center gap-1">
                   {t('common.status')}
                   {sortConfig.field === 'status' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3 text-[#D4AF37]" /> : <ArrowDown className="w-3 h-3 text-[#D4AF37]" />
                   ) : (
-                    <ArrowUpDown className="w-4 h-4 opacity-50" />
+                    <ArrowUpDown className="w-3 h-3 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                className="text-left text-white px-2 py-1.5 font-medium text-xs cursor-pointer hover:bg-gray-800 select-none bg-black"
                 style={{ width: '110px', backgroundColor: sortConfig.field === 'team_id' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('team_id')}
               >
                 <div className="flex items-center gap-1">
                   {t('users.team')}
                   {sortConfig.field === 'team_id' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3 text-[#D4AF37]" /> : <ArrowDown className="w-3 h-3 text-[#D4AF37]" />
                   ) : (
-                    <ArrowUpDown className="w-4 h-4 opacity-50" />
+                    <ArrowUpDown className="w-3 h-3 opacity-50" />
                   )}
                 </div>
               </th>
               <th 
-                className="text-left text-white p-3 font-semibold cursor-pointer hover:bg-gray-800 select-none bg-black"
+                className="text-left text-white px-2 py-1.5 font-medium text-xs cursor-pointer hover:bg-gray-800 select-none bg-black"
                 style={{ width: '130px', backgroundColor: sortConfig.field === 'assigned_to' ? '#1f2937' : '#000' }}
                 onClick={() => handleSort('assigned_to')}
               >
                 <div className="flex items-center gap-1">
                   {t('leads.assignedTo')}
                   {sortConfig.field === 'assigned_to' ? (
-                    sortConfig.direction === 'asc' ? <ArrowUp className="w-4 h-4 text-[#D4AF37]" /> : <ArrowDown className="w-4 h-4 text-[#D4AF37]" />
+                    sortConfig.direction === 'asc' ? <ArrowUp className="w-3 h-3 text-[#D4AF37]" /> : <ArrowDown className="w-3 h-3 text-[#D4AF37]" />
                   ) : (
-                    <ArrowUpDown className="w-4 h-4 opacity-50" />
+                    <ArrowUpDown className="w-3 h-3 opacity-50" />
                   )}
                 </div>
               </th>
-              <th className="text-left text-white p-3 font-semibold bg-black" style={{ width: '180px', backgroundColor: '#000' }}>{t('common.actions')}</th>
+              <th className="text-left text-white px-2 py-1.5 font-medium text-xs bg-black" style={{ width: '180px', backgroundColor: '#000' }}>{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {filteredLeads.length === 0 ? (
               <tr>
-                <td colSpan={canMassUpdate ? "10" : "9"} className="text-center p-8 text-gray-600">
+                <td colSpan={canMassUpdate ? "10" : "9"} className="text-center py-4 text-gray-500 text-sm">
                   {t('leads.noLeadsFound')}
                 </td>
               </tr>
@@ -1549,9 +1549,9 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
                 {canMassUpdate && (
                   <button onClick={() => toggleLeadSelection(lead.id)} className="text-gray-700 hover:text-[#D4AF37]">
                     {selectedLeadIds.includes(lead.id) ? (
-                      <CheckSquare className="w-5 h-5" />
+                      <CheckSquare className="w-4 h-4" />
                     ) : (
-                      <Square className="w-5 h-5" />
+                      <Square className="w-4 h-4" />
                     )}
                   </button>
                 )}
@@ -1753,7 +1753,7 @@ const LeadsTable = ({ currentUser, urgentCallbackLead, onClearCallbackLead, boot
               {/* Comments Section */}
               <div>
                 <h3 className="text-lg font-bold text-black mb-4 border-b-2 border-[#D4AF37] pb-2 flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5" />
+                  <MessageSquare className="w-4 h-4" />
                   {t('crm.commentsAndNotes')}
                 </h3>
                 
