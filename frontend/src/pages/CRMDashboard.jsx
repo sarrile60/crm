@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Scale, Users, TrendingUp, AlertCircle, LogOut, Settings, FileText, Bell, Shield, DollarSign, BarChart3, PieChart, Wallet, Sliders } from 'lucide-react';
+import { Scale, Users, TrendingUp, AlertCircle, LogOut, Settings, FileText, Bell, Shield, DollarSign, BarChart3, PieChart, Wallet, Sliders, ChevronDown, CheckCircle, Clock, Activity } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -250,13 +250,13 @@ const CRMDashboard = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-black border-b-2 border-[#D4AF37] py-4 px-8 sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Scale className="w-8 h-8 text-[#D4AF37]" />
+      <header className="bg-black border-b border-[#D4AF37] px-6 sticky top-0 z-50">
+        <div className="max-w-[1600px] mx-auto flex items-center justify-between h-12">
+          <div className="flex items-center gap-2">
+            <Scale className="w-6 h-6 text-[#D4AF37]" />
             <div>
-              <h1 className="text-white text-xl font-semibold">1 LAW SOLICITORS CRM</h1>
-              <p className="text-gray-400 text-sm">{currentUser?.full_name} - {t(`users.roles.${currentUser?.role}`)}</p>
+              <h1 className="text-white text-sm font-semibold leading-tight">1 LAW SOLICITORS CRM</h1>
+              <p className="text-gray-400 text-[10px] leading-tight">{currentUser?.full_name} · {t(`users.roles.${currentUser?.role}`)}</p>
             </div>
           </div>
           
@@ -287,177 +287,159 @@ const CRMDashboard = () => {
               </div>
             )}
             <CallbackNotifications onCallbackAlert={handleCallbackAlert} currentUser={currentUser} bootstrapData={bootstrapData} />
-            <Button onClick={handleLogout} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
-              <LogOut className="w-4 h-4 mr-2" />
+            <Button onClick={handleLogout} size="sm" className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-sm h-8 text-xs">
+              <LogOut className="w-3.5 h-3.5 mr-1" />
               {t('auth.logout')}
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Navigation Tabs */}
-      <nav className="bg-gray-50 border-b-2 border-gray-200 px-8 py-4">
-        <div className="max-w-[1600px] mx-auto flex gap-6">
-          <button
-            onClick={() => setActiveTab('dashboard')}
-            className={`px-4 py-2 font-semibold transition-all ${
-              activeTab === 'dashboard'
-                ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                : 'text-gray-600 hover:text-black'
-            }`}
-          >
-            <TrendingUp className="w-4 h-4 inline mr-2" />
-            {t('nav.dashboard')}
-          </button>
-          <button
-            onClick={() => setActiveTab('leads')}
-            className={`px-4 py-2 font-semibold transition-all ${
-              activeTab === 'leads'
-                ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                : 'text-gray-600 hover:text-black'
-            }`}
-          >
-            <FileText className="w-4 h-4 inline mr-2" />
-            {t('nav.leads')}
-          </button>
-          {/* Deposits tab for all users */}
-          <button
-            onClick={() => setActiveTab('deposits')}
-            className={`px-4 py-2 font-semibold transition-all ${
-              activeTab === 'deposits'
-                ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                : 'text-gray-600 hover:text-black'
-            }`}
-          >
-            <DollarSign className="w-4 h-4 inline mr-2" />
-            {t('nav.deposits')}
-          </button>
-          {/* Earnings tab for agents and supervisors */}
-          {(currentUser?.role === 'agent' || currentUser?.role === 'supervisor') && (
+      {/* Navigation - Clean Professional Layout */}
+      <nav className="bg-white border-b border-gray-200 px-6">
+        <div className="max-w-[1600px] mx-auto flex items-center h-10">
+          {/* Primary Nav Items */}
+          <div className="flex items-center gap-1">
+            {/* Dashboard */}
             <button
-              onClick={() => setActiveTab('earnings')}
-              className={`px-4 py-2 font-semibold transition-all ${
-                activeTab === 'earnings'
-                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                  : 'text-gray-600 hover:text-black'
+              onClick={() => setActiveTab('dashboard')}
+              className={`px-3 py-2 text-sm font-medium transition-all rounded-sm ${
+                activeTab === 'dashboard'
+                  ? 'text-[#D4AF37] bg-[#D4AF37]/10'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
               }`}
             >
-              <Wallet className="w-4 h-4 inline mr-2" />
-              {t('nav.earnings')}
+              <TrendingUp className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
+              {t('nav.dashboard')}
             </button>
-          )}
-          {/* Revenue tab for supervisors and admins */}
-          {(currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
+
+            {/* Leads */}
             <button
-              onClick={() => setActiveTab('revenue')}
-              className={`px-4 py-2 font-semibold transition-all ${
-                activeTab === 'revenue'
-                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                  : 'text-gray-600 hover:text-black'
+              onClick={() => setActiveTab('leads')}
+              className={`px-3 py-2 text-sm font-medium transition-all rounded-sm ${
+                activeTab === 'leads'
+                  ? 'text-[#D4AF37] bg-[#D4AF37]/10'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
               }`}
             >
-              <BarChart3 className="w-4 h-4 inline mr-2" />
-              {t('nav.revenue')}
+              <FileText className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
+              {t('nav.leads')}
             </button>
-          )}
-          {/* Team tab for supervisors and admins */}
-          {(currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
+
+            {/* Deposits */}
             <button
-              onClick={() => setActiveTab('team')}
-              className={`px-4 py-2 font-semibold transition-all ${
-                activeTab === 'team'
-                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                  : 'text-gray-600 hover:text-black'
+              onClick={() => setActiveTab('deposits')}
+              className={`px-3 py-2 text-sm font-medium transition-all rounded-sm ${
+                activeTab === 'deposits'
+                  ? 'text-[#D4AF37] bg-[#D4AF37]/10'
+                  : 'text-gray-600 hover:text-black hover:bg-gray-100'
               }`}
             >
-              <Users className="w-4 h-4 inline mr-2" />
-              {t('nav.team')}
+              <DollarSign className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
+              {t('nav.deposits')}
             </button>
-          )}
-          {/* Deposit Approvals for Admin */}
-          {currentUser?.role === 'admin' && (
-            <button
-              onClick={() => setActiveTab('depositApprovals')}
-              className={`px-4 py-2 font-semibold transition-all ${
-                activeTab === 'depositApprovals'
-                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                  : 'text-gray-600 hover:text-black'
-              }`}
-            >
-              <DollarSign className="w-4 h-4 inline mr-2" />
-              {t('nav.depositApprovals')}
-            </button>
-          )}
-          {/* Analytics for Admin */}
-          {currentUser?.role === 'admin' && (
-            <button
-              onClick={() => setActiveTab('analytics')}
-              className={`px-4 py-2 font-semibold transition-all ${
-                activeTab === 'analytics'
-                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                  : 'text-gray-600 hover:text-black'
-              }`}
-            >
-              <PieChart className="w-4 h-4 inline mr-2" />
-              {t('nav.analytics')}
-            </button>
-          )}
-          {/* Finance for Admin */}
-          {currentUser?.role === 'admin' && (
-            <button
-              onClick={() => setActiveTab('finance')}
-              className={`px-4 py-2 font-semibold transition-all ${
-                activeTab === 'finance'
-                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                  : 'text-gray-600 hover:text-black'
-              }`}
-            >
-              <Wallet className="w-4 h-4 inline mr-2" />
-              {t('nav.finance')}
-            </button>
-          )}
-          {/* Commission Settings for Admin */}
-          {currentUser?.role === 'admin' && (
-            <button
-              onClick={() => setActiveTab('commissionSettings')}
-              className={`px-4 py-2 font-semibold transition-all ${
-                activeTab === 'commissionSettings'
-                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                  : 'text-gray-600 hover:text-black'
-              }`}
-            >
-              <Sliders className="w-4 h-4 inline mr-2" />
-              {t('nav.commissionSettings')}
-            </button>
-          )}
-          {/* Users tab moved to Administration Panel */}
-          {currentUser?.role === 'admin' && (
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`px-4 py-2 font-semibold transition-all ${
-                activeTab === 'settings'
-                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
-                  : 'text-gray-600 hover:text-black'
-              }`}
-            >
-              <Settings className="w-4 h-4 inline mr-2" />
-              {t('nav.settings')}
-            </button>
-          )}
-          {currentUser?.role === 'admin' && (
-            <button
-              onClick={() => navigate('/crm/admin')}
-              className="px-4 py-2 font-semibold transition-all text-gray-600 hover:text-black bg-[#D4AF37] bg-opacity-10 hover:bg-opacity-20 border border-[#D4AF37] ml-4"
-            >
-              <Shield className="w-4 h-4 inline mr-2" />
-              {t('nav.administration')}
-            </button>
-          )}
+
+            {/* Team (Supervisor/Admin) */}
+            {(currentUser?.role === 'supervisor' || currentUser?.role === 'admin') && (
+              <button
+                onClick={() => setActiveTab('team')}
+                className={`px-3 py-2 text-sm font-medium transition-all rounded-sm ${
+                  activeTab === 'team'
+                    ? 'text-[#D4AF37] bg-[#D4AF37]/10'
+                    : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                }`}
+              >
+                <Users className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
+                {t('nav.team')}
+              </button>
+            )}
+
+            {/* Earnings (Agent/Supervisor) */}
+            {(currentUser?.role === 'agent' || currentUser?.role === 'supervisor') && (
+              <button
+                onClick={() => setActiveTab('earnings')}
+                className={`px-3 py-2 text-sm font-medium transition-all rounded-sm ${
+                  activeTab === 'earnings'
+                    ? 'text-[#D4AF37] bg-[#D4AF37]/10'
+                    : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                }`}
+              >
+                <Wallet className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
+                {t('nav.earnings')}
+              </button>
+            )}
+
+            {/* Divider */}
+            {currentUser?.role === 'admin' && (
+              <div className="w-px h-5 bg-gray-300 mx-1"></div>
+            )}
+
+            {/* Reports Dropdown (Admin) */}
+            {currentUser?.role === 'admin' && (
+              <div className="relative group">
+                <button
+                  className={`px-3 py-2 text-sm font-medium transition-all rounded-sm flex items-center gap-1 ${
+                    ['revenue', 'analytics', 'finance', 'depositApprovals'].includes(activeTab)
+                      ? 'text-[#D4AF37] bg-[#D4AF37]/10'
+                      : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                  }`}
+                >
+                  <BarChart3 className="w-3.5 h-3.5 -mt-0.5" />
+                  Reports
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+                <div className="absolute left-0 top-full mt-0 w-52 bg-white border border-gray-200 shadow-lg rounded-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <button onClick={() => setActiveTab('revenue')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'revenue' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                    <BarChart3 className="w-3.5 h-3.5" /> Revenue
+                  </button>
+                  <button onClick={() => setActiveTab('analytics')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'analytics' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                    <PieChart className="w-3.5 h-3.5" /> Analytics
+                  </button>
+                  <button onClick={() => setActiveTab('finance')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'finance' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                    <Wallet className="w-3.5 h-3.5" /> Finance
+                  </button>
+                  <div className="border-t border-gray-100"></div>
+                  <button onClick={() => setActiveTab('depositApprovals')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'depositApprovals' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                    <CheckCircle className="w-3.5 h-3.5" /> Deposit Approvals
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Admin Dropdown */}
+            {currentUser?.role === 'admin' && (
+              <div className="relative group">
+                <button
+                  className={`px-3 py-2 text-sm font-medium transition-all rounded-sm flex items-center gap-1 ${
+                    ['settings', 'commissionSettings'].includes(activeTab)
+                      ? 'text-[#D4AF37] bg-[#D4AF37]/10'
+                      : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                  }`}
+                >
+                  <Settings className="w-3.5 h-3.5 -mt-0.5" />
+                  Settings
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+                <div className="absolute left-0 top-full mt-0 w-52 bg-white border border-gray-200 shadow-lg rounded-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <button onClick={() => setActiveTab('commissionSettings')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'commissionSettings' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                    <Sliders className="w-3.5 h-3.5" /> Commission Settings
+                  </button>
+                  <button onClick={() => setActiveTab('settings')} className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 ${activeTab === 'settings' ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-700'}`}>
+                    <Settings className="w-3.5 h-3.5" /> CRM Settings
+                  </button>
+                  <div className="border-t border-gray-100"></div>
+                  <button onClick={() => navigate('/crm/admin')} className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700">
+                    <Shield className="w-3.5 h-3.5" /> Administration Panel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-[1600px] mx-auto p-8">
+      <main className="max-w-[1600px] mx-auto px-6 py-4">
         {/* ==================== LAZY KEEP-ALIVE TABS ====================
              Mount once on first visit, then keep alive (display:none) forever.
              Result: ALL tab switches are INSTANT after first visit.
@@ -467,54 +449,72 @@ const CRMDashboard = () => {
         <div style={{ display: activeTab === 'dashboard' ? 'block' : 'none' }}>
           {stats && (
             <div>
-              <h2 className="text-3xl font-bold text-black mb-8">{t('dashboard.title')}</h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                <div className="bg-white border-2 border-[#D4AF37] p-6 shadow-lg">
-                  <div className="flex items-center justify-between mb-4">
-                    <FileText className="w-8 h-8 text-[#D4AF37]" />
-                    <span className="text-sm text-gray-600">{t('common.total')}</span>
-                  </div>
-                  <div className="text-4xl font-bold text-black mb-2">{stats.total_leads}</div>
-                  <p className="text-gray-600">{t('dashboard.totalLeads')}</p>
-                </div>
-                <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
-                  <div className="flex items-center justify-between mb-4">
-                    <AlertCircle className="w-8 h-8 text-blue-600" />
-                    <span className="text-sm text-gray-600">{t('common.new')}</span>
-                  </div>
-                  <div className="text-4xl font-bold text-black mb-2">{stats.new_leads}</div>
-                  <p className="text-gray-600">{t('dashboard.newLeads')}</p>
-                </div>
-                <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
-                  <div className="flex items-center justify-between mb-4">
-                    <TrendingUp className="w-8 h-8 text-orange-600" />
-                    <span className="text-sm text-gray-600">{t('common.inProgress')}</span>
-                  </div>
-                  <div className="text-4xl font-bold text-black mb-2">{stats.in_progress}</div>
-                  <p className="text-gray-600">{t('dashboard.inProgress')}</p>
-                </div>
-                <div className="bg-white border-2 border-gray-300 p-6 shadow-lg">
-                  <div className="flex items-center justify-between mb-4">
-                    <Bell className="w-8 h-8 text-red-600" />
-                    <span className="text-sm text-gray-600">{t('common.urgent')}</span>
-                  </div>
-                  <div className="text-4xl font-bold text-black mb-2">{stats.pending_callbacks}</div>
-                  <p className="text-gray-600">{t('dashboard.pendingCallbacks')}</p>
-                </div>
-              </div>
-              <div className="bg-gray-50 border-2 border-gray-200 p-6">
-                <h3 className="text-xl font-bold text-black mb-4">{t('dashboard.quickActions')}</h3>
-                <div className="flex flex-wrap gap-4">
-                  <Button onClick={() => setActiveTab('leads')} className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-none">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-black">{t('dashboard.title')}</h2>
+                <div className="flex gap-2">
+                  <Button onClick={() => setActiveTab('leads')} size="sm" className="bg-[#D4AF37] text-black hover:bg-[#C5A028] rounded-sm text-xs h-8">
                     {t('dashboard.viewAllLeads')}
                   </Button>
                   {currentUser?.role === 'admin' && (
-                    <Button onClick={() => navigate('/crm/admin')} className="bg-black text-white hover:bg-gray-800 rounded-none">
+                    <Button onClick={() => navigate('/crm/admin')} size="sm" className="bg-gray-800 text-white hover:bg-black rounded-sm text-xs h-8">
                       {t('dashboard.adminPanel')}
                     </Button>
                   )}
                 </div>
               </div>
+
+              {/* Compact Stats Row */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                <div className="bg-white border border-gray-200 p-3 rounded-sm flex items-center gap-3">
+                  <div className="w-10 h-10 bg-[#D4AF37]/10 rounded-sm flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-[#D4AF37]" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-black leading-tight">{stats.total_leads}</div>
+                    <div className="text-xs text-gray-500">{t('dashboard.totalLeads')}</div>
+                  </div>
+                </div>
+                <div className="bg-white border border-gray-200 p-3 rounded-sm flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-50 rounded-sm flex items-center justify-center">
+                    <AlertCircle className="w-5 h-5 text-blue-500" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-black leading-tight">{stats.new_leads}</div>
+                    <div className="text-xs text-gray-500">{t('dashboard.newLeads')}</div>
+                  </div>
+                </div>
+                <div className="bg-white border border-gray-200 p-3 rounded-sm flex items-center gap-3">
+                  <div className="w-10 h-10 bg-orange-50 rounded-sm flex items-center justify-center">
+                    <Activity className="w-5 h-5 text-orange-500" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-black leading-tight">{stats.in_progress}</div>
+                    <div className="text-xs text-gray-500">{t('dashboard.inProgress')}</div>
+                  </div>
+                </div>
+                <div className="bg-white border border-gray-200 p-3 rounded-sm flex items-center gap-3">
+                  <div className="w-10 h-10 bg-red-50 rounded-sm flex items-center justify-center">
+                    <Clock className="w-5 h-5 text-red-500" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-black leading-tight">{stats.pending_callbacks}</div>
+                    <div className="text-xs text-gray-500">{t('dashboard.pendingCallbacks')}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recent Leads Preview */}
+              {bootstrapData?.users && (
+                <div className="bg-white border border-gray-200 rounded-sm">
+                  <div className="px-4 py-2 border-b border-gray-200 flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-black">Recent Activity</h3>
+                    <button onClick={() => setActiveTab('leads')} className="text-xs text-[#D4AF37] hover:underline">View all leads →</button>
+                  </div>
+                  <div className="p-4 text-center text-sm text-gray-400">
+                    Click "View all leads" to see your {stats.total_leads} leads
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
