@@ -553,7 +553,7 @@ const CRMDashboard = () => {
                     <h3 className="text-sm font-semibold text-black">Recent Leads</h3>
                     <div className="flex items-center gap-2">
                       <button onClick={() => setActiveTab('leads')} className="text-[10px] text-[#D4AF37] hover:underline">View all {stats.total_leads} →</button>
-                      <button onClick={() => { setRecentLeads([]); fetchData(); }} className="text-gray-400 hover:text-gray-600 text-xs" title="Refresh">↻</button>
+                      <button onClick={() => setRecentLeads([])} className="text-gray-300 hover:text-gray-500 text-sm" title="Clear all">✕</button>
                     </div>
                   </div>
                   {recentLeads.length > 0 ? (
@@ -585,7 +585,7 @@ const CRMDashboard = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="p-4 text-center text-xs text-gray-400">Loading...</div>
+                    <div className="p-4 text-center text-xs text-gray-400">No recent leads</div>
                   )}
                   <button onClick={() => setActiveTab('leads')} className="w-full py-2 text-xs text-[#D4AF37] hover:bg-gray-50 border-t border-gray-100 font-medium">
                     Show more
@@ -596,7 +596,7 @@ const CRMDashboard = () => {
                 <div className="bg-white border border-gray-200 rounded-sm flex flex-col">
                   <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                     <h3 className="text-sm font-semibold text-black">Stream</h3>
-                    <button onClick={() => { setStreamData([]); fetchData(); }} className="text-gray-400 hover:text-gray-600 text-xs" title="Refresh">↻</button>
+                    <button onClick={() => setStreamData([])} className="text-gray-300 hover:text-gray-500 text-sm" title="Clear all">✕</button>
                   </div>
                   {streamData.length > 0 ? (
                     <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto flex-1">
@@ -675,7 +675,7 @@ const CRMDashboard = () => {
                   <div className="bg-white border border-gray-200 rounded-sm flex flex-col">
                     <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                       <h3 className="text-sm font-semibold text-black">Login Activity</h3>
-                      <button onClick={() => { setLoginActivity([]); fetchData(); }} className="text-gray-400 hover:text-gray-600 text-xs" title="Refresh">↻</button>
+                      <button onClick={() => setLoginActivity([])} className="text-gray-300 hover:text-gray-500 text-sm" title="Clear all">✕</button>
                     </div>
                     {loginActivity.length > 0 ? (
                       <div className="divide-y divide-gray-50 max-h-[400px] overflow-y-auto flex-1">
